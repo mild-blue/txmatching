@@ -226,6 +226,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                                       [-2.0, -1.0, 10.0],
                                       [10.0, -2.0, -1.0],
                                       [10.0, -1.0, -2.0]])
+                                      
+        #todo: prepare compatibility graph
 
 
         donors = _get_donors_for_score_matrix(score_matrix_test)

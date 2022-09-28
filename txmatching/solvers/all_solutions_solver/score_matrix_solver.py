@@ -95,14 +95,10 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
                                    donors,
                                    config_parameters.max_number_of_distinct_countries_in_round)
 
-    cycles_with_recipients = [[[donor_idx, donor_idx_to_recipient_idx[donor_idx]] for donor_idx in cycle] for cycle in cycles]
+    cycles_with_recipients = [[[donor_idx, donor_idx_to_recipient_idx[donor_idx]]
+                               for donor_idx in cycle] for cycle in cycles]
 
-    valid_cycles = []
-    for cycle in cycles_with_recipients:
-        recipient_ids = [pair[1] for pair in cycle]
-        unique_recipients = set(recipient_ids)
-        if len(unique_recipients) == len(recipient_ids):
-            valid_cycles.append(cycle)
+    valid_cycles = _filter_cycles_with_recipient_duplicates(cycles_with_recipients)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         valid_cycles,
@@ -114,3 +110,13 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
         donor_idx_to_recipient_idx=donor_idx_to_recipient_idx
     )
     return highest_scoring_paths
+
+
+def _filter_cycles_with_recipient_duplicates(cycles_with_recipients: List[List[int]]) -> List[List[int]]:
+    valid_cycles = []
+    for cycle in cycles_with_recipients:
+        recipient_ids = [pair[1] for pair in cycle]
+        unique_recipients = set(recipient_ids)
+        if len(unique_recipients) == len(recipient_ids):
+            valid_cycles.append(cycle)
+    return valid_cycles
