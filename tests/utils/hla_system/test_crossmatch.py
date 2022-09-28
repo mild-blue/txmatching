@@ -80,7 +80,7 @@ class TestCrossmatch(unittest.TestCase):
 
         # there is no antibody below the cutoff
         antibodies[0] = create_antibody(antibodies[0].raw_code, 2100, 2000)
-        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:-1])))
+        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
 
     def test_crossmatch_split(self):
         """
@@ -242,8 +242,9 @@ class TestCrossmatch(unittest.TestCase):
 
     def test_get_crossmatched_antibodies(self):
         """
-        Also checks the matches that the get_crossmatched_antibodies function returns.
+        Checks the matches that the `get_crossmatched_antibodies` function returns.
         """
+
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
         self._assert_raw_code_equal('A*23:04', HLACode('A*23:04', 'A23', 'A9'))
         self._assert_raw_code_equal('A*24:02', HLACode('A*24:02', 'A24', 'A9'))
