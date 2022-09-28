@@ -27,7 +27,7 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
 
     for pair in config_parameters.manual_donor_recipient_scores:
         if pair.donor_db_id not in txm_event.active_and_valid_donors_dict \
-            and pair.recipient_db_id not in txm_event.active_and_valid_recipients_dict:
+            or pair.recipient_db_id not in txm_event.active_and_valid_recipients_dict:
             config_parameters.manual_donor_recipient_scores.remove(pair)
 
     scorer = scorer_from_configuration(config_parameters)

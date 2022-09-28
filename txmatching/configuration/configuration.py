@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.data_transfer_objects import txm_event
-from txmatching.database.services.txm_event_service import get_txm_event_complete, raise_error_if_txm_event_does_not_exist
-from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel
+from txmatching.database.services.txm_event_service import raise_error_if_txm_event_does_not_exist
+from txmatching.database.sql_alchemy_schema import ConfigModel
 
 
 @dataclass
