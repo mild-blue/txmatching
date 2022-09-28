@@ -100,8 +100,8 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
         ilp_model.add_constr(mapping.node_to_out_var[node] <= 1)
 
     # Required patients
-    for node in data_and_configuration.required_patients:
-        ilp_model.add_constr(mapping.node_to_in_var[node] >= 0.5)
+    for donors_node_ids in data_and_configuration.required_patients:
+        ilp_model.add_constr(mip.xsum([mapping.node_to_in_var[node] for node in donors_node_ids]) >= 0.5)
 
     _add_debt_static_constraints(ilp_model, data_and_configuration, mapping)
 
