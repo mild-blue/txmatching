@@ -104,7 +104,7 @@ def _do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
         positive_matches = []
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(antibodies, hla_per_group, positive_matches)
+        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -164,7 +164,7 @@ def _do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                             positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
                         continue
 
-        _add_none_typization(antibodies, positive_matches)
+        _add_none_typization(_get_antibodies_over_cutoff(antibodies), positive_matches)
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, positive_matches))
 
     return antibody_matches_for_groups
@@ -178,7 +178,7 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
         positive_matches = []
-        antibodies = antibodies_per_group.hla_antibody_list
+        antibodies = _get_antibodies_over_cutoff(antibodies_per_group.hla_antibody_list)
 
         _add_undecidable_typization(antibodies, hla_per_group, positive_matches)
 
@@ -187,7 +187,7 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.high_res == antibody.code.high_res]
                 if len(tested_antibodies_that_match) > 0:
-                    for match in _get_antibodies_over_cutoff(tested_antibodies_that_match):
+                    for match in tested_antibodies_that_match:
                         # HIGH_RES_1
                         positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES))
                     continue
@@ -196,7 +196,7 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.split == antibody.code.split]
                 if len(tested_antibodies_that_match) > 0:
-                    for match in _get_antibodies_over_cutoff(tested_antibodies_that_match):
+                    for match in tested_antibodies_that_match:
                         # SPLIT_1, SPLIT_2
                         positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.SPLIT))
                     continue
@@ -210,7 +210,7 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                                                     if hla_type.code.broad == antibody.code.broad
                                                     if antibody.code.high_res is None and antibody.code.split is None]
                 if len(tested_antibodies_that_match) > 0:
-                    for match in _get_antibodies_over_cutoff(tested_antibodies_that_match):
+                    for match in tested_antibodies_that_match:
                         positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.BROAD))
                     continue
 
@@ -244,9 +244,7 @@ def _is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_resolution: bool):
-    is_type_a = _is_recipient_type_a(recipient_antibodies)
-
-    if is_type_a:
+    if _is_recipient_type_a(recipient_antibodies):
         antibody_matches_for_groups = _do_crossmatch_in_type_a(donor_hla_typing, recipient_antibodies, use_high_resolution)
     else:
         antibody_matches_for_groups = _do_crossmatch_in_type_b(donor_hla_typing, recipient_antibodies, use_high_resolution)
