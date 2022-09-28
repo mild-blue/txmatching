@@ -193,8 +193,13 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                     continue
 
             if hla_type.code.split is not None:
-                tested_antibodies_that_match = [antibody for antibody in antibodies
-                                                if hla_type.code.split == antibody.code.split]
+                if hla_type.code.high_res is None:  # SPLIT_1
+                    tested_antibodies_that_match = [antibody for antibody in antibodies
+                                                    if hla_type.code.split == antibody.code.split]
+                else:  # SPLIT_2
+                    tested_antibodies_that_match = [antibody for antibody in antibodies
+                                                    if hla_type.code.split == antibody.code.split
+                                                    and antibody.code.high_res is None]
                 if len(tested_antibodies_that_match) > 0:
                     for match in tested_antibodies_that_match:
                         # SPLIT_1, SPLIT_2

@@ -268,7 +268,7 @@ class TestCrossmatch(unittest.TestCase):
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A23', 2100, 2000)], True,
                                    [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)],
-                                   is_type_a=False)
+                                   is_type_a=True)
 
     def test_antibodies_with_multiple_mfis(self):
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
