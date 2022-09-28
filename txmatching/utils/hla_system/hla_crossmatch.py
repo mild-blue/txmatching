@@ -85,7 +85,8 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                     continue
 
                 tested_antibodies_that_match = [antibody for antibody in antibodies
-                                                if hla_type.code.split == antibody.code.split]
+                                                if hla_type.code.split == antibody.code.split
+                                                if hla_type.code.split is not None]
                 positive_tested_antibodies = _get_antibodies_over_cutoff(tested_antibodies_that_match)
 
                 if len(positive_tested_antibodies) > 0:
@@ -102,7 +103,8 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
 
             if hla_type.code.split is not None:
                 tested_antibodies_that_match = [antibody for antibody in antibodies
-                                                if hla_type.code.split == antibody.code.split]
+                                                if hla_type.code.split == antibody.code.split
+                                                if hla_type.code.split is not None]
                 positive_tested_antibodies = _get_antibodies_over_cutoff(tested_antibodies_that_match)
 
                 if len(positive_tested_antibodies) > 0:
@@ -168,11 +170,13 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
             if hla_type.code.split is not None:
                 if hla_type.code.high_res is None:  # SPLIT_1
                     tested_antibodies_that_match = [antibody for antibody in antibodies
-                                                    if hla_type.code.split == antibody.code.split]
+                                                    if hla_type.code.split == antibody.code.split
+                                                    if hla_type.code.split is not None]
                 else:  # SPLIT_2
                     tested_antibodies_that_match = [antibody for antibody in antibodies
                                                     if hla_type.code.split == antibody.code.split
-                                                    and antibody.code.high_res is None]
+                                                    and antibody.code.high_res is None
+                                                    if hla_type.code.split is not None]
                 if len(tested_antibodies_that_match) > 0:
                     for match in tested_antibodies_that_match:
                         # SPLIT_1, SPLIT_2
