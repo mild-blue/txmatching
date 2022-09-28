@@ -1169,6 +1169,9 @@ definitions:
         type: object
     Pair:
         properties:
+            category:
+                example: Spain
+                type: string
             donor_id:
                 example: 1
                 type: integer
@@ -1560,12 +1563,12 @@ definitions:
         type: string
     Statistics:
         properties:
-            number_of_found_cycles:
+            number_of_found_cycles_and_chains:
                 type: integer
             number_of_found_transplants:
                 type: integer
         required:
-        - number_of_found_cycles
+        - number_of_found_cycles_and_chains
         - number_of_found_transplants
         type: object
     Success:

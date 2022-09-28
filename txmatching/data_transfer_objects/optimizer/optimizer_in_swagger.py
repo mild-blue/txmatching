@@ -19,7 +19,7 @@ DonorToRecipientJson = optimizer_api.model('DonorToRecipient', {
 })
 
 StatisticsJson = optimizer_api.model('Statistics', {
-    'number_of_found_cycles': fields.Integer(required=True),
+    'number_of_found_cycles_and_chains': fields.Integer(required=True),
     'number_of_found_transplants': fields.Integer(required=True)
 })
 
@@ -35,7 +35,8 @@ OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
 
 PairJson = optimizer_api.model('Pair', {
     'donor_id': fields.Integer(required=True, example=1),
-    'recipient_id': fields.Integer(reqired=False, example=4)
+    'recipient_id': fields.Integer(reqired=False, example=4),
+    'category': fields.String(required=False, example="Spain")
 })
 
 LimitationsJson = optimizer_api.model('Limitations', {

@@ -17,7 +17,7 @@ class CycleOrChain:
 
 @dataclass
 class Statistics:
-    number_of_found_cycles: int
+    number_of_found_cycles_and_chains: int
     number_of_found_transplants: int
 
 

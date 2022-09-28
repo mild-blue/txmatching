@@ -3608,6 +3608,10 @@
                 "recipient_id": {
                     "type": "integer",
                     "example": 4
+                },
+                "category": {
+                    "type": "string",
+                    "example": "Spain"
                 }
             },
             "type": "object"
@@ -4249,11 +4253,11 @@
         },
         "Statistics": {
             "required": [
-                "number_of_found_cycles",
+                "number_of_found_cycles_and_chains",
                 "number_of_found_transplants"
             ],
             "properties": {
-                "number_of_found_cycles": {
+                "number_of_found_cycles_and_chains": {
                     "type": "integer"
                 },
                 "number_of_found_transplants": {

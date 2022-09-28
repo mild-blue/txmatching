@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 class Pair:
     donor_id: int
     recipient_id: Optional[int] = None
+    category: Optional[str] = None
 
 
 @dataclass
