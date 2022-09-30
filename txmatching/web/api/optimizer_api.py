@@ -12,7 +12,7 @@ from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.optimizer.optimizer_functions import calculate_from_optimizer_safe, get_compatibility_graph, \
+from txmatching.optimizer.optimizer_functions import calculate_from_optimizer_safe, get_compatibility_graph_to_return, \
     get_optimizer_configuration, get_pairs_from_txm_event
 from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
@@ -63,8 +63,8 @@ class Optimize(Resource):
         pairs = get_pairs_from_txm_event(txm_event.active_and_valid_donors_dict)
 
         # get compatibility graph
-        compatibility_graph = get_compatibility_graph(txm_event.active_and_valid_donors_dict,
-                                                      txm_event.active_and_valid_recipients_dict)
+        compatibility_graph = get_compatibility_graph_to_return(txm_event.active_and_valid_donors_dict,
+                                                                txm_event.active_and_valid_recipients_dict)
 
         # get configuration
         configuration = get_optimizer_configuration(txm_event_configuration_parameters)

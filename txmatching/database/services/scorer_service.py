@@ -11,17 +11,17 @@ from txmatching.scorers.compatibility_graph import CompatibilityGraph
 
 @dataclass
 class CompatibilityGraphDto:
-    compatibility_graph_dto: List[List[float]]
+    compatibility_graph_dto: List[List[int]]
 
 
-def compatibility_graph_to_dict(compatibility_graph: CompatibilityGraph) -> Dict[str, List[List[float]]]:
+def compatibility_graph_to_dict(compatibility_graph: CompatibilityGraph) -> Dict[str, List[List[int]]]:
     list_of_lists = [[int(pair[0]), int(pair[1]), score] for pair, score in compatibility_graph.items()]
     return dataclasses.asdict(CompatibilityGraphDto(list_of_lists))
 
 
-def compatibility_graph_from_dict(compatibility_graph_dict: Dict[str, List[List[float]]]) -> CompatibilityGraph:
+def compatibility_graph_from_dict(compatibility_graph_dict: Dict[str, List[List[int]]]) -> CompatibilityGraph:
     compatibility_graph_dto = from_dict(data_class=CompatibilityGraphDto, data=compatibility_graph_dict)
-    compatibility_graph = {(int(single_list[0]), int(single_list[1])): single_list[2] for single_list in
+    compatibility_graph = {(int(single_list[0]), int(single_list[1])): int(single_list[2]) for single_list in
                            compatibility_graph_dto.compatibility_graph_dto}
     return compatibility_graph
 
