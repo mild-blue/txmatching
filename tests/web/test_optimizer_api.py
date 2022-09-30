@@ -6,7 +6,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete, get_txm_event_db_id_by_name
-from txmatching.optimizer.optimizer_functions import get_compatibility_graph
+from txmatching.optimizer.optimizer_functions import get_compatibility_graph_to_return
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.web import API_VERSION, OPTIMIZER_NAMESPACE
@@ -143,7 +143,7 @@ class TestOptimizerApi(DbTests):
         # number of pairs in response equal to the number of active and valid pairs in txm event
         self.assertEqual(len(txm_event.active_and_valid_donors_dict), len(res.json['pairs']))
 
-        compatibility_graph = get_compatibility_graph(txm_event.active_and_valid_donors_dict,
+        compatibility_graph = get_compatibility_graph_to_return(txm_event.active_and_valid_donors_dict,
                                                       txm_event.active_and_valid_recipients_dict)
         self.assertCountEqual(compatibility_graph, res.json['compatibility_graph'])
 
