@@ -63,29 +63,31 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                  txm_event.active_and_valid_donors_dict,
                                                                  txm_event.active_and_valid_recipients_dict)
     logger.debug('Getting score dict with score')
-    score_dict = scorer.get_score_dict(txm_event.active_and_valid_recipients_dict,
-                                       txm_event.active_and_valid_donors_dict, compatibility_graph)
+    compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
+                                                                             txm_event.active_and_valid_donors_dict,
+                                                                             compatibility_graph)
     logger.debug('Getting compatible_blood dict with score')
     compatible_blood_dict = {(pair[0], pair[1]): blood_groups_compatible(
         txm_event.active_and_valid_donors_dict[pair[0]].parameters.blood_group,
-        txm_event.active_and_valid_recipients_dict[pair[1]].parameters.blood_group) for pair in score_dict.keys()}
+        txm_event.active_and_valid_recipients_dict[pair[1]].parameters.blood_group) for pair in
+        compatibility_graph_of_db_ids.keys()}
     logger.debug('Getting has crossmatch')
     logger.debug('Getting ci dict dict with score')
     detailed_compatibility_index_dict = {
         (pair[0], pair[1]): get_detailed_compatibility_index(
             txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
             txm_event.active_and_valid_recipients_dict[pair[1]].parameters.hla_typing,
-            ci_configuration=scorer.ci_configuration) for pair in score_dict.keys()}
+            ci_configuration=scorer.ci_configuration) for pair in compatibility_graph_of_db_ids.keys()}
     logger.debug('Getting antibody matches dict dict with score')
     antibody_matches_dict = {
         (pair[0], pair[1]): get_crossmatched_antibodies(
             txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
             txm_event.active_and_valid_recipients_dict[pair[1]].hla_antibodies,
-            configuration_parameters.use_high_resolution) for pair in score_dict.keys()}
+            configuration_parameters.use_high_resolution) for pair in compatibility_graph_of_db_ids.keys()}
 
     return MatchingsDetailed(
         matchings_with_score,
-        score_dict,
+        compatibility_graph_of_db_ids,
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
