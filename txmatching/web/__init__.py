@@ -5,7 +5,7 @@ from importlib import util as importing
 from typing import List, Tuple
 
 import sentry_sdk
-from flask import Flask, request, send_from_directory
+from flask import Flask, make_response, request, send_from_directory
 from flask_restx import Api
 from flask_restx.apidoc import ui_for
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -202,7 +202,11 @@ def create_app() -> Flask:
         )
 
         def generate_docs():
-            return ui_for(api)
+            response = make_response(ui_for(api))
+            response.headers['Content-Security-Policy'] = "default-src 'self'; connect-src 'self'; media-src data:;" \
+                                                          "img-src 'self' data:; style-src 'self' 'unsafe-inline'; " \
+                                                          "script-src 'self' 'unsafe-inline'"
+            return response
 
         app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
         api.init_app(app, add_specs=False)
