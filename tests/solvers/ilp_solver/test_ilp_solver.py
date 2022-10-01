@@ -306,7 +306,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         # there are more than 10 possibilities, so it should find 10
         self.assertEqual(len(solutions.calculated_matchings_list), 10)
 
-        # test required patients
+    def test_solver_with_multiple_donors_per_recipient_required_patients(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_MULTIPLE_DONORS)
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
         required_patients = [3, 4]
         solutions = solve_from_configuration(
             ConfigParameters(solver_constructor_name=Solver.ILPSolver, max_number_of_matchings=10,
