@@ -21,104 +21,6 @@ class AntibodyMatchForHLAGroup:
     antibody_matches: List[AntibodyMatch]
 
 
-def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
-    return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
-
-
-def _add_all_tested_antibodies_are_positive(tested_antibodies_that_match: List[HLAAntibody],
-                                            positive_tested_antibodies: List[HLAAntibody],
-                                            match_type: AntibodyMatchTypes,
-                                            positive_matches: List[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
-
-    if len(positive_tested_antibodies) > 0:
-        if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
-            for antibody in tested_antibodies_that_match:
-                positive_matches.append(AntibodyMatch(antibody, match_type))
-            return True
-    return False
-
-
-def _add_positive_tested_antibodies(tested_antibodies_that_match: List[HLAAntibody],
-                                    match_type: AntibodyMatchTypes,
-                                    positive_matches: List[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
-
-    if len(tested_antibodies_that_match) > 0:
-        for antibody in _get_antibodies_over_cutoff(tested_antibodies_that_match):
-            positive_matches.append(AntibodyMatch(antibody, match_type))
-        return True
-    return False
-
-
-def _add_split_typization(hla_type: HLAType,
-                          tested_antibodies_that_match: List[HLAAntibody],
-                          positive_matches: List[AntibodyMatch]) -> bool:
-    """Return True if split crossmatching has happened."""
-
-    # SPLIT_1
-    if hla_type.code.high_res is None:
-        if _add_positive_tested_antibodies(tested_antibodies_that_match,
-                                           AntibodyMatchTypes.SPLIT,
-                                           positive_matches):
-            return True
-
-    tested_antibodies_that_match = [antibody for antibody in tested_antibodies_that_match
-                                    if antibody.code.high_res is None]
-    # SPLIT_2
-    if _add_positive_tested_antibodies(tested_antibodies_that_match,
-                                       AntibodyMatchTypes.SPLIT,
-                                       positive_matches):
-        return True
-
-    return False
-
-
-def _add_broad_typization(hla_type: HLAType,
-                          tested_antibodies_that_match: List[HLAAntibody],
-                          positive_matches: List[AntibodyMatch]) -> bool:
-    """Return True if broad crossmatching has happened."""
-
-    # BROAD_1
-    if hla_type.code.high_res is None and hla_type.code.split is None:
-        if _add_positive_tested_antibodies(tested_antibodies_that_match,
-                                           AntibodyMatchTypes.BROAD,
-                                           positive_matches):
-            return True
-
-    tested_antibodies_that_match = [antibody for antibody in tested_antibodies_that_match
-                                    if antibody.code.high_res is None and antibody.code.split is None]
-    # BROAD_2
-    if _add_positive_tested_antibodies(tested_antibodies_that_match,
-                                       AntibodyMatchTypes.BROAD,
-                                       positive_matches):
-        return True
-
-    return False
-
-
-def _add_undecidable_typization(antibodies: List[HLAAntibody],
-                                hla_per_group: HLAPerGroup,
-                                positive_matches: List[AntibodyMatch]):
-    if hla_per_group.hla_group == HLAGroup.Other:
-        groups_other = {hla_type.code.group for hla_type in hla_per_group.hla_types}
-        for antibody in antibodies:
-            if antibody.code.group not in groups_other:
-                positive_matches.append(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
-
-
-def _add_none_typization(antibodies: List[HLAAntibody],
-                         positive_matches: List[AntibodyMatch]):
-    antibodies_positive_matches = {match.hla_antibody for match in positive_matches}
-    for antibody in _get_antibodies_over_cutoff(antibodies):
-        if antibody not in antibodies_positive_matches:
-            positive_matches.append(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
-
-
-def _recipient_was_tested_for_donor_antigen(antibodies: List[HLAAntibody], antigen: HLACode) -> bool:
-    return antigen in [antibody.code for antibody in antibodies]
-
-
 def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                             recipient_antibodies: HLAAntibodies,
                             use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
@@ -326,3 +228,101 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                     if antibody_match.match_type.is_positive_for_level(crossmatch_level)}
     # if there are any common codes, positive crossmatch is found
     return len(common_codes) > 0
+
+
+def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
+    return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
+
+
+def _recipient_was_tested_for_donor_antigen(antibodies: List[HLAAntibody], antigen: HLACode) -> bool:
+    return antigen in [antibody.code for antibody in antibodies]
+
+
+def _add_all_tested_antibodies_are_positive(tested_antibodies_that_match: List[HLAAntibody],
+                                            positive_tested_antibodies: List[HLAAntibody],
+                                            match_type: AntibodyMatchTypes,
+                                            positive_matches: List[AntibodyMatch]) -> bool:
+    """Return True if crossmatching has happened."""
+
+    if len(positive_tested_antibodies) > 0:
+        if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
+            for antibody in tested_antibodies_that_match:
+                positive_matches.append(AntibodyMatch(antibody, match_type))
+            return True
+    return False
+
+
+def _add_positive_tested_antibodies(tested_antibodies_that_match: List[HLAAntibody],
+                                    match_type: AntibodyMatchTypes,
+                                    positive_matches: List[AntibodyMatch]) -> bool:
+    """Return True if crossmatching has happened."""
+
+    if len(tested_antibodies_that_match) > 0:
+        for antibody in _get_antibodies_over_cutoff(tested_antibodies_that_match):
+            positive_matches.append(AntibodyMatch(antibody, match_type))
+        return True
+    return False
+
+
+def _add_split_typization(hla_type: HLAType,
+                          tested_antibodies_that_match: List[HLAAntibody],
+                          positive_matches: List[AntibodyMatch]) -> bool:
+    """Return True if split crossmatching has happened."""
+
+    # SPLIT_1
+    if hla_type.code.high_res is None:
+        if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                           AntibodyMatchTypes.SPLIT,
+                                           positive_matches):
+            return True
+
+    tested_antibodies_that_match = [antibody for antibody in tested_antibodies_that_match
+                                    if antibody.code.high_res is None]
+    # SPLIT_2
+    if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                       AntibodyMatchTypes.SPLIT,
+                                       positive_matches):
+        return True
+
+    return False
+
+
+def _add_broad_typization(hla_type: HLAType,
+                          tested_antibodies_that_match: List[HLAAntibody],
+                          positive_matches: List[AntibodyMatch]) -> bool:
+    """Return True if broad crossmatching has happened."""
+
+    # BROAD_1
+    if hla_type.code.high_res is None and hla_type.code.split is None:
+        if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                           AntibodyMatchTypes.BROAD,
+                                           positive_matches):
+            return True
+
+    tested_antibodies_that_match = [antibody for antibody in tested_antibodies_that_match
+                                    if antibody.code.high_res is None and antibody.code.split is None]
+    # BROAD_2
+    if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                       AntibodyMatchTypes.BROAD,
+                                       positive_matches):
+        return True
+
+    return False
+
+
+def _add_undecidable_typization(antibodies: List[HLAAntibody],
+                                hla_per_group: HLAPerGroup,
+                                positive_matches: List[AntibodyMatch]):
+    if hla_per_group.hla_group == HLAGroup.Other:
+        groups_other = {hla_type.code.group for hla_type in hla_per_group.hla_types}
+        for antibody in antibodies:
+            if antibody.code.group not in groups_other:
+                positive_matches.append(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
+
+
+def _add_none_typization(antibodies: List[HLAAntibody],
+                         positive_matches: List[AntibodyMatch]):
+    antibodies_positive_matches = {match.hla_antibody for match in positive_matches}
+    for antibody in _get_antibodies_over_cutoff(antibodies):
+        if antibody not in antibodies_positive_matches:
+            positive_matches.append(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
