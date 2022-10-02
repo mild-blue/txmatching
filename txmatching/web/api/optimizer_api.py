@@ -1,5 +1,6 @@
-from flask_restx import Resource
 from typing import Optional
+
+from flask_restx import Resource
 
 # todo use require_valid_txm_event_id
 from txmatching.auth.auth_check import require_valid_config_id
