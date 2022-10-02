@@ -22,6 +22,7 @@ def calculate_from_optimizer_safe(optimizer_request_object: OptimizerRequest) ->
     return run_with_solver_lock(lambda: _calculate_from_optimizer_unsafe(optimizer_request_object))
 
 
+# pylint: disable=too-many-locals
 def _calculate_from_optimizer_unsafe(optimizer_request_object: OptimizerRequest) -> OptimizerReturn:
     config_parameters = ConfigParameters(
         # todo add more parameters later according to added keywords
@@ -80,6 +81,7 @@ def _get_cycles_and_chains_original_ids(enum_cycles: List[Tuple[int, int]], enum
     return cycles, chains
 
 
+# pylint: disable=too-many-branches
 def _get_cycles_and_chains(best_matching: List[Tuple[int, int]]) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]:
     biggest_index = -1
     for d_to_r in best_matching:

@@ -43,6 +43,7 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
             return manual_score
 
     # it seems that it is reasonable to want many return statements here as it is still well readable
+    # pylint: disable=too-many-return-statements
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
                                     original_donors: Optional[List[Donor]]) -> float:
         donor_recipient_ci = compatibility_index(
