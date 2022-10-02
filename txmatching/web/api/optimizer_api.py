@@ -37,6 +37,7 @@ class Optimize(Resource):
         return response_ok(return_data)
 
 
+# pylint: disable=function-redefined
 @optimizer_api.route('/export/<txm_event_id>/<config_id>', methods=['GET'])
 class Optimize(Resource):
     @optimizer_api.doc(
