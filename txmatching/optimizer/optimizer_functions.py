@@ -103,8 +103,8 @@ def _get_cycles_and_chains(best_matching: List[Tuple[int, int]]) -> Tuple[List[T
         in_degrees[d_to_r[1]] += 1
 
     ordered_indexes = []
-    for index in range(len(in_degrees)):
-        if in_degrees[index] == 1:
+    for index, item in enumerate(in_degrees):
+        if item == 1:
             ordered_indexes.append(index)
         else:
             ordered_indexes.insert(0, index)
