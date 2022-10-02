@@ -4,7 +4,7 @@ from txmatching.web.web_utils.namespaces import optimizer_api
 
 
 class DictItem(fields.Raw):
-    def output(self, key, obj, *args, **kwargs):
+    def output(self, key, obj, **kwargs):
         try:
             dct = getattr(obj, self.attribute)
         except AttributeError:
