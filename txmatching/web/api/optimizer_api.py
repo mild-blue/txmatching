@@ -27,6 +27,7 @@ class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
     @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
     @optimizer_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    # pylint: disable=no-self-use
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
@@ -53,6 +54,7 @@ class Optimize(Resource):
     @optimizer_api.require_user_login()
     # @require_valid_txm_event_id()
     @require_valid_config_id()
+    # pylint: disable=no-self-use
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
         txm_event_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
