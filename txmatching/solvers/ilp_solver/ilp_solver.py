@@ -42,4 +42,4 @@ class ILPSolver(SolverBase):
 
     def solve_kepsoft(self, config_for_ilp_solver: DataAndConfigurationForILPSolver) -> List[List[Tuple[int, int]]]:
         solutions = solve_ilp(config_for_ilp_solver)
-        return [[d_to_r for d_to_r in solution.edges] for solution in solutions]
+        return [list(solution.edges) for solution in solutions]
