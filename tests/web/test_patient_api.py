@@ -567,11 +567,9 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
 
-        # Because there is a uniqueness between antibodies in high resolution and
-        # the server deals with it, means: it will store ['A*01:01', 'A*01:01', 'B*01:01'] like ['A*01:01', 'B*01:01'].
-        # When we compare the raw codes, we need to care of uniqueness as well.
-        # So list(dict(zip(antibodies, antibodies))) removes duplicates and doesn't sort a list.
-        expected_antibody_raw_codes = [antibody[0] for antibody in list(dict(zip(antibodies, antibodies)))]
+        # Using code from the link to get unique antibody raw codes while preserving order:
+        # https://stackoverflow.com/questions/480214/how-do-i-remove-duplicates-from-a-list-while-preserving-order
+        expected_antibody_raw_codes = [antibody[0] for antibody in list(dict.fromkeys(antibodies))]
         for donor in res.json['donors']:
             antibodies_raw_codes = []
             for detailed_score_for_group in donor['detailed_score_with_related_recipient']:
