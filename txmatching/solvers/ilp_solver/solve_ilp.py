@@ -157,8 +157,8 @@ def _add_objective(ilp_model: mip.Model,
                    mapping: VariableMapping):
     # Objective.
     if internal_parameters.objective_type == ObjectiveType.MAX_TRANSPLANTS_MAX_WEIGHTS:
-        weight_of_addition_of_extra_pair = max([data['weight'] for (_, _, data) in data_and_configuration.graph.edges(
-            data=True)]) * data_and_configuration.graph.number_of_nodes()
+        weight_of_addition_of_extra_pair = max(data['weight'] for (_, _, data) in data_and_configuration.graph.edges(
+            data=True)) * data_and_configuration.graph.number_of_nodes()
         ilp_model.objective = mip.xsum([
             (weight_of_addition_of_extra_pair * mapping.edge_to_var[from_node, to_node]) + (
                     data_and_configuration.graph[from_node][to_node]['weight'] * mapping.edge_to_var[
@@ -224,8 +224,8 @@ def _is_majority_of_recipients_missing_antibodies(recipient_list: List[Recipient
     number_of_recipients = len(recipient_list)
     recipients_without_antibodies = 0
     for recipient in recipient_list:
-        hla_antibodies_count = sum([len(hla_antibody_per_group.hla_antibody_list) for hla_antibody_per_group in
-                                    recipient.hla_antibodies.hla_antibodies_per_groups])
+        hla_antibodies_count = sum(len(hla_antibody_per_group.hla_antibody_list) for hla_antibody_per_group in
+                                   recipient.hla_antibodies.hla_antibodies_per_groups)
         if hla_antibodies_count == 0:
             recipients_without_antibodies = recipients_without_antibodies + 1
             if recipients_without_antibodies > number_of_recipients / 2:

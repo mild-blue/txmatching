@@ -76,9 +76,8 @@ def compatibility_index(donor_hla_typing: HLATyping,
     if ci_configuration is None:
         ci_configuration = DefaultCIConfiguration()
 
-    return sum([ci_index_for_group.group_compatibility_index for ci_index_for_group
-                in get_detailed_compatibility_index(donor_hla_typing, recipient_hla_typing, ci_configuration)
-                ])
+    return sum(ci_index_for_group.group_compatibility_index for ci_index_for_group
+               in get_detailed_compatibility_index(donor_hla_typing, recipient_hla_typing, ci_configuration))
 
 
 def get_detailed_compatibility_index(donor_hla_typing: HLATyping,

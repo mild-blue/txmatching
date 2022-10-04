@@ -113,7 +113,7 @@ def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupPropert
         HLAGroup.Other.name,
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].split_code_regex for hla_group in group_list]) + ')',
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex for hla_group in group_list]) + ')',
-        sum([HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list])
+        sum(HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list)
     )
 
 
