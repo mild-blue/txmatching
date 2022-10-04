@@ -541,6 +541,69 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}/configuration/find-config-id": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns config id if config exists, else creates new config.",
+                        "schema": {
+                            "$ref": "#/definitions/ConfigurationId"
+                        }
+                    }
+                },
+                "operationId": "post_configuration_id_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Configuration"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "configuration"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/configuration/set-default": {
             "parameters": [
                 {
@@ -641,7 +704,7 @@
                         }
                     },
                     "200": {
-                        "description": "Returns the latest matching configuration for the current user.",
+                        "description": "Returns the specified matching configuration for the current user.",
                         "schema": {
                             "$ref": "#/definitions/Configuration"
                         }
@@ -732,7 +795,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/matching/calculate-for-config": {
+        "/v1/txm-event/{txm_event_id}/matching/calculate-for-config/{config_id}": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -741,7 +804,7 @@
                     "type": "integer"
                 }
             ],
-            "post": {
+            "get": {
                 "responses": {
                     "500": {
                         "description": "Unexpected error, see contents for details.",
@@ -774,15 +837,15 @@
                         }
                     }
                 },
-                "operationId": "post_calculate_from_config",
+                "operationId": "get_calculate_from_config",
                 "parameters": [
                     {
-                        "name": "payload",
+                        "name": "config_id",
+                        "in": "path",
                         "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/Configuration"
-                        }
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
                     }
                 ],
                 "security": [
@@ -2381,6 +2444,18 @@
                 "max_matchings_in_ilp_solver": {
                     "type": "integer",
                     "example": 20
+                }
+            },
+            "type": "object"
+        },
+        "ConfigurationId": {
+            "required": [
+                "config_id"
+            ],
+            "properties": {
+                "config_id": {
+                    "type": "integer",
+                    "example": 2
                 }
             },
             "type": "object"

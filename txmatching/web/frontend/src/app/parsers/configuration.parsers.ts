@@ -1,8 +1,14 @@
-import { ConfigurationGenerated } from "../generated";
-import { Configuration } from "../model";
+import { ConfigurationGenerated, ConfigurationIdGenerated } from '../generated';
+import { Configuration, ConfigurationId } from '../model';
 
 export const parseConfiguration = (data: ConfigurationGenerated): Configuration => {
   return {
-    ...data,
+    ...data
+  };
+};
+
+export const parseConfigurationId = (data: ConfigurationIdGenerated): ConfigurationId => {
+  return {
+    configId: data.config_id
   };
 };
