@@ -119,7 +119,21 @@ def get_pairs_from_clique(clique,
                           donor_idx_to_recipient_idx: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
     circuit_list = [path_number_to_path[path_number] for path_number in clique]
 
-    return _get_pairs_from_paths(circuit_list, donor_idx_to_recipient_idx)
+    pairs = _get_pairs_from_paths(circuit_list, donor_idx_to_recipient_idx)
+
+    recipient_idxs = [pair.recipient_idx for pair in pairs]
+    if len(recipient_idxs) != len(set(recipient_idxs)):
+        for pair in pairs:
+            if recipient_idxs.count(pair.recipient_idx) > 1:
+                pairs.remove(pair)
+    
+    donor_idxs = [pair.donor_idx for pair in pairs]
+    if len(donor_idxs) != len(set(donor_idxs)):
+        for pair in pairs:
+            if donor_idxs.count(pair.donor_idx) > 1:
+                pairs.remove(pair)
+
+    return pairs
 
 
 def _get_pairs_from_paths(paths: List[Path],
