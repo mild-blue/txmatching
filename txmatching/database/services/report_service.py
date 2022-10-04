@@ -4,6 +4,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass, replace
+# pylint: disable=deprecated-module
 from distutils.dir_util import copy_tree
 from io import BytesIO
 from typing import Dict, List, Optional, Tuple, Union
