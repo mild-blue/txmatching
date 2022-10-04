@@ -176,6 +176,8 @@ class AuthentikLogin(Resource):
             'grant_type': 'authorization_code'
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        # TODO: Here should be something like try / except requests.Timeout / requests.ConnectionError.
+        # pylint: disable=missing-timeout
         authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/',
                                       data=data, headers=headers)
         authentik_res = authentik_res.json()
