@@ -14,6 +14,7 @@
 export enum CountryCodeGenerated {
     Cze = 'CZE',
     Aut = 'AUT',
+    Aut2 = 'AUT_2',
     Isr = 'ISR',
     Abw = 'ABW',
     Afg = 'AFG',

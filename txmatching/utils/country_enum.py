@@ -4,6 +4,7 @@ from enum import Enum
 class Country(str, Enum):
     CZE = 'CZE'
     AUT = 'AUT'
+    AUT_2 = 'AUT_2'
     ISR = 'ISR'
     ABW = 'ABW'
     AFG = 'AFG'
