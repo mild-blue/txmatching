@@ -19,7 +19,7 @@ class DataAndConfigurationForILPSolver:
     regular_donors: Iterable[int]
     configuration: ConfigParameters
     country_codes_dict: Dict[int, Country]
-    required_patients: List[int]
+    required_patients: List[List[int]]
     recipient_to_donors_enum_dict: Dict[int, List[int]]
     active_and_valid_recipients_list: List[Recipient]
     active_and_valid_donors_list: List[Donor]
@@ -55,8 +55,10 @@ class DataAndConfigurationForILPSolver:
 
         self.required_patients = []
         for recipient_db_id in config_parameters.required_patient_db_ids:
+            related_donor_db_ids = []
             for related_donor_db_id in active_and_valid_recipients_dict[recipient_db_id].related_donors_db_ids:
-                self.required_patients += [donor_db_id_to_idx[active_and_valid_donors_dict[related_donor_db_id].db_id]]
+                related_donor_db_ids += [donor_db_id_to_idx[active_and_valid_donors_dict[related_donor_db_id].db_id]]
+            self.required_patients += [related_donor_db_ids]
 
         self.country_codes_dict = {i: donor.parameters.country_code for i, donor in
                                    enumerate(active_and_valid_donors_dict.values())}
