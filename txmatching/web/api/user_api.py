@@ -176,7 +176,8 @@ class AuthentikLogin(Resource):
             'grant_type': 'authorization_code'
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        # TODO: Here should be something like try / except requests.Timeout / requests.ConnectionError.
+        # TODO: here should be something like try / except requests.Timeout / requests.ConnectionError
+        #  https://github.com/mild-blue/txmatching/issues/1007
         # pylint: disable=missing-timeout
         authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/',
                                       data=data, headers=headers)

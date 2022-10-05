@@ -30,7 +30,8 @@ def _send_otp_ikem(recipient_phone: str, message_body: str, app_config: Applicat
         'sender': app_config.sms_service_sender
     }
     try:
-        # TODO: Here should be something like try / except requests.Timeout / requests.ConnectionError.
+        # TODO: here should be something like try / except requests.Timeout / requests.ConnectionError
+        #  https://github.com/mild-blue/txmatching/issues/1007
         # pylint: disable=missing-timeout
         sms_request = requests.post(app_config.sms_service_url, json=params)
         if sms_request.status_code != 200:
