@@ -3,7 +3,7 @@ from flask_restx import fields
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.enums_swagger import (
     CountryCodeJson, HlaCrossmatchLevelJson, ScorerEnumJson, SolverEnumJson)
-from txmatching.web.web_utils.namespaces import matching_api
+from txmatching.web.web_utils.namespaces import configuration_api, matching_api
 
 ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {
     'donor_db_id': fields.Integer(required=True, example=2),
@@ -98,3 +98,7 @@ ConfigIdPathParamDefinition = {
     'in': 'path',
     'default': 'default'
 }
+
+ConfigurationIdJson = configuration_api.model('ConfigurationId', {
+    'config_id': fields.Integer(required=True, example=2)
+})
