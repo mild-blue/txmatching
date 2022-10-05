@@ -3,5 +3,6 @@
 -- depends: 0033.make-txm-event-id-required-in-parsing-issue
 --
 
+DELETE FROM pairing_result;
 ALTER TABLE pairing_result DROP COLUMN score_matrix;
 ALTER TABLE pairing_result ADD COLUMN compatibility_graph JSONB NOT NULL;
