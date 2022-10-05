@@ -15,21 +15,24 @@ class DictItem(fields.Raw):
 DonorToRecipientJson = optimizer_api.model('DonorToRecipient', {
     'donor_id': fields.Integer(required=True),
     'recipient_id': fields.Integer(required=True),
-    'score': fields.List(required=True, cls_or_instance=fields.Integer)
+    'weights': DictItem(attribute="calling_args")
 })
 
 StatisticsJson = optimizer_api.model('Statistics', {
-    'number_of_found_cycles': fields.Integer(required=True),
-    'number_of_found_transplants': fields.Integer(required=True)
+    'number_of_selected_cycles': fields.Integer(required=True),
+    'number_of_selected_chains': fields.Integer(required=True),
+    'number_of_selected_transplants': fields.Integer(required=True),
+    'final_level': fields.Integer(required=True),
+    'aggregated_weights': DictItem(attribute="calling_args")
 })
 
 CycleOrChainJson = optimizer_api.model('CycleOrChain', {
-    'patients': fields.List(required=True, cls_or_instance=fields.Nested(DonorToRecipientJson)),
-    'scores': fields.List(reqired=True, cls_or_instance=fields.Integer)
+    'arcs': fields.List(required=True, cls_or_instance=fields.Nested(DonorToRecipientJson)),
+    'cycle_weights': DictItem(attribute="calling_args")
 })
 
 OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
-    'cycles_and_chains': fields.List(required=True, cls_or_instance=fields.Nested(CycleOrChainJson)),
+    'selected_cycles_and_chains': fields.List(required=True, cls_or_instance=fields.Nested(CycleOrChainJson)),
     'statistics': fields.Nested(StatisticsJson, reqired=True)
 })
 
@@ -38,17 +41,11 @@ PairJson = optimizer_api.model('Pair', {
     'recipient_id': fields.Integer(reqired=False, example=4)
 })
 
-LimitationsJson = optimizer_api.model('Limitations', {
+OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
     'max_cycle_length': fields.Integer(reqired=False, example=3),
     'max_chain_length': fields.Integer(reqired=False, example=4),
-    'custom_algorithm_settings': DictItem(attribute="calling_args", example={"max_number_of_iterations": 200})
-})
-
-OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
-    'limitations': fields.Nested(LimitationsJson, reqired=False),
-    'scoring': fields.List(required=False, cls_or_instance=fields.List(requred=True, cls_or_instance=DictItem(
-        attribute="calling_args")), example=[[{"transplant_count": 1}],
-                                             [{"hla_compatibility_score": 3}, {"donor_age_difference": 20}]])
+    'objective': fields.List(required=False, cls_or_instance=DictItem(
+        attribute="calling_args", example=[{"transplant_count": 1}, {"hla_compatibility_score": 3}]))
 })
 
 CompGraphEntryJson = optimizer_api.model('CompGraphEntry', {
