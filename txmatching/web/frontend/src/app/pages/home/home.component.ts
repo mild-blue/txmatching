@@ -18,6 +18,7 @@ import { TxmEventStateGenerated } from "@app/generated";
 import { TemplatePopupStyle } from "@app/components/template-popup/template-popup.interface";
 import { ReportConfig } from "@app/components/generate-report/generate-report.interface";
 import { getErrorMessage } from "@app/helpers/error";
+import { ConfigurationId } from "@app/model";
 
 @Component({
   selector: "app-home",
@@ -39,6 +40,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public errorMessage?: string;
 
   public configuration?: Configuration;
+  public configurationId?: ConfigurationId;
 
   public configIcon = faCog;
   public configOpened: boolean = false;
@@ -213,15 +215,16 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this._logger.log("Calculating with config", [configuration]);
 
     this.configuration = configuration;
+    this.configurationId = await this._configService.findConfigurationId(this.defaultTxmEvent.id, this.configuration);
 
     try {
+      this._eventService.setConfigId(this.configurationId.configId);
       const calculatedMatchings = await this._matchingService.calculate(
         this.defaultTxmEvent.id,
         configuration,
         this.patients
       );
       this.matchings = calculatedMatchings.calculatedMatchings;
-      this._eventService.setConfigId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.foundMatchingsCount;
       this.numberOfPossibleTransplants = calculatedMatchings.numberOfPossibleTransplants;
       this.numberOfPossibleRecipients = calculatedMatchings.numberOfPossibleRecipients;
