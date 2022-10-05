@@ -134,8 +134,12 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                                                    positive_matches):
                     continue
 
-                if _add_split_typization(hla_type, tested_antibodies_that_match, positive_matches):
-                    continue
+                # SPLIT_1
+                if hla_type.code.high_res is None:
+                    if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                                       AntibodyMatchTypes.SPLIT,
+                                                       positive_matches):
+                        continue
 
             if hla_type.code.broad is not None:
                 tested_antibodies_that_match = [antibody for antibody in antibodies
@@ -157,8 +161,12 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                                                        positive_matches):
                         continue
 
-                if _add_broad_typization(hla_type, tested_antibodies_that_match, positive_matches):
-                    continue
+                # BROAD_1
+                if hla_type.code.high_res is None and hla_type.code.split is None:
+                    if _add_positive_tested_antibodies(tested_antibodies_that_match,
+                                                       AntibodyMatchTypes.BROAD,
+                                                       positive_matches):
+                        continue
 
         _add_none_typization(_get_antibodies_over_cutoff(antibodies), positive_matches)
 
