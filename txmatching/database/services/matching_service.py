@@ -74,9 +74,7 @@ def get_matchings_detailed_for_pairing_result_model(
 
     number_of_possible_recipients = len([
         recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
-        if count_if(
-            lambda x: score_dict[(x, recipient_db_id)] >= 0, txm_event.active_and_valid_donors_dict.keys()
-        ) > 0]
+        if recipient_has_at_least_one_donor(score_dict, recipient_db_id, txm_event.active_and_valid_donors_dict)]
     )
     compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
                                                                              txm_event.active_and_valid_donors_dict,
@@ -249,8 +247,9 @@ def get_transplant_messages(
             'errors': []
         }) if detailed_messages else None
 
-def count_if(condition, seq):
+def recipient_has_at_least_one_donor(score_dict, recipient_db_id, active_and_valid_donors_dict) -> bool:
     """
-    Returns the amount of items in seq that return true from condition
+    Returns true if the recipient has at least one donor, otherwise returns false.
     """
-    return sum(1 for item in seq if condition(item))
+    return sum(score_dict[(item, recipient_db_id)] >= 0 for item in active_and_valid_donors_dict.keys()
+    ) > 0
