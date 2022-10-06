@@ -14,6 +14,7 @@ from txmatching.solvers.solver_base import SolverBase
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=abstract-method
 @dataclass
 class AllSolutionsSolver(SolverBase):
     config_parameters: ConfigParameters

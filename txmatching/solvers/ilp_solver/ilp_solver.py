@@ -1,9 +1,7 @@
 import logging
 from dataclasses import dataclass
-from optparse import Option
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import Dict, Iterable, Iterator, List, Tuple
 
-from txmatching.optimizer.optimizer_request_object import Pair
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.ilp_solver.solve_ilp import solve_ilp
@@ -44,4 +42,4 @@ class ILPSolver(SolverBase):
 
     def solve_kepsoft(self, config_for_ilp_solver: DataAndConfigurationForILPSolver) -> List[List[Tuple[int, int]]]:
         solutions = solve_ilp(config_for_ilp_solver)
-        return [[d_to_r for d_to_r in solution.edges] for solution in solutions]
+        return [list(solution.edges) for solution in solutions]

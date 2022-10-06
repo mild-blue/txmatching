@@ -1,5 +1,6 @@
-from flask_restx import Resource
 from typing import Optional
+
+from flask_restx import Resource
 
 # todo use require_valid_txm_event_id
 from txmatching.auth.auth_check import require_valid_config_id
@@ -35,6 +36,7 @@ class Optimize(Resource):
         return response_ok(return_data)
 
 
+# pylint: disable=function-redefined
 @optimizer_api.route('/export/<txm_event_id>/<config_id>', methods=['GET'])
 class Optimize(Resource):
     @optimizer_api.doc(

@@ -1,8 +1,5 @@
-# pylint: disable=no-self-use
-# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
 
-from flask import request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_valid_txm_event_id

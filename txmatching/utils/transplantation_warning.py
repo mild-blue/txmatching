@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List
 
 
+# pylint: disable=unnecessary-lambda-assignment
 class TransplantWarningDetail(str, Enum):
     # donor weight
     MAX_WEIGHT = lambda max_weight: (
