@@ -12,7 +12,7 @@ from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.optimizer.optimizer_functions import (calculate_from_optimizer_safe, 
+from txmatching.optimizer.optimizer_functions import (calculate_from_optimizer_safe,
     get_compatibility_graph_for_optimizer_api, get_optimizer_configuration, get_pairs_from_txm_event)
 from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
