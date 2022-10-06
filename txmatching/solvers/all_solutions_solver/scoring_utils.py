@@ -7,4 +7,4 @@ from txmatching.solvers.donor_recipient_pair_idx_only import \
 
 def get_score_for_idx_pairs(compatibility_graph: CompatibilityGraph,
                             pairs: Iterable[DonorRecipientPairIdxOnly]):
-    return sum([compatibility_graph[(pair.donor_idx, pair.recipient_idx)] for pair in pairs])
+    return sum(compatibility_graph[(pair.donor_idx, pair.recipient_idx)] for pair in pairs)

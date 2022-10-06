@@ -18,6 +18,7 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 
 @dataclass(init=True)
 class SolverBase:
+    # pylint: disable=too-many-instance-attributes
     config_parameters: ConfigParameters
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
