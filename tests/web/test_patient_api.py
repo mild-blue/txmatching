@@ -520,12 +520,15 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(406, res.status_code)
 
-    def test_sorted_antibodies(self):
+    def test_sorted_and_unique_antibodies(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
         antibodies = [('B*08:01', 2350, 1000),
+                      ('B*08:01', 2350, 1000),
                       ('DPA1*02:20', 2350, 1000),
                       ('DPB1*09:01', 2350, 1000),
                       ('DPB1*895:01', 2350, 1000),
+                      ('DQA1*05:07', 2350, 1000),
+                      ('DQA1*05:07', 2350, 1000),
                       ('DQA1*05:07', 2350, 1000)]
 
         with self.app.test_client() as client:
@@ -564,9 +567,11 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
 
+        # Using code from the link to get unique antibody raw codes while preserving order:
+        # https://stackoverflow.com/questions/480214/how-do-i-remove-duplicates-from-a-list-while-preserving-order
+        expected_antibody_raw_codes = [antibody[0] for antibody in list(dict.fromkeys(antibodies))]
         for donor in res.json['donors']:
             antibodies_raw_codes = []
-            expected_antibody_raw_codes = [antibody[0] for antibody in antibodies]
             for detailed_score_for_group in donor['detailed_score_with_related_recipient']:
                 for antibody in detailed_score_for_group['antibody_matches']:
                     antibodies_raw_codes.append(antibody['hla_antibody']['raw_code'])
