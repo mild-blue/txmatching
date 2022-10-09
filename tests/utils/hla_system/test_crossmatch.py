@@ -228,8 +228,8 @@ class TestCrossmatch(unittest.TestCase):
                               is_type_a: bool):
 
         # False -> 0 | True -> 1
-        crossmatch_type_functions = [do_crossmatch_in_type_b, do_crossmatch_in_type_a]
-        crossmatched_antibodies = crossmatch_type_functions[is_type_a](
+        crossmatch_functions = (do_crossmatch_in_type_b, do_crossmatch_in_type_a)
+        crossmatched_antibodies, _ = crossmatch_functions[is_type_a](
             create_hla_typing(hla_types_list=[hla_type]),
             create_antibodies(hla_antibodies_list=hla_antibodies),
             use_high_resolution

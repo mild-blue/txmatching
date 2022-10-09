@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Callable, Set
+from typing import List, Callable, Set, Tuple
 
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLAType, HLATyping, HLAPerGroup
@@ -23,15 +23,15 @@ class AntibodyMatchForHLAGroup:
 
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
-                                use_high_resolution: bool):
-    if is_recipient_type_a(recipient_antibodies):
-        antibody_matches_for_groups = do_crossmatch_in_type_a(donor_hla_typing,
-                                                              recipient_antibodies,
-                                                              use_high_resolution)
-    else:
-        antibody_matches_for_groups = do_crossmatch_in_type_b(donor_hla_typing,
-                                                              recipient_antibodies,
-                                                              use_high_resolution)
+                                use_high_resolution: bool) -> Tuple[List[AntibodyMatchForHLAGroup],
+                                                                    List[AntibodyMatchForHLAGroup]]:
+    crossmatch_functions = (do_crossmatch_in_type_b, do_crossmatch_in_type_a)
+    is_type_a = is_recipient_type_a(recipient_antibodies)
+
+    antibody_matches_for_groups, \
+        antibody_soft_matches_for_groups = crossmatch_functions[is_type_a](donor_hla_typing,
+                                                                           recipient_antibodies,
+                                                                           use_high_resolution)
 
     # Sort antibodies
     for antibodies_per_hla_group in antibody_matches_for_groups:
@@ -41,7 +41,15 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 hla_group.hla_antibody.raw_code,
             ))
 
-    return antibody_matches_for_groups
+    # Sort antibodies with soft crossmatch
+    for antibodies_per_hla_group in antibody_soft_matches_for_groups:
+        antibodies_per_hla_group.antibody_matches = sorted(
+            antibodies_per_hla_group.antibody_matches,
+            key=lambda hla_group: (
+                hla_group.hla_antibody.raw_code,
+            ))
+
+    return antibody_matches_for_groups, antibody_soft_matches_for_groups
 
 
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
@@ -65,7 +73,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :return:
     """
     common_codes = {antibody_match.hla_antibody for antibody_match_group in
-                    crossmatch_logic(donor_hla_typing, recipient_antibodies, use_high_resolution)
+                    crossmatch_logic(donor_hla_typing, recipient_antibodies, use_high_resolution)[0]
                     for antibody_match in antibody_match_group.antibody_matches
                     if antibody_match.match_type.is_positive_for_level(crossmatch_level)}
     # if there are any common codes, positive crossmatch is found
@@ -75,8 +83,10 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
 # pylint: disable=too-many-branches
 def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                             recipient_antibodies: HLAAntibodies,
-                            use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
+                            use_high_resolution: bool) -> Tuple[List[AntibodyMatchForHLAGroup],
+                                                                List[AntibodyMatchForHLAGroup]]:
     antibody_matches_for_groups = []
+    antibody_soft_matches_for_groups = []
 
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
@@ -173,13 +183,15 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
 
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
 
-    return antibody_matches_for_groups
+    return antibody_matches_for_groups, antibody_soft_matches_for_groups
 
 
 def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                             recipient_antibodies: HLAAntibodies,
-                            use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
+                            use_high_resolution: bool) -> Tuple[List[AntibodyMatchForHLAGroup],
+                                                                List[AntibodyMatchForHLAGroup]]:
     antibody_matches_for_groups = []
+    antibody_soft_matches_for_groups = []
 
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
@@ -215,7 +227,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
 
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
 
-    return antibody_matches_for_groups
+    return antibody_matches_for_groups, antibody_soft_matches_for_groups
 
 
 def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
