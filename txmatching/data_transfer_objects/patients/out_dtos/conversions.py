@@ -90,10 +90,11 @@ def donor_to_donor_dto_out(donor: Donor,
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
         )
-        antibodies, _ = get_crossmatched_antibodies(
+        antibodies, antibodies_with_soft_crossmatch = get_crossmatched_antibodies(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
-            config_parameters.use_high_resolution
+            config_parameters.use_high_resolution,
+            config_parameters.soft_cutoff
         )
         compatibility_index_detailed = get_detailed_compatibility_index(
             donor_hla_typing=donor.parameters.hla_typing,
