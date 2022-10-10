@@ -24,6 +24,8 @@ NON_NEGATIVE = 'non_negative'
 
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
+
+
 @dataclass
 class ConfigParameters:
     """
@@ -153,8 +155,3 @@ class ConfigParameters:
 
     def __post_init__(self):
         self.non_negative()
-
-
-@dataclass
-class ConfigurationId:
-    config_id: int

@@ -1,6 +1,5 @@
 export * from "./Alert";
 export * from "./Configuration";
-export * from "./ConfigurationId";
 export * from "./Donor";
 export * from "./Hla";
 export * from "./Matching";

@@ -26,6 +26,8 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
               internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Iterable[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
         return
+    # raise CannotFindShortEnoughRoundsOrPathsInILPSolver
+
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
 
@@ -109,8 +111,8 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
 
 
 def _add_debt_static_constraints(ilp_model,
-                                data_and_configuration: DataAndConfigurationForILPSolver,
-                                mapping: VariableMapping):
+                                 data_and_configuration: DataAndConfigurationForILPSolver,
+                                 mapping: VariableMapping):
     countries = set(data_and_configuration.country_codes_dict.values())
     for current_country in countries:
         country_giving = [mapping.node_to_out_var[node] for node, country in
@@ -125,8 +127,8 @@ def _add_debt_static_constraints(ilp_model,
 
 
 def _add_blood_group_zero_debt_static_constraints(ilp_model,
-                                                 data_and_configuration: DataAndConfigurationForILPSolver,
-                                                 mapping: VariableMapping):
+                                                  data_and_configuration: DataAndConfigurationForILPSolver,
+                                                  mapping: VariableMapping):
     countries = set(data_and_configuration.country_codes_dict.values())
 
     for current_country in countries:
@@ -161,8 +163,8 @@ def _add_objective(ilp_model: mip.Model,
             data=True)) * data_and_configuration.graph.number_of_nodes()
         ilp_model.objective = mip.xsum([
             (weight_of_addition_of_extra_pair * mapping.edge_to_var[from_node, to_node]) + (
-                    data_and_configuration.graph[from_node][to_node]['weight'] * mapping.edge_to_var[
-                from_node, to_node])
+                data_and_configuration.graph[from_node][to_node]['weight'] * mapping.edge_to_var[
+                    from_node, to_node])
             for (from_node, to_node) in data_and_configuration.graph.edges()
         ])
     elif internal_parameters.objective_type == ObjectiveType.MAX_TRANSPLANTS:

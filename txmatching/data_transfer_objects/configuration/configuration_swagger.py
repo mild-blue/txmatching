@@ -98,7 +98,3 @@ ConfigIdPathParamDefinition = {
     'in': 'path',
     'default': 'default'
 }
-
-ConfigurationIdJson = configuration_api.model('ConfigurationId', {
-    'config_id': fields.Integer(required=True, example=2)
-})

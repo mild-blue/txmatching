@@ -69,6 +69,7 @@ export class EventService {
   }
 
   public getConfigId(): number | undefined {
+    console.log("the cofig id is", this._configId);
     return this._configId;
   }
 }
