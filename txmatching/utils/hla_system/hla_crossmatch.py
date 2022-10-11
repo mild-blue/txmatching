@@ -27,13 +27,17 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 use_high_resolution: bool,
                                 soft_cutoff: int) -> Tuple[List[AntibodyMatchForHLAGroup],
                                                            List[AntibodyMatchForHLAGroup]]:
-    crossmatch_function = get_crossmatched_antibodies__type_a \
-        if is_recipient_type_a(recipient_antibodies) \
-        else get_crossmatched_antibodies__type_b
+    if use_high_resolution and is_recipient_type_a(recipient_antibodies):
+        crossmatch_function = get_crossmatched_antibodies__type_a
+    else:
+        crossmatch_function = get_crossmatched_antibodies__type_b
 
-    antibody_matches_for_groups = crossmatch_function(donor_hla_typing, recipient_antibodies, use_high_resolution,
+    antibody_matches_for_groups = crossmatch_function(donor_hla_typing,
+                                                      recipient_antibodies,
                                                       soft_cutoff=None)
-    antibody_soft_matches_for_groups = crossmatch_function(donor_hla_typing, recipient_antibodies, use_high_resolution,
+
+    antibody_soft_matches_for_groups = crossmatch_function(donor_hla_typing,
+                                                           recipient_antibodies,
                                                            soft_cutoff)
 
     # Sort antibodies
@@ -49,7 +53,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
 
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
-                               use_high_resolution: bool,
+                               use_high_resolution: Optional[bool],
                                crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.NONE,
                                crossmatch_logic: Callable = get_crossmatched_antibodies,
                                soft_cutoff: Optional[int] = None) -> bool:
@@ -75,7 +79,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
             crossmatch_logic(donor_hla_typing, recipient_antibodies, use_high_resolution, soft_cutoff)[0]
     else:
         crossmatched_antibodies = \
-            crossmatch_logic(donor_hla_typing, recipient_antibodies, use_high_resolution, soft_cutoff)
+            crossmatch_logic(donor_hla_typing, recipient_antibodies, soft_cutoff)
 
     common_codes = {antibody_match.hla_antibody for antibody_match_group in
                     crossmatched_antibodies
@@ -88,7 +92,6 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
 # pylint: disable=too-many-branches
 def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
                                         recipient_antibodies: HLAAntibodies,
-                                        use_high_resolution: bool,
                                         soft_cutoff: Optional[int] = None) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches_for_groups = []
 
@@ -98,7 +101,7 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
         antibodies = antibodies_per_group.hla_antibody_list
 
         for hla_type in hla_per_group.hla_types:
-            if use_high_resolution and hla_type.code.high_res is not None:
+            if hla_type.code.high_res is not None:
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.high_res == antibody.code.high_res]
 
@@ -125,6 +128,7 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
                         continue
 
             if (hla_type.code.split is not None
+                    # TODO: Is necessary this condition?
                     and hla_type.code.high_res is None):
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.split == antibody.code.split
@@ -148,6 +152,7 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
                     continue
 
             if (hla_type.code.broad is not None
+                    # TODO: Is necessary this condition?
                     and (hla_type.code.high_res is None and hla_type.code.split is None)):
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.broad == antibody.code.broad]
@@ -181,7 +186,6 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
 
 def get_crossmatched_antibodies__type_b(donor_hla_typing: HLATyping,
                                         recipient_antibodies: HLAAntibodies,
-                                        use_high_resolution: bool,
                                         soft_cutoff: Optional[int] = None) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches_for_groups = []
 
@@ -191,7 +195,7 @@ def get_crossmatched_antibodies__type_b(donor_hla_typing: HLATyping,
         antibodies = antibodies_per_group.hla_antibody_list
 
         for hla_type in hla_per_group.hla_types:
-            if use_high_resolution and hla_type.code.high_res is not None:
+            if hla_type.code.high_res is not None:
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.high_res == antibody.code.high_res]
                 # HIGH_RES_1
