@@ -142,7 +142,7 @@ Example for case 1: donor has antigen DRB1\*08:18, and the recipient has antibod
 Example for case 3: donor has antigen DR8, and the recipient has antibodies DRB1\*08:01, DRB1\*08:02, ... DRB1\*08:18 and all are positive.
 
 #### SPLIT
-1. Donor antigen is in split resolution and the recipient has a matching antibody in split or high resolution (after conversion)
+1. Donor antigen is in split resolution and the recipient is type B and the recipient has a matching antibody in split or high resolution (after conversion)
 2. Donor antigen is in high resolution and the recipient is type B and the recipient has a matching antibody in split resolution
 
 Example for case 1: donor has antigen DQ8 and the recipient has antibody DRB1\*08:01 or donor has antigen DQ8 and the recipient has antibody DQ8
@@ -165,7 +165,7 @@ Example for case 3:
   - DRB1\*08:02 with MFI 2500
   - DRB1\*08:03 with MFI 1800
 #### BROAD
-1. Donor antigen is in broad resolution and the recipient has a matching antibody in split/broad/high resolution
+1. Donor antigen is in broad resolution and the recipient is type B and the recipient has a matching antibody in split/broad/high resolution
 2. Donor antigen is in high/split/broad resolution and the recipient is type B and the recipient has a matching antibody in broad resolution
 
 Example for both cases: donor has antigen DQ3 and the recipient has antibody DQ3.

@@ -147,10 +147,6 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
                 if _add_tested_antibodies(tested_antibodies_that_match, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT, positive_matches, soft_cutoff):
                     continue
 
-                # SPLIT_1
-                if _add_tested_antibodies(tested_antibodies_that_match, AntibodyMatchTypes.SPLIT, positive_matches, soft_cutoff):
-                    continue
-
             if (hla_type.code.broad is not None
                     # TODO: Is necessary this condition?
                     and (hla_type.code.high_res is None and hla_type.code.split is None)):
@@ -168,10 +164,6 @@ def get_crossmatched_antibodies__type_a(donor_hla_typing: HLATyping,
 
                 # HIGH_RES_WITH_BROAD_1
                 if _add_tested_antibodies(tested_antibodies_that_match, AntibodyMatchTypes.HIGH_RES_WITH_BROAD, positive_matches, soft_cutoff):
-                    continue
-
-                # BROAD_1
-                if _add_tested_antibodies(tested_antibodies_that_match, AntibodyMatchTypes.BROAD, positive_matches, soft_cutoff):
                     continue
 
         _add_undecidable_typization(antibodies, hla_per_group, positive_matches, soft_cutoff)
