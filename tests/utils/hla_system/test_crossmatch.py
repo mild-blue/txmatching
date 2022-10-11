@@ -312,53 +312,150 @@ class TestCrossmatch(unittest.TestCase):
                                     create_antibody('A23', 2100, 2000)],
                                    [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)],
                                    is_type_a=True)
-    #
-    # def test_get_soft_crossmatched_antibodies(self):
-    #     # Type A
-    #
-    #     # HIGH_RES_1
-    #     self._assert_soft_matches_equal(["A*01:01"], [create_antibody("A*01:01", 1500, 2000),
-    #                                                   create_antibody("A*01:02", 2500, 2000),
-    #                                                   create_antibody("A*02:01", 1200, 2000)], True,
-    #                                     [AntibodyMatch(create_antibody("A*01:01", 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES)],
-    #                                     is_type_a=True,
-    #                                     soft_cutoff=1000)
-    #     # HIGH_RES_WITH_SPLIT_2
-    #     self._assert_soft_matches_equal(["A*01:01"], [create_antibody("A*01:01", 2500, 2000),
-    #                                                   create_antibody("A*01:02", 1500, 2000),
-    #                                                   create_antibody("A*02:01", 1200, 2000)], True,
-    #                                     [AntibodyMatch(create_antibody("A*01:02", 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
-    #                                     is_type_a=True,
-    #                                     soft_cutoff=1000)
-    #
-    #     # Type B HIGH_RES_1
-    #     self._assert_soft_matches_equal(["A*01:01", "A3"], [create_antibody("A*01:01", 1500, 2000),
-    #                                                         create_antibody('A*01:02', 1500, 2000),
-    #                                                         create_antibody('A*02:01', 1200, 2000)], True,
-    #                                     [AntibodyMatch(create_antibody('A*01:01', 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES)],
-    #                                     is_type_a=False,
-    #                                     soft_cutoff=1000)
-    #
-    #     self._assert_soft_matches_equal(["A1", "A3"], [create_antibody('A*01:01', 2500, 2000),
-    #                                                    create_antibody('A*01:02', 1500, 2000),
-    #                                                    create_antibody('A*02:01', 1200, 2000)], True,
-    #                                     [AntibodyMatch(create_antibody('A*01:02', 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
-    #                                     is_type_a=True,
-    #                                     soft_cutoff=1000)
-    #
-    #     self._assert_soft_matches_equal(["A1", "A3"], [create_antibody('A*01:01', 1500, 2000),
-    #                                                    create_antibody('A*01:02', 1500, 2000),
-    #                                                    create_antibody('A*02:01', 1200, 2000)], True,
-    #                                     [AntibodyMatch(create_antibody('A*01:01', 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES_WITH_SPLIT),
-    #                                      AntibodyMatch(create_antibody('A*01:02', 1500, 2000),
-    #                                                    AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
-    #                                     is_type_a=True,
-    #                                     soft_cutoff=1000)
+
+    def test_get_soft_crossmatched_antibodies(self):
+        # Type A
+
+        # HIGH_RES_1
+        self._assert_matches_equal(["A*01:01", "A*01:02"], [create_antibody("A*01:01", 1500, 2000),
+                                                            create_antibody("A*01:02", 2500, 2000)],
+                                   [AntibodyMatch(create_antibody("A*01:01", 1500, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES)],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_2
+        self._assert_matches_equal(["A*24:02"], [create_antibody("A*24:37", 2500, 2000),
+                                                 create_antibody("A*24:85", 3000, 2000)],
+                                   [],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_WITH_SPLIT_2
+        self._assert_matches_equal(["A*24:02"], [create_antibody("A*24:37", 1500, 2000),
+                                                 create_antibody("A*24:85", 500, 2000)],
+                                   [AntibodyMatch(create_antibody("A*24:37", 1500, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_3
+        self._assert_matches_equal(["A24"], [create_antibody("A*24:37", 2500, 2000),
+                                             create_antibody("A*24:85", 3000, 2000)],
+                                   [],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_WITH_SPLIT_1
+        self._assert_matches_equal(["A24"], [create_antibody("A*24:37", 1500, 2000),
+                                             create_antibody("A*24:85", 500, 2000)],
+                                   [AntibodyMatch(create_antibody("A*24:37", 1500, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_3
+        self._assert_matches_equal(["A9"], [create_antibody("A*23:01", 2500, 2000),
+                                            create_antibody("A*23:04", 3000, 2000)],
+                                   [],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # HIGH_RES_WITH_BROAD_1
+        self._assert_matches_equal(["A9"], [create_antibody("A*23:01", 500, 2000),
+                                            create_antibody("A*23:04", 1900, 2000)],
+                                   [AntibodyMatch(create_antibody("A*23:04", 1900, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_BROAD)],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # NONE & UNDECIDABLE
+        self._assert_matches_equal(["DPB1*858:01"], [create_antibody("DPB1*858:01", 1700, 2000),
+                                                     create_antibody("DPB1*1016:01", 2100, 2000),
+                                                     create_antibody("DPB1*1110:01", 1700, 2000),
+                                                     create_antibody("DQB1*03:10", 2100, 2000),
+                                                     create_antibody("DQB1*06:03", 1700, 2000)],
+                                   [AntibodyMatch(create_antibody("DPB1*858:01", 1700, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody("DQB1*06:03", 1700, 2000),
+                                                  AntibodyMatchTypes.UNDECIDABLE)],
+                                   is_type_a=True,
+                                   soft_cutoff=1000)
+
+        # Type B
+
+        # HIGH_RES_1
+        self._assert_matches_equal(["A*01:01", "A*01:02"], [create_antibody("A*01:01", 1500, 2000),
+                                                            create_antibody("A*01:02", 2500, 2000)],
+                                   [AntibodyMatch(create_antibody("A*01:01", 1500, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # SPLIT_1
+        self._assert_matches_equal(["A24"], [create_antibody("A24", 1000, 2000),
+                                             create_antibody("A*24:37", 1500, 2000),
+                                             create_antibody("A*24:85", 500, 2000)],
+                                   [AntibodyMatch(create_antibody("A24", 1000, 2000),
+                                                  AntibodyMatchTypes.SPLIT),
+                                    AntibodyMatch(create_antibody("A*24:37", 1500, 2000),
+                                                  AntibodyMatchTypes.SPLIT)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # SPLIT_2
+        self._assert_matches_equal(["A23", "A*24:02"], [create_antibody("A24", 1000, 2000),
+                                                        create_antibody("A*24:37", 1500, 2000),
+                                                        create_antibody("A23", 1500, 2000)],
+                                   [AntibodyMatch(create_antibody("A24", 1000, 2000),
+                                                  AntibodyMatchTypes.SPLIT),
+                                    AntibodyMatch(create_antibody("A23", 1500, 2000),
+                                                  AntibodyMatchTypes.SPLIT)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # BROAD_1
+        self._assert_matches_equal(["A9"], [create_antibody("A24", 1000, 2000),
+                                            create_antibody("A*24:37", 1500, 2000),
+                                            create_antibody("A*24:85", 500, 2000)],
+                                   [AntibodyMatch(create_antibody("A24", 1000, 2000),
+                                                  AntibodyMatchTypes.BROAD),
+                                    AntibodyMatch(create_antibody("A*24:37", 1500, 2000),
+                                                  AntibodyMatchTypes.BROAD)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # BROAD_2
+        self._assert_matches_equal(["DRB1*15:03", "A24"], [create_antibody("A9", 1000, 2000),
+                                                           create_antibody("DR2", 1500, 2000)],
+                                   [AntibodyMatch(create_antibody("A9", 1000, 2000),
+                                                  AntibodyMatchTypes.BROAD),
+                                    AntibodyMatch(create_antibody("DR2", 1500, 2000),
+                                                  AntibodyMatchTypes.BROAD)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # TODO: https://github.com/mild-blue/txmatching/issues/1022
+        # BROAD_2 for antigen in only broad resolution
+        self._assert_matches_equal(["A9"], [create_antibody("A1", 1000, 2000),
+                                            create_antibody("A9", 1500, 2000)],
+                                   [AntibodyMatch(create_antibody("A9", 1500, 2000),
+                                                  AntibodyMatchTypes.BROAD)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
+
+        # NONE & UNDECIDABLE
+        self._assert_matches_equal(["DPB1*858:01"], [create_antibody("DPB1*858:01", 1700, 2000),
+                                                     create_antibody("DPB1*1016:01", 2100, 2000),
+                                                     create_antibody("DPB1*1110:01", 1700, 2000),
+                                                     create_antibody("DQB1*03:10", 2100, 2000),
+                                                     create_antibody("DQB1*06:03", 1700, 2000)],
+                                   [AntibodyMatch(create_antibody("DPB1*858:01", 1700, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody("DQB1*06:03", 1700, 2000),
+                                                  AntibodyMatchTypes.UNDECIDABLE)],
+                                   is_type_a=False,
+                                   soft_cutoff=1000)
 
     def test_antibodies_with_multiple_mfis(self):
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
