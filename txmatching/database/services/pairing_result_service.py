@@ -12,7 +12,7 @@ from txmatching.database.services.config_service import \
     configuration_from_config_model
 from txmatching.database.services.patient_service import \
     get_patients_persistent_hash
-from txmatching.database.services.scorer_service import score_matrix_to_dict
+from txmatching.database.services.scorer_service import compatibility_graph_to_dict
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \
@@ -77,7 +77,7 @@ def _save_pairing_result(
     patients_hash = get_patients_persistent_hash(txm_event)
 
     pairing_result_model = PairingResultModel(
-        score_matrix=score_matrix_to_dict(pairing_result.score_matrix),
+        compatibility_graph=compatibility_graph_to_dict(pairing_result.compatibility_graph),
         calculated_matchings=calculated_matchings_model,
         original_config_id=original_config_id,
         patients_hash=patients_hash,

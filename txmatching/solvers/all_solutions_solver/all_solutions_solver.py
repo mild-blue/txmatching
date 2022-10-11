@@ -6,8 +6,8 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
-from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
-    find_possible_path_combinations_from_score_matrix
+from txmatching.solvers.all_solutions_solver.compatibility_graph_solver import \
+    find_possible_path_combinations_from_compatibility_graph
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.solver_base import SolverBase
 
@@ -23,8 +23,9 @@ class AllSolutionsSolver(SolverBase):
     scorer: AdditiveScorer
 
     def solve(self) -> Iterator[MatchingWithScore]:
-        possible_path_combinations = find_possible_path_combinations_from_score_matrix(
-            score_matrix=self.score_matrix,
+        possible_path_combinations = find_possible_path_combinations_from_compatibility_graph(
+            compatibility_graph=self.compatibility_graph,
+            donor_idx_to_recipient_idx=self.donor_idx_to_recipient_idx,
             config_parameters=self.config_parameters,
             donors=list(self.donors)
         )

@@ -12,7 +12,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.database.services.config_service import \
     configuration_from_config_model
 from txmatching.database.services.scorer_service import (
-    matchings_model_from_dict, score_matrix_from_dict)
+    compatibility_graph_from_dict, matchings_model_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import (Donor, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -55,7 +55,7 @@ def get_matchings_detailed_for_pairing_result_model(
     configuration_parameters = configuration_from_config_model(pairing_result_model.original_config).parameters
     scorer = scorer_from_configuration(configuration_parameters)
 
-    score_matrix = score_matrix_from_dict(pairing_result_model.score_matrix)
+    compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
     matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
 
     logger.debug('Getting matchings with score')
@@ -63,42 +63,31 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                  txm_event.active_and_valid_donors_dict,
                                                                  txm_event.active_and_valid_recipients_dict)
     logger.debug('Getting score dict with score')
-    score_dict = {
-        (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_and_valid_donors_dict, score_matrix) for recipient_db_id, score in
-        zip(txm_event.active_and_valid_recipients_dict, row)
-    }
+    compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
+                                                                             txm_event.active_and_valid_donors_dict,
+                                                                             compatibility_graph)
     logger.debug('Getting compatible_blood dict with score')
-    compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
-                                                                                     recipient.parameters.blood_group)
-                             for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
-                             for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-                             score_dict[(donor_db_id, recipient_db_id)] >= 0
-                             }
+    compatible_blood_dict = {(pair[0], pair[1]): blood_groups_compatible(
+        txm_event.active_and_valid_donors_dict[pair[0]].parameters.blood_group,
+        txm_event.active_and_valid_recipients_dict[pair[1]].parameters.blood_group) for pair in
+        compatibility_graph_of_db_ids.keys()}
     logger.debug('Getting has crossmatch')
     logger.debug('Getting ci dict dict with score')
     detailed_compatibility_index_dict = {
-        (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
-                                                                         recipient.parameters.hla_typing,
-                                                                         ci_configuration=scorer.ci_configuration)
-        for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
-        for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-        score_dict[(donor_db_id, recipient_db_id)] >= 0
-    }
+        (pair[0], pair[1]): get_detailed_compatibility_index(
+            txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
+            txm_event.active_and_valid_recipients_dict[pair[1]].parameters.hla_typing,
+            ci_configuration=scorer.ci_configuration) for pair in compatibility_graph_of_db_ids.keys()}
     logger.debug('Getting antibody matches dict dict with score')
     antibody_matches_dict = {
-        (donor_db_id, recipient_db_id): get_crossmatched_antibodies(donor.parameters.hla_typing,
-                                                                    recipient.hla_antibodies,
-                                                                    configuration_parameters.use_high_resolution
-                                                                    )
-        for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
-        for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-        score_dict[(donor_db_id, recipient_db_id)] >= 0
-    }
+        (pair[0], pair[1]): get_crossmatched_antibodies(
+            txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
+            txm_event.active_and_valid_recipients_dict[pair[1]].hla_antibodies,
+            configuration_parameters.use_high_resolution) for pair in compatibility_graph_of_db_ids.keys()}
 
     return MatchingsDetailed(
         matchings_with_score,
-        score_dict,
+        compatibility_graph_of_db_ids,
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,

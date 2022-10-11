@@ -1,44 +1,36 @@
 import logging
 from typing import Dict, Iterable, List
 
-import numpy as np
 from graph_tool import topology
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
-from txmatching.solvers.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
-from txmatching.solvers.all_solutions_solver.score_matrix_utils import (
+from txmatching.scorers.compatibility_graph import CompatibilityGraph
+from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
     Path, construct_path_intersection_graph, find_all_cycles,
     find_all_sequences, get_compatible_donor_idxs_per_donor_idx,
-    get_donor_idx_to_recipient_idx, get_pairs_from_clique,
-    keep_only_highest_scoring_paths)
+    get_pairs_from_clique, keep_only_highest_scoring_paths)
+from txmatching.solvers.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly
 
 logger = logging.getLogger(__name__)
 
 
-def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
-                                                      donors: List[Donor],
-                                                      config_parameters: ConfigParameters = ConfigParameters(),
-                                                      ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
+def find_possible_path_combinations_from_compatibility_graph(compatibility_graph: CompatibilityGraph,
+                                                             donor_idx_to_recipient_idx: Dict[int, int],
+                                                             donors: List[Donor],
+                                                             config_parameters: ConfigParameters = ConfigParameters(),
+                                                             ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
     """
     Returns iterator over the optimal list of possible path combinations. The result is a list of pairs. Each pair
     consists of two integers which correspond to recipient and donor indices.
-
-    :param score_matrix: matrix of Score(i,j) for transplant from donor_i to recipient_j
-            special values are:
-    ORIGINAL_DONOR_RECIPIENT_SCORE = -2.0
-    TRANSPLANT_IMPOSSIBLE_SCORE = -1.0
-    :param donors: List of all possible donors
-    :param config_parameters
     """
-    if len(score_matrix) == 0:
+    if len(compatibility_graph) == 0:
         logger.info('Empty set of paths, returning empty iterator')
         yield from ()
         return
 
-    donor_idx_to_recipient_idx = get_donor_idx_to_recipient_idx(score_matrix)
-    highest_scoring_paths = get_highest_scoring_paths(score_matrix,
+    highest_scoring_paths = get_highest_scoring_paths(compatibility_graph,
                                                       donor_idx_to_recipient_idx,
                                                       donors,
                                                       config_parameters)
@@ -74,14 +66,14 @@ def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
                                     donor_idx_to_recipient_idx)
 
 
-def get_highest_scoring_paths(score_matrix: np.ndarray,
+def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                               donor_idx_to_recipient_idx: Dict[int, int],
                               donors: List[Donor],
                               config_parameters: ConfigParameters = ConfigParameters()) -> List[Path]:
-    n_donors, _ = score_matrix.shape
+    n_donors = len(donor_idx_to_recipient_idx)
     assert len(donors) == n_donors
 
-    compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(score_matrix,
+    compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(compatibility_graph,
                                                                                   donor_idx_to_recipient_idx)
 
     cycles = find_all_cycles(n_donors,
@@ -89,19 +81,19 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
                              donors,
                              config_parameters)
 
-    sequences = find_all_sequences(score_matrix,
-                                   compatible_donor_idxs_per_donor_idx,
+    sequences = find_all_sequences(compatible_donor_idxs_per_donor_idx,
                                    config_parameters.max_sequence_length,
                                    donors,
-                                   config_parameters.max_number_of_distinct_countries_in_round)
+                                   config_parameters.max_number_of_distinct_countries_in_round,
+                                   donor_idx_to_recipient_idx)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         cycles,
-        score_matrix=score_matrix,
+        compatibility_graph=compatibility_graph,
         donor_idx_to_recipient_idx=donor_idx_to_recipient_idx
     ) + keep_only_highest_scoring_paths(
         sequences,
-        score_matrix=score_matrix,
+        compatibility_graph=compatibility_graph,
         donor_idx_to_recipient_idx=donor_idx_to_recipient_idx
     )
     return highest_scoring_paths

@@ -106,7 +106,8 @@ class TestUpdateDonorRecipient(DbTests):
         self.maxDiff = None
 
         scorer = SplitScorer()
-        calculated_scores = scorer.get_score_matrix(txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict)
+        calculated_scores = scorer.get_compatibility_graph(txm_event.active_and_valid_recipients_dict,
+                                                           txm_event.active_and_valid_donors_dict)
 
         # This commented out code serves the purpose to re-create the files in case something in the data changes
         # with open(get_absolute_path('tests/resources/recipients_tuples.json'), 'w') as f:
@@ -139,15 +140,19 @@ class TestUpdateDonorRecipient(DbTests):
 
         for i, donor in enumerate(donors_tuples):
             self.assertTrue(donor in expected_donors_tuples, f'Error in round {i}: {donor} not found')
-        for donor, expected_score_row, calculated_score_row in zip(txm_event.active_and_valid_donors_dict.values(),
-                                                                   expected_scores, calculated_scores.tolist()):
-            for recipient, expected_score, calculated_score in zip(txm_event.active_and_valid_recipients_dict.values(),
-                                                                   expected_score_row,
-                                                                   calculated_score_row):
-                self.assertEqual(expected_score, calculated_score,
-                                 f'Not true for expected {expected_score} vs real {calculated_score} '
-                                 f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '
-                                 f'{[code.raw_code for code in recipient.parameters.hla_typing.hla_types_raw_list]}')
+
+        donor_enums = [i for i in range(0, len(txm_event.active_and_valid_donors_dict))]
+        recipient_enums = [i for i in range(0, len(txm_event.active_and_valid_recipients_dict))]
+        for donor_enum, donor, expected_score_row in zip(donor_enums, txm_event.active_and_valid_donors_dict.values(),
+                                                         expected_scores):
+            for recipient_enum, recipient, expected_score in zip(
+                    recipient_enums, txm_event.active_and_valid_recipients_dict.values(), expected_score_row):
+                if expected_score >= 0:
+                    calculated_score = calculated_scores[(donor_enum, recipient_enum)]
+                    self.assertEqual(expected_score, calculated_score,
+                                     f'Not true for expected {expected_score} vs real {calculated_score} '
+                                     f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '
+                                     f'{[code.raw_code for code in recipient.parameters.hla_typing.hla_types_raw_list]}')
 
     def test_loading_patients_wrong(self):
         txm_event = create_or_overwrite_txm_event('test')
