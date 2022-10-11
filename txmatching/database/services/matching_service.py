@@ -65,20 +65,17 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                  txm_event.active_and_valid_donors_dict,
                                                                  txm_event.active_and_valid_recipients_dict)
     logger.debug('Getting score dict with score')
-    score_dict = {
-        (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_and_valid_donors_dict, score_matrix) for recipient_db_id, score in
-        zip(txm_event.active_and_valid_recipients_dict, row)
-    }
-    number_of_possible_transplants = len([score_pair for score_pair in score_dict.values() if score_pair >= 0])
-
-    number_of_possible_recipients = len([
-        recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
-        if recipient_has_at_least_one_donor(score_dict, recipient_db_id, txm_event.active_and_valid_donors_dict)]
-    )
     compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
                                                                              txm_event.active_and_valid_donors_dict,
                                                                              compatibility_graph)
+
+    number_of_possible_transplants = len([score_pair for score_pair in compatibility_graph_of_db_ids.values() if score_pair >= 0])
+
+    number_of_possible_recipients = len([
+        recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
+        if recipient_has_at_least_one_donor(compatibility_graph_of_db_ids, recipient_db_id, txm_event.active_and_valid_donors_dict)]
+    )
+
     logger.debug('Getting compatible_blood dict with score')
     compatible_blood_dict = {(pair[0], pair[1]): blood_groups_compatible(
         txm_event.active_and_valid_donors_dict[pair[0]].parameters.blood_group,
@@ -247,9 +244,10 @@ def get_transplant_messages(
             'errors': []
         }) if detailed_messages else None
 
+
 def recipient_has_at_least_one_donor(score_dict, recipient_db_id, active_and_valid_donors_dict) -> bool:
     """
     Returns true if the recipient has at least one donor, otherwise returns false.
     """
-    return sum(score_dict[(item, recipient_db_id)] >= 0 for item in active_and_valid_donors_dict.keys()
-    ) > 0
+    return sum(score_dict.get((item, recipient_db_id), -1) >= 0 for item in active_and_valid_donors_dict.keys()
+               ) > 0
