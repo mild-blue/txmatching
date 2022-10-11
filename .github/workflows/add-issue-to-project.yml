@@ -1,4 +1,4 @@
-name: Add new issue to project
+name: Add issue to project
 
 on:
   issues:
@@ -10,7 +10,7 @@ jobs:
     name: Add issue to project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/add-to-project@v3.0.0
+      - uses: actions/add-to-project@v0.3.0
         with:
           project-url: https://github.com/orgs/mild-blue/projects/27
           github-token: ${{ secrets.ADD_ISSUE_TO_PROJECT_PAT }}
