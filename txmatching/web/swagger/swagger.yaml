@@ -141,7 +141,7 @@ definitions:
                 example: 3
                 type: integer
             max_matchings_in_all_solutions_solver:
-                example: 10000
+                example: 20
                 type: integer
             max_matchings_in_ilp_solver:
                 example: 20

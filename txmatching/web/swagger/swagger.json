@@ -2290,7 +2290,7 @@
                 },
                 "max_matchings_in_all_solutions_solver": {
                     "type": "integer",
-                    "example": 10000
+                    "example": 20
                 },
                 "max_cycles_in_all_solutions_solver": {
                     "type": "integer",
