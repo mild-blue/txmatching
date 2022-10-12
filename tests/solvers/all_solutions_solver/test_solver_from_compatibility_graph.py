@@ -49,8 +49,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
             solution_score = sum([scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)
                                   for pair in solution])
             all_scores.append(solution_score)
-
-        self.assertEqual(self._expected_num_solutions, len(all_solutions))
+        self.assertEqual(len(all_solutions[0]), 9)
         self.assertEqual(self._expected_max_score, max(all_scores))
 
     def test_solve_specific(self):
@@ -72,7 +71,8 @@ class TestAllSolutionsSolver(unittest.TestCase):
                                                                                  solver_constructor_name=Solver.AllSolutionsSolver,
                                                                                  max_sequence_length=100,
                                                                                  max_cycle_length=100))
-        self.assertEqual(36, len(list(solutions)))
+        solutions = list(solutions)
+        self.assertEqual(4, len(solutions[0]))
 
 
 def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:

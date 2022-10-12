@@ -1,3 +1,4 @@
+import dataclasses
 import logging
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
@@ -8,12 +9,25 @@ from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
-from txmatching.solvers.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
+from txmatching.solvers.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.country_enum import Country
 
 Path = Tuple[int]
+
+
+@dataclasses.dataclass
+class PathWithScore:
+    donor_ids: Path
+    score: int
+    debt_per_country: Dict[Country, int]
+    debt_blood_zero_per_country: Dict[Country, int]
+    length: int
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,7 +98,9 @@ def country_count_in_path(path: Path, donors: List[Donor]) -> int:
 
 def keep_only_highest_scoring_paths(paths: List[Path],
                                     compatibility_graph: CompatibilityGraph,
-                                    donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+                                    donor_idx_to_recipient_idx: Dict[int, int],
+                                    donors: List[Donor],
+                                    is_cycle: bool) -> List[PathWithScore]:
     def group_key(path: Path) -> List[int]:
         return sorted(list(set(path)))
 
@@ -94,8 +110,33 @@ def keep_only_highest_scoring_paths(paths: List[Path],
         max(path_group,
             key=lambda path: _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx))
         for path_group in paths_grouped]
+    return [PathWithScore(
+        path,
+        _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx),
+        _get_path_debt(is_cycle, path, donors),
+        _get_path_debt(is_cycle, path, donors, blood_group_zero=True),
+        _get_path_length(is_cycle, path)
+    ) for path in
+        paths_filtered]
 
-    return paths_filtered
+
+def _get_path_length(is_cycle: bool, path: Path) -> int:
+    length = len(path) - 1 if is_cycle else len(path)
+    return length
+
+
+def _get_path_debt(is_cycle: bool, path: Path, donors: List[Donor], blood_group_zero=False) -> Dict[Country, int]:
+    path_debt = {}
+    if is_cycle:
+        return path_debt
+    current_bridging_donor = donors[path[0]]
+    future_bridging_donor = donors[path[-1]]
+    if current_bridging_donor.parameters.blood_group.ZERO == BloodGroup.ZERO or not blood_group_zero:
+        path_debt[current_bridging_donor.parameters.country_code] = 1
+    if future_bridging_donor.parameters.blood_group.ZERO == BloodGroup.ZERO or not blood_group_zero:
+        path_debt[future_bridging_donor.parameters.country_code] = \
+            path_debt.get(future_bridging_donor.parameters.country_code, 0) - 1
+    return path_debt
 
 
 def _get_path_score(compatibility_graph: CompatibilityGraph,
@@ -106,9 +147,9 @@ def _get_path_score(compatibility_graph: CompatibilityGraph,
 
 
 def get_pairs_from_clique(clique,
-                          path_number_to_path: Dict[int, Path],
+                          path_number_to_path: Dict[int, PathWithScore],
                           donor_idx_to_recipient_idx: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
-    circuit_list = [path_number_to_path[path_number] for path_number in clique]
+    circuit_list = [path_number_to_path[path_number].donor_ids for path_number in clique]
 
     return _get_pairs_from_paths(circuit_list, donor_idx_to_recipient_idx)
 
@@ -125,28 +166,17 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 
 # pylint: disable=too-many-locals
 # I think here the local variables help the code
-def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:
-    graph = Graph(directed=False)
+def find_paths_with_same_donors(all_paths: List[PathWithScore]) -> Tuple[List[List[int]], Dict[int, PathWithScore]]:
+    path_id_to_path = dict(enumerate(all_paths))
 
-    path_number_to_path = dict(enumerate(all_paths))
-    path_to_path_number = {path: path_number for path_number, path in enumerate(all_paths)}
+    donor_ids = {donor_id for path in all_paths for donor_id in path.donor_ids}
+    paths_with_the_same_donors = []
+    for donor_id in donor_ids:
+        paths_for_donor = [path_id for path_id, path in path_id_to_path.items() if donor_id in path.donor_ids]
+        if len(paths_for_donor) > 1:
+            paths_with_the_same_donors.append(paths_for_donor)
 
-    unique_indices = {index for path in all_paths for index in path}
-
-    index_to_path_number_not_having_index = {
-        index: {path_to_path_number[path] for path in all_paths if index not in path} for index in
-        unique_indices}
-    compatible_paths = []
-    for path_number, path in enumerate(all_paths):
-        complementary_paths_per_item = [index_to_path_number_not_having_index[item] for item in path]
-        complementary_path_numbers = set.intersection(*complementary_paths_per_item)
-
-        for complementary_path_number in complementary_path_numbers:
-            if complementary_path_number > path_number:
-                compatible_paths.append((path_number, complementary_path_number))
-
-    graph.add_edge_list(compatible_paths)
-    return graph, path_number_to_path
+    return paths_with_the_same_donors, path_id_to_path
 
 
 # pylint: enable=too-many-locals
