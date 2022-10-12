@@ -25,7 +25,7 @@ class AllSolutionsSolver(SolverBase):
     def solve(self) -> Iterator[MatchingWithScore]:
         possible_path_combinations = find_possible_path_combinations_from_compatibility_graph(
             compatibility_graph=self.compatibility_graph,
-            donor_idx_to_recipient_idx=self.donor_idx_to_recipient_idx,
+            original_donor_idx_to_recipient_idx=self.original_donor_idx_to_recipient_idx,
             config_parameters=self.config_parameters,
             donors=list(self.donors)
         )

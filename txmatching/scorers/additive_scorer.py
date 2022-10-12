@@ -49,9 +49,9 @@ class AdditiveScorer(ScorerBase):
 
         return total_score
 
-    def get_donor_idx_to_recipient_idx(self,
-                                       recipients_dict: Dict[RecipientDbId, Recipient],
-                                       donors_dict: Dict[DonorDbId, Donor]) -> Dict[int, int]:
+    def get_original_donor_idx_to_recipient_idx(self,
+                                                recipients_dict: Dict[RecipientDbId, Recipient],
+                                                donors_dict: Dict[DonorDbId, Donor]) -> Dict[int, int]:
         donor_idx_to_recipient_idx = {donor_enum: recipient_enum for recipient_enum, recipient in
                                       enumerate(recipients_dict.values()) for donor_enum, donor in
                                       enumerate(donors_dict.values()) if

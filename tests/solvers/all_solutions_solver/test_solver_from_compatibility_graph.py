@@ -34,9 +34,8 @@ class TestAllSolutionsSolver(unittest.TestCase):
         donor_idx_to_recipient_idx = _get_donor_idx_to_recipient_idx_from_score_matrix(self._score_matrix)
         all_solutions = list(
             find_possible_path_combinations_from_compatibility_graph(compatibility_graph=compatibility_graph,
-                                                                     donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
-                                                                     donors=_get_donors_for_score_matrix(
-                                                                         self._score_matrix),
+                                                                     original_donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
+                                                                     donors=_get_donors(len(self._score_matrix)),
                                                                      config_parameters=ConfigParameters(
                                                                          solver_constructor_name=Solver.AllSolutionsSolver,
                                                                          max_cycle_length=100,
@@ -65,8 +64,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         solutions = find_possible_path_combinations_from_compatibility_graph(compatibility_graph_test,
                                                                              donor_idx_to_recipient_idx,
-                                                                             _get_donors_for_score_matrix(
-                                                                                 score_matrix_test),
+                                                                             _get_donors(len(score_matrix_test)),
                                                                              ConfigParameters(
                                                                                  solver_constructor_name=Solver.AllSolutionsSolver,
                                                                                  max_sequence_length=100,
@@ -74,17 +72,55 @@ class TestAllSolutionsSolver(unittest.TestCase):
         solutions = list(solutions)
         self.assertEqual(4, len(solutions[0]))
 
+    def test_handling_correctly_multiple_donors_with_the_same_recipient_2(self):
+        """
+        situation
+       D1 __ R1
+       D2 _/
+       D3__R2
+       D4__R3
+       and D3 and D4 can give to r1 and d1 to r2 and d2 to r3
+       correct solution are two cycles: only d1 -> r2, d2 -> r1 and d2 -> r3, d3 -> r1. but not both together
+        """
 
-def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
+        original_donor_idx_to_recipient_idx = {0: 0, 1: 0, 2: 1, 3: 2}
+
+        compatibility_graph_test = {(0, 1): 11, (1, 2): 10, (2, 0): 10, (3, 0): 10}
+
+        solutions = list(find_possible_path_combinations_from_compatibility_graph(
+            compatibility_graph_test,
+            original_donor_idx_to_recipient_idx,
+            _get_donors(len(original_donor_idx_to_recipient_idx)),
+            ConfigParameters(
+                solver_constructor_name=Solver.AllSolutionsSolver,
+                max_sequence_length=100,
+                max_cycle_length=100))
+        )
+        self.assertEqual(len(solutions), 2)
+        self.assertCountEqual({pair.recipient_idx for pair in solutions[0]}, {0, 1})
+        self.assertCountEqual({pair.recipient_idx for pair in solutions[1]}, {0, 2})
+
+        for solution in solutions:
+            recipient_ids = [pair.recipient_idx for pair in solution]
+
+            seen = set()
+            duplicates = [x for x in recipient_ids if x in seen or seen.add(x)]
+
+            if duplicates:
+                raise Exception(
+                    f'Recipient/recipients with id/ids {duplicates} is/are present in a matching more than once')
+
+
+def _get_donors(ndonors: int) -> List[Donor]:
     donors = []
-    for _ in range(len(score_matrix)):
+    for i in range(ndonors):
         donors.append(Donor(
             parameters=PatientParameters(country_code=Country.CZE,
                                          blood_group=BloodGroup.ZERO,
                                          hla_typing=HLATyping(hla_types_raw_list=[], hla_per_groups=[])
                                          ),
-            db_id=1,
-            medical_id='test',
+            db_id=i,
+            medical_id=f'test_{i}',
             etag=1,
             parsing_issues=[]
         ))

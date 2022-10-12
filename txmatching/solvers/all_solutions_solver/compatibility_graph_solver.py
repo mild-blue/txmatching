@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def find_possible_path_combinations_from_compatibility_graph(compatibility_graph: CompatibilityGraph,
-                                                             donor_idx_to_recipient_idx: Dict[int, int],
+                                                             original_donor_idx_to_recipient_idx: Dict[int, int],
                                                              donors: List[Donor],
                                                              config_parameters: ConfigParameters = ConfigParameters(),
                                                              ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
@@ -31,7 +31,7 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
         return
 
     highest_scoring_paths = get_highest_scoring_paths(compatibility_graph,
-                                                      donor_idx_to_recipient_idx,
+                                                      original_donor_idx_to_recipient_idx,
                                                       donors,
                                                       config_parameters)
 
@@ -41,45 +41,47 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
         return
 
     logger.info(f'Constructing intersection graph # paths {len(highest_scoring_paths)}')
-    paths_with_the_same_donors, path_id_to_path_with_score = find_paths_with_same_donors(highest_scoring_paths)
+    paths_with_the_same_donors, path_id_to_path_with_score = find_paths_with_same_donors(highest_scoring_paths,
+                                                                                         original_donor_idx_to_recipient_idx)
 
     found_solutions = optimise_paths(paths_with_the_same_donors, path_id_to_path_with_score, config_parameters)
 
     for selected_cycles in found_solutions:
-        yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, donor_idx_to_recipient_idx)
+        yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, original_donor_idx_to_recipient_idx)
 
 
 def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
-                              donor_idx_to_recipient_idx: Dict[int, int],
+                              original_donor_idx_to_recipient_idx: Dict[int, int],
                               donors: List[Donor],
                               config_parameters: ConfigParameters = ConfigParameters()) -> List[PathWithScore]:
-    n_donors = len(donor_idx_to_recipient_idx)
+    n_donors = len(original_donor_idx_to_recipient_idx)
     assert len(donors) == n_donors
 
     compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(compatibility_graph,
-                                                                                  donor_idx_to_recipient_idx)
+                                                                                  original_donor_idx_to_recipient_idx)
 
     cycles = find_all_cycles(n_donors,
                              compatible_donor_idxs_per_donor_idx,
                              donors,
-                             config_parameters)
+                             config_parameters,
+                             original_donor_idx_to_recipient_idx)
 
     sequences = find_all_sequences(compatible_donor_idxs_per_donor_idx,
                                    config_parameters.max_sequence_length,
                                    donors,
                                    config_parameters.max_number_of_distinct_countries_in_round,
-                                   donor_idx_to_recipient_idx)
+                                   original_donor_idx_to_recipient_idx)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         cycles,
         compatibility_graph=compatibility_graph,
-        donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
+        donor_idx_to_recipient_idx=original_donor_idx_to_recipient_idx,
         donors=donors,
         is_cycle=True
     ) + keep_only_highest_scoring_paths(
         sequences,
         compatibility_graph=compatibility_graph,
-        donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
+        donor_idx_to_recipient_idx=original_donor_idx_to_recipient_idx,
         donors=donors,
         is_cycle=False
     )
