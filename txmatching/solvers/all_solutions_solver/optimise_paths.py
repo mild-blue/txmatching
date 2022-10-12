@@ -1,6 +1,4 @@
 import logging
-import tempfile
-from os import close, dup, dup2
 from typing import Dict, List, Set
 
 import mip
@@ -10,7 +8,8 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import \
     PathWithScore
 from txmatching.solvers.ilp_solver.mip_utils import (mip_get_result_status,
-                                                     mip_var_to_bool)
+                                                     mip_var_to_bool,
+                                                     solve_with_logging)
 from txmatching.solvers.ilp_solver.solution import Status
 
 logger = logging.getLogger(__name__)
@@ -23,7 +22,7 @@ def optimise_paths(paths_with_the_same_donors: List[List[int]], path_id_to_path_
     Parameters:
     ntpo -- number of possible cycles/chains
     incomp -- list containing the incompatibilities between cycles/chains
-    weights -- weights of the cycles/chains according to the the criteria given in lexicographic order
+    weights -- weights of the cycles/chains according to the criteria given in lexicographic order
     """
 
     # model
@@ -51,7 +50,7 @@ def optimise_paths(paths_with_the_same_donors: List[List[int]], path_id_to_path_
     _add_constraints_for_country_debt(path_id_to_path_with_score, path_id_to_var, config, ilp_model)
     matchings_to_search_for = config.max_matchings_in_all_solutions_solver
     for _ in range(matchings_to_search_for):
-        _solve_with_logging(ilp_model)
+        solve_with_logging(ilp_model)
 
         status = mip_get_result_status(ilp_model)
 
@@ -73,19 +72,6 @@ def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
 
     ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in not_used_path_ids]) >= 0.5)
     return not_used_path_ids
-
-
-def _solve_with_logging(ilp_model: mip.Model):
-    with tempfile.TemporaryFile() as tmp_output:
-        orig_std_out = dup(1)
-        dup2(tmp_output.fileno(), 1)
-        ilp_model.optimize()
-        dup2(orig_std_out, 1)
-        close(orig_std_out)
-        if logging.DEBUG >= logging.root.level:
-            tmp_output.seek(0)
-            for line in tmp_output.read().splitlines():
-                logger.debug(line.decode('utf8'))
 
 
 def _add_constraints_for_country_debt(path_id_to_path_with_score: Dict[int, PathWithScore],

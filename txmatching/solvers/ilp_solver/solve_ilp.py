@@ -1,6 +1,4 @@
 import logging
-import tempfile
-from os import close, dup, dup2
 from typing import Iterable, List, Tuple
 
 import mip
@@ -13,7 +11,8 @@ from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
     InternalILPSolverParameters, ObjectiveType, VariableMapping)
 from txmatching.solvers.ilp_solver.mip_utils import (mip_get_result_status,
-                                                     mip_var_to_bool)
+                                                     mip_var_to_bool,
+                                                     solve_with_logging)
 from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
@@ -42,7 +41,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
     for _ in range(matchings_to_search_for):
         number_of_times_dynamic_constraint_added = 0
         while True:
-            _solve_with_logging(ilp_model)
+            solve_with_logging(ilp_model)
 
             status = mip_get_result_status(ilp_model)
             dynamic_constraints_added = add_dynamic_constraints(data_and_configuration,
@@ -109,8 +108,8 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
 
 
 def _add_debt_static_constraints(ilp_model,
-                                data_and_configuration: DataAndConfigurationForILPSolver,
-                                mapping: VariableMapping):
+                                 data_and_configuration: DataAndConfigurationForILPSolver,
+                                 mapping: VariableMapping):
     countries = set(data_and_configuration.country_codes_dict.values())
     for current_country in countries:
         country_giving = [mapping.node_to_out_var[node] for node, country in
@@ -125,8 +124,8 @@ def _add_debt_static_constraints(ilp_model,
 
 
 def _add_blood_group_zero_debt_static_constraints(ilp_model,
-                                                 data_and_configuration: DataAndConfigurationForILPSolver,
-                                                 mapping: VariableMapping):
+                                                  data_and_configuration: DataAndConfigurationForILPSolver,
+                                                  mapping: VariableMapping):
     countries = set(data_and_configuration.country_codes_dict.values())
 
     for current_country in countries:
@@ -177,19 +176,6 @@ def _add_objective(ilp_model: mip.Model,
         ])
     else:
         raise Exception('Unknown objective type.')
-
-
-def _solve_with_logging(ilp_model: mip.Model):
-    with tempfile.TemporaryFile() as tmp_output:
-        orig_std_out = dup(1)
-        dup2(tmp_output.fileno(), 1)
-        ilp_model.optimize()
-        dup2(orig_std_out, 1)
-        close(orig_std_out)
-        if logging.DEBUG >= logging.root.level:
-            tmp_output.seek(0)
-            for line in tmp_output.read().splitlines():
-                logger.debug(line.decode('utf8'))
 
 
 def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
