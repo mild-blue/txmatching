@@ -31,7 +31,6 @@ class PathWithScore:
 logger = logging.getLogger(__name__)
 
 
-# TODO: this is blocked by https://github.com/mild-blue/txmatching/pull/979
 def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGraph,
                                             original_donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[
     int, List[int]]:
