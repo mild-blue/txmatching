@@ -42,6 +42,7 @@ class MatchingsDetailed:
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
+    antibody_soft_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
     found_matchings_count: Optional[int]
     show_not_all_matchings_found: bool
     max_transplant_score: float
@@ -83,7 +84,15 @@ def get_matchings_detailed_for_pairing_result_model(
         (pair[0], pair[1]): get_crossmatched_antibodies(
             txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
             txm_event.active_and_valid_recipients_dict[pair[1]].hla_antibodies,
-            configuration_parameters.use_high_resolution) for pair in compatibility_graph_of_db_ids.keys()}
+            configuration_parameters.use_high_resolution,
+            configuration_parameters.soft_cutoff)[0] for pair in compatibility_graph_of_db_ids.keys()}
+    logger.debug('Getting antibody soft matches dict dict with score')
+    antibody_soft_matches_dict = {
+        (pair[0], pair[1]): get_crossmatched_antibodies(
+            txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
+            txm_event.active_and_valid_recipients_dict[pair[1]].hla_antibodies,
+            configuration_parameters.use_high_resolution,
+            configuration_parameters.soft_cutoff)[1] for pair in compatibility_graph_of_db_ids.keys()}
 
     return MatchingsDetailed(
         matchings_with_score,
@@ -91,6 +100,7 @@ def get_matchings_detailed_for_pairing_result_model(
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
+        antibody_soft_matches_dict,
         matchings_model.found_matchings_count,
         matchings_model.show_not_all_matchings_found,
         scorer.max_transplant_score
@@ -133,6 +143,8 @@ def create_calculated_matchings_dto(
             latest_matchings_detailed.detailed_score_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)],
             latest_matchings_detailed.antibody_matches_tuples[
+                (pair.donor.db_id, pair.recipient.db_id)],
+            latest_matchings_detailed.antibody_soft_matches_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)]
         )
 

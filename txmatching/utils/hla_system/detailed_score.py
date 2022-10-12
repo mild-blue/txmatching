@@ -14,3 +14,4 @@ class DetailedScoreForHLAGroup:
     recipient_matches: List[HLAMatch]
     group_compatibility_index: float
     antibody_matches: List[AntibodyMatch]
+    antibody_soft_matches: List[AntibodyMatch]

@@ -90,7 +90,7 @@ def donor_to_donor_dto_out(donor: Donor,
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
         )
-        antibodies, antibodies_with_soft_crossmatch = get_crossmatched_antibodies(
+        antibodies, antibodies_with_soft_crossmatching = get_crossmatched_antibodies(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
             config_parameters.use_high_resolution,
@@ -102,7 +102,8 @@ def donor_to_donor_dto_out(donor: Donor,
             ci_configuration=scorer.ci_configuration)
         donor_dto.detailed_score_with_related_recipient = get_detailed_score(
             compatibility_index_detailed,
-            antibodies
+            antibodies,
+            antibodies_with_soft_crossmatching
         )
     else:
         compatibility_index_detailed = get_detailed_compatibility_index_without_recipient(
@@ -116,6 +117,7 @@ def donor_to_donor_dto_out(donor: Donor,
                 hla_group=compatibility_index_detailed_group.hla_group,
                 group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
                 antibody_matches=[],
+                antibody_soft_matches=[],
                 donor_matches=compatibility_index_detailed_group.donor_matches
             ) for compatibility_index_detailed_group in compatibility_index_detailed
         ]
@@ -124,10 +126,13 @@ def donor_to_donor_dto_out(donor: Donor,
 
 
 def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityIndexForHLAGroup],
-                       antibodies: List[AntibodyMatchForHLAGroup]) -> List[DetailedScoreForHLAGroup]:
+                       antibodies: List[AntibodyMatchForHLAGroup],
+                       antibodies_with_soft_crossmatching: List[AntibodyMatchForHLAGroup]
+                       ) -> List[DetailedScoreForHLAGroup]:
     assert len(antibodies) == len(compatibility_index_detailed)
     detailed_scores = []
-    for antibody_group, compatibility_index_detailed_group in zip(antibodies, compatibility_index_detailed):
+    for antibody_group, antibody_with_soft_crossmatching_group, compatibility_index_detailed_group \
+            in zip(antibodies, antibodies_with_soft_crossmatching, compatibility_index_detailed):
         assert antibody_group.hla_group == compatibility_index_detailed_group.hla_group
         detailed_scores.append(
             DetailedScoreForHLAGroup(
@@ -135,6 +140,7 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
                 hla_group=compatibility_index_detailed_group.hla_group,
                 group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
                 antibody_matches=antibody_group.antibody_matches,
+                antibody_soft_matches=antibody_with_soft_crossmatching_group.antibody_matches,
                 donor_matches=compatibility_index_detailed_group.donor_matches
             )
         )
