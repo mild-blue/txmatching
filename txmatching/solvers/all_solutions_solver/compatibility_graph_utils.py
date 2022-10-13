@@ -134,14 +134,13 @@ def keep_only_highest_scoring_paths(paths: List[Path],
         _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx),
         _get_path_debt(is_cycle, path, donors),
         _get_path_debt(is_cycle, path, donors, blood_group_zero=True),
-        _get_path_length(is_cycle, path)
+        _get_path_length(path)
     ) for path in
         paths_filtered]
 
 
-def _get_path_length(is_cycle: bool, path: Path) -> int:
-    length = len(path) - 1 if is_cycle else len(path)
-    return length
+def _get_path_length(path: Path) -> int:
+    return len(path) - 1
 
 
 def _get_path_debt(is_cycle: bool, path: Path, donors: List[Donor], blood_group_zero=False) -> Dict[Country, int]:
@@ -187,16 +186,16 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 # I think here the local variables help the code
 def find_paths_with_same_donors(all_paths: List[PathWithScore],
                                 original_donor_idx_to_recipient_idx: Dict[int, int]
-                                ) -> Tuple[List[List[int]], Dict[int, PathWithScore]]:
+                                ) -> Tuple[Dict[int, List[int]], Dict[int, PathWithScore]]:
     path_id_to_path = dict(enumerate(all_paths))
 
     donor_ids = {donor_id for path in all_paths for donor_id in path.donor_ids}
-    paths_with_the_same_donors = []
+    paths_with_the_same_donors = {}
     for donor_id in donor_ids:
         paths_for_donor = [path_id for path_id, path in path_id_to_path.items() if
                            _donor_id_or_its_recipient_in_path(donor_id, path, original_donor_idx_to_recipient_idx)]
         if len(paths_for_donor) > 1:
-            paths_with_the_same_donors.append(paths_for_donor)
+            paths_with_the_same_donors[donor_id] = paths_for_donor
 
     return paths_with_the_same_donors, path_id_to_path
 
@@ -204,9 +203,12 @@ def find_paths_with_same_donors(all_paths: List[PathWithScore],
 def _donor_id_or_its_recipient_in_path(donor_id, path: PathWithScore,
                                        original_donor_idx_to_recipient_idx: Dict[int, int]):
     donor_in_path = donor_id in path.donor_ids
-    donors_recipient_in_path = original_donor_idx_to_recipient_idx[donor_id] in [
-        original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
-    return donor_in_path or donors_recipient_in_path
+    if original_donor_idx_to_recipient_idx[donor_id] >= 0:
+        donors_recipient_in_path = original_donor_idx_to_recipient_idx[donor_id] in [
+            original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
+
+        return donor_in_path or donors_recipient_in_path
+    return donor_in_path
 
 
 # pylint: enable=too-many-locals

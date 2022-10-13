@@ -2,7 +2,7 @@ import logging
 from typing import Dict, List, Set
 
 import mip
-from mip import Var
+from mip import ConstraintPriority, Var
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import \
@@ -15,7 +15,9 @@ from txmatching.solvers.ilp_solver.solution import Status
 logger = logging.getLogger(__name__)
 
 
-def optimise_paths(paths_with_the_same_donors: List[List[int]], path_id_to_path_with_score: Dict[int, PathWithScore],
+# pylint:disable=too-many-locals
+def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
+                   path_id_to_path_with_score: Dict[int, PathWithScore],
                    config: ConfigParameters):
     """Build and solve the lexicographic optimisation integer programming model.
 
@@ -29,7 +31,7 @@ def optimise_paths(paths_with_the_same_donors: List[List[int]], path_id_to_path_
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     path_id_to_var = {}
     for path_id in path_id_to_path_with_score:
-        path_id_to_var[path_id] = ilp_model.add_var(var_type=mip.BINARY, name=str(path_id))
+        path_id_to_var[path_id] = ilp_model.add_var(var_type=mip.BINARY, name=f'path_id {path_id}')
 
     max_score = max(path_info.score for path_info in path_id_to_path_with_score.values())
     donor_count = sum(path_info.length for path_info in path_id_to_path_with_score.values())
@@ -40,23 +42,32 @@ def optimise_paths(paths_with_the_same_donors: List[List[int]], path_id_to_path_
                number_of_transplants_multiplier * path_id_to_path_with_score[path_id].length)
         for path_id, var in path_id_to_var.items()
     )
-    for var in path_id_to_var.values():
-        ilp_model.add_constr(var <= 1)
 
-    for paths_with_the_same_donor in paths_with_the_same_donors:
+    for donor_id, path_ids in paths_ids_with_the_same_donors.items():
         ilp_model.add_constr(
-            mip.xsum([path_id_to_var[path] for path in paths_with_the_same_donor]) <= 1
+            mip.xsum([path_id_to_var[path_id] for path_id in path_ids]) <= 1, name=f'No duplicate donor_id {donor_id}',
+            priority=ConstraintPriority.MANDATORY
         )
     _add_constraints_for_country_debt(path_id_to_path_with_score, path_id_to_var, config, ilp_model)
     matchings_to_search_for = config.max_matchings_in_all_solutions_solver
-    for _ in range(matchings_to_search_for):
+    i = 0
+    while i < matchings_to_search_for:
         solve_with_logging(ilp_model)
 
         status = mip_get_result_status(ilp_model)
 
         if status == Status.OPTIMAL:
+            # check there is no violation, this is a hack, there should be no violation in optimal solution,
+            # but it seems sometimes there is.
+            constr_broken = False
+            for constr in ilp_model.constrs:
+                if constr.expr.violation > 0:
+                    constr_broken = True
+                    break
             selected_path_ids = [path_id for path_id, var in path_id_to_var.items() if mip_var_to_bool(var)]
-            yield selected_path_ids
+            if not constr_broken:
+                i = i + 1
+                yield selected_path_ids
             missing = _add_constraints_removing_solution_return_missing_set(ilp_model, selected_path_ids,
                                                                             path_id_to_var)
             if missing == set():

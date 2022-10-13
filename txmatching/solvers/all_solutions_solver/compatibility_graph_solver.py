@@ -41,11 +41,10 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
         return
 
     logger.info(f'Constructing intersection graph # paths {len(highest_scoring_paths)}')
-    paths_with_the_same_donors, path_id_to_path_with_score = find_paths_with_same_donors(highest_scoring_paths,
+    paths_idx_with_the_same_donors, path_id_to_path_with_score = find_paths_with_same_donors(highest_scoring_paths,
                                                                                          original_donor_idx_to_recipient_idx)
 
-    found_solutions = optimise_paths(paths_with_the_same_donors, path_id_to_path_with_score, config_parameters)
-
+    found_solutions = optimise_paths(paths_idx_with_the_same_donors, path_id_to_path_with_score, config_parameters)
     for selected_cycles in found_solutions:
         yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, original_donor_idx_to_recipient_idx)
 

@@ -267,7 +267,7 @@ class TestSaveAndGetConfiguration(DbTests):
                               json=conf_dto2,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(947, res.json['found_matchings_count'])
+            self.assertEqual(20, res.json['found_matchings_count'])
             # should be the same as in the previous run as such configuration does not affect these counts
             self.assertEqual(157, res.json['number_of_possible_transplants'])
             self.assertEqual(12, res.json['number_of_possible_recipients'])
