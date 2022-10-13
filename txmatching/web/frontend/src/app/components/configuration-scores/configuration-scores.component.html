@@ -2,7 +2,9 @@
   <div class="list">
     <h4>
       Manual scores for donors and recipients
-      <app-count [count]="selectedScores.length"></app-count>
+      <div class="count-space">
+        <app-count [count]="selectedScores.length"></app-count>
+      </div>
     </h4>
 
     <div class="hint">Manually set score for particular pair of patients.</div>

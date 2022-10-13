@@ -16,6 +16,8 @@ export interface CalculatedMatchingsGenerated {
     calculated_matchings: Array<MatchingGenerated>;
     config_id: number;
     found_matchings_count?: number;
+    number_of_possible_recipients?: number;
+    number_of_possible_transplants?: number;
     show_not_all_matchings_found: boolean;
 }
 

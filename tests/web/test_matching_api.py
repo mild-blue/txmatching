@@ -26,7 +26,7 @@ class TestSaveAndGetConfiguration(DbTests):
             broad=broad_code if broad_code is not None else split_code,
         )
         return {
-            'high_res': hla_code.high_res, 
+            'high_res': hla_code.high_res,
             'split': hla_code.split,
             'broad': hla_code.broad,
             'group': hla_code.group
@@ -255,6 +255,8 @@ class TestSaveAndGetConfiguration(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
+            self.assertEqual(157, res.json['number_of_possible_transplants'])
+            self.assertEqual(12, res.json['number_of_possible_recipients'])
 
             conf_dto2 = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                                             max_number_of_distinct_countries_in_round=50,
@@ -266,6 +268,9 @@ class TestSaveAndGetConfiguration(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(947, res.json['found_matchings_count'])
+            # should be the same as in the previous run as such configuration does not affect these counts
+            self.assertEqual(157, res.json['number_of_possible_transplants'])
+            self.assertEqual(12, res.json['number_of_possible_recipients'])
 
     def test_solver_multiple_txm_events(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -288,3 +293,5 @@ class TestSaveAndGetConfiguration(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(0, res.json['found_matchings_count'])
+            self.assertEqual(0, res.json['number_of_possible_transplants'])
+            self.assertEqual(0, res.json['number_of_possible_recipients'])

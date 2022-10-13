@@ -2,7 +2,9 @@
   <div class="list">
     <h4>
       Forbidden country combinations
-      <app-count [count]="selectedCombinations.length"></app-count>
+      <div class="count-space">
+        <app-count [count]="selectedCombinations.length"></app-count>
+      </div>
     </h4>
 
     <div class="hint">Patients from selected countries will not be paired as donors and recipients.</div>

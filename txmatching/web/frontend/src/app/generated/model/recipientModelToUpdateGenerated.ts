@@ -13,7 +13,7 @@ import { RecipientModelToUpdateAllOfGenerated } from './recipientModelToUpdateAl
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { SexEnumGenerated } from './sexEnumGenerated';
 import { HlaAntibodiesToUpdateGenerated } from './hlaAntibodiesToUpdateGenerated';
-import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
+import { PatientModelToUpdateHlaTypingGenerated } from './patientModelToUpdateHlaTypingGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
 
@@ -32,10 +32,7 @@ export interface RecipientModelToUpdateGenerated {
      * Height of the patient in centimeters.
      */
     height?: number;
-    /**
-     * Provide full list of all the HLA types of the patient, not just the change set
-     */
-    hla_typing?: HlaTypingToUpdateGenerated;
+    hla_typing?: PatientModelToUpdateHlaTypingGenerated;
     note?: string;
     sex?: SexEnumGenerated;
     /**

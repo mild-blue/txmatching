@@ -38,6 +38,14 @@
 
     margin-left: $item-gap;
     margin-right: $item-gap;
+
+    .count-space {
+      display: flex;
+      width: 2%;
+      position: relative;
+      top: -1.2em;
+      margin-left: auto;
+    }
   }
 
   .inputs,

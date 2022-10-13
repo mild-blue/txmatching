@@ -5,22 +5,19 @@
 }
 
 .count {
-  position: absolute;
-  bottom: 70%;
-  left: 100%;
-
-  color: white;
   background: $success;
   border-radius: $border-radius;
-
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  top: -1.2em;
+  margin: 5px 5px 5px auto;
+  left: 100%;
   font-weight: 700;
   font-size: 12px;
-  margin-left: 5px;
   padding: 1px 6px 1px 5px;
-
-  display: flex;
   align-items: center;
-  justify-content: center;
 
   &.zero {
     background: $gray-400;

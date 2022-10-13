@@ -32,6 +32,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   /* All possible matchings that the solver found. This can be much higher then number of returned
    * top matchings. This is set only for AllSolution solver. */
   public foundMatchingsCount?: number;
+  public numberOfPossibleTransplants?: number;
+  public numberOfPossibleRecipients?: number;
 
   /* If set, error message is shown instead of "No matchings were found." */
   public errorMessage?: string;
@@ -204,6 +206,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.loading = true;
     this.matchings = [];
     this.foundMatchingsCount = 0;
+    this.numberOfPossibleTransplants = 0;
+    this.numberOfPossibleRecipients = 0;
     this.errorMessage = undefined;
 
     this._logger.log("Calculating with config", [configuration]);
@@ -219,6 +223,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       this.matchings = calculatedMatchings.calculatedMatchings;
       this._eventService.setConfigId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.foundMatchingsCount;
+      this.numberOfPossibleTransplants = calculatedMatchings.numberOfPossibleTransplants;
+      this.numberOfPossibleRecipients = calculatedMatchings.numberOfPossibleRecipients;
       this._logger.log("Calculated matchings", [calculatedMatchings]);
       if (calculatedMatchings.showNotAllMatchingsFound) {
         this._alertService.info(`
