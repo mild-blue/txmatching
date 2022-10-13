@@ -58,15 +58,18 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
 
         if status == Status.OPTIMAL:
             # check there is no violation, this is a hack, there should be no violation in optimal solution,
-            # but it seems sometimes there is.
+            # but it seems sometimes there is (but extremely rarely).
+            #  https://github.com/mild-blue/txmatching/issues/1027
+
             constr_broken = False
             for constr in ilp_model.constrs:
                 if constr.expr.violation > 0:
                     constr_broken = True
                     break
+            i = i + 1
             selected_path_ids = [path_id for path_id, var in path_id_to_var.items() if mip_var_to_bool(var)]
             if not constr_broken:
-                i = i + 1
+
                 yield selected_path_ids
             missing = _add_constraints_removing_solution_return_missing_set(ilp_model, selected_path_ids,
                                                                             path_id_to_var)

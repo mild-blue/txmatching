@@ -203,6 +203,7 @@ def find_paths_with_same_donors(all_paths: List[PathWithScore],
 def _donor_id_or_its_recipient_in_path(donor_id, path: PathWithScore,
                                        original_donor_idx_to_recipient_idx: Dict[int, int]):
     donor_in_path = donor_id in path.donor_ids
+    # we are interested only in normal donors, bridging donors have recipient index -1 and this we are not interested in
     if original_donor_idx_to_recipient_idx[donor_id] >= 0:
         donors_recipient_in_path = original_donor_idx_to_recipient_idx[donor_id] in [
             original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
