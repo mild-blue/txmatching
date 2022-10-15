@@ -794,7 +794,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/matching/calculate-for-config": {
+        "/v1/txm-event/{txm_event_id}/matching/calculate-for-config/{config_id}": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -803,7 +803,7 @@
                     "type": "integer"
                 }
             ],
-            "post": {
+            "get": {
                 "responses": {
                     "500": {
                         "description": "Unexpected error, see contents for details.",
@@ -836,15 +836,15 @@
                         }
                     }
                 },
-                "operationId": "post_calculate_from_config",
+                "operationId": "get_calculate_from_config",
                 "parameters": [
                     {
-                        "name": "payload",
+                        "name": "config_id",
+                        "in": "path",
                         "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/Configuration"
-                        }
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
                     }
                 ],
                 "security": [

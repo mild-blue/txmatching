@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { SexEnumGenerated } from './sexEnumGenerated';
-import { PatientModelToUpdateHlaTypingGenerated } from './patientModelToUpdateHlaTypingGenerated';
+import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
@@ -28,7 +28,10 @@ export interface PatientModelToUpdateGenerated {
      * Height of the patient in centimeters.
      */
     height?: number;
-    hla_typing?: PatientModelToUpdateHlaTypingGenerated;
+    /**
+     * Provide full list of all the HLA types of the patient, not just the change set
+     */
+    hla_typing?: HlaTypingToUpdateGenerated;
     note?: string;
     sex?: SexEnumGenerated;
     /**

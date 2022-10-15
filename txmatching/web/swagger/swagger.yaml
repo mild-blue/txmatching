@@ -2406,20 +2406,21 @@ paths:
             -   bearer: []
             tags:
             - txm-event
-    /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
+    /v1/txm-event/{txm_event_id}/matching/calculate-for-config/{config_id}:
         parameters:
         -   in: path
             name: txm_event_id
             required: true
             type: integer
-        post:
-            operationId: post_calculate_from_config
+        get:
+            operationId: get_calculate_from_config
             parameters:
-            -   in: body
-                name: payload
+            -   default: default
+                description: Configuration ID or "default".
+                in: path
+                name: config_id
                 required: true
-                schema:
-                    $ref: '#/definitions/Configuration'
+                type: string
             responses:
                 '200':
                     description: List of all matchings for given configuration.

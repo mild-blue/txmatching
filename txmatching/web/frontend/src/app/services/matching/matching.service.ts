@@ -16,11 +16,7 @@ import { firstValueFrom } from "rxjs";
 export class MatchingService {
   constructor(private _http: HttpClient) {}
 
-  public async calculate(
-    txmEventId: number,
-    configId: number,
-    patients: PatientList
-  ): Promise<CalculatedMatchings> {
+  public async calculate(txmEventId: number, configId: number, patients: PatientList): Promise<CalculatedMatchings> {
     return firstValueFrom(
       this._http
         .get<CalculatedMatchingsGenerated>(

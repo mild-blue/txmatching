@@ -42,16 +42,24 @@ class TestSwaggerEndpoints(DbTests):
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(ConfigParameters())
 
-        res = client.post(
-            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
-            json=conf_dto,
+        res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                          f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                          json=conf_dto,
+                          headers=self.auth_headers)
+
+        config_id = res.json['config_id']
+        res = client.get(
+            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+            f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
             headers=self.auth_headers
         )
         self.assertEqual(200, res.status_code)
 
         special_status_code_for_paths = {
             'get': {
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400]
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400],
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{MATCHING_NAMESPACE}/calculate-for-config/{{config_id}}': [
+                    400]
             },
             'post': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],
