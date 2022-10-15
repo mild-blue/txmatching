@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from flask_restx import Resource
 
@@ -21,7 +22,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import matching_api
-from txmatching.web.web_utils.route_utils import request_body, response_ok
+from txmatching.web.web_utils.route_utils import response_ok
 
 logger = logging.getLogger(__name__)
 
