@@ -19,16 +19,13 @@ export class MatchingService {
 
   public async calculate(
     txmEventId: number,
-    config: Configuration,
+    configId: number,
     patients: PatientList
   ): Promise<CalculatedMatchings> {
-    const payload: ConfigurationGenerated = fromConfiguration(config);
-    const configId: ConfigurationId = await this._configService.findConfigurationId(txmEventId, payload);
-
     return firstValueFrom(
       this._http
         .get<CalculatedMatchingsGenerated>(
-          `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config/${configId.configId}`
+          `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config/${configId}`
         )
         .pipe(map((_) => parseCalculatedMatchings(_, patients)))
     );

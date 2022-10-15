@@ -217,7 +217,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     try {
       const calculatedMatchings = await this._matchingService.calculate(
         this.defaultTxmEvent.id,
-        configuration,
+        this.configurationId.configId,
         this.patients
       );
       this.matchings = calculatedMatchings.calculatedMatchings;
