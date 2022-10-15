@@ -6,6 +6,7 @@ export * from './antigenMatchGenerated';
 export * from './bloodGroupEnumGenerated';
 export * from './calculatedMatchingsGenerated';
 export * from './configurationGenerated';
+export * from './configurationIdGenerated';
 export * from './copyPatientsGenerated';
 export * from './countryCodeGenerated';
 export * from './countryGenerated';

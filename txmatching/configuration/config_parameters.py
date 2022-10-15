@@ -155,3 +155,8 @@ class ConfigParameters:
 
     def __post_init__(self):
         self.non_negative()
+
+
+@dataclass
+class ConfigurationId:
+    config_id: int
