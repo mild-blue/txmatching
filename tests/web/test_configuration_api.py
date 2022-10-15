@@ -2,6 +2,7 @@ import dataclasses
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.utils.enums import HLACrossmatchLevel, Solver
 from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
                             MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE)
 
