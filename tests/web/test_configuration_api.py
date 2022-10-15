@@ -30,6 +30,28 @@ class TestPatientService(DbTests):
         self._set_default_config(third_config_id, txm_event_db_id)
         self.assertEqual(0, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
 
+    def test_correct_config_returned(self):
+        txm_event_db_id = self.fill_db_with_patients()
+
+        config_parameters_1 = ConfigParameters(use_high_resolution=True,
+                                        max_number_of_matchings=20,
+                                        solver_constructor_name=Solver.ILPSolver,
+                                        hla_crossmatch_level=HLACrossmatchLevel.NONE)
+        config_parameters_2 = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
+                                        use_high_resolution=True,
+                                        max_number_of_matchings=1000,
+                                        max_debt_for_country=10,
+                                        hla_crossmatch_level=HLACrossmatchLevel.NONE)
+
+        config_1_id = self._find_config_id(config_parameters_1, txm_event_db_id)['config_id']
+        config_2_id = self._find_config_id(config_parameters_2, txm_event_db_id)['config_id']
+
+        config_parameters_1_return = self._get_config(config_1_id, txm_event_db_id)
+        config_parameters_2_return = self._get_config(config_2_id, txm_event_db_id)
+
+        self.assertEqual(config_parameters_1_return, dataclasses.asdict(config_parameters_1))
+        self.assertEqual(config_parameters_2_return, dataclasses.asdict(config_parameters_2))
+
     def _calculate_for_config(self, configuration, txm_event_db_id):
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(configuration)
