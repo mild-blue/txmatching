@@ -26,7 +26,6 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
               internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Iterable[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
         return
-    raise CannotFindShortEnoughRoundsOrPathsInILPSolver
 
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)

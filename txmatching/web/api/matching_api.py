@@ -41,7 +41,7 @@ class CalculateFromConfig(Resource):
         user_id = get_current_user_id()
 
         # 1. Get or save config
-        configuration = get_configuration_from_db_id_or_default(txm_event, user_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
 
         # 2. Get or solve pairing result
         pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
