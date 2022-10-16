@@ -244,6 +244,7 @@ definitions:
         enum:
         - CZE
         - AUT
+        - AUT_2
         - ISR
         - ABW
         - AFG
