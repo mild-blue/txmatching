@@ -50,7 +50,6 @@ export * from './parsingIssueGenerated';
 export * from './parsingIssuePublicGenerated';
 export * from './passwordChangeGenerated';
 export * from './patientModelToUpdateGenerated';
-export * from './patientModelToUpdateHlaTypingGenerated';
 export * from './patientParametersGenerated';
 export * from './patientUploadSuccessResponseGenerated';
 export * from './patientsGenerated';

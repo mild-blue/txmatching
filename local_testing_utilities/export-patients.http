@@ -16,14 +16,25 @@ Content-Type: application/json
 ###
 
 
-POST {{url}}/v1/txm-event/2/export
+POST {{url}}/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": "461389"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+POST {{url}}/v1/txm-event/18/export
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 
 {
-  "country": "CZE",
-  "new_txm_event_name": "test2"
+  "country": "BEL_2",
+  "new_txm_event_name": "38-TXM-2022-07"
 }
 
 

@@ -2211,7 +2211,7 @@
                     ]
                 },
                 "solver_constructor_name": {
-                    "example": "ILPSolver",
+                    "example": "AllSolutionsSolver",
                     "allOf": [
                         {
                             "$ref": "#/definitions/Solver"

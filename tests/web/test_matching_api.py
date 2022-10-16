@@ -247,27 +247,31 @@ class TestSaveAndGetConfiguration(DbTests):
 
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                                           max_number_of_distinct_countries_in_round=1))
+                                                           max_number_of_distinct_countries_in_round=1,
+                                                           max_number_of_matchings=20,
+                                                           max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(9, res.json['found_matchings_count'])
+            self.assertEqual(9, len(res.json['calculated_matchings']))
             self.assertEqual(157, res.json['number_of_possible_transplants'])
             self.assertEqual(12, res.json['number_of_possible_recipients'])
 
             conf_dto2 = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                                             max_number_of_distinct_countries_in_round=50,
-                                                            hla_crossmatch_level=HLACrossmatchLevel.NONE))
+                                                            hla_crossmatch_level=HLACrossmatchLevel.NONE,
+                                                            max_number_of_matchings=20,
+                                                            max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto2,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(20, res.json['found_matchings_count'])
+            self.assertEqual(20, len(res.json['calculated_matchings']))
             # should be the same as in the previous run as such configuration does not affect these counts
             self.assertEqual(157, res.json['number_of_possible_transplants'])
             self.assertEqual(12, res.json['number_of_possible_recipients'])
@@ -277,13 +281,15 @@ class TestSaveAndGetConfiguration(DbTests):
 
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                                           max_number_of_distinct_countries_in_round=1))
+                                                           max_number_of_distinct_countries_in_round=1,
+                                                           max_matchings_in_all_solutions_solver=20,
+                                                           max_number_of_matchings=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
-            self.assertEqual(9, res.json['found_matchings_count'])
+            self.assertEqual(9, len(res.json['calculated_matchings']))
             self.assertEqual(200, res.status_code)
 
             txm_event_db_id_2 = create_or_overwrite_txm_event(name='test2').db_id
@@ -292,6 +298,6 @@ class TestSaveAndGetConfiguration(DbTests):
                               json=conf_dto,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(0, res.json['found_matchings_count'])
+            self.assertEqual(0, len(res.json['calculated_matchings']))
             self.assertEqual(0, res.json['number_of_possible_transplants'])
             self.assertEqual(0, res.json['number_of_possible_recipients'])

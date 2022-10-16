@@ -185,7 +185,7 @@ definitions:
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
-                example: ILPSolver
+                example: AllSolutionsSolver
             use_binary_scoring:
                 example: false
                 type: boolean
