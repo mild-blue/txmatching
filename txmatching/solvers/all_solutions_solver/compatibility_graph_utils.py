@@ -35,7 +35,8 @@ def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGr
                                             original_donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[
     int, List[int]]:
     donor_idxs = set(original_donor_idx_to_recipient_idx.keys())
-    recipient_idxs = set(original_donor_idx_to_recipient_idx.values())
+    recipient_idxs = set(
+        recipient_idx for recipient_idx in original_donor_idx_to_recipient_idx.values() if recipient_idx != -1)
 
     original_recipient_idx_to_donor_idxs = {
         recipient_idx: [donor_idx for donor_idx, donor_recipient_idx in original_donor_idx_to_recipient_idx.items() if
