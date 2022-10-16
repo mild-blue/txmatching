@@ -72,6 +72,15 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
         return res.json
 
+    def _find_config_id(self, config_parameters_1, txm_event_db_id):
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                             json=config_parameters_1,
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+        return res.json
+
     def _get_config(self, config_id, txm_event_db_id):
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
