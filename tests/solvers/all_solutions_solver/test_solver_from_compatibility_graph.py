@@ -12,6 +12,8 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_solver import \
     find_possible_path_combinations_from_compatibility_graph
+from txmatching.solvers.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Solver
@@ -109,6 +111,26 @@ class TestAllSolutionsSolver(unittest.TestCase):
             if duplicates:
                 raise Exception(
                     f'Recipient/recipients with id/ids {duplicates} is/are present in a matching more than once')
+
+    def test_works_with_one_cycle_only(self):
+        """
+        This simple case with one sequence has to work and it had initially some issue, so we added this test.
+        """
+
+        original_donor_idx_to_recipient_idx = {0: -1, 1: 1}
+
+        compatibility_graph_test = {(0, 1): 0}
+
+        solutions = list(find_possible_path_combinations_from_compatibility_graph(
+            compatibility_graph_test,
+            original_donor_idx_to_recipient_idx,
+            _get_donors(len(original_donor_idx_to_recipient_idx)),
+            ConfigParameters(
+                solver_constructor_name=Solver.AllSolutionsSolver,
+                max_sequence_length=100,
+                max_cycle_length=100))
+        )
+        self.assertEqual(solutions[0], [DonorRecipientPairIdxOnly(donor_idx=0, recipient_idx=1)])
 
 
 def _get_donors(ndonors: int) -> List[Donor]:

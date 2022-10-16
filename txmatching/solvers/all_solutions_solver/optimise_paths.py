@@ -36,7 +36,7 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
     max_score = max(path_info.score for path_info in path_id_to_path_with_score.values())
     donor_count = sum(path_info.length for path_info in path_id_to_path_with_score.values())
 
-    number_of_transplants_multiplier = max_score * donor_count
+    number_of_transplants_multiplier = max_score * donor_count + 1
     ilp_model.objective = mip.xsum(
         var * (path_id_to_path_with_score[path_id].score +
                number_of_transplants_multiplier * path_id_to_path_with_score[path_id].length)
@@ -116,7 +116,7 @@ def _get_debt_paths(path_id_to_var: Dict[int, Var], country, path_id_to_path_wit
     else:
         access_attribute_name = 'debt_per_country'
     for path_id, var in path_id_to_var.items():
-        country_debt_dict = getattr(path_id_to_path_with_score[path_id], access_attribute_name)
-        if country in country_debt_dict:
-            debt_paths.append(var * country_debt_dict[country])
+        country_debt = getattr(path_id_to_path_with_score[path_id], access_attribute_name).get(country, 0)
+        if country_debt > 0:
+            debt_paths.append(var * country_debt)
     return debt_paths
