@@ -34,8 +34,11 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
         path_id_to_var[path_id] = ilp_model.add_var(var_type=mip.BINARY, name=f'path_id {path_id}')
 
     max_score = max(path_info.score for path_info in path_id_to_path_with_score.values())
-    donor_count = sum(path_info.length for path_info in path_id_to_path_with_score.values())
-
+    donor_count = len({donor_id for path in path_id_to_path_with_score.values() for donor_id in path.donor_ids})
+    # This multiplicator of number of donors in path ensures that we prioritize first number of donors in the cycle
+    # and only second the overall score. In the future this will be changed to include multiple criterions
+    # and then probably better solution will be to iteratively find optimality for first objective,
+    # then fix the value of the first and optimize the second. But this works well for the moment.
     number_of_transplants_multiplier = max_score * donor_count + 1
     ilp_model.objective = mip.xsum(
         var * (path_id_to_path_with_score[path_id].score +
