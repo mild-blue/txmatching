@@ -58,7 +58,7 @@ class ConfigParameters:
      the duration of the computation)
     """
     scorer_constructor_name: Scorer = Scorer.SplitScorer
-    solver_constructor_name: Solver = Solver.ILPSolver
+    solver_constructor_name: Solver = Solver.AllSolutionsSolver
     require_compatible_blood_group: bool = False
     minimum_total_score: float = field(default=0.0,
                                        compare=False,
