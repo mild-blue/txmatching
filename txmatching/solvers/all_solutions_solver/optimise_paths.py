@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 # pylint:disable=too-many-locals
 def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
                    path_id_to_path_with_score: Dict[int, PathWithScore],
-                   config: ConfigParameters):
+                   config: ConfigParameters,
+                   required_paths_per_recipient: List[List[int]]):
     """Build and solve the lexicographic optimisation integer programming model.
 
     Parameters:
@@ -52,6 +53,7 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
             priority=ConstraintPriority.MANDATORY
         )
     _add_constraints_for_country_debt(path_id_to_path_with_score, path_id_to_var, config, ilp_model)
+    _add_constraints_for_required_patients(path_id_to_var, ilp_model, required_paths_per_recipient)
     matchings_to_search_for = config.max_matchings_in_all_solutions_solver
     i = 0
     while i < matchings_to_search_for:
@@ -72,7 +74,6 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
             i = i + 1
             selected_path_ids = [path_id for path_id, var in path_id_to_var.items() if mip_var_to_bool(var)]
             if not constr_broken:
-
                 yield selected_path_ids
             missing = _add_constraints_removing_solution_return_missing_set(ilp_model, selected_path_ids,
                                                                             path_id_to_var)
@@ -109,6 +110,14 @@ def _add_constraints_for_country_debt(path_id_to_path_with_score: Dict[int, Path
         debt_paths = _get_debt_paths(path_id_to_var, country, path_id_to_path_with_score, True)
         if debt_paths:
             ilp_model.add_constr(mip.xsum(debt_paths) <= config.max_debt_for_country_for_blood_group_zero)
+
+
+def _add_constraints_for_required_patients(path_id_to_var: Dict[int, Var],
+                                           ilp_model: mip.Model,
+                                           required_paths_per_recipient: List[List[int]]):
+    for required_donor_idxs_per_one_recipient in required_paths_per_recipient:
+        ilp_model.add_constr(
+            mip.xsum([path_id_to_var[path_id] for path_id in required_donor_idxs_per_one_recipient]) >= 1)
 
 
 def _get_debt_paths(path_id_to_var: Dict[int, Var], country, path_id_to_path_with_score: Dict[int, PathWithScore],

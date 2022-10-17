@@ -20,11 +20,15 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
                                                              original_donor_idx_to_recipient_idx: Dict[int, int],
                                                              donors: List[Donor],
                                                              config_parameters: ConfigParameters = ConfigParameters(),
+                                                             required_donors_ids_per_required_recipient: List[
+                                                                 List[int]] = None
                                                              ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
     """
     Returns iterator over the optimal list of possible path combinations. The result is a list of pairs. Each pair
     consists of two integers which correspond to recipient and donor indices.
     """
+    if required_donors_ids_per_required_recipient is None:
+        required_donors_ids_per_required_recipient = []
     if len(compatibility_graph) == 0:
         logger.info('Empty set of paths, returning empty iterator')
         yield from ()
@@ -41,10 +45,15 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
         return
 
     logger.info(f'Constructing intersection graph # paths {len(highest_scoring_paths)}')
-    paths_idx_with_the_same_donors, path_id_to_path_with_score = find_paths_with_same_donors(highest_scoring_paths,
-                                                                                         original_donor_idx_to_recipient_idx)
+    paths_idx_with_the_same_donors, path_id_to_path_with_score, required_paths_per_required_recipient = \
+        find_paths_with_same_donors(
+            highest_scoring_paths,
+            original_donor_idx_to_recipient_idx,
+            required_donors_ids_per_required_recipient
+        )
 
-    found_solutions = optimise_paths(paths_idx_with_the_same_donors, path_id_to_path_with_score, config_parameters)
+    found_solutions = optimise_paths(paths_idx_with_the_same_donors, path_id_to_path_with_score, config_parameters,
+                                     required_paths_per_required_recipient)
     for selected_cycles in found_solutions:
         yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, original_donor_idx_to_recipient_idx)
 

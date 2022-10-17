@@ -186,8 +186,9 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 # pylint: disable=too-many-locals
 # I think here the local variables help the code
 def find_paths_with_same_donors(all_paths: List[PathWithScore],
-                                original_donor_idx_to_recipient_idx: Dict[int, int]
-                                ) -> Tuple[Dict[int, List[int]], Dict[int, PathWithScore]]:
+                                original_donor_idx_to_recipient_idx: Dict[int, int],
+                                required_donor_idxs_per_required_recipients: List[List[int]]
+                                ) -> Tuple[Dict[int, List[int]], Dict[int, PathWithScore], List[List[int]]]:
     path_id_to_path = dict(enumerate(all_paths))
 
     donor_ids = {donor_id for path in all_paths for donor_id in path.donor_ids}
@@ -197,25 +198,37 @@ def find_paths_with_same_donors(all_paths: List[PathWithScore],
                            _donor_id_or_its_recipient_in_path(donor_id, path, original_donor_idx_to_recipient_idx)]
         if len(paths_for_donor) > 1:
             paths_with_the_same_donors[donor_id] = paths_for_donor
+    required_paths_per_recipient = []
 
-    return paths_with_the_same_donors, path_id_to_path
+    for required_donor_idxs_per_required_recipient in required_donor_idxs_per_required_recipients:
+        paths_idxs_per_donor = []
+        for donor_idx in required_donor_idxs_per_required_recipient:
+            paths_idxs_per_donor.append(
+                {path_id for path_id, path in path_id_to_path.items() if donor_idx in path.donor_ids})
+        required_paths = set.union(*paths_idxs_per_donor)
+        required_paths_per_recipient.append(required_paths)
+
+    return paths_with_the_same_donors, path_id_to_path, required_paths_per_recipient
 
 
 def _donor_id_or_its_recipient_in_path(donor_id, path: PathWithScore,
                                        original_donor_idx_to_recipient_idx: Dict[int, int]):
     donor_in_path = donor_id in path.donor_ids
-    # we are interested only in normal donors, bridging donors have recipient index -1 and this we are not interested in
-    if original_donor_idx_to_recipient_idx[donor_id] >= 0:
-        donors_recipient_in_path = original_donor_idx_to_recipient_idx[donor_id] in [
-            original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
+    donors_recipient_in_path = _is_recipient_id_in_path(original_donor_idx_to_recipient_idx[donor_id],
+                                                        path,
+                                                        original_donor_idx_to_recipient_idx)
 
-        return donor_in_path or donors_recipient_in_path
-    return donor_in_path
+    return donor_in_path or donors_recipient_in_path
+
+
+def _is_recipient_id_in_path(recipient_id, path: PathWithScore, original_donor_idx_to_recipient_idx: Dict[int, int]):
+    # if recipient id is -1 its not real donor and we ignore it
+    if recipient_id < 0:
+        return False
+    return recipient_id in [original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
 
 
 # pylint: enable=too-many-locals
-
-
 def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, donor_index: int) -> List[int]:
     return list({pair[1] for pair in compatibility_graph.keys() if pair[0] == donor_index})
 
