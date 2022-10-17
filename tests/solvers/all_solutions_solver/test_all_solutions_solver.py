@@ -58,7 +58,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                                  use_high_resolution=True, max_sequence_length=max_sequence_length,
                                                  max_cycle_length=0,
-                                                 max_number_of_matchings=1000)
+                                                 max_number_of_matchings=5)
             solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
             self.assertEqual(max_sequence_length,
                              max([max([sequence.length() for sequence in solution.get_sequences()]) for solution in
@@ -71,7 +71,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                                  use_high_resolution=True, max_cycle_length=max_cycle_length,
                                                  max_sequence_length=0,
-                                                 max_number_of_matchings=1000)
+                                                 max_number_of_matchings=5)
             solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
             self.assertEqual(max_cycle_length,
                              max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in

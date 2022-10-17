@@ -34,8 +34,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                             get_donor_recipient_pairs_from_solution(solutions_ilp[0].matching_pairs))
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                              use_high_resolution=True,
-                                             max_number_of_matchings=1000,
-                                             max_matchings_in_all_solutions_solver=NUMBER_OF_SOLUTIONS,
+                                             max_number_of_matchings=NUMBER_OF_SOLUTIONS,
                                              max_debt_for_country=10,
                                              hla_crossmatch_level=HLACrossmatchLevel.NONE)
 

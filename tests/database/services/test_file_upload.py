@@ -96,7 +96,7 @@ class TestUpdateDonorRecipient(DbTests):
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
             use_high_resolution=True,
-            max_number_of_matchings=1000,
+            max_number_of_matchings=20,
             max_debt_for_country=10,
             hla_crossmatch_level=HLACrossmatchLevel.NONE,
         ),
