@@ -14,13 +14,4 @@ class FilterDefault(FilterBase):
         return FilterDefault(config_parameters)
 
     def keep(self, matching: Matching) -> bool:
-        sequences = matching.get_sequences()
-        cycles = matching.get_cycles()
-
-        if matching.max_debt_from_matching > self.configuration.max_debt_for_country:
-            return False
-
-        if matching.max_blood_group_zero_debt_from_matching \
-                > self.configuration.max_debt_for_country_for_blood_group_zero:
-            return False
         return True

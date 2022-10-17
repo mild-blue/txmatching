@@ -39,6 +39,7 @@ class SolverBase:
             self.recipients_dict,
             self.donors_dict
         )
+        self.required_donor_idxs_per_recipient_idx = self._get_required_donor_idxs_per_recipient_idx()
 
     def solve(self) -> Iterator[MatchingWithScore]:
         raise NotImplementedError('Has to be overridden')
@@ -53,3 +54,14 @@ class SolverBase:
                                 for found_pair_idxs_only in found_pairs_idxs_only)
         score = get_score_for_idx_pairs(self.compatibility_graph, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)
+
+    def _get_required_donor_idxs_per_recipient_idx(self):
+        donor_db_id_to_idx = {donor.db_id: i for i, donor in enumerate(self.donors_dict.values())}
+        required_donor_idx = []
+        for recipient_db_id in self.config_parameters.required_patient_db_ids:
+            required_donor_idx_one_recipient = []
+            for donor_db_id in self.recipients_dict[recipient_db_id].related_donors_db_ids:
+                required_donor_idx_one_recipient.append(donor_db_id_to_idx[donor_db_id])
+            if len(required_donor_idx_one_recipient) > 0:
+                required_donor_idx.append(required_donor_idx_one_recipient)
+        return required_donor_idx

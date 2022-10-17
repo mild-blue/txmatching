@@ -27,7 +27,8 @@ class AllSolutionsSolver(SolverBase):
             compatibility_graph=self.compatibility_graph,
             original_donor_idx_to_recipient_idx=self.original_donor_idx_to_recipient_idx,
             config_parameters=self.config_parameters,
-            donors=list(self.donors)
+            donors=list(self.donors),
+            required_donors_ids_per_required_recipient=self.required_donor_idxs_per_recipient_idx
         )
 
         for possible_path_combination in possible_path_combinations:
