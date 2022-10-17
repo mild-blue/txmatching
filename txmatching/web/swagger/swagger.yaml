@@ -141,7 +141,7 @@ definitions:
                 example: 3
                 type: integer
             max_matchings_in_all_solutions_solver:
-                example: 10000
+                example: 20
                 type: integer
             max_matchings_in_ilp_solver:
                 example: 20
@@ -185,7 +185,7 @@ definitions:
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
-                example: ILPSolver
+                example: AllSolutionsSolver
             use_binary_scoring:
                 example: false
                 type: boolean

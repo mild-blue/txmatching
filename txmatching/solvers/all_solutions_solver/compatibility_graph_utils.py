@@ -1,3 +1,4 @@
+import dataclasses
 import logging
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
@@ -6,31 +7,49 @@ from graph_tool import Graph, topology
 
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.patients.patient import Donor
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
-from txmatching.solvers.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
+from txmatching.solvers.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.country_enum import Country
 
 Path = Tuple[int]
+
+
+@dataclasses.dataclass
+class PathWithScore:
+    donor_ids: Path
+    score: int
+    debt_per_country: Dict[Country, int]
+    debt_blood_zero_per_country: Dict[Country, int]
+    length: int
+
+
 logger = logging.getLogger(__name__)
 
 
-# TODO: this is blocked by https://github.com/mild-blue/txmatching/pull/979
 def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGraph,
-                                            donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[int, List[int]]:
-    n_donors = len(donor_idx_to_recipient_idx)
+                                            original_donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[
+    int, List[int]]:
+    donor_idxs = set(original_donor_idx_to_recipient_idx.keys())
+    recipient_idxs = set(
+        recipient_idx for recipient_idx in original_donor_idx_to_recipient_idx.values() if recipient_idx != -1)
 
-    recipient_idx_to_donor_idx = {recipient_idx: donor_idx for donor_idx, recipient_idx
-                                  in donor_idx_to_recipient_idx.items()}
+    original_recipient_idx_to_donor_idxs = {
+        recipient_idx: [donor_idx for donor_idx, donor_recipient_idx in original_donor_idx_to_recipient_idx.items() if
+                        donor_recipient_idx == recipient_idx] for recipient_idx in recipient_idxs}
 
     donor_idx_to_recipient_idxs = {
         donor_idx: _find_acceptable_recipient_idxs(compatibility_graph, donor_idx)
-        for donor_idx in range(n_donors)}
+        for donor_idx in donor_idxs}
 
     compatible_donor_idxs_per_donor_idx = {
-        donor_idx: [recipient_idx_to_donor_idx[recipient_index] for recipient_index in recipient_idxs]
+        donor_idx: [dx for list_dx in
+                    [original_recipient_idx_to_donor_idxs[recipient_index] for recipient_index in recipient_idxs] for dx
+                    in list_dx]
         for donor_idx, recipient_idxs in donor_idx_to_recipient_idxs.items()}
 
     return compatible_donor_idxs_per_donor_idx
@@ -39,7 +58,8 @@ def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGr
 def find_all_cycles(n_donors: int,
                     compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
                     donors: List[Donor],
-                    config_parameters: ConfigParameters) -> List[Path]:
+                    config_parameters: ConfigParameters,
+                    original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
@@ -47,8 +67,7 @@ def find_all_cycles(n_donors: int,
                                                                            compatible_donor_idxs_per_donor_idx)
     all_circuits = []
     for i, circuit in enumerate(topology.all_circuits(donor_to_compatible_donor_graph)):
-        if (len(circuit) <= config_parameters.max_cycle_length and
-                country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round):
+        if _circuit_valid(circuit, config_parameters, donors, original_donor_idx_to_recipient_idx):
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
         if i > config_parameters.max_cycles_in_all_solutions_solver:
@@ -59,12 +78,26 @@ def find_all_cycles(n_donors: int,
     return all_circuits
 
 
+def _circuit_valid(circuit: Path, config_parameters: ConfigParameters, donors: List[Donor],
+                   original_donor_idx_to_recipient_idx: Dict[int, int]):
+    return (
+            len(circuit) <= config_parameters.max_cycle_length
+            and country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round
+            and _no_duplicate_recipients_in_path(circuit, original_donor_idx_to_recipient_idx)
+
+    )
+
+
+def _no_duplicate_recipients_in_path(path: Path, original_donor_idx_to_recipient_idx: Dict[int, int]):
+    return len(path) == len({original_donor_idx_to_recipient_idx[donor_idx] for donor_idx in path})
+
+
 def find_all_sequences(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
                        max_length: int,
                        donors: List[Donor],
                        max_countries: int,
-                       donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
-    bridge_indices = _get_bridge_indices(donor_idx_to_recipient_idx)
+                       original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+    bridge_indices = _get_bridge_indices(original_donor_idx_to_recipient_idx)
 
     paths = []
 
@@ -73,7 +106,8 @@ def find_all_sequences(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]
         paths.extend(bridge_paths)
 
     paths = [tuple(path) for path in paths if 1 < len(path) <= max_length + 1 and
-             country_count_in_path(tuple(path), donors) <= max_countries]
+             country_count_in_path(tuple(path), donors) <= max_countries and
+             _no_duplicate_recipients_in_path(tuple(path), original_donor_idx_to_recipient_idx)]
 
     return paths
 
@@ -84,7 +118,9 @@ def country_count_in_path(path: Path, donors: List[Donor]) -> int:
 
 def keep_only_highest_scoring_paths(paths: List[Path],
                                     compatibility_graph: CompatibilityGraph,
-                                    donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+                                    donor_idx_to_recipient_idx: Dict[int, int],
+                                    donors: List[Donor],
+                                    recipients: List[Recipient]) -> List[PathWithScore]:
     def group_key(path: Path) -> List[int]:
         return sorted(list(set(path)))
 
@@ -94,8 +130,41 @@ def keep_only_highest_scoring_paths(paths: List[Path],
         max(path_group,
             key=lambda path: _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx))
         for path_group in paths_grouped]
+    return [PathWithScore(
+        path,
+        _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx),
+        _get_path_debt(path, donor_idx_to_recipient_idx, donors, recipients),
+        _get_path_debt(path, donor_idx_to_recipient_idx, donors, recipients, blood_group_zero=True),
+        _get_path_length(path)
+    ) for path in
+        paths_filtered]
 
-    return paths_filtered
+
+def _get_path_length(path: Path) -> int:
+    return len(path) - 1
+
+
+def _get_path_debt(path: Path,
+                   donor_idx_to_recipient_idx: Dict[int, int],
+                   donors: List[Donor],
+                   recipients: List[Recipient], blood_group_zero=False) -> Dict[Country, int]:
+    path_donors = path[:-1]
+    path_recipients = [donor_idx_to_recipient_idx[donor_idx] for donor_idx in path[1:]]
+
+    donor_countries = [donors[donor_idx].parameters.country_code for donor_idx in path_donors
+                       if not blood_group_zero or donors[donor_idx].parameters.blood_group == BloodGroup.ZERO]
+    if not blood_group_zero:
+        recipient_countries = [recipients[recipient_idx].parameters.country_code for recipient_idx in path_recipients]
+    else:
+        recipient_countries = [recipients[recipient_idx].parameters.country_code for recipient_idx, donor_idx in
+                               zip(path_recipients, path_donors)
+                               if donors[donor_idx].parameters.blood_group == BloodGroup.ZERO]
+    path_debt = {}
+    for donor_country in donor_countries:
+        path_debt[donor_country] = path_debt.get(donor_country, 0) + 1
+    for recipient_country in recipient_countries:
+        path_debt[recipient_country] = path_debt.get(recipient_country, 0) - 1
+    return path_debt
 
 
 def _get_path_score(compatibility_graph: CompatibilityGraph,
@@ -106,9 +175,9 @@ def _get_path_score(compatibility_graph: CompatibilityGraph,
 
 
 def get_pairs_from_clique(clique,
-                          path_number_to_path: Dict[int, Path],
+                          path_number_to_path: Dict[int, PathWithScore],
                           donor_idx_to_recipient_idx: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
-    circuit_list = [path_number_to_path[path_number] for path_number in clique]
+    circuit_list = [path_number_to_path[path_number].donor_ids for path_number in clique]
 
     return _get_pairs_from_paths(circuit_list, donor_idx_to_recipient_idx)
 
@@ -125,33 +194,50 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 
 # pylint: disable=too-many-locals
 # I think here the local variables help the code
-def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:
-    graph = Graph(directed=False)
+def find_paths_with_same_donors(all_paths: List[PathWithScore],
+                                original_donor_idx_to_recipient_idx: Dict[int, int],
+                                required_donor_idxs_per_required_recipients: List[List[int]]
+                                ) -> Tuple[Dict[int, List[int]], Dict[int, PathWithScore], List[List[int]]]:
+    path_id_to_path = dict(enumerate(all_paths))
 
-    path_number_to_path = dict(enumerate(all_paths))
-    path_to_path_number = {path: path_number for path_number, path in enumerate(all_paths)}
+    donor_ids = {donor_id for path in all_paths for donor_id in path.donor_ids}
+    paths_with_the_same_donors = {}
+    for donor_id in donor_ids:
+        paths_for_donor = [path_id for path_id, path in path_id_to_path.items() if
+                           _donor_id_or_its_recipient_in_path(donor_id, path, original_donor_idx_to_recipient_idx)]
+        if len(paths_for_donor) > 1:
+            paths_with_the_same_donors[donor_id] = paths_for_donor
+    required_paths_per_recipient = []
 
-    unique_indices = {index for path in all_paths for index in path}
+    for required_donor_idxs_per_required_recipient in required_donor_idxs_per_required_recipients:
+        paths_idxs_per_donor = []
+        for donor_idx in required_donor_idxs_per_required_recipient:
+            paths_idxs_per_donor.append(
+                {path_id for path_id, path in path_id_to_path.items() if donor_idx in path.donor_ids})
+        required_paths = set.union(*paths_idxs_per_donor)
+        required_paths_per_recipient.append(required_paths)
 
-    index_to_path_number_not_having_index = {
-        index: {path_to_path_number[path] for path in all_paths if index not in path} for index in
-        unique_indices}
-    compatible_paths = []
-    for path_number, path in enumerate(all_paths):
-        complementary_paths_per_item = [index_to_path_number_not_having_index[item] for item in path]
-        complementary_path_numbers = set.intersection(*complementary_paths_per_item)
+    return paths_with_the_same_donors, path_id_to_path, required_paths_per_recipient
 
-        for complementary_path_number in complementary_path_numbers:
-            if complementary_path_number > path_number:
-                compatible_paths.append((path_number, complementary_path_number))
 
-    graph.add_edge_list(compatible_paths)
-    return graph, path_number_to_path
+def _donor_id_or_its_recipient_in_path(donor_id, path: PathWithScore,
+                                       original_donor_idx_to_recipient_idx: Dict[int, int]):
+    donor_in_path = donor_id in path.donor_ids
+    donors_recipient_in_path = _is_recipient_id_in_path(original_donor_idx_to_recipient_idx[donor_id],
+                                                        path,
+                                                        original_donor_idx_to_recipient_idx)
+
+    return donor_in_path or donors_recipient_in_path
+
+
+def _is_recipient_id_in_path(recipient_id, path: PathWithScore, original_donor_idx_to_recipient_idx: Dict[int, int]):
+    # if recipient id is -1 its not real donor and we ignore it
+    if recipient_id < 0:
+        return False
+    return recipient_id in [original_donor_idx_to_recipient_idx[donor_id] for donor_id in path.donor_ids]
 
 
 # pylint: enable=too-many-locals
-
-
 def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, donor_index: int) -> List[int]:
     return list({pair[1] for pair in compatibility_graph.keys() if pair[0] == donor_index})
 

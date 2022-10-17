@@ -101,7 +101,7 @@ class TestUpdateDonorRecipient(DbTests):
             hla_crossmatch_level=HLACrossmatchLevel.NONE,
         ),
             txm_event).calculated_matchings_list)
-        self.assertEqual(961, len(all_matchings))
+        self.assertEqual(20, len(all_matchings))
 
         self.maxDiff = None
 

@@ -11,7 +11,6 @@ from txmatching.solve_service.solver_lock import run_with_solver_lock
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
-from txmatching.utils.enums import Solver
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +49,10 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
                                config_parameters: ConfigParameters
                                ) -> Tuple[List[MatchingWithScore], bool, Optional[int]]:
     matchings_heap = []
+    # Obsolete parameters, remove in https://github.com/mild-blue/txmatching/issues/1028, result count made sense
+    # only when all solutions solver was really looking for all solutions.
+    result_count = None
     all_results_found = True
-    i = -1
     for i, matching in enumerate(all_matchings):
         if matching_filter.keep(matching):
             matching_entry = (
@@ -69,21 +70,8 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
             if i % 100000 == 0:
                 logger.info(f'Processed {i} matchings')
 
-            if i == config_parameters.max_matchings_in_all_solutions_solver - 1:
-                logger.error(
-                    f'Max number of matchings {config_parameters.max_matchings_in_all_solutions_solver} was reached. '
-                    f'Returning only best {config_parameters.max_number_of_matchings} matchings from '
-                    f'{config_parameters.max_matchings_in_all_solutions_solver} found up to now.')
-                all_results_found = False
-                break
-
     matchings = [matching for _, _, _, _, matching in sorted(matchings_heap, reverse=True)]
     for idx, matching_in_good_order in enumerate(matchings):
         matching_in_good_order.set_order_id(idx + 1)
-
-    if config_parameters.solver_constructor_name == Solver.ILPSolver:
-        result_count = None
-    else:
-        result_count = i + 1
 
     return matchings, all_results_found, result_count

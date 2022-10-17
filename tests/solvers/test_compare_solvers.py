@@ -21,27 +21,30 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         # TODO https://github.com/mild-blue/txmatching/issues/499
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        ILP_SCORES_NUMBER = 20
+        NUMBER_OF_SOLUTIONS = 10
         config_parameters = ConfigParameters(use_high_resolution=True,
-                                             max_number_of_matchings=ILP_SCORES_NUMBER,
+                                             max_number_of_matchings=NUMBER_OF_SOLUTIONS,
                                              solver_constructor_name=Solver.ILPSolver,
-                                             hla_crossmatch_level=HLACrossmatchLevel.NONE)
+                                             hla_crossmatch_level=HLACrossmatchLevel.NONE,
+                                             max_matchings_in_ilp_solver=NUMBER_OF_SOLUTIONS)
         solutions_ilp = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
 
-        self.assertEqual(ILP_SCORES_NUMBER, len(solutions_ilp))
+        self.assertEqual(NUMBER_OF_SOLUTIONS, len(solutions_ilp))
         self.assertSetEqual(BEST_SOLUTION_use_high_resolution_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions_ilp[0].matching_pairs))
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                              use_high_resolution=True,
                                              max_number_of_matchings=1000,
+                                             max_matchings_in_all_solutions_solver=NUMBER_OF_SOLUTIONS,
                                              max_debt_for_country=10,
                                              hla_crossmatch_level=HLACrossmatchLevel.NONE)
 
-        solutions_all_sol_solver = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertEqual(947, len(solutions_all_sol_solver))
+        solutions_all_sol_solver = list(
+            solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
+        self.assertEqual(NUMBER_OF_SOLUTIONS, len(solutions_all_sol_solver))
         self.assertSetEqual(BEST_SOLUTION_use_high_resolution_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions_all_sol_solver[0].matching_pairs))
         ilp_scores = [sol.score for sol in solutions_ilp]
-        all_sol_solver_scores = [sol.score for sol in solutions_all_sol_solver[:ILP_SCORES_NUMBER]]
+        all_sol_solver_scores = [sol.score for sol in solutions_all_sol_solver]
         self.maxDiff = None
         self.assertListEqual(ilp_scores, all_sol_solver_scores)

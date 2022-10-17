@@ -22,6 +22,7 @@ class ComparisonMode(Enum):
 COMPARISON_MODE = 'comparison_mode'
 NON_NEGATIVE = 'non_negative'
 
+
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
 @dataclass
@@ -57,7 +58,7 @@ class ConfigParameters:
      the duration of the computation)
     """
     scorer_constructor_name: Scorer = Scorer.SplitScorer
-    solver_constructor_name: Solver = Solver.ILPSolver
+    solver_constructor_name: Solver = Solver.AllSolutionsSolver
     require_compatible_blood_group: bool = False
     minimum_total_score: float = field(default=0.0,
                                        compare=False,
@@ -102,7 +103,7 @@ class ConfigParameters:
                                          compare=True,
                                          metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
                                                    NON_NEGATIVE: True})
-    max_matchings_in_all_solutions_solver: int = field(default=10000,
+    max_matchings_in_all_solutions_solver: int = field(default=20,
                                                        compare=True,
                                                        metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
                                                                  NON_NEGATIVE: True})
@@ -148,7 +149,7 @@ class ConfigParameters:
         for fld in dataclasses.fields(self):
             if fld.metadata.get(NON_NEGATIVE, None):
                 if getattr(self, fld.name, None) < 0:
-                    raise ValueError(f"{fld.name} has to be non-negative")
+                    raise ValueError(f'{fld.name} has to be non-negative')
         return True
 
     def __post_init__(self):
