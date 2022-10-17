@@ -121,21 +121,19 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         config_parameters = ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             use_high_resolution=True,
-            max_number_of_matchings=10,
-            max_cycle_length=10)
-        solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertLessEqual(1, len(solutions))
-        self.assertNotIn(required_patient, {pair.recipient.db_id for pair in solutions[0].matching_pairs})
+            max_number_of_matchings=1)
+        solutions_not_required = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
+        self.assertEqual(1, len(solutions_not_required))
+        self.assertNotIn(required_patient, {pair.recipient.db_id for pair in solutions_not_required[0].matching_pairs})
 
         config_parameters = ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             use_high_resolution=True,
             required_patient_db_ids=[required_patient],
-            max_number_of_matchings=3,
-            max_cycle_length=10)
-        solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertLessEqual(1, len(solutions))
-        self.assertIn(required_patient, {pair.recipient.db_id for pair in solutions[0].matching_pairs})
+            max_number_of_matchings=1)
+        solutions_required = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
+        self.assertEqual(1, len(solutions_required))
+        self.assertIn(required_patient, {pair.recipient.db_id for pair in solutions_required[0].matching_pairs})
 
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
