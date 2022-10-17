@@ -6,12 +6,12 @@ import numpy as np
 
 from tests.solvers.tabular_scorer import TabularScorer
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.patients.hla_model import HLATyping
-from txmatching.patients.patient import Donor
+from txmatching.patients.hla_model import HLAAntibodies, HLATyping
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_solver import \
-    find_possible_path_combinations_from_compatibility_graph
+    find_optimal_paths
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.utils.blood_groups import BloodGroup
@@ -35,15 +35,16 @@ class TestAllSolutionsSolver(unittest.TestCase):
         scorer = TabularScorer(compatibility_graph=compatibility_graph)
         donor_idx_to_recipient_idx = _get_donor_idx_to_recipient_idx_from_score_matrix(self._score_matrix)
         all_solutions = list(
-            find_possible_path_combinations_from_compatibility_graph(compatibility_graph=compatibility_graph,
-                                                                     original_donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
-                                                                     donors=_get_donors(len(self._score_matrix)),
-                                                                     config_parameters=ConfigParameters(
-                                                                         solver_constructor_name=Solver.AllSolutionsSolver,
-                                                                         max_cycle_length=100,
-                                                                         max_sequence_length=100,
-                                                                         max_number_of_distinct_countries_in_round=100)
-                                                                     )
+            find_optimal_paths(compatibility_graph=compatibility_graph,
+                               original_donor_idx_to_recipient_idx=donor_idx_to_recipient_idx,
+                               donors=_get_donors(len(self._score_matrix)),
+                               recipients=_get_recipients(len(self._score_matrix[0])),
+                               config_parameters=ConfigParameters(
+                                   solver_constructor_name=Solver.AllSolutionsSolver,
+                                   max_cycle_length=100,
+                                   max_sequence_length=100,
+                                   max_number_of_distinct_countries_in_round=100)
+                               )
         )
         all_scores = []
         for solution in all_solutions:
@@ -64,13 +65,14 @@ class TestAllSolutionsSolver(unittest.TestCase):
         compatibility_graph_test = _get_compatibility_graph_from_score_matrix(score_matrix_test)
         donor_idx_to_recipient_idx = _get_donor_idx_to_recipient_idx_from_score_matrix(score_matrix_test)
 
-        solutions = find_possible_path_combinations_from_compatibility_graph(compatibility_graph_test,
-                                                                             donor_idx_to_recipient_idx,
-                                                                             _get_donors(len(score_matrix_test)),
-                                                                             ConfigParameters(
-                                                                                 solver_constructor_name=Solver.AllSolutionsSolver,
-                                                                                 max_sequence_length=100,
-                                                                                 max_cycle_length=100))
+        solutions = find_optimal_paths(compatibility_graph_test,
+                                       donor_idx_to_recipient_idx,
+                                       _get_donors(len(score_matrix_test)),
+                                       _get_recipients(4),
+                                       ConfigParameters(
+                                           solver_constructor_name=Solver.AllSolutionsSolver,
+                                           max_sequence_length=100,
+                                           max_cycle_length=100))
         solutions = list(solutions)
         self.assertEqual(4, len(solutions[0]))
 
@@ -89,10 +91,11 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         compatibility_graph_test = {(0, 1): 11, (1, 2): 10, (2, 0): 10, (3, 0): 10}
 
-        solutions = list(find_possible_path_combinations_from_compatibility_graph(
+        solutions = list(find_optimal_paths(
             compatibility_graph_test,
             original_donor_idx_to_recipient_idx,
             _get_donors(len(original_donor_idx_to_recipient_idx)),
+            _get_recipients(3),
             ConfigParameters(
                 solver_constructor_name=Solver.AllSolutionsSolver,
                 max_sequence_length=100,
@@ -117,20 +120,21 @@ class TestAllSolutionsSolver(unittest.TestCase):
         This simple case with one sequence has to work and it had initially some issue, so we added this test.
         """
 
-        original_donor_idx_to_recipient_idx = {0: -1, 1: 1}
+        original_donor_idx_to_recipient_idx = {0: -1, 1: 0}
 
-        compatibility_graph_test = {(0, 1): 0}
+        compatibility_graph_test = {(0, 0): 0}
 
-        solutions = list(find_possible_path_combinations_from_compatibility_graph(
+        solutions = list(find_optimal_paths(
             compatibility_graph_test,
             original_donor_idx_to_recipient_idx,
             _get_donors(len(original_donor_idx_to_recipient_idx)),
+            _get_recipients(1),
             ConfigParameters(
                 solver_constructor_name=Solver.AllSolutionsSolver,
                 max_sequence_length=100,
                 max_cycle_length=100))
         )
-        self.assertEqual(solutions[0], [DonorRecipientPairIdxOnly(donor_idx=0, recipient_idx=1)])
+        self.assertEqual([DonorRecipientPairIdxOnly(donor_idx=0, recipient_idx=0)], solutions[0])
 
 
 def _get_donors(ndonors: int) -> List[Donor]:
@@ -147,6 +151,25 @@ def _get_donors(ndonors: int) -> List[Donor]:
             parsing_issues=[]
         ))
     return donors
+
+
+def _get_recipients(nrecipients: int) -> List[Recipient]:
+    recipients = []
+    for i in range(nrecipients):
+        recipients.append(Recipient(
+            parameters=PatientParameters(country_code=Country.CZE,
+                                         blood_group=BloodGroup.ZERO,
+                                         hla_typing=HLATyping(hla_types_raw_list=[], hla_per_groups=[])
+                                         ),
+            db_id=i,
+            medical_id=f'test_{i}',
+            etag=1,
+            parsing_issues=[],
+            related_donors_db_ids=[],
+            acceptable_blood_groups=[],
+            hla_antibodies=HLAAntibodies(hla_antibodies_raw_list=[], hla_antibodies_per_groups=[])
+        ))
+    return recipients
 
 
 def _get_compatibility_graph_from_score_matrix(score_matrix: np.array) -> CompatibilityGraph:

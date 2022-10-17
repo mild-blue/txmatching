@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Iterable, List
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.patients.patient import Donor
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
     PathWithScore, find_all_cycles, find_all_sequences,
@@ -15,14 +15,15 @@ from txmatching.solvers.donor_recipient_pair_idx_only import \
 
 logger = logging.getLogger(__name__)
 
-
-def find_possible_path_combinations_from_compatibility_graph(compatibility_graph: CompatibilityGraph,
-                                                             original_donor_idx_to_recipient_idx: Dict[int, int],
-                                                             donors: List[Donor],
-                                                             config_parameters: ConfigParameters = ConfigParameters(),
-                                                             required_donors_ids_per_required_recipient: List[
-                                                                 List[int]] = None
-                                                             ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
+# This should be improved.
+# pylint:disable=too-many-arguments)
+def find_optimal_paths(compatibility_graph: CompatibilityGraph,
+                       original_donor_idx_to_recipient_idx: Dict[int, int],
+                       donors: List[Donor],
+                       recipients: List[Recipient],
+                       config_parameters: ConfigParameters = ConfigParameters(),
+                       required_donors_ids_per_required_recipient: List[List[int]] = None
+                       ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
     """
     Returns iterator over the optimal list of possible path combinations. The result is a list of pairs. Each pair
     consists of two integers which correspond to recipient and donor indices.
@@ -37,6 +38,7 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
     highest_scoring_paths = get_highest_scoring_paths(compatibility_graph,
                                                       original_donor_idx_to_recipient_idx,
                                                       donors,
+                                                      recipients,
                                                       config_parameters)
 
     if len(highest_scoring_paths) == 0:
@@ -61,6 +63,7 @@ def find_possible_path_combinations_from_compatibility_graph(compatibility_graph
 def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                               original_donor_idx_to_recipient_idx: Dict[int, int],
                               donors: List[Donor],
+                              recipients: List[Recipient],
                               config_parameters: ConfigParameters = ConfigParameters()) -> List[PathWithScore]:
     n_donors = len(original_donor_idx_to_recipient_idx)
     assert len(donors) == n_donors
@@ -85,12 +88,12 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
         compatibility_graph=compatibility_graph,
         donor_idx_to_recipient_idx=original_donor_idx_to_recipient_idx,
         donors=donors,
-        is_cycle=True
+        recipients=recipients
     ) + keep_only_highest_scoring_paths(
         sequences,
         compatibility_graph=compatibility_graph,
         donor_idx_to_recipient_idx=original_donor_idx_to_recipient_idx,
         donors=donors,
-        is_cycle=False
+        recipients=recipients
     )
     return highest_scoring_paths

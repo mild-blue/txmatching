@@ -7,7 +7,7 @@ from graph_tool import Graph, topology
 
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.patients.patient import Donor
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
@@ -120,7 +120,7 @@ def keep_only_highest_scoring_paths(paths: List[Path],
                                     compatibility_graph: CompatibilityGraph,
                                     donor_idx_to_recipient_idx: Dict[int, int],
                                     donors: List[Donor],
-                                    is_cycle: bool) -> List[PathWithScore]:
+                                    recipients: List[Recipient]) -> List[PathWithScore]:
     def group_key(path: Path) -> List[int]:
         return sorted(list(set(path)))
 
@@ -133,8 +133,8 @@ def keep_only_highest_scoring_paths(paths: List[Path],
     return [PathWithScore(
         path,
         _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx),
-        _get_path_debt(is_cycle, path, donors),
-        _get_path_debt(is_cycle, path, donors, blood_group_zero=True),
+        _get_path_debt(path, donor_idx_to_recipient_idx, donors, recipients),
+        _get_path_debt(path, donor_idx_to_recipient_idx, donors, recipients, blood_group_zero=True),
         _get_path_length(path)
     ) for path in
         paths_filtered]
@@ -144,17 +144,26 @@ def _get_path_length(path: Path) -> int:
     return len(path) - 1
 
 
-def _get_path_debt(is_cycle: bool, path: Path, donors: List[Donor], blood_group_zero=False) -> Dict[Country, int]:
+def _get_path_debt(path: Path,
+                   donor_idx_to_recipient_idx: Dict[int, int],
+                   donors: List[Donor],
+                   recipients: List[Recipient], blood_group_zero=False) -> Dict[Country, int]:
+    path_donors = path[:-1]
+    path_recipients = [donor_idx_to_recipient_idx[donor_idx] for donor_idx in path[1:]]
+
+    donor_countries = [donors[donor_idx].parameters.country_code for donor_idx in path_donors
+                       if not blood_group_zero or donors[donor_idx].parameters.blood_group == BloodGroup.ZERO]
+    if not blood_group_zero:
+        recipient_countries = [recipients[recipient_idx].parameters.country_code for recipient_idx in path_recipients]
+    else:
+        recipient_countries = [recipients[recipient_idx].parameters.country_code for recipient_idx, donor_idx in
+                               zip(path_recipients, path_donors)
+                               if donors[donor_idx].parameters.blood_group == BloodGroup.ZERO]
     path_debt = {}
-    if is_cycle:
-        return path_debt
-    current_bridging_donor = donors[path[0]]
-    future_bridging_donor = donors[path[-1]]
-    if current_bridging_donor.parameters.blood_group.ZERO == BloodGroup.ZERO or not blood_group_zero:
-        path_debt[current_bridging_donor.parameters.country_code] = 1
-    if future_bridging_donor.parameters.blood_group.ZERO == BloodGroup.ZERO or not blood_group_zero:
-        path_debt[future_bridging_donor.parameters.country_code] = \
-            path_debt.get(future_bridging_donor.parameters.country_code, 0) - 1
+    for donor_country in donor_countries:
+        path_debt[donor_country] = path_debt.get(donor_country, 0) + 1
+    for recipient_country in recipient_countries:
+        path_debt[recipient_country] = path_debt.get(recipient_country, 0) - 1
     return path_debt
 
 

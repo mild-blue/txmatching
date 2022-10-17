@@ -104,12 +104,18 @@ def _add_constraints_for_country_debt(path_id_to_path_with_score: Dict[int, Path
     for country in countries_debt:
         debt_paths = _get_debt_paths(path_id_to_var, country, path_id_to_path_with_score, False)
         if debt_paths:
-            ilp_model.add_constr(mip.xsum(debt_paths) <= config.max_debt_for_country)
+            ilp_model.add_constr(mip.xsum(debt_paths) <= config.max_debt_for_country, name=f'Max country debt'
+                                                                                           f'for country {country}')
+            ilp_model.add_constr(mip.xsum(debt_paths) >= - config.max_debt_for_country, name=f'Min country debt'
+                                                                                           f'for country {country}')
 
     for country in countries_debt_zero:
         debt_paths = _get_debt_paths(path_id_to_var, country, path_id_to_path_with_score, True)
         if debt_paths:
-            ilp_model.add_constr(mip.xsum(debt_paths) <= config.max_debt_for_country_for_blood_group_zero)
+            ilp_model.add_constr(mip.xsum(debt_paths) <= config.max_debt_for_country_for_blood_group_zero,
+                                 name=f'Max blood group 0 country debt for country {country}')
+            ilp_model.add_constr(mip.xsum(debt_paths) >= - config.max_debt_for_country_for_blood_group_zero,
+                                 name=f'Min blood group 0 country debt for country {country}')
 
 
 def _add_constraints_for_required_patients(path_id_to_var: Dict[int, Var],
@@ -129,6 +135,6 @@ def _get_debt_paths(path_id_to_var: Dict[int, Var], country, path_id_to_path_wit
         access_attribute_name = 'debt_per_country'
     for path_id, var in path_id_to_var.items():
         country_debt = getattr(path_id_to_path_with_score[path_id], access_attribute_name).get(country, 0)
-        if country_debt > 0:
+        if country_debt != 0:
             debt_paths.append(var * country_debt)
     return debt_paths
