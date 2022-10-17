@@ -56,7 +56,7 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
     possible = _add_constraints_for_required_patients(path_id_to_var, ilp_model, required_paths_per_recipient)
     if not possible:
         return
-    matchings_to_search_for = config.max_matchings_in_all_solutions_solver
+    matchings_to_search_for = config.max_number_of_matchings
     i = 0
     while i < matchings_to_search_for:
         solve_with_logging(ilp_model)
