@@ -18,3 +18,6 @@ PARSE_HLA_CODE_EXCEPTIONS = {
 PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
     'C*04:03': ['CW4', 'CW6']
 }
+
+MULTIPLE_SERO_CODES_LIST = [code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values() for code
+                            in code_list]
