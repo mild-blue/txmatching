@@ -217,7 +217,7 @@ class TestCrossmatch(unittest.TestCase):
         # negative high res crossmatch
         self._assert_negative_crossmatch('A*23:01',
                                          [create_antibody('A*23:01', 1900, 2000),
-                                          create_antibody('A23', 2100, 2000)], True,
+                                          create_antibody('A*23:04', 2100, 2000)], True,
                                          crossmatch_logic=do_crossmatch_in_type_a)
         # positive split crossmatch
         self._assert_positive_crossmatch('A*23:01',
@@ -340,8 +340,8 @@ class TestCrossmatch(unittest.TestCase):
         # negative high res crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 1900, 2000),
-                                    create_antibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)],
+                                    create_antibody('A*23:04', 2100, 2000)], True,
+                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)],
                                    is_type_a=True)
 
     def test_antibodies_with_multiple_mfis(self):
@@ -471,8 +471,8 @@ class TestCrossmatch(unittest.TestCase):
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # HIGH_RES_WITH_BROAD_1
         self._assert_matches_equal('A9',
                                    [create_antibody('A*23:01', 1900, 2000),
-                                    create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2100, 2000),
+                                    create_antibody('A*23:04', 2100, 2000)], True,
+                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES_WITH_BROAD)],
                                    is_type_a=True)
 
