@@ -293,55 +293,19 @@ class TestCrossmatch(unittest.TestCase):
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=False)
 
-        # positive split crossmatch  # HIGH_RES_2
-        self._assert_matches_equal('A*23:01', [create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
-                                                  AntibodyMatchTypes.HIGH_RES)],
-                                   is_type_a=True)
-
-        # negative split crossmatch
-        self._assert_matches_equal('A*23:01', [create_antibody('A*24:02', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*24:02', 2100, 2000),
-                                                  AntibodyMatchTypes.NONE)],
-                                   is_type_a=False)
-
-        # mfi < cutoff:
-
-        # negative high res crossmatch
-        self._assert_matches_equal('A*01:01', [create_antibody('A*23:01', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
-                                                  AntibodyMatchTypes.NONE)],
-                                   is_type_a=False)
-
-        # multiple antibodies
-
-        # positive high res crossmatch
-        self._assert_matches_equal('A*23:01',
-                                   [create_antibody('A*23:01', 2100, 2000),
-                                    create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+        # positive high res crossmatch for special case of C*04:03 from exceptions
+        self._assert_matches_equal('CW6', [create_antibody('C*04:03', 2100, 2000)], True,
+                                   [AntibodyMatch(create_antibody('CW6', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
+                                    AntibodyMatch(create_antibody('CW4', 2100, 2000),
                                                   AntibodyMatchTypes.NONE)],
-                                   is_type_a=False)
-
-        # negative high res crossmatch
-        self._assert_matches_equal('A*23:01',
-                                   [create_antibody('A*23:01', 1900, 2000),
-                                    create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)],
-                                   is_type_a=False)
-        # positive split crossmatch
-        self._assert_matches_equal('A*23:01',
-                                   [create_antibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.SPLIT)],
-                                   is_type_a=False)
-
-        # negative high res crossmatch
-        self._assert_matches_equal('A*23:01',
-                                   [create_antibody('A*23:01', 1900, 2000),
-                                    create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)],
+                                   is_type_a=True)
+        # positive high res crossmatch for special case of C*04:03 from exceptions
+        self._assert_matches_equal('C*04:03', [create_antibody('C*04:03', 2100, 2000)], True,
+                                   [AntibodyMatch(create_antibody('CW6', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody('CW4', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
 
     def test_antibodies_with_multiple_mfis(self):
