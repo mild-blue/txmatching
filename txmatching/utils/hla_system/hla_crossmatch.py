@@ -1,10 +1,14 @@
 from dataclasses import dataclass
-from typing import List, Callable, Set
+from typing import Callable, List, Set
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLAType, HLATyping, HLAPerGroup
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
+                                           HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
+from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
+    MULTIPLE_SERO_CODES_LIST
 
 MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A = 20
 
@@ -80,6 +84,12 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
 
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
+        for antibody in antibodies_per_group.hla_antibody_list:
+            # TODO improve the code around multiple sero codes https://github.com/mild-blue/txmatching/issues/1036
+            if antibody.code.high_res is None and antibody.code.split not in MULTIPLE_SERO_CODES_LIST:
+                raise InvalidArgumentException(f'Crossmatch type a cannot be computed if some of'
+                                               f'patient antibodies is not in high res. Antibody: '
+                                               f'{antibody} does not have high res')
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
@@ -186,7 +196,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(antibodies, hla_per_group, positive_matches)
+        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -225,7 +235,9 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
     for antibodies_per_group in recipient_antibodies.hla_antibodies_per_groups:
         total_antibodies += len(antibodies_per_group.hla_antibody_list)
         for hla_antibody in antibodies_per_group.hla_antibody_list:
-            if hla_antibody.code.high_res is None:
+            # TODO the not in multiple sero codes list is ugly hack, improve in
+            #  https://github.com/mild-blue/txmatching/issues/1036
+            if hla_antibody.code.high_res is None and hla_antibody.code.split not in MULTIPLE_SERO_CODES_LIST:
                 return False
             if hla_antibody.mfi < hla_antibody.cutoff:
                 is_at_least_one_antibody_below_cutoff = True

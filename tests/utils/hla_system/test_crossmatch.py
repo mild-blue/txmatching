@@ -8,11 +8,13 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_type,
                                                         create_hla_typing)
+from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibody
 from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
-from txmatching.utils.hla_system.hla_crossmatch import (AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
-                                                        is_positive_hla_crossmatch, is_recipient_type_a)
+from txmatching.utils.hla_system.hla_crossmatch import (
+    AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
+    is_positive_hla_crossmatch, is_recipient_type_a)
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +59,12 @@ class TestCrossmatch(unittest.TestCase):
         self.assertEqual(expected_hla_code, actual_hla_code)
 
     def test_is_recipient_type_a(self):
-        with open(os.path.join(LARGE_DATA_FOLDER, "high_res_example_data_CZE.json")) as f:
+        with open(os.path.join(LARGE_DATA_FOLDER, 'high_res_example_data_CZE.json')) as f:
             import json
             data = json.load(f)
 
-            hla_typing = data["donors"][0]["hla_typing"]  # len = 10
-            hla_typing.extend(data["donors"][1]["hla_typing"])  # len = 10
+            hla_typing = data['donors'][0]['hla_typing']  # len = 10
+            hla_typing.extend(data['donors'][1]['hla_typing'])  # len = 10
 
             antibodies = [create_antibody(hla, 2100, 2000) for hla in hla_typing]
             # set first antibody to be negative to fulfill the criteria
@@ -72,7 +74,7 @@ class TestCrossmatch(unittest.TestCase):
         self.assertTrue(is_recipient_type_a(create_antibodies(antibodies)))
 
         # not all antibodies are in high resolution
-        antibodies[0] = create_antibody("A9", 2100, 2000)
+        antibodies[0] = create_antibody('A9', 2100, 2000)
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
 
         # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
@@ -81,6 +83,8 @@ class TestCrossmatch(unittest.TestCase):
         # there is no antibody below the cutoff
         antibodies[0] = create_antibody(antibodies[0].raw_code, 2100, 2000)
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
+
+        self.assertTrue(is_recipient_type_a(create_antibodies(TYPE_A_EXAMPLE_REC)))
 
     def test_crossmatch_split(self):
         """
@@ -221,12 +225,44 @@ class TestCrossmatch(unittest.TestCase):
                                           create_antibody('A23', 2100, 2000)], True,
                                          crossmatch_logic=do_crossmatch_in_type_b)
 
+    def test_undecidable(self):
+        # Antibody undecidable in type A
+        hla_antibodies = [create_antibody('DQB1*04:02', 2100, 2000)]
+        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=[]),
+                                      create_antibodies(hla_antibodies_list=hla_antibodies),
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[3].antibody_matches[0].match_type)
+
+        # Antibody undecidable in type B
+        hla_antibodies = [create_antibody('DQ6', 2100, 2000)]
+        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=[]),
+                                      create_antibodies(hla_antibodies_list=hla_antibodies),
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[3].antibody_matches[0].match_type)
+
+        # Antibody below cutoff, should not be returned in type a
+        hla_antibodies = [create_antibody('DQB1*04:02', 1900, 2000)]
+        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=[]),
+                                      create_antibodies(hla_antibodies_list=hla_antibodies),
+                                      use_high_resolution=True)
+
+        self.assertEqual([], res[3].antibody_matches)
+
+        # Antibody below cutoff, should not be returned in type b
+        hla_antibodies = [create_antibody('DQ6', 1900, 2000)]
+        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=[]),
+                                      create_antibodies(hla_antibodies_list=hla_antibodies),
+                                      use_high_resolution=True)
+
+        self.assertEqual([], res[3].antibody_matches)
+
     def _assert_matches_equal(self,
                               hla_type: str, hla_antibodies: List[HLAAntibody],
                               use_high_resolution: bool,
                               expected_antibody_matches: List[AntibodyMatch],
                               is_type_a: bool):
-
         # False -> 0 | True -> 1
         crossmatch_type_functions = [do_crossmatch_in_type_b, do_crossmatch_in_type_a]
         crossmatched_antibodies = crossmatch_type_functions[is_type_a](
@@ -436,7 +472,8 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A9',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2100, 2000), AntibodyMatchTypes.HIGH_RES_WITH_BROAD)],
+                                   [AntibodyMatch(create_antibody('A9', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_BROAD)],
                                    is_type_a=True)
 
         # first matching antibody with mfi < cutoff, second with mfi < cutoff
