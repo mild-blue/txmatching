@@ -71,11 +71,11 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
     compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(compatibility_graph,
                                                                                   original_donor_idx_to_recipient_idx)
 
-    cycles = find_all_cycles(n_donors,
-                             compatible_donor_idxs_per_donor_idx,
+    cycles = find_all_cycles(compatible_donor_idxs_per_donor_idx,
                              donors,
                              config_parameters,
-                             original_donor_idx_to_recipient_idx)
+                             original_donor_idx_to_recipient_idx,
+                             config_parameters.max_cycle_length)
 
     sequences = find_all_sequences(compatible_donor_idxs_per_donor_idx,
                                    config_parameters.max_sequence_length,

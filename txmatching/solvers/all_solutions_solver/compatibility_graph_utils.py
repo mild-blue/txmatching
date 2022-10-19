@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import networkx as nx
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
 
@@ -55,40 +56,69 @@ def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGr
     return compatible_donor_idxs_per_donor_idx
 
 
-def find_all_cycles(n_donors: int,
-                    compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
+def find_all_cycles(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
                     donors: List[Donor],
                     config_parameters: ConfigParameters,
-                    original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+                    original_donor_idx_to_recipient_idx: Dict[int, int],
+                    max_cycle_length: int) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
-    donor_to_compatible_donor_graph = _get_donor_to_compatible_donor_graph(n_donors,
+    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if 
+            original_donor_idx_to_recipient_idx[donor_id] == -1}
+    donor_to_compatible_donor_graph = _get_donor_to_compatible_donor_graph(ndds,
                                                                            compatible_donor_idxs_per_donor_idx)
+    ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_circuits = []
-    for i, circuit in enumerate(topology.all_circuits(donor_to_compatible_donor_graph)):
+    for node in donor_to_compatible_donor_graph.nodes():
+        if ndd_dict[node] == False:
+            _dfs_cycles(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph)
+
+    circuits_to_return = []
+    for i, circuit in enumerate(all_circuits):
         if _circuit_valid(circuit, config_parameters, donors, original_donor_idx_to_recipient_idx):
-            circuit_with_end = tuple(list(circuit) + [circuit[0]])
-            all_circuits.append(circuit_with_end)
+            circuit_with_end = tuple(circuit + [circuit[0]])
+            circuits_to_return.append(circuit_with_end)
         if i > config_parameters.max_cycles_in_all_solutions_solver:
             raise TooComplicatedDataForAllSolutionsSolver(
                 f'Number of possible cycles in data was above threshold of '
                 f'{config_parameters.max_cycles_in_all_solutions_solver})')
 
-    return all_circuits
+    return circuits_to_return
 
 
-def _circuit_valid(circuit: Path, config_parameters: ConfigParameters, donors: List[Donor],
+def _dfs_cycles(node: int, stack: List[int], all_cycles: List[List[int]], max_cycle_length: int, graph: nx.DiGraph):
+    if len(stack) >= 1:
+        if node == stack[0]:
+            all_cycles.append(stack.copy())
+            return
+
+        if len(stack) == max_cycle_length:
+            return
+
+        if node < stack[0]:
+            return
+
+    stack.append(node)
+
+    if len(set(stack)) != len(stack):
+        return
+
+    for neighbor in graph.neighbors(node):
+        _dfs_cycles(neighbor, stack.copy(), all_cycles,
+                    max_cycle_length, graph)
+
+
+def _circuit_valid(circuit: List[int], config_parameters: ConfigParameters, donors: List[Donor],
                    original_donor_idx_to_recipient_idx: Dict[int, int]):
     return (
             len(circuit) <= config_parameters.max_cycle_length
             and country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round
             and _no_duplicate_recipients_in_path(circuit, original_donor_idx_to_recipient_idx)
-
     )
 
 
-def _no_duplicate_recipients_in_path(path: Path, original_donor_idx_to_recipient_idx: Dict[int, int]):
+def _no_duplicate_recipients_in_path(path: List[int], original_donor_idx_to_recipient_idx: Dict[int, int]):
     return len(path) == len({original_donor_idx_to_recipient_idx[donor_idx] for donor_idx in path})
 
 
@@ -112,7 +142,7 @@ def find_all_sequences(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]
     return paths
 
 
-def country_count_in_path(path: Path, donors: List[Donor]) -> int:
+def country_count_in_path(path: List[int], donors: List[Donor]) -> int:
     return len({donors[donor_idx].parameters.country_code for donor_idx in path})
 
 
@@ -242,18 +272,19 @@ def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, don
     return list({pair[1] for pair in compatibility_graph.keys() if pair[0] == donor_index})
 
 
-def _get_donor_to_compatible_donor_graph(n_donors: int,
-                                         compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> Graph:
-    donor_to_compatible_donor_graph = Graph(directed=True)
-    for i in range(n_donors):
-        assert i == donor_to_compatible_donor_graph.add_vertex()
+def _get_donor_to_compatible_donor_graph(ndds: Set[int],
+                                         compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> nx.Graph:
+    donor_to_compatible_donor_graph = nx.DiGraph()
+
+    donor_to_compatible_donor_graph.add_nodes_from(
+        [(donor_id, {'ndd': donor_id in ndds}) for donor_id in compatible_donor_idxs_per_donor_idx.keys()])
 
     # Add donor -> compatible_donor edges
     for donor_idx, compatible_donor_idxs in compatible_donor_idxs_per_donor_idx.items():
-
-        for compatible_donor_idx in compatible_donor_idxs:
-            donor_to_compatible_donor_graph.add_edge(donor_idx, compatible_donor_idx)
-
+        donor_to_compatible_donor_graph.add_edges_from(
+            (donor_idx, compatible_donor_idx)
+            for compatible_donor_idx in compatible_donor_idxs
+        )
     return donor_to_compatible_donor_graph
 
 
