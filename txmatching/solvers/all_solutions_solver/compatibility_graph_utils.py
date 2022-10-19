@@ -1,10 +1,9 @@
 import dataclasses
 import logging
-import networkx as nx
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
 
-from graph_tool import Graph, topology
+import networkx as nx
 
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
@@ -64,14 +63,14 @@ def find_all_cycles(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
-    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if 
+    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
             original_donor_idx_to_recipient_idx[donor_id] == -1}
     donor_to_compatible_donor_graph = _get_donor_to_compatible_donor_graph(ndds,
                                                                            compatible_donor_idxs_per_donor_idx)
     ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_circuits = []
     for node in donor_to_compatible_donor_graph.nodes():
-        if ndd_dict[node] == False:
+        if ndd_dict[node] is False:
             _dfs_cycles(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph)
 
     circuits_to_return = []
