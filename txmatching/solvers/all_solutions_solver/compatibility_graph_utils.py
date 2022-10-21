@@ -55,7 +55,7 @@ def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGr
     return compatible_donor_idxs_per_donor_idx
 
 
-def find_all_cycles(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
+def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
                     donors: List[Donor],
                     config_parameters: ConfigParameters,
                     original_donor_idx_to_recipient_idx: Dict[int, int],
@@ -63,49 +63,48 @@ def find_all_cycles(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
-    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
-            original_donor_idx_to_recipient_idx[donor_id] == -1}
-    donor_to_compatible_donor_graph = _get_donor_to_compatible_donor_graph(ndds,
-                                                                           compatible_donor_idxs_per_donor_idx)
+
     ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_circuits = []
     for node in donor_to_compatible_donor_graph.nodes():
         if ndd_dict[node] is False:
-            _dfs_cycles(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph)
+            dfs_cycles(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
+                        config_parameters.max_cycles_in_all_solutions_solver)
 
     circuits_to_return = []
-    for i, circuit in enumerate(all_circuits):
+    for circuit in all_circuits:
         if _circuit_valid(circuit, config_parameters, donors, original_donor_idx_to_recipient_idx):
             circuit_with_end = tuple(circuit + [circuit[0]])
             circuits_to_return.append(circuit_with_end)
-        if i > config_parameters.max_cycles_in_all_solutions_solver:
-            raise TooComplicatedDataForAllSolutionsSolver(
-                f'Number of possible cycles in data was above threshold of '
-                f'{config_parameters.max_cycles_in_all_solutions_solver})')
 
     return circuits_to_return
 
 
-def _dfs_cycles(node: int, stack: List[int], all_cycles: List[List[int]], max_cycle_length: int, graph: nx.DiGraph):
-    if len(stack) >= 1:
-        if node == stack[0]:
-            all_cycles.append(stack.copy())
+def dfs_cycles(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], max_cycle_length: int,
+                graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
+    if len(maybe_cycle) >= 1:
+        if node == maybe_cycle[0]:
+            all_cycles.append(maybe_cycle.copy())
+            if len(all_cycles) > max_cycles_in_all_solutions_solver:
+                raise TooComplicatedDataForAllSolutionsSolver(
+                    f'Number of possible cycles in data was above threshold of '
+                    f'{max_cycles_in_all_solutions_solver})')
             return
 
-        if len(stack) == max_cycle_length:
+        if len(maybe_cycle) == max_cycle_length:
             return
 
-        if node < stack[0]:
+        if node < maybe_cycle[0]:
             return
 
-    stack.append(node)
+    maybe_cycle.append(node)
 
-    if len(set(stack)) != len(stack):
+    if len(set(maybe_cycle)) != len(maybe_cycle):
         return
 
     for neighbor in graph.neighbors(node):
-        _dfs_cycles(neighbor, stack.copy(), all_cycles,
-                    max_cycle_length, graph)
+        dfs_cycles(neighbor, maybe_cycle.copy(), all_cycles, max_cycle_length, graph,
+                    max_cycles_in_all_solutions_solver)
 
 
 def _circuit_valid(circuit: List[int], config_parameters: ConfigParameters, donors: List[Donor],
@@ -121,24 +120,39 @@ def _no_duplicate_recipients_in_path(path: List[int], original_donor_idx_to_reci
     return len(path) == len({original_donor_idx_to_recipient_idx[donor_idx] for donor_idx in path})
 
 
-def find_all_sequences(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
-                       max_length: int,
+def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
+                       max_chain_length: int,
                        donors: List[Donor],
                        max_countries: int,
                        original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
-    bridge_indices = _get_bridge_indices(original_donor_idx_to_recipient_idx)
+    ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
+    all_sequences = []
+    for node in donor_to_compatible_donor_graph.nodes():
+        if ndd_dict[node] is True:
+            dfs_sequences(node, [], all_sequences, max_chain_length, donor_to_compatible_donor_graph)
 
-    paths = []
+    all_sequences = [tuple(sequence) for sequence in all_sequences if 1 < len(sequence) <= max_chain_length + 1 and
+                     country_count_in_path(tuple(sequence), donors) <= max_countries and
+                     _no_duplicate_recipients_in_path(tuple(sequence), original_donor_idx_to_recipient_idx)]
 
-    for bridge_index in bridge_indices:
-        bridge_paths = _find_all_paths_starting_with(bridge_index, compatible_donor_idxs_per_donor_idx, set())
-        paths.extend(bridge_paths)
+    return all_sequences
 
-    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length + 1 and
-             country_count_in_path(tuple(path), donors) <= max_countries and
-             _no_duplicate_recipients_in_path(tuple(path), original_donor_idx_to_recipient_idx)]
 
-    return paths
+def dfs_sequences(node: int, maybe_sequence: List[int], all_sequences: List[List[int]], max_chain_length: int,
+                   graph: nx.DiGraph):
+    maybe_sequence.append(node)
+
+    if len(maybe_sequence) > max_chain_length:
+        return
+
+    if len(set(maybe_sequence)) == len(maybe_sequence):
+        if len(maybe_sequence) >= 2:
+            all_sequences.append(maybe_sequence.copy())
+    else:
+        return
+
+    for neighbor in graph.neighbors(node):
+        dfs_sequences(neighbor, maybe_sequence.copy(), all_sequences, max_chain_length, graph)
 
 
 def country_count_in_path(path: List[int], donors: List[Donor]) -> int:
@@ -271,9 +285,11 @@ def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, don
     return list({pair[1] for pair in compatibility_graph.keys() if pair[0] == donor_index})
 
 
-def _get_donor_to_compatible_donor_graph(ndds: Set[int],
-                                         compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> nx.Graph:
+def get_donor_to_compatible_donor_graph(original_donor_idx_to_recipient_idx: Dict[int, int],
+                                        compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> nx.Graph:
     donor_to_compatible_donor_graph = nx.DiGraph()
+    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
+        original_donor_idx_to_recipient_idx[donor_id] == -1}
 
     donor_to_compatible_donor_graph.add_nodes_from(
         [(donor_id, {'ndd': donor_id in ndds}) for donor_id in compatible_donor_idxs_per_donor_idx.keys()])
@@ -285,27 +301,3 @@ def _get_donor_to_compatible_donor_graph(ndds: Set[int],
             for compatible_donor_idx in compatible_donor_idxs
         )
     return donor_to_compatible_donor_graph
-
-
-def _get_bridge_indices(donor_idx_to_recipient_idx: Dict[int, int]) -> List[int]:
-    bridge_indices = {donor_id for donor_id, recipient_id in donor_idx_to_recipient_idx.items() if recipient_id == -1}
-    return list(bridge_indices)
-
-
-def _find_all_paths_starting_with(source: int, source_to_targets: Dict[int, List[int]],
-                                  covered_indices: Set) -> List[List[int]]:
-    targets = source_to_targets[source]
-    remaining_targets = set(targets) - covered_indices
-
-    paths = [[source]]
-
-    for target in remaining_targets:
-        covered_indices.add(target)
-        paths_starting_with_target = _find_all_paths_starting_with(target, source_to_targets, covered_indices)
-        covered_indices.remove(target)
-
-        for path in paths_starting_with_target:
-            path.insert(0, source)
-        paths.extend(paths_starting_with_target)
-
-    return paths

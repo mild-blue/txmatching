@@ -6,14 +6,16 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
     PathWithScore, find_all_cycles, find_all_sequences,
-    find_paths_with_same_donors, get_compatible_donor_idxs_per_donor_idx,
-    get_pairs_from_clique, keep_only_highest_scoring_paths)
+    find_paths_with_same_donors, get_donor_to_compatible_donor_graph,
+    get_compatible_donor_idxs_per_donor_idx, get_pairs_from_clique,
+    keep_only_highest_scoring_paths)
 from txmatching.solvers.all_solutions_solver.optimise_paths import \
     optimise_paths
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 
 logger = logging.getLogger(__name__)
+
 
 # This should be improved.
 # pylint:disable=too-many-arguments)
@@ -71,13 +73,16 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
     compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(compatibility_graph,
                                                                                   original_donor_idx_to_recipient_idx)
 
-    cycles = find_all_cycles(compatible_donor_idxs_per_donor_idx,
+    donor_to_compatible_donor_graph = get_donor_to_compatible_donor_graph(original_donor_idx_to_recipient_idx,
+                                                                          compatible_donor_idxs_per_donor_idx)
+
+    cycles = find_all_cycles(donor_to_compatible_donor_graph,
                              donors,
                              config_parameters,
                              original_donor_idx_to_recipient_idx,
                              config_parameters.max_cycle_length)
 
-    sequences = find_all_sequences(compatible_donor_idxs_per_donor_idx,
+    sequences = find_all_sequences(donor_to_compatible_donor_graph,
                                    config_parameters.max_sequence_length,
                                    donors,
                                    config_parameters.max_number_of_distinct_countries_in_round,
