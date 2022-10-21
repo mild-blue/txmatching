@@ -68,7 +68,7 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     all_circuits = []
     for node in donor_to_compatible_donor_graph.nodes():
         if ndd_dict[node] is False:
-            dfs_cycles(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
+            _find_cycles_recursive(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
                         config_parameters.max_cycles_in_all_solutions_solver)
 
     circuits_to_return = []
@@ -80,7 +80,7 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     return circuits_to_return
 
 
-def dfs_cycles(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], max_cycle_length: int,
+def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], max_cycle_length: int,
                 graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
     if len(maybe_cycle) >= 1:
         if node == maybe_cycle[0]:
@@ -103,7 +103,7 @@ def dfs_cycles(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], m
         return
 
     for neighbor in graph.neighbors(node):
-        dfs_cycles(neighbor, maybe_cycle.copy(), all_cycles, max_cycle_length, graph,
+        _find_cycles_recursive(neighbor, maybe_cycle.copy(), all_cycles, max_cycle_length, graph,
                     max_cycles_in_all_solutions_solver)
 
 
@@ -129,7 +129,7 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
     all_sequences = []
     for node in donor_to_compatible_donor_graph.nodes():
         if ndd_dict[node] is True:
-            dfs_sequences(node, [], all_sequences, max_chain_length, donor_to_compatible_donor_graph)
+            _find_sequences_recursive(node, [], all_sequences, max_chain_length, donor_to_compatible_donor_graph)
 
     all_sequences = [tuple(sequence) for sequence in all_sequences if 1 < len(sequence) <= max_chain_length + 1 and
                      country_count_in_path(tuple(sequence), donors) <= max_countries and
@@ -138,7 +138,7 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
     return all_sequences
 
 
-def dfs_sequences(node: int, maybe_sequence: List[int], all_sequences: List[List[int]], max_chain_length: int,
+def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequences: List[List[int]], max_chain_length: int,
                    graph: nx.DiGraph):
     maybe_sequence.append(node)
 
@@ -152,7 +152,7 @@ def dfs_sequences(node: int, maybe_sequence: List[int], all_sequences: List[List
         return
 
     for neighbor in graph.neighbors(node):
-        dfs_sequences(neighbor, maybe_sequence.copy(), all_sequences, max_chain_length, graph)
+        _find_sequences_recursive(neighbor, maybe_sequence.copy(), all_sequences, max_chain_length, graph)
 
 
 def country_count_in_path(path: List[int], donors: List[Donor]) -> int:
@@ -288,11 +288,11 @@ def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, don
 def get_donor_to_compatible_donor_graph(original_donor_idx_to_recipient_idx: Dict[int, int],
                                         compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> nx.Graph:
     donor_to_compatible_donor_graph = nx.DiGraph()
-    ndds = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
+    non_directed_donors = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
         original_donor_idx_to_recipient_idx[donor_id] == -1}
 
     donor_to_compatible_donor_graph.add_nodes_from(
-        [(donor_id, {'ndd': donor_id in ndds}) for donor_id in compatible_donor_idxs_per_donor_idx.keys()])
+        [(donor_id, {'ndd': donor_id in non_directed_donors}) for donor_id in compatible_donor_idxs_per_donor_idx.keys()])
 
     # Add donor -> compatible_donor edges
     for donor_idx, compatible_donor_idxs in compatible_donor_idxs_per_donor_idx.items():
