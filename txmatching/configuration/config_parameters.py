@@ -23,6 +23,11 @@ COMPARISON_MODE = 'comparison_mode'
 NON_NEGATIVE = 'non_negative'
 
 
+@dataclass
+class ConfigurationId:
+    config_id: int
+
+
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
 @dataclass
