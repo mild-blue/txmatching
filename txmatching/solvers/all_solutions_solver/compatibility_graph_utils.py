@@ -63,6 +63,8 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
+    if max_cycle_length < 2:
+        return []
 
     ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_circuits = []
@@ -110,8 +112,7 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
 def _circuit_valid(circuit: List[int], config_parameters: ConfigParameters, donors: List[Donor],
                    original_donor_idx_to_recipient_idx: Dict[int, int]):
     return (
-            len(circuit) <= config_parameters.max_cycle_length
-            and country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round
+            country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round
             and _no_duplicate_recipients_in_path(circuit, original_donor_idx_to_recipient_idx)
     )
 
@@ -125,6 +126,9 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
                        donors: List[Donor],
                        max_countries: int,
                        original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+    if max_chain_length < 1:
+        return []
+
     ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_sequences = []
     for node in donor_to_compatible_donor_graph.nodes():
@@ -142,7 +146,7 @@ def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequence
                    graph: nx.DiGraph):
     maybe_sequence.append(node)
 
-    if len(maybe_sequence) > max_chain_length:
+    if len(maybe_sequence) > max_chain_length + 1:
         return
 
     if len(set(maybe_sequence)) == len(maybe_sequence):
