@@ -1,7 +1,7 @@
 import dataclasses
 import logging
 from itertools import groupby
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 
 import networkx as nx
 
@@ -82,8 +82,9 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     return circuits_to_return
 
 
+# pylint: disable=too-many-arguments
 def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], max_cycle_length: int,
-                graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
+                           graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
     if len(maybe_cycle) >= 1:
         if node == maybe_cycle[0]:
             all_cycles.append(maybe_cycle.copy())
