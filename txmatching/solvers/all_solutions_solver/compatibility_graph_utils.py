@@ -66,10 +66,10 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     if max_cycle_length < 2:
         return []
 
-    ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
+    non_directed_donors_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_circuits = []
     for node in donor_to_compatible_donor_graph.nodes():
-        if ndd_dict[node] is False:
+        if non_directed_donors_dict[node] is False:
             _find_cycles_recursive(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
                         config_parameters.max_cycles_in_all_solutions_solver)
 
@@ -97,13 +97,14 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
         if len(maybe_cycle) == max_cycle_length:
             return
 
+        # this prevents duplicite cycles to be found
         if node < maybe_cycle[0]:
             return
 
-    maybe_cycle.append(node)
-
-    if len(set(maybe_cycle)) != len(maybe_cycle):
+    if node in maybe_cycle:
         return
+
+    maybe_cycle.append(node)
 
     for neighbor in graph.neighbors(node):
         _find_cycles_recursive(neighbor, maybe_cycle.copy(), all_cycles, max_cycle_length, graph,
@@ -130,10 +131,10 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
     if max_chain_length < 1:
         return []
 
-    ndd_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
+    non_directed_donors_dict = nx.get_node_attributes(donor_to_compatible_donor_graph, 'ndd')
     all_sequences = []
     for node in donor_to_compatible_donor_graph.nodes():
-        if ndd_dict[node] is True:
+        if non_directed_donors_dict[node] is True:
             _find_sequences_recursive(node, [], all_sequences, max_chain_length, donor_to_compatible_donor_graph)
 
     all_sequences = [tuple(sequence) for sequence in all_sequences if 1 < len(sequence) <= max_chain_length + 1 and
@@ -145,16 +146,16 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
 
 def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequences: List[List[int]], max_chain_length: int,
                    graph: nx.DiGraph):
+    if node in maybe_sequence:
+        return
+
     maybe_sequence.append(node)
 
     if len(maybe_sequence) > max_chain_length + 1:
         return
 
-    if len(set(maybe_sequence)) == len(maybe_sequence):
-        if len(maybe_sequence) >= 2:
-            all_sequences.append(maybe_sequence.copy())
-    else:
-        return
+    if len(maybe_sequence) >= 2:
+        all_sequences.append(maybe_sequence.copy())
 
     for neighbor in graph.neighbors(node):
         _find_sequences_recursive(neighbor, maybe_sequence.copy(), all_sequences, max_chain_length, graph)
