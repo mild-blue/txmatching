@@ -70,14 +70,14 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
     all_circuits = []
     for node in donor_to_compatible_donor_graph.nodes():
         if non_directed_donors_dict[node] is False:
+            # returns cycles with the same first and last node
             _find_cycles_recursive(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
                         config_parameters.max_cycles_in_all_solutions_solver)
 
     circuits_to_return = []
     for circuit in all_circuits:
-        if _circuit_valid(circuit, config_parameters, donors, original_donor_idx_to_recipient_idx):
-            circuit_with_end = tuple(circuit + [circuit[0]])
-            circuits_to_return.append(circuit_with_end)
+        if _circuit_valid(circuit[:-1], config_parameters, donors, original_donor_idx_to_recipient_idx):
+            circuits_to_return.append(circuit)
 
     return circuits_to_return
 
@@ -87,7 +87,8 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
                            graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
     if len(maybe_cycle) >= 1:
         if node == maybe_cycle[0]:
-            all_cycles.append(maybe_cycle.copy())
+            maybe_cycle_copy = maybe_cycle.copy()
+            all_cycles.append(tuple(maybe_cycle_copy + [maybe_cycle_copy[0]]))
             if len(all_cycles) > max_cycles_in_all_solutions_solver:
                 raise TooComplicatedDataForAllSolutionsSolver(
                     f'Number of possible cycles in data was above threshold of '
@@ -111,7 +112,7 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
                     max_cycles_in_all_solutions_solver)
 
 
-def _circuit_valid(circuit: List[int], config_parameters: ConfigParameters, donors: List[Donor],
+def _circuit_valid(circuit: Path, config_parameters: ConfigParameters, donors: List[Donor],
                    original_donor_idx_to_recipient_idx: Dict[int, int]):
     return (
             country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round
@@ -119,7 +120,7 @@ def _circuit_valid(circuit: List[int], config_parameters: ConfigParameters, dono
     )
 
 
-def _no_duplicate_recipients_in_path(path: List[int], original_donor_idx_to_recipient_idx: Dict[int, int]):
+def _no_duplicate_recipients_in_path(path: Path, original_donor_idx_to_recipient_idx: Dict[int, int]):
     return len(path) == len({original_donor_idx_to_recipient_idx[donor_idx] for donor_idx in path})
 
 
@@ -137,9 +138,9 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
         if non_directed_donors_dict[node] is True:
             _find_sequences_recursive(node, [], all_sequences, max_chain_length, donor_to_compatible_donor_graph)
 
-    all_sequences = [tuple(sequence) for sequence in all_sequences if 1 < len(sequence) <= max_chain_length + 1 and
-                     country_count_in_path(tuple(sequence), donors) <= max_countries and
-                     _no_duplicate_recipients_in_path(tuple(sequence), original_donor_idx_to_recipient_idx)]
+    all_sequences = [sequence for sequence in all_sequences if 1 < len(sequence) <= max_chain_length + 1 and
+                     country_count_in_path(sequence, donors) <= max_countries and
+                     _no_duplicate_recipients_in_path(sequence, original_donor_idx_to_recipient_idx)]
 
     return all_sequences
 
@@ -155,13 +156,13 @@ def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequence
         return
 
     if len(maybe_sequence) >= 2:
-        all_sequences.append(maybe_sequence.copy())
+        all_sequences.append(tuple(maybe_sequence.copy()))
 
     for neighbor in graph.neighbors(node):
         _find_sequences_recursive(neighbor, maybe_sequence.copy(), all_sequences, max_chain_length, graph)
 
 
-def country_count_in_path(path: List[int], donors: List[Donor]) -> int:
+def country_count_in_path(path: Path, donors: List[Donor]) -> int:
     return len({donors[donor_idx].parameters.country_code for donor_idx in path})
 
 
