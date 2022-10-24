@@ -72,7 +72,7 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
         if non_directed_donors_dict[node] is False:
             # returns cycles with the same first and last node
             _find_cycles_recursive(node, [], all_circuits, max_cycle_length, donor_to_compatible_donor_graph,
-                        config_parameters.max_cycles_in_all_solutions_solver)
+                                   config_parameters.max_cycles_in_all_solutions_solver)
 
     circuits_to_return = []
     for circuit in all_circuits:
@@ -83,8 +83,8 @@ def find_all_cycles(donor_to_compatible_donor_graph: nx.Graph,
 
 
 # pylint: disable=too-many-arguments
-def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[List[int]], max_cycle_length: int,
-                           graph: nx.DiGraph, max_cycles_in_all_solutions_solver: int):
+def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[Path], max_cycle_length: int,
+                           graph: nx.Graph, max_cycles_in_all_solutions_solver: int):
     if len(maybe_cycle) >= 1:
         if node == maybe_cycle[0]:
             maybe_cycle_copy = maybe_cycle.copy()
@@ -98,7 +98,7 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
         if len(maybe_cycle) == max_cycle_length:
             return
 
-        # this prevents duplicite cycles to be found
+        # this prevents duplicate cycles to be found
         if node < maybe_cycle[0]:
             return
 
@@ -109,7 +109,7 @@ def _find_cycles_recursive(node: int, maybe_cycle: List[int], all_cycles: List[L
 
     for neighbor in graph.neighbors(node):
         _find_cycles_recursive(neighbor, maybe_cycle.copy(), all_cycles, max_cycle_length, graph,
-                    max_cycles_in_all_solutions_solver)
+                               max_cycles_in_all_solutions_solver)
 
 
 def _circuit_valid(circuit: Path, config_parameters: ConfigParameters, donors: List[Donor],
@@ -145,8 +145,8 @@ def find_all_sequences(donor_to_compatible_donor_graph: nx.Graph,
     return all_sequences
 
 
-def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequences: List[List[int]], max_chain_length: int,
-                   graph: nx.DiGraph):
+def _find_sequences_recursive(node: int, maybe_sequence: List[int], all_sequences: List[Path], max_chain_length: int,
+                              graph: nx.Graph):
     if node in maybe_sequence:
         return
 
@@ -296,10 +296,11 @@ def get_donor_to_compatible_donor_graph(original_donor_idx_to_recipient_idx: Dic
                                         compatible_donor_idxs_per_donor_idx: Dict[int, List[int]]) -> nx.Graph:
     donor_to_compatible_donor_graph = nx.DiGraph()
     non_directed_donors = {donor_id for donor_id in original_donor_idx_to_recipient_idx.keys() if
-        original_donor_idx_to_recipient_idx[donor_id] == -1}
+                           original_donor_idx_to_recipient_idx[donor_id] == -1}
 
     donor_to_compatible_donor_graph.add_nodes_from(
-        [(donor_id, {'ndd': donor_id in non_directed_donors}) for donor_id in compatible_donor_idxs_per_donor_idx.keys()])
+        [(donor_id, {'ndd': donor_id in non_directed_donors}) for donor_id in
+         compatible_donor_idxs_per_donor_idx.keys()])
 
     # Add donor -> compatible_donor edges
     for donor_idx, compatible_donor_idxs in compatible_donor_idxs_per_donor_idx.items():
