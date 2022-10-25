@@ -1,5 +1,4 @@
 import dataclasses
-import json
 import logging
 from enum import Enum
 from typing import List, Optional, Tuple, Union
@@ -31,7 +30,8 @@ from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies, HLAAntibody, HLAAntibodyRaw,
+from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
+                                           HLAAntibody, HLAAntibodyRaw,
                                            HLATypeRaw, HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -88,13 +88,6 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
 
 
 def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> HLAAntibodies:
-
-    # antibodies_dto: HLAAntibodiesDTO = dacite.from_dict(                   # BOTTLENECK! 
-    #     data_class=HLAAntibodiesDTO, 
-    #     data=recipient_model.hla_antibodies,
-    #     config=dacite.Config(cast=[Enum])
-    # )
-
     antibodies_dto = HLAAntibodiesDTO([
                                 AntibodiesPerGroup(hla_group=hla["hla_group"],
                                                    hla_antibody_list=[HLAAntibody(
