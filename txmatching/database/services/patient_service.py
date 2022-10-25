@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import logging
 from enum import Enum
 from typing import List, Optional, Tuple, Union
@@ -29,11 +30,13 @@ from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
+from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies, HLAAntibody, HLAAntibodyRaw,
                                            HLATypeRaw, HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.utils.enums import HLAGroup
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
@@ -84,13 +87,26 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
     return recipient
 
 
-def get_hla_antibodies_from_recipient_model(
-        recipient_model: RecipientModel,
-) -> HLAAntibodies:
-    antibodies_dto: HLAAntibodiesDTO = dacite.from_dict(
-        data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies,
-        config=dacite.Config(cast=[Enum])
-    )
+def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> HLAAntibodies:
+
+    # antibodies_dto: HLAAntibodiesDTO = dacite.from_dict(                   # BOTTLENECK! 
+    #     data_class=HLAAntibodiesDTO, 
+    #     data=recipient_model.hla_antibodies,
+    #     config=dacite.Config(cast=[Enum])
+    # )
+
+    antibodies_dto = HLAAntibodiesDTO([
+                                AntibodiesPerGroup(hla_group=hla["hla_group"],
+                                                   hla_antibody_list=[HLAAntibody(
+                                                    raw_code=antibody['raw_code'],
+                                                    mfi=antibody["mfi"],
+                                                    cutoff=antibody["cutoff"],
+                                                    code=HLACode(high_res=antibody["code"]["high_res"],
+                                                                split=antibody["code"]["split"],
+                                                                broad=antibody["code"]["broad"],
+                                                                group=HLAGroup(antibody["code"]["group"]))
+                                                   ) for antibody in hla["hla_antibody_list"]])
+                                for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
     antibodies_raw_models = recipient_model.hla_antibodies_raw
     antibodies_raw = [
