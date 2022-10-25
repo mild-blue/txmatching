@@ -160,16 +160,3 @@ def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]
         if antibody.mfi < antibody.cutoff:
             return False
     return True
-
-
-def number_of_antigens_is_insufficient_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
-    if len(recipient_antibodies) == 0:
-        return False
-
-    for antibody in recipient_antibodies:
-        if antibody.code.high_res is None:
-            return False
-
-    if len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES:
-        return True
-    return False
