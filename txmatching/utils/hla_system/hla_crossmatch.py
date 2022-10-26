@@ -5,12 +5,12 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
-
-MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A = 20
 
 
 @dataclass(eq=True, frozen=True)
@@ -242,7 +242,7 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
             if hla_antibody.mfi < hla_antibody.cutoff:
                 is_at_least_one_antibody_below_cutoff = True
 
-    if total_antibodies < MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A:
+    if total_antibodies < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
         return False
 
     if not is_at_least_one_antibody_below_cutoff:

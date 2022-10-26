@@ -270,6 +270,7 @@ class RecomputeParsing(Resource):
     @patient_api.response_ok(PatientsRecomputeParsingSuccessJson,
                              description='Returns the recomputation statistics.')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    @patient_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):

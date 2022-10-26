@@ -19,6 +19,5 @@ class DonorUploadDTO(PatientBaseDTO):
     sex: Optional[Sex] = None
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
-    year_of_birth: Optional[int] = None
     note: str = ''
     internal_medical_id: Optional[str] = None

@@ -1236,8 +1236,8 @@ definitions:
                 - UNPARSABLE_HLA_CODE
                 - MORE_THAN_TWO_HLA_CODES_PER_GROUP
                 - BASIC_HLA_GROUP_IS_EMPTY
-                - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
                 - ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+                - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
                 - MULTIPLE_CUTOFFS_PER_ANTIBODY
                 - MFI_PROBLEM
                 - OTHER_PROBLEM
@@ -2728,6 +2728,8 @@ paths:
                     description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
             tags:
             - patients
     /v1/txm-event/{txm_event_id}/patients/unconfirm-warning/{parsing_issue_id}:

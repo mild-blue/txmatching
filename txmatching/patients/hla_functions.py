@@ -7,6 +7,8 @@ from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
                                     HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES,
                                     HLAGroup)
@@ -16,8 +18,6 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
     ParsingIssueDetail
 
 logger = logging.getLogger(__name__)
-
-SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
 
 
 def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssueBase], List[HLAPerGroup]]:
@@ -65,7 +65,7 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
-        List[ParsingIssueBase], List[AntibodiesPerGroup]]:
+    List[ParsingIssueBase], List[AntibodiesPerGroup]]:
     parsing_issues, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return (parsing_issues, [AntibodiesPerGroup(hla_group,
                                                 sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -126,7 +126,8 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
 
 
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssueBase], Dict[HLAGroup,
-                                                                                                    List[HLACodeAlias]]]:
+                                                                                                    List[
+                                                                                                        HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
@@ -165,11 +166,13 @@ def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]
 def number_of_antigens_is_insufficient_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
     if len(recipient_antibodies) == 0:
         return False
-
+    is_some_antibody_below_cutoff = False
     for antibody in recipient_antibodies:
         if antibody.code.high_res is None:
             return False
+        if antibody.mfi < antibody.cutoff:
+            is_some_antibody_below_cutoff = True
 
-    if len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES:
+    if is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
         return True
     return False

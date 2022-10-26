@@ -29,8 +29,8 @@ export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
     UnparsableHlaCode = 'UNPARSABLE_HLA_CODE',
     MoreThanTwoHlaCodesPerGroup = 'MORE_THAN_TWO_HLA_CODES_PER_GROUP',
     BasicHlaGroupIsEmpty = 'BASIC_HLA_GROUP_IS_EMPTY',
-    InsufficientNumberOfAntibodiesInHighRes = 'INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES',
     AllAntibodiesArePositiveInHighRes = 'ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES',
+    InsufficientNumberOfAntibodiesInHighRes = 'INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES',
     MultipleCutoffsPerAntibody = 'MULTIPLE_CUTOFFS_PER_ANTIBODY',
     MfiProblem = 'MFI_PROBLEM',
     OtherProblem = 'OTHER_PROBLEM'
