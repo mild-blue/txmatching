@@ -13,7 +13,7 @@ from txmatching.database.sql_alchemy_schema import RecipientModel
 
 
 class TestDictToDataclass(DbTests):
-    def test_dict_to_dataclass(self):
+    def test_direct_conversion_to_dataclass_works_and_is_faster_than_dacite(self):
         txm_event_id = self.fill_db_with_patients()
         recipient_model = RecipientModel.query.filter_by(txm_event_id=txm_event_id).first()
 
