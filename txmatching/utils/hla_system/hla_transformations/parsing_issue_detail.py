@@ -1,5 +1,8 @@
 from enum import Enum
 
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
+
 
 class ParsingIssueDetail(str, Enum):
     # still returning value
@@ -23,11 +26,11 @@ class ParsingIssueDetail(str, Enum):
                                               ' cutoff. This is fine and antibodies will be processed properly, but ' \
                                               ' it is better to all antibodies the patient was tested for to improve' \
                                               ' crossmatch estimation.'
-    INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES = 'All antibodies are in high resolution, some of them below cutoff' \
-                                                    ' and less then 20 were provided. This is fine and antibodies' \
-                                                    ' will be processed properly, but we are assuming' \
-                                                    ' that not all antibodies the patient was tested for were sent.' \
-                                                    ' It is better to send all to improve crossmatch estimation.'
+    INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES = \
+        f'All antibodies are in high resolution, some of them below cutoff and less then ' \
+        f'{SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES} were provided. This is fine and antibodies' \
+        ' will be processed properly, but we are assuming that not all antibodies the patient was tested for were ' \
+        'sent. It is better to send all to improve crossmatch estimation.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
