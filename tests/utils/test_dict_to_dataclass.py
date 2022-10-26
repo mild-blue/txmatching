@@ -1,5 +1,4 @@
 from enum import Enum
-import unittest
 import time
 
 import dacite
@@ -117,6 +116,7 @@ class TestDictToDataclass(DbTests):
         dacite_time = dacite_end_time - start_time
         dataclass_time = dataclass_end_time - dacite_end_time
 
-        self.assertGreater(dacite_time, dataclass_time)
+        self.assertGreater(dacite_time, 3 * dataclass_time)
+        self.assertEqual(antibodies_dto_dacite, antibodies_dto_list_comprehension)
 
         logger.info(f"Dacite time: {dacite_time}, Dataclass time: {dataclass_time}")
