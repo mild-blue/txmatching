@@ -1294,6 +1294,11 @@
                 },
                 "description": "Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.",
                 "operationId": "post_recompute_parsing",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
                 "tags": [
                     "patients"
                 ]

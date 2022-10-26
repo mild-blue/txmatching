@@ -15,7 +15,7 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 from txmatching.utils.hla_system.hla_transformations.utils import \
     process_parsing_result
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
-    PARSE_HLA_CODE_EXCEPTIONS,
+    PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS,
     PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES)
 
 logger = logging.getLogger(__name__)
@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 # pylint: disable=too-many-return-statements
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
-    if hla_raw_code in PARSE_HLA_CODE_EXCEPTIONS:
-        return process_parsing_result(hla_raw_code, PARSE_HLA_CODE_EXCEPTIONS[hla_raw_code])
+    if hla_raw_code in PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS:
+        return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code])
     if re.match(LOW_RES_REGEX, hla_raw_code):
         exception_split_broad_code = high_res_low_res_to_split_or_broad(hla_raw_code)
         if isinstance(exception_split_broad_code, ParsingIssueDetail):
