@@ -14,7 +14,8 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     all_samples_are_positive_in_high_res,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    split_hla_types_to_groups, split_hla_types_to_groups_other)
+    number_of_antigens_is_insufficient_in_high_res, split_hla_types_to_groups,
+    split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
@@ -111,6 +112,14 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
                 hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
                 message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
+            )
+        )
+    if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
+        parsing_issues.append(
+            ParsingIssueBase(
+                hla_code_or_group='Antibodies',
+                parsing_issue_detail=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
             )
         )
 

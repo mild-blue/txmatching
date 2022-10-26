@@ -20,8 +20,14 @@ class ParsingIssueDetail(str, Enum):
     MORE_THAN_TWO_HLA_CODES_PER_GROUP = 'There can not be more than 2 antigens per group.'
     BASIC_HLA_GROUP_IS_EMPTY = 'This HLA group should contain at least one antigen.'
     ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES = 'All antibodies are in high resolution, and all of them are above' \
-        ' cutoff. This is fine and antibodies will be processed properly, but it is better to send both antibodies ' \
-        'above and below cutoff to improve crossmatch estimation.'
+                                              ' cutoff. This is fine and antibodies will be processed properly, but ' \
+                                              ' it is better to all antibodies the patient was tested for to improve' \
+                                              ' crossmatch estimation.'
+    INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES = 'All antibodies are in high resolution, some of them below cutoff' \
+                                                    ' and less then 20 were provided. This is fine and antibodies' \
+                                                    ' will be processed properly, but we are assuming' \
+                                                    ' that not all antibodies the patient was tested for were sent.' \
+                                                    ' It is better to send all to improve crossmatch estimation.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
@@ -41,7 +47,8 @@ WARNING_PROCESSING_RESULTS = {
     ParsingIssueDetail.IRRELEVANT_CODE,
     ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND,
     ParsingIssueDetail.MFI_PROBLEM,
-    ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+    ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
+    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
 }
 
 ERROR_PROCESSING_RESULTS = {

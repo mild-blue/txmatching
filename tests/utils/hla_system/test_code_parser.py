@@ -78,6 +78,8 @@ codes = {
     'DOA*01:04N': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
 }
 
 
