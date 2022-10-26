@@ -9,6 +9,8 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
+from txmatching.utils.hla_system.hla_crossmatch import \
+    is_positive_hla_crossmatch
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
@@ -168,6 +170,23 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF
                )).cutoff
+
+
+def calculate_cPRA_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> Tuple[set, int]:
+    """
+    # TODO: doc
+    """
+    possible_donors = set()
+    all_donors = txm_event.all_donors
+    for donor in all_donors:
+        if is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
+                                      recipient_antibodies=recipient.hla_antibodies,
+                                      use_high_resolution=True):
+            possible_donors.add(donor.db_id)
+
+    print('result of parsing is: ', possible_donors)
+
+    return 1 - len(possible_donors)/len(all_donors), possible_donors
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(

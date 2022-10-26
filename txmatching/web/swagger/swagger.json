@@ -1250,6 +1250,69 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}/patients/recipient/calculate-cpra/{recipient_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "cPRA is successfully calculated",
+                        "schema": {
+                            "$ref": "#/definitions/cPRACalculatedSuccess"
+                        }
+                    }
+                },
+                "description": "Endpoint that receives recipients cPRA and list of suitable donors ids.",
+                "operationId": "get_calculate_c_pra",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "the id of the recipient for which we want to calculate cPRA"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/patients/recompute-parsing": {
             "parameters": [
                 {
@@ -4772,6 +4835,35 @@
                         "STAGING",
                         "DEVELOPMENT"
                     ]
+                }
+            },
+            "type": "object"
+        },
+        "cPRACalculatedSuccess": {
+            "required": [
+                "cPRA",
+                "suitable_donors"
+            ],
+            "properties": {
+                "cPRA": {
+                    "type": "number",
+                    "description": "recipient's cPRA.",
+                    "example": 0.95
+                },
+                "suitable_donors": {
+                    "type": "array",
+                    "example": [
+                        3,
+                        4,
+                        5,
+                        7,
+                        8,
+                        10,
+                        15
+                    ],
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             },
             "type": "object"
