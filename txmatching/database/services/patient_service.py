@@ -88,18 +88,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
 
 
 def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> HLAAntibodies:
-    antibodies_dto = HLAAntibodiesDTO([
-                                AntibodiesPerGroup(hla_group=hla["hla_group"],
-                                                   hla_antibody_list=[HLAAntibody(
-                                                    raw_code=antibody['raw_code'],
-                                                    mfi=antibody["mfi"],
-                                                    cutoff=antibody["cutoff"],
-                                                    code=HLACode(high_res=antibody["code"]["high_res"],
-                                                                split=antibody["code"]["split"],
-                                                                broad=antibody["code"]["broad"],
-                                                                group=HLAGroup(antibody["code"]["group"]))
-                                                   ) for antibody in hla["hla_antibody_list"]])
-                                for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
+    antibodies_dto = _recipient_model_to_antibodies_dto(recipient_model)
 
     antibodies_raw_models = recipient_model.hla_antibodies_raw
     antibodies_raw = [
@@ -121,6 +110,21 @@ def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> 
             )),
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
     )
+
+
+def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAntibodiesDTO:
+    return HLAAntibodiesDTO([
+                                AntibodiesPerGroup(hla_group=hla["hla_group"],
+                                                   hla_antibody_list=[HLAAntibody(
+                                                    raw_code=antibody['raw_code'],
+                                                    mfi=antibody["mfi"],
+                                                    cutoff=antibody["cutoff"],
+                                                    code=HLACode(high_res=antibody["code"]["high_res"],
+                                                                split=antibody["code"]["split"],
+                                                                broad=antibody["code"]["broad"],
+                                                                group=HLAGroup(antibody["code"]["group"]))
+                                                   ) for antibody in hla["hla_antibody_list"]])
+                                for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
 
 def _get_hla_typing_from_patient_model(
