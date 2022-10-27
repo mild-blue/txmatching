@@ -2,8 +2,6 @@ import dataclasses
 import logging
 from typing import List, Optional, Tuple, Union
 
-import dacite
-
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         OverridingException)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
