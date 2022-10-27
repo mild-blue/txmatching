@@ -41,13 +41,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
-from txmatching.database.services.config_service import (
-    get_configuration_from_db_id,
-    get_configuration_parameters_from_db_id_or_default)
-from txmatching.database.services.matching_service import \
-    get_matchings_detailed_for_pairing_result_model  # TODO: delete
-from txmatching.database.services.pairing_result_service import \
-    get_pairing_result_comparable_to_config  # TODO: delete
+from txmatching.database.services.config_service import \
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
     confirm_a_parsing_issue, get_parsing_issues_for_patients,
     unconfirm_a_parsing_issue)
@@ -61,13 +56,9 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (
     TxmEvent, get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
-from txmatching.patients.patient import calculate_cPRA_for_recipient
+from txmatching.patients.patient import Recipient, calculate_cpra_for_recipient
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
-from txmatching.solvers.solver_from_config import \
-    solver_from_configuration  # TODO: delete
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
-from txmatching.utils.hla_system.hla_crossmatch import \
-    is_positive_hla_crossmatch
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import (request_arg_flag,
@@ -340,9 +331,8 @@ class UnconfirmWarning(Resource):
         return response_ok(result)
 
 
-# TODO: create endpoint
 @patient_api.route('/recipient/calculate-cpra/<int:recipient_id>', methods=['GET'])
-class Calculate_cPRA(Resource):
+class CalculatecPRA(Resource):
     @patient_api.doc(
         params={
             'recipient_id': {
@@ -353,28 +343,29 @@ class Calculate_cPRA(Resource):
             }
         },
         security='bearer',
-        description='Endpoint that receives recipients cPRA and list of suitable donors ids.'
+        description='Endpoint that receives recipients cPRA (in %) and list of suitable donors ids.'
     )
     @patient_api.response_ok(cPRACalculatedSuccessJson,
-                             description='cPRA is successfully calculated')  # TODO: positive response
+                             description='cPRA [%] is successfully calculated')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     @require_role(UserRole.ADMIN)
     def get(self, txm_event_id: int, recipient_id: int):
+
         txm_event = get_txm_event_complete(txm_event_id)
         recipient = _get_recipient_by_recipient_db_id(txm_event, recipient_id)
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
-        cPRA, suitable_donors = calculate_cPRA_for_recipient(txm_event, recipient)
-        result = {'cPRA': cPRA, 'suitable donors': suitable_donors}
+        cpra, compatible_donors = calculate_cpra_for_recipient(txm_event, recipient)
+        result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
         return response_ok(result)
 
 
-def _get_recipient_by_recipient_db_id(txm_event: TxmEvent, recipient_id: int) -> Optional[int]:
-    """ # TODO: doc"""
+def _get_recipient_by_recipient_db_id(txm_event: TxmEvent, recipient_id: int) -> Optional[Recipient]:
+    """Returns Recipient's object by id in database."""
     parsed_recipients = [rec for rec in txm_event.all_recipients if rec.db_id == recipient_id]
     if len(parsed_recipients) == 1:  # just 1 recipient was found
         return parsed_recipients[0]

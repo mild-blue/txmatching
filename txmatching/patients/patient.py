@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
@@ -172,21 +172,22 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                )).cutoff
 
 
-def calculate_cPRA_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> Tuple[set, int]:
+def calculate_cpra_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> Tuple[int, Set[int]]:
     """
-    # TODO: doc
+    Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for actual txm_event.
+    :return: cPRA as decimal in [0;1].
     """
-    possible_donors = set()
-    all_donors = txm_event.all_donors
-    for donor in all_donors:
-        if is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
-                                      recipient_antibodies=recipient.hla_antibodies,
-                                      use_high_resolution=True):
-            possible_donors.add(donor.db_id)
+    if len(txm_event.all_donors) < 1:  # no donors = compatible to all donors
+        return 1, set()
 
-    print('result of parsing is: ', possible_donors)
+    compatible_donors = set()
+    for donor in txm_event.all_donors:
+        if not is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
+                                          recipient_antibodies=recipient.hla_antibodies,
+                                          use_high_resolution=True):
+            compatible_donors.add(donor.db_id)
 
-    return 1 - len(possible_donors)/len(all_donors), possible_donors
+    return 1 - len(compatible_donors)/len(txm_event.all_donors), compatible_donors
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(

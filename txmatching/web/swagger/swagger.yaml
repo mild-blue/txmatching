@@ -1870,10 +1870,10 @@ definitions:
     cPRACalculatedSuccess:
         properties:
             cPRA:
-                description: recipient's cPRA.
-                example: 0.95
+                description: recipient's cPRA [%].
+                example: 95
                 type: number
-            suitable_donors:
+            compatible_donors:
                 example:
                 - 3
                 - 4
@@ -1887,7 +1887,7 @@ definitions:
                 type: array
         required:
         - cPRA
-        - suitable_donors
+        - compatible_donors
         type: object
 info:
     title: API
@@ -2725,9 +2725,9 @@ paths:
             required: true
             type: integer
         get:
-            description: Endpoint that receives recipients cPRA and list of suitable
-                donors ids.
-            operationId: get_calculate_c_pra
+            description: Endpoint that receives recipients cPRA (in %) and list of
+                suitable donors ids.
+            operationId: get_calculatec_pra
             parameters:
             -   description: the id of the recipient for which we want to calculate
                     cPRA
@@ -2737,7 +2737,7 @@ paths:
                 type: integer
             responses:
                 '200':
-                    description: cPRA is successfully calculated
+                    description: cPRA [%] is successfully calculated
                     schema:
                         $ref: '#/definitions/cPRACalculatedSuccess'
                 '400':
