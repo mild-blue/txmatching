@@ -320,7 +320,8 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
 
     # Update hla_typing for donors and recipients
     for patient_model in donor_models + recipient_models:
-        hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+        # hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+        hla_typing_raw = _get_hla_typing_raw_dto_from_patient_model(patient_model)
         patient_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
         if patient_model in donor_models:
             new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
