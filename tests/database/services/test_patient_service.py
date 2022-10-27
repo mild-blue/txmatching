@@ -358,8 +358,8 @@ class TestPatientService(DbTests):
         db.session.commit()
 
         # Get event raises error
-        # with self.assertRaises(dacite.exceptions.MissingValueError):
-        #     get_txm_event_complete(txm_event_id)
+        with self.assertRaises(ValueError):
+            get_txm_event_complete(txm_event_id)
 
         # recompute parsing function make changes
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)

@@ -111,18 +111,21 @@ def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> 
 
 
 def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAntibodiesDTO:
-    return HLAAntibodiesDTO([
-        AntibodiesPerGroup(hla_group=hla["hla_group"],
-                           hla_antibody_list=[HLAAntibody(
-                               raw_code=antibody['raw_code'],
-                               mfi=antibody["mfi"],
-                               cutoff=antibody["cutoff"],
-                               code=HLACode(high_res=antibody["code"]["high_res"],
-                                            split=antibody["code"]["split"],
-                                            broad=antibody["code"]["broad"],
-                                            group=HLAGroup(antibody["code"]["group"]))
-                           ) for antibody in hla["hla_antibody_list"]])
-        for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
+    if len(recipient_model.hla_antibodies) != 0:
+        return HLAAntibodiesDTO([
+            AntibodiesPerGroup(hla_group=hla["hla_group"],
+                               hla_antibody_list=[HLAAntibody(
+                                raw_code=antibody['raw_code'],
+                                mfi=antibody["mfi"],
+                                cutoff=antibody["cutoff"],
+                                code=HLACode(high_res=antibody["code"]["high_res"],
+                                             split=antibody["code"]["split"],
+                                             broad=antibody["code"]["broad"],
+                                             group=HLAGroup(antibody["code"]["group"]))
+                                ) for antibody in hla["hla_antibody_list"]])
+            for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
+    else:
+        raise ValueError("Recipient model has no antibodies")
 
 
 def _get_hla_typing_from_patient_model(
@@ -142,25 +145,31 @@ def _get_hla_typing_from_patient_model(
 
 
 def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingDTO:
-    return HLATypingDTO(
-        hla_per_groups = [HLAPerGroup(
-            hla_group=group["hla_group"],
-            hla_types=[HLAType(
-                raw_code=type["raw_code"],
-                code=HLACode(
-                    high_res=type["code"]["high_res"],
-                    split=type["code"]["split"],
-                    broad=type["code"]["broad"],
-                    group=type["code"]["group"])
-            ) for type in group["hla_types"]]
-    ) for group in patient_model.hla_typing["hla_per_groups"]])
+    if len(patient_model.hla_typing) != 0:
+        return HLATypingDTO(
+            hla_per_groups=[HLAPerGroup(
+                hla_group=group["hla_group"],
+                hla_types=[HLAType(
+                    raw_code=type["raw_code"],
+                    code=HLACode(
+                        high_res=type["code"]["high_res"],
+                        split=type["code"]["split"],
+                        broad=type["code"]["broad"],
+                        group=type["code"]["group"])
+                ) for type in group["hla_types"]]
+            ) for group in patient_model.hla_typing["hla_per_groups"]])
+    else:
+        raise ValueError("Patient has no hla typing")
 
 
 def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingRawDTO:
-    return HLATypingRawDTO(
-        hla_types_list=[HLATypeRaw(
-            raw_code=type["raw_code"],
-        ) for type in patient_model.hla_typing_raw["hla_types_list"]])
+    if len(patient_model.hla_typing_raw) != 0:
+        return HLATypingRawDTO(
+            hla_types_list=[HLATypeRaw(
+                raw_code=type["raw_code"],
+            ) for type in patient_model.hla_typing_raw["hla_types_list"]])
+    else:
+        raise ValueError("Patient has no hla typing")
 
 
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tuple[List[ParsingIssue], dict]:
