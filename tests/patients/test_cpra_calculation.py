@@ -8,8 +8,6 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from txmatching.patients.patient import (Donor, Recipient, TxmEvent,
                                          calculate_cpra_for_recipient)
-from txmatching.utils.hla_system.hla_transformations.hla_transformations import \
-    parse_hla_raw_code_with_details
 
 
 class TestCPRACalculation(TestCase):
@@ -48,7 +46,8 @@ class TestCPRACalculation(TestCase):
         donors = []
         for i in range(len(self.some_hla_raw_codes) - 1):
             donors.append(self.__create_mock_donor_object_with_hla_typing(
-                create_hla_typing([self.some_hla_raw_codes[i], self.some_hla_raw_codes[i+1]])
+                create_hla_typing([self.some_hla_raw_codes[i], self.some_hla_raw_codes[i + 1]]),
+                i + 1
             ))
 
         # creating general txm_event with mock
@@ -62,23 +61,23 @@ class TestCPRACalculation(TestCase):
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
         self.assertEqual(
-            0.25,
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,
-                                         recipient=self.recipient_general)[0])
+            (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}),  # expected
+            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
+                                         recipient=self.recipient_general))
 
     def test_calculate_cpra_for_recipient_without_antibodies_case(self):
-        """Case: usual recipient in standard conditions"""
+        """Case: recipient without antibodies"""
         self.assertEqual(
-            0,
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,
-                                         recipient=self.recipient_without_antibodies)[0])
+            (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),  # expected
+            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
+                                         recipient=self.recipient_without_antibodies))
 
     def test_calculate_cpra_for_recipient_against_all_donors_case(self):
         """Case: recipient is incompatible to all donors in txm_event"""
         self.assertEqual(
-            1,
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,
-                                         recipient=self.recipient_against_all_donors)[0])
+            (1, set()),  # expected
+            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
+                                         recipient=self.recipient_against_all_donors))
 
     def test_calculate_cpra_for_recipient_no_donors_case(self):
         """Case: txm_event without donors for usual recipient"""
@@ -86,8 +85,8 @@ class TestCPRACalculation(TestCase):
             self.PatientsTuple(donors=[],
                                recipients=[self.recipient_general]))
         self.assertEqual(
-            (1, set()),
-            calculate_cpra_for_recipient(txm_event=txm_event,
+            (1, set()),  # expected
+            calculate_cpra_for_recipient(txm_event=txm_event,  # real
                                          recipient=self.recipient_general))
 
     @staticmethod
@@ -99,9 +98,10 @@ class TestCPRACalculation(TestCase):
 
     @staticmethod
     @patch(f'{__name__}.Donor')
-    def __create_mock_donor_object_with_hla_typing(hla_typing, mocked_Donor):
+    def __create_mock_donor_object_with_hla_typing(hla_typing, db_id, mocked_Donor):
         donor = mocked_Donor.return_value
         donor.parameters.hla_typing = hla_typing
+        donor.db_id = db_id
         return donor
 
     @staticmethod
