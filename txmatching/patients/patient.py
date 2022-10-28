@@ -185,6 +185,7 @@ def calculate_cpra_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> T
         if not is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
                                           recipient_antibodies=recipient.hla_antibodies,
                                           use_high_resolution=True):
+            # crossmatch test is negative -> donor is compatible to recipient
             compatible_donors.add(donor.db_id)
 
     return 1 - len(compatible_donors)/len(txm_event.all_donors), compatible_donors

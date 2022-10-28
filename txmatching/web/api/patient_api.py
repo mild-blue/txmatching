@@ -332,18 +332,18 @@ class UnconfirmWarning(Resource):
 
 
 @patient_api.route('/recipient/calculate-cpra/<int:recipient_id>', methods=['GET'])
-class CalculatecPRA(Resource):
+class CalculateCPRA(Resource):
     @patient_api.doc(
         params={
             'recipient_id': {
-                'description': 'the id of the recipient for which we want to calculate cPRA',
+                'description': 'the id of the recipient for whom we calculate cPRA',
                 'type': int,
                 'required': True,
                 'in': 'path'
             }
         },
         security='bearer',
-        description='Endpoint that receives recipients cPRA (in %) and list of suitable donors ids.'
+        description='Endpoint returns recipients cPRA (in %) and list of suitable donors ids.'
     )
     @patient_api.response_ok(cPRACalculatedSuccessJson,
                              description='cPRA [%] is successfully calculated')
@@ -353,7 +353,6 @@ class CalculatecPRA(Resource):
     @require_valid_txm_event_id()
     @require_role(UserRole.ADMIN)
     def get(self, txm_event_id: int, recipient_id: int):
-
         txm_event = get_txm_event_complete(txm_event_id)
         recipient = _get_recipient_by_recipient_db_id(txm_event, recipient_id)
         if recipient is None:
@@ -365,7 +364,10 @@ class CalculatecPRA(Resource):
 
 
 def _get_recipient_by_recipient_db_id(txm_event: TxmEvent, recipient_id: int) -> Optional[Recipient]:
-    """Returns Recipient's object by id in database."""
+    """
+    Get recipient's object by id in database.
+    :return: Recipient object (if just one recipient exists in txm_event), otherwise None
+    """
     parsed_recipients = [rec for rec in txm_event.all_recipients if rec.db_id == recipient_id]
     if len(parsed_recipients) == 1:  # just 1 recipient was found
         return parsed_recipients[0]
