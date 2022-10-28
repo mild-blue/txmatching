@@ -177,7 +177,7 @@ def calculate_cpra_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> T
     Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for actual txm_event.
     :return: cPRA as decimal in [0;1].
     """
-    if len(txm_event.all_donors) < 1:  # no donors = compatible to all donors
+    if len(txm_event.all_donors) == 0:  # no donors = compatible to all donors
         return 1, set()
 
     compatible_donors = set()

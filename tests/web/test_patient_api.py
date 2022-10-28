@@ -760,15 +760,15 @@ class TestPatientService(DbTests):
 
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
-    def test_calculate_cpra_endpoint(self):
+    def test_calculate_recipient_cpra_endpoint(self):
         txm_event = get_txm_event_complete(
             self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         )
-        self._test_calculate_cpra_endpoint_general_case(txm_event)  # code 200 cases
-        self._test_calculate_cpra_endpoint_nonexistent_recipient_id(txm_event)  # code 400 case
-        self._test_calculate_cpra_endpoint_unauthorized_user_case(txm_event)  # code 401 case
+        self._test_calculate_recipient_cpra_endpoint_general_case(txm_event)  # code 200 cases
+        self._test_calculate_recipient_cpra_endpoint_nonexistent_recipient_id(txm_event)  # code 400 case
+        self._test_calculate_recipient_cpra_endpoint_unauthorized_user_case(txm_event)  # code 401 case
 
-    def _test_calculate_cpra_endpoint_general_case(self, txm_event):
+    def _test_calculate_recipient_cpra_endpoint_general_case(self, txm_event):
         for recipient in txm_event.all_recipients:
             # creating expected result
             expected_cPRA, expected_compatible_donors = calculate_cpra_for_recipient(
@@ -780,23 +780,23 @@ class TestPatientService(DbTests):
             # get real result
             with self.app.test_client() as client:
                 res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
-                                 f'{PATIENT_NAMESPACE}/recipient/calculate-cpra/{recipient.db_id}',
+                                 f'{PATIENT_NAMESPACE}/calculate-recipient-cpra/{recipient.db_id}',
                                  headers=self.auth_headers)
                 self.assertEqual(200, res.status_code)
-                self.assertEqual(res.json, expected_json)  # compare real and expected result
+                self.assertEqual(expected_json, res.json)
 
-    def _test_calculate_cpra_endpoint_nonexistent_recipient_id(self, txm_event):
+    def _test_calculate_recipient_cpra_endpoint_nonexistent_recipient_id(self, txm_event):
         # recipient id = max(all_recipients_ids) + 1
         recipient_db_id = sorted(txm_event.all_recipients, key=lambda k: k.db_id)[-1].db_id + 1
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
-                             f'{PATIENT_NAMESPACE}/recipient/calculate-cpra/{recipient_db_id}',
+                             f'{PATIENT_NAMESPACE}/calculate-recipient-cpra/{recipient_db_id}',
                              headers=self.auth_headers)
             self.assertEqual(400, res.status_code)  # Wrong data format.
 
-    def _test_calculate_cpra_endpoint_unauthorized_user_case(self, txm_event):
+    def _test_calculate_recipient_cpra_endpoint_unauthorized_user_case(self, txm_event):
         with self.app.test_client() as client:
             # without auth_headers
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
-                             f'{PATIENT_NAMESPACE}/recipient/calculate-cpra/1')
+                             f'{PATIENT_NAMESPACE}/calculate-recipient-cpra/1')
             self.assertEqual(401, res.status_code)  # Authentication failed.

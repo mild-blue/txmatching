@@ -30,10 +30,10 @@ class TestCPRACalculation(TestCase):
         )
         self.recipient_against_all_donors = self.__create_mock_recipient_object_with_hla_antibodies(
             create_antibodies(hla_antibodies_list=[create_antibody(
-                raw_code=row_code,  # recipient has antibodies against all donors in txm_event
+                raw_code=raw_code,  # recipient has antibodies against all donors in txm_event
                 mfi=4000,
                 cutoff=2000)
-                for row_code in self.some_hla_raw_codes]
+                for raw_code in self.some_hla_raw_codes]
             )
         )
 

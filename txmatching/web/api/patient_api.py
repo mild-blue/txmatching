@@ -331,8 +331,8 @@ class UnconfirmWarning(Resource):
         return response_ok(result)
 
 
-@patient_api.route('/recipient/calculate-cpra/<int:recipient_id>', methods=['GET'])
-class CalculateCPRA(Resource):
+@patient_api.route('/calculate-recipient-cpra/<int:recipient_id>', methods=['GET'])
+class CalculateRecipientCPRA(Resource):
     @patient_api.doc(
         params={
             'recipient_id': {
