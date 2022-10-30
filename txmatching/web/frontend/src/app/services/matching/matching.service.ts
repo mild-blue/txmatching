@@ -15,7 +15,7 @@ import { ConfigurationService } from "../configuration/configuration.service";
   providedIn: "root",
 })
 export class MatchingService {
-  constructor(private _http: HttpClient, protected _configService: ConfigurationService) {}
+  constructor(private _http: HttpClient) {}
 
   public async calculate(txmEventId: number, configId: number, patients: PatientList): Promise<CalculatedMatchings> {
     return firstValueFrom(
