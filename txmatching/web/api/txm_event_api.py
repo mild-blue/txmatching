@@ -142,12 +142,12 @@ class TxmEventDeleteApi(Resource):
 class TxmExportEventApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
-    @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
+    @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to '
                                                                'some other event')
     @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @txm_event_api.request_body(
         TxmEventExportJsonIn,
-        description='Export patients from provided country and TXM event. Make the file ready to be'
+        description='Export patients from provided country and TXM event. Make the file ready to be '
                     'uploaded again with already new txm event name ready.'
     )  # where to export
     def post(self, txm_event_id: int) -> str:

@@ -43,7 +43,7 @@ export class ConfigurationService {
     return firstValueFrom(
       this._http
         .post<ConfigurationIdGenerated>(
-          `${environment.apiUrl}/txm-event/${txmEventId}/configuration/find-config-id`,
+          `${environment.apiUrl}/txm-event/${txmEventId}/configuration/find-or-create-config`,
           payload
         )
         .pipe(map(parseConfigurationId))

@@ -58,7 +58,7 @@ class TestPatientService(DbTests):
             conf_dto = dataclasses.asdict(configuration)
 
         res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                          f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                          f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                           json=conf_dto,
                           headers=self.auth_headers)
 
@@ -75,7 +75,7 @@ class TestPatientService(DbTests):
     def _find_config_id(self, config_parameters_1, txm_event_db_id):
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                             f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                              json=config_parameters_1,
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)

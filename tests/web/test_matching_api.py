@@ -54,7 +54,7 @@ class TestSaveAndGetConfiguration(DbTests):
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(configuration_parameters)
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
 
@@ -257,7 +257,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                            max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
 
@@ -278,7 +278,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                             max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto2,
                               headers=self.auth_headers)
 
@@ -303,7 +303,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                            max_number_of_matchings=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
 
@@ -316,7 +316,7 @@ class TestSaveAndGetConfiguration(DbTests):
 
             txm_event_db_id_2 = create_or_overwrite_txm_event(name='test2').db_id
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id_2}/'
-                              f'{CONFIGURATION_NAMESPACE}/find-config-id',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
 

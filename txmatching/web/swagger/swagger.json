@@ -541,7 +541,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/configuration/find-config-id": {
+        "/v1/txm-event/{txm_event_id}/configuration/find-or-create-config": {
             "parameters": [
                 {
                     "name": "txm_event_id",
