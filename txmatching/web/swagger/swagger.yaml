@@ -2273,8 +2273,8 @@ paths:
                     $ref: '#/definitions/Configuration'
             responses:
                 '200':
-                    description: Returns config id if config exists, else creates
-                        new config.
+                    description: If config exists, this endpoint returns config id,
+                        else creates new config and then returns config id.
                     schema:
                         $ref: '#/definitions/ConfigurationId'
                 '400':
@@ -2389,7 +2389,7 @@ paths:
             type: integer
         post:
             description: Export patients from provided country and TXM event. Make
-                the file ready to beuploaded again with already new txm event name
+                the file ready to be uploaded again with already new txm event name
                 ready.
             operationId: post_txm_export_event_api
             parameters:
@@ -2400,7 +2400,7 @@ paths:
                     $ref: '#/definitions/TxmEventExport'
             responses:
                 '200':
-                    description: Exported patients DTO, Ready to be uploaded tosome
+                    description: Exported patients DTO, Ready to be uploaded to some
                         other event
                     schema:
                         $ref: '#/definitions/UploadPatients'
