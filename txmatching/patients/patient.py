@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Set, Tuple
 
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
@@ -172,23 +173,26 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                )).cutoff
 
 
-def calculate_cpra_for_recipient(txm_event: TxmEvent, recipient: Recipient) -> Tuple[int, Set[int]]:
+def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent, recipient: Recipient,
+                                                           config_parameters: ConfigParameters) -> Tuple[int, Set[int]]:
     """
     Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for actual txm_event.
     :return: cPRA as decimal in [0;1].
     """
-    if len(txm_event.all_donors) == 0:  # no donors = compatible to all donors
+    active_donors = txm_event.active_and_valid_donors_dict.values()
+    if len(active_donors) == 0:  # no donors = compatible to all donors
         return 1, set()
 
     compatible_donors = set()
-    for donor in txm_event.all_donors:
+    for donor in active_donors:
         if not is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
                                           recipient_antibodies=recipient.hla_antibodies,
-                                          use_high_resolution=True):
+                                          use_high_resolution=config_parameters.use_high_resolution,
+                                          crossmatch_level=config_parameters.hla_crossmatch_level):
             # crossmatch test is negative -> donor is compatible to recipient
             compatible_donors.add(donor.db_id)
 
-    return 1 - len(compatible_donors)/len(txm_event.all_donors), compatible_donors
+    return 1 - len(compatible_donors)/len(active_donors), compatible_donors
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(

@@ -29,8 +29,8 @@ from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import
     UpdatedRecipientDTOOut
 from txmatching.data_transfer_objects.patients.patient_in_swagger import (
     DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
-    RecipientToUpdateJson, UpdatedDonorJsonOut, UpdatedRecipientJsonOut,
-    cPRACalculatedSuccessJson)
+    RecipientCompatibilityInfoJson, RecipientToUpdateJson, UpdatedDonorJsonOut,
+    UpdatedRecipientJsonOut)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadPublicDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -56,7 +56,8 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (
     TxmEvent, get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
-from txmatching.patients.patient import Recipient, calculate_cpra_for_recipient
+from txmatching.patients.patient import (
+    Recipient, calculate_cpra_and_get_compatible_donors_for_recipient)
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
@@ -331,7 +332,8 @@ class UnconfirmWarning(Resource):
         return response_ok(result)
 
 
-@patient_api.route('/calculate-recipient-cpra/<int:recipient_id>', methods=['GET'])
+@patient_api.route('/recipient-compatibility-info/<int:recipient_id>/<config_id>',
+                   methods=['GET'])
 class CalculateRecipientCPRA(Resource):
     @patient_api.doc(
         params={
@@ -340,25 +342,32 @@ class CalculateRecipientCPRA(Resource):
                 'type': int,
                 'required': True,
                 'in': 'path'
-            }
+            },
+            'config_id': ConfigIdPathParamDefinition
         },
         security='bearer',
         description='Endpoint returns recipients cPRA (in %) and list of suitable donors ids.'
     )
-    @patient_api.response_ok(cPRACalculatedSuccessJson,
+    @patient_api.response_ok(RecipientCompatibilityInfoJson,
                              description='cPRA [%] is successfully calculated')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
+    @require_valid_config_id()
     @require_role(UserRole.ADMIN)
-    def get(self, txm_event_id: int, recipient_id: int):
+    def get(self, txm_event_id: int, recipient_id: int, config_id: Optional[int]):
         txm_event = get_txm_event_complete(txm_event_id)
+        config_parameters = get_configuration_parameters_from_db_id_or_default(txm_event,
+                                                                               config_id)
+
         recipient = _get_recipient_by_recipient_db_id(txm_event, recipient_id)
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
-        cpra, compatible_donors = calculate_cpra_for_recipient(txm_event, recipient)
+        cpra, compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(txm_event,
+                                                                                         recipient,
+                                                                                         config_parameters)
         result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
         return response_ok(result)
 
