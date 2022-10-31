@@ -115,16 +115,15 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
     return HLAAntibodiesDTO([
         AntibodiesPerGroup(hla_group=hla["hla_group"],
                             hla_antibody_list=[HLAAntibody(
-                            raw_code=antibody['raw_code'],
-                            mfi=antibody["mfi"],
-                            cutoff=antibody["cutoff"],
-                            code=HLACode(high_res=antibody["code"]["high_res"],
-                                            split=antibody["code"]["split"],
-                                            broad=antibody["code"]["broad"],
-                                            group=HLAGroup(antibody["code"]["group"]))
+                                raw_code=antibody['raw_code'],
+                                mfi=antibody["mfi"],
+                                cutoff=antibody["cutoff"],
+                                code=HLACode(high_res=antibody["code"]["high_res"],
+                                             split=antibody["code"]["split"],
+                                             broad=antibody["code"]["broad"],
+                                             group=HLAGroup(antibody["code"]["group"]))
                             ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
-
 
 
 def _get_hla_typing_from_patient_model(
@@ -134,7 +133,7 @@ def _get_hla_typing_from_patient_model(
 
     hla_typing_raw_dto = _get_hla_typing_raw_dto_from_patient_model(patient_model)
 
-    if hla_typing_dto.hla_per_groups is None: # why this does not help that test?
+    if hla_typing_dto.hla_per_groups is None:  # why this does not help that test?
         raise ValueError(f'Parsed antigens have invalid format. '
                          f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
@@ -159,10 +158,10 @@ def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, Reci
 
 
 def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingRawDTO:
-        return HLATypingRawDTO(
-            hla_types_list=[HLATypeRaw(
-                raw_code=type["raw_code"],
-            ) for type in patient_model.hla_typing_raw["hla_types_list"]])
+    return HLATypingRawDTO(
+        hla_types_list=[HLATypeRaw(
+            raw_code=type["raw_code"],
+        ) for type in patient_model.hla_typing_raw["hla_types_list"]])
 
 
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tuple[List[ParsingIssue], dict]:
