@@ -358,7 +358,7 @@ class TestPatientService(DbTests):
         db.session.commit()
 
         # Get event raises error
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             get_txm_event_complete(txm_event_id)
 
         # recompute parsing function make changes
