@@ -63,7 +63,7 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
 def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recipient:
     related_donors_db_ids = [donor.id for donor in DonorModel.query.filter(
         DonorModel.recipient_id == recipient_model.id).all()]
-    base_patient = _get_base_patient_from_patient_model(recipient_model)  # ????
+    base_patient = _get_base_patient_from_patient_model(recipient_model)
 
     recipient = Recipient(base_patient.db_id,
                           base_patient.medical_id,
