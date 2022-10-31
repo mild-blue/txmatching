@@ -112,6 +112,9 @@ def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> 
 
 
 def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAntibodiesDTO:
+    if not recipient_model.hla_antibodies:
+        raise ValueError('Parsed antibodies have invalid format. Try to run recompute-parsing api')
+
     return HLAAntibodiesDTO([
         AntibodiesPerGroup(hla_group=hla["hla_group"],
                             hla_antibody_list=[HLAAntibody(
@@ -133,7 +136,7 @@ def _get_hla_typing_from_patient_model(
 
     hla_typing_raw_dto = _get_hla_typing_raw_dto_from_patient_model(patient_model)
 
-    if hla_typing_dto.hla_per_groups is None:  # why this does not help that test?
+    if hla_typing_dto.hla_per_groups is None:
         raise ValueError(f'Parsed antigens have invalid format. '
                          f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
@@ -143,6 +146,9 @@ def _get_hla_typing_from_patient_model(
 
 
 def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingDTO:
+    if not patient_model.hla_typing:
+        raise ValueError('Parsed antigens have invalid format. Try to run recompute-parsing api')
+
     return HLATypingDTO(
         hla_per_groups=[HLAPerGroup(
             hla_group=group["hla_group"],
