@@ -174,7 +174,8 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
 
 
 def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent, recipient: Recipient,
-                                                           config_parameters: ConfigParameters) -> Tuple[int, Set[int]]:
+                                                           config_parameters: Optional[ConfigParameters]) \
+        -> Tuple[int, Set[int]]:
     """
     Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for actual txm_event.
     :return: cPRA as decimal in [0;1].

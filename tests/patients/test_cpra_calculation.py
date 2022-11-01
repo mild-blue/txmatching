@@ -6,8 +6,11 @@ from unittest.mock import patch
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
-from txmatching.patients.patient import (Donor, Recipient, TxmEvent,
-                                         calculate_cpra_for_recipient)
+from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.patients.patient import (
+    Donor, Recipient, TxmEvent,
+    calculate_cpra_and_get_compatible_donors_for_recipient)
+from txmatching.utils.enums import HLACrossmatchLevel
 
 
 class TestCPRACalculation(TestCase):
@@ -58,26 +61,35 @@ class TestCPRACalculation(TestCase):
             )
         )
 
+        # creating general config parameters
+        self.config_parameters_general = self.__create_mock_configuration_parameters(
+            True,
+            HLACrossmatchLevel.BROAD
+        )
+
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
         self.assertEqual(
             (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}),  # expected
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
-                                         recipient=self.recipient_general))
+            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,  # real
+                                                                   recipient=self.recipient_general,
+                                                                   config_parameters=self.config_parameters_general))
 
     def test_calculate_cpra_for_recipient_without_antibodies_case(self):
         """Case: recipient without antibodies"""
         self.assertEqual(
-            (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),  # expected
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
-                                         recipient=self.recipient_without_antibodies))
+            (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),
+            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
+                                                                   recipient=self.recipient_without_antibodies,
+                                                                   config_parameters=self.config_parameters_general))
 
     def test_calculate_cpra_for_recipient_against_all_donors_case(self):
         """Case: recipient is incompatible to all donors in txm_event"""
         self.assertEqual(
-            (1, set()),  # expected
-            calculate_cpra_for_recipient(txm_event=self.txm_event_general,  # real
-                                         recipient=self.recipient_against_all_donors))
+            (1, set()),
+            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
+                                                                   recipient=self.recipient_against_all_donors,
+                                                                   config_parameters=self.config_parameters_general))
 
     def test_calculate_cpra_for_recipient_no_donors_case(self):
         """Case: txm_event without donors for usual recipient"""
@@ -85,9 +97,10 @@ class TestCPRACalculation(TestCase):
             self.PatientsTuple(donors=[],
                                recipients=[self.recipient_general]))
         self.assertEqual(
-            (1, set()),  # expected
-            calculate_cpra_for_recipient(txm_event=txm_event,  # real
-                                         recipient=self.recipient_general))
+            (1, set()),
+            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=txm_event,
+                                                                   recipient=self.recipient_general,
+                                                                   config_parameters=self.config_parameters_general))
 
     @staticmethod
     @patch(f'{__name__}.Recipient')
@@ -109,5 +122,14 @@ class TestCPRACalculation(TestCase):
     def __create_mock_txm_event_object_with_patients(patients: Tuple[List[int]], mocked_TxmEvent):
         txm_event = mocked_TxmEvent.return_value
         txm_event.all_recipients = patients.recipients
-        txm_event.all_donors = patients.donors
+        txm_event.active_and_valid_donors_dict = {donor.db_id: donor for donor in patients.donors}
         return txm_event
+
+    @staticmethod
+    @patch(f'{__name__}.ConfigParameters')
+    def __create_mock_configuration_parameters(use_high_resolution, hla_crossmatch_level,
+                                               mocked_ConfigParameters):
+        config_parameters = mocked_ConfigParameters.return_value
+        config_parameters.use_high_resolution = use_high_resolution
+        config_parameters.hla_crossmatch_level = hla_crossmatch_level
+        return config_parameters
