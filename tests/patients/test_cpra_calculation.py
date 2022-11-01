@@ -61,7 +61,10 @@ class TestCPRACalculation(TestCase):
             )
         )
 
-        # creating general config parameters
+        # creating general config parameters:
+        # The tests DO NOT CONTROL the dependence of cPRA on CONFIGURATION!
+        # If you have changed crossmatch logic (function is_positive_hla_crossmatch()) for some config,
+        # the expected results should be recalculated!
         self.config_parameters_general = self.__create_mock_configuration_parameters(
             True,
             HLACrossmatchLevel.BROAD
@@ -70,8 +73,8 @@ class TestCPRACalculation(TestCase):
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
         self.assertEqual(
-            (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}),  # expected
-            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,  # real
+            (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}),
+            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
                                                                    recipient=self.recipient_general,
                                                                    config_parameters=self.config_parameters_general))
 
