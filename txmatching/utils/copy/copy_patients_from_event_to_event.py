@@ -3,9 +3,9 @@ from typing import List
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_base, get_txm_event_complete
+    get_txm_event_complete
 from txmatching.utils.export.export_txm_event import \
-    get_patients_upload_json_from_txm_event_for_country_and_donor_ids
+    get_patients_upload_json_from_txm_event_for_country
 
 
 def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to: int, donor_ids: List[int]) -> List[int]:
@@ -13,35 +13,37 @@ def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to: int, d
     txm_event_to = get_txm_event_complete(txm_event_id_to, load_antibodies_raw=True)
     donors_to_copy = [donor for donor in txm_event_from.active_and_valid_donors_dict.values()
                       if donor.db_id in donor_ids]
-    donor_countries = set(donor.parameters.country_code for donor in donors_to_copy)
+
+    donor_related_recipient_medical_ids = [
+        txm_event_from.active_and_valid_recipients_dict[donor.related_recipient_db_id] for donor in donors_to_copy if
+        donor.related_recipient_db_id is not None]
 
     # raise error if the recipient is already in the event
     txm_event_to_recipient_medical_ids = [recipient.medical_id for recipient in
                                           txm_event_to.active_and_valid_recipients_dict.values()]
 
-    donor_related_recipient_db_ids = [donor.related_recipient_db_id for donor in donors_to_copy]
-    donor_related_recipient_medical_ids = [recipient.medical_id for recipient
-                                           in txm_event_to.active_and_valid_recipients_dict.values()
-                                           if recipient.db_id in donor_related_recipient_db_ids]
-
     for medical_id in donor_related_recipient_medical_ids:
         if medical_id in txm_event_to_recipient_medical_ids:
-            raise ValueError(f"Recipient with medical id {medical_id} already exists in event {txm_event_to.name}. " +
-                             "Unfortunately, we do not support copying donors with the related recipient that is already in TxmEventTo yet.")
+            raise ValueError(f'Recipient with medical id {medical_id} already exists in event {txm_event_to.name}. '
+                             f'Unfortunately, we do not support copying donors with the related recipient that is'
+                             f' already in TxmEventTo yet.')
 
     # actual copying
+    donor_countries = set(donor.parameters.country_code for donor in donors_to_copy)
     donor_ids_to_copy_by_country = {country: [donor.medical_id for donor in donors_to_copy
-                                    if donor.parameters.country_code == country] for country in donor_countries}
+                                              if donor.parameters.country_code == country] for country in
+                                    donor_countries}
 
-    patient_upload_dtos_for_country = [get_patients_upload_json_from_txm_event_for_country_and_donor_ids(txm_event_id_from,
-                                                                                                         country,
-                                                                                                         txm_event_to.name,
-                                                                                                         donor_ids)
-                                       for country, donor_ids in donor_ids_to_copy_by_country.items()]
+    patient_upload_dtos_for_country = [
+        get_patients_upload_json_from_txm_event_for_country(txm_event_id_from,
+                                                            country,
+                                                            txm_event_to.name,
+                                                            donor_ids)
+        for country, donor_ids in donor_ids_to_copy_by_country.items()]
 
     new_donor_ids = []
     for patient_upload_dto in patient_upload_dtos_for_country:
-        patients = replace_or_add_patients_from_one_country(patient_upload_dto=patient_upload_dto, is_copy=True)
+        patients = replace_or_add_patients_from_one_country(patient_upload_dto=patient_upload_dto)
         new_donor_ids = new_donor_ids + [donor.id for donor in patients[0]]
 
     return new_donor_ids
