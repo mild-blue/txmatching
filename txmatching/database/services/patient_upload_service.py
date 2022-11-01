@@ -53,8 +53,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
 
 
 def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipientPairDTO,
-                                         txm_event_db_id: int, is_copy: bool = False) -> Tuple[
-    List[DonorModel], List[RecipientModel]]:
+                                         txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
