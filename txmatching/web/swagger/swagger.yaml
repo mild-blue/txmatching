@@ -515,6 +515,14 @@ definitions:
         required:
         - id
         type: object
+    DeleteTxmEventId:
+        properties:
+            id:
+                example: 2
+                type: integer
+        required:
+        - id
+        type: object
     DetailedScoreForGroup:
         properties:
             antibody_matches:
@@ -2218,20 +2226,59 @@ paths:
             -   bearer: []
             tags:
             - txm-event
-    /v1/txm-event/{txm_event_id}:
+    /v1/txm-event/delete:
         delete:
             description: Endpoint that lets an ADMIN delete existing TXM event.
             operationId: delete_txm_event_delete_api
             parameters:
-            -   description: Id of the TXM event to be deleted.
-                in: path
-                name: txm_event_id
+            -   in: body
+                name: payload
                 required: true
-                type: integer
+                schema:
+                    $ref: '#/definitions/DeleteTxmEventId'
             responses:
                 '200':
                     description: Returns status code representing result of TXM event
                         object deletion.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - txm-event
+    /v1/txm-event/{txm_event_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: TXM event parameters that should be updated.
+            operationId: put_txm_event_update_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/TxmEventUpdateIn'
+            responses:
+                '200':
+                    description: Returns the updated TXM event.
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
                 '400':
                     description: Wrong data format.
                     schema:

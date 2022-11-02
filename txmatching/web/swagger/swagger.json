@@ -488,7 +488,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}": {
+        "/v1/txm-event/delete": {
             "delete": {
                 "responses": {
                     "500": {
@@ -523,11 +523,71 @@
                 "operationId": "delete_txm_event_delete_api",
                 "parameters": [
                     {
-                        "name": "txm_event_id",
-                        "in": "path",
+                        "name": "payload",
                         "required": true,
-                        "type": "integer",
-                        "description": "Id of the TXM event to be deleted."
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/DeleteTxmEventId"
+                        }
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the updated TXM event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "TXM event parameters that should be updated.",
+                "operationId": "put_txm_event_update_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEventUpdateIn"
+                        }
                     }
                 ],
                 "security": [
@@ -2708,6 +2768,18 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "DeleteTxmEventId": {
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 2
                 }
             },
             "type": "object"

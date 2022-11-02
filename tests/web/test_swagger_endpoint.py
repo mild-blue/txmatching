@@ -38,6 +38,10 @@ class TestSwaggerEndpoints(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
 
+        self.txm_event_db_id_2 = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED)
+        )
+
         # add configuration to db
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(ConfigParameters())
@@ -70,12 +74,6 @@ class TestSwaggerEndpoints(DbTests):
                     400],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/unconfirm-warning/{{parsing_issue_id}}': [
                     400]
-            },
-            # TODO: this should not be here, not sure why this is suddenly needed.
-            #  https://github.com/mild-blue/txmatching/issues/780
-            'delete': {
-                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/pairs/{{donor_db_id}}': [
-                    403]
             }
         }
         # we need this user as we need the report to be generated from filled txm event, but we create an empty

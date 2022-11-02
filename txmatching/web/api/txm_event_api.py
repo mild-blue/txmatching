@@ -13,7 +13,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import (
     TxmEventCopyPatientsDTOOut, TxmEventsDTOOut)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    TxmDefaultEventJsonIn, TxmEventCopyPatientsJsonIn, TxmEventExportJsonIn,
+    DeleteTxmEventIdJson, TxmDefaultEventJsonIn, TxmEventCopyPatientsJsonIn, TxmEventExportJsonIn,
     TxmEventJsonIn, TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn)
 from txmatching.database.services.txm_event_service import (
     convert_txm_event_base_to_dto, create_txm_event, delete_txm_event,
@@ -114,26 +114,15 @@ class TxmEventUpdateApi(Resource):
 
 # noinspection PyUnresolvedReferences
 # because Pycharm clearly does not know how what that is
-@txm_event_api.route('/<int:txm_event_id>', methods=['DELETE'])
+@txm_event_api.route('/delete', methods=['DELETE'])
 class TxmEventDeleteApi(Resource):
-
-    @txm_event_api.doc(
-        params={
-            'txm_event_id': {
-                'description': 'Id of the TXM event to be deleted.',
-                'type': int,
-                'required': True,
-                'in': 'path'
-            }
-        },
-        security='bearer',
-        description='Endpoint that lets an ADMIN delete existing TXM event.'
-    )
+    @txm_event_api.request_body(DeleteTxmEventIdJson, description='Endpoint that lets an ADMIN delete existing TXM event.')
     @txm_event_api.response_ok(description='Returns status code representing result of TXM event object deletion.')
     @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_role(UserRole.ADMIN)
-    def delete(self, txm_event_id: int):
-        delete_txm_event(txm_event_id)
+    def delete(self):
+        txm_event_in = request_body(TxmDefaultEventDTOIn)
+        delete_txm_event(txm_event_in.id)
 
 
 # noinspection PyUnresolvedReferences
