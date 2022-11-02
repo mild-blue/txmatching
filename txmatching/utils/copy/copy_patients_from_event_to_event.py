@@ -14,7 +14,7 @@ def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to: int, d
     donors_to_copy = [donor for donor in txm_event_from.active_and_valid_donors_dict.values()
                       if donor.db_id in donor_ids]
 
-    donor_related_recipient_medical_ids = [
+    donor_related_recipients = [
         txm_event_from.active_and_valid_recipients_dict[donor.related_recipient_db_id] for donor in donors_to_copy if
         donor.related_recipient_db_id is not None]
 
@@ -22,11 +22,12 @@ def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to: int, d
     txm_event_to_recipient_medical_ids = [recipient.medical_id for recipient in
                                           txm_event_to.active_and_valid_recipients_dict.values()]
 
-    for medical_id in donor_related_recipient_medical_ids:
-        if medical_id in txm_event_to_recipient_medical_ids:
-            raise ValueError(f'Recipient with medical id {medical_id} already exists in event {txm_event_to.name}. '
-                             f'Unfortunately, we do not support copying donors with the related recipient that is'
-                             f' already in TxmEventTo yet.')
+    for recipient in donor_related_recipients:
+        if recipient.medical_id in txm_event_to_recipient_medical_ids:
+            raise ValueError(
+                f'Recipient with medical id {recipient.medical_id} already exists in event {txm_event_to.name}. '
+                f'Unfortunately, we do not support copying donors with the related recipient that is'
+                f' already in TxmEventTo yet.')
 
     # actual copying
     donor_countries = set(donor.parameters.country_code for donor in donors_to_copy)

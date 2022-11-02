@@ -294,6 +294,10 @@ class TestMatchingApi(DbTests):
                 ).__dict__
             )
 
+            self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-
-            self.assertRaises(ValueError)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('Recipient with medical id 130B-CZE-R already exists in event test_copy. Unfortunately,'
+                             ' we do not support copying donors with the related recipient that is already in '
+                             'TxmEventTo yet.',
+                             res.json['message'])
