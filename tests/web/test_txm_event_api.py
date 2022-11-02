@@ -101,7 +101,8 @@ class TestMatchingApi(DbTests):
         # Successful deletion
         with self.app.test_client() as client:
             res = client.delete(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model.id}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/delete',
+                json={'id': txm_event_model.id},
                 headers=self.auth_headers
             )
 
@@ -113,7 +114,8 @@ class TestMatchingApi(DbTests):
         # Second deletion should fail
         with self.app.test_client() as client:
             res = client.delete(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model.id}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/delete',
+                json={'id': txm_event_model.id},
                 headers=self.auth_headers
             )
 

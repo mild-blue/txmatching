@@ -7,8 +7,7 @@ from local_testing_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
-                            MATCHING_NAMESPACE, PATH_TO_SWAGGER_YAML,
+from txmatching.web import (API_VERSION, MATCHING_NAMESPACE, PATH_TO_SWAGGER_YAML,
                             PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
                             SERVICE_NAMESPACE, TXM_EVENT_NAMESPACE,
                             USER_NAMESPACE)
