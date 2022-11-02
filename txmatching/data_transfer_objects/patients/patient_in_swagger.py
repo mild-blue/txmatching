@@ -86,6 +86,11 @@ DonorToUpdateJson = patient_api.inherit('DonorModelToUpdate', PatientToUpdateJso
 
 RecipientToUpdateJson = patient_api.inherit('RecipientModelToUpdate', PatientToUpdateJson, RecipientToUpdate)
 
+RecipientCompatibilityInfoJson = patient_api.model('RecipientCompatibilityInfoJson', {
+    'cPRA': fields.Float(required=True, example=95, description="recipient's cPRA [%]."),
+    'compatible_donors': fields.List(required=True, cls_or_instance=fields.Integer(), example=[3, 4, 5, 7, 8, 10, 15]),
+})
+
 HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {
     'name': fields.String(required=True, example='A32', description='HLA antibody name.'),
     'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),

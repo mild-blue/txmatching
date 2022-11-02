@@ -9,13 +9,17 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.database.services.config_service import \
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
-from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.patients.patient import (
+    DonorType, RecipientRequirements,
+    calculate_cpra_and_get_compatible_donors_for_recipient)
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -758,3 +762,48 @@ class TestPatientService(DbTests):
             self.assertEqual(406, res.status_code)
 
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
+    def test_calculate_recipient_cpra_endpoint(self):
+        txm_event = get_txm_event_complete(
+            self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        )
+
+        self._test_calculate_recipient_cpra_endpoint_general_case(txm_event)  # code 200 cases
+        self._test_calculate_recipient_cpra_endpoint_nonexistent_recipient_id(txm_event)  # code 400 case
+        self._test_calculate_recipient_cpra_endpoint_unauthorized_user_case(txm_event)  # code 401 case
+
+    def _test_calculate_recipient_cpra_endpoint_general_case(self, txm_event):
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(
+            txm_event=txm_event,
+            configuration_db_id=None
+        )
+
+        for recipient in txm_event.all_recipients:
+            expected_cPRA, expected_compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(
+                txm_event=txm_event,
+                recipient=recipient,
+                config_parameters=configuration_parameters)
+            expected_json = {'cPRA': round(expected_cPRA * 100, 1),
+                             'compatible_donors': list(expected_compatible_donors)}
+
+            with self.app.test_client() as client:
+                res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
+                                 f'{PATIENT_NAMESPACE}/recipient-compatibility-info/{recipient.db_id}/default',
+                                 headers=self.auth_headers)
+                self.assertEqual(200, res.status_code)
+                self.assertEqual(expected_json, res.json)
+
+    def _test_calculate_recipient_cpra_endpoint_nonexistent_recipient_id(self, txm_event):
+        recipient_db_id = sorted(txm_event.all_recipients, key=lambda k: k.db_id)[-1].db_id + 1
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient-compatibility-info/{recipient_db_id}/default',
+                             headers=self.auth_headers)
+            self.assertEqual(400, res.status_code)  # Incorrect recipient_id for current txm_event.
+
+    def _test_calculate_recipient_cpra_endpoint_unauthorized_user_case(self, txm_event):
+        with self.app.test_client() as client:
+            # without auth_headers
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient-compatibility-info/1/default')
+            self.assertEqual(401, res.status_code)  # Authentication failed.

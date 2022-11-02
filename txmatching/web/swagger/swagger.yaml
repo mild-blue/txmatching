@@ -1413,6 +1413,28 @@ definitions:
         - parameters
         - related_donors_db_ids
         type: object
+    RecipientCompatibilityInfoJson:
+        properties:
+            cPRA:
+                description: recipient's cPRA [%].
+                example: 95
+                type: number
+            compatible_donors:
+                example:
+                - 3
+                - 4
+                - 5
+                - 7
+                - 8
+                - 10
+                - 15
+                items:
+                    type: integer
+                type: array
+        required:
+        - cPRA
+        - compatible_donors
+        type: object
     RecipientInput:
         properties:
             acceptable_blood_groups: &id014
@@ -2675,6 +2697,54 @@ paths:
                     description: Updated recipient.
                     schema:
                         $ref: '#/definitions/UpdatedRecipient'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/recipient-compatibility-info/{recipient_id}/{config_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        get:
+            description: Endpoint returns recipients cPRA (in %) and list of suitable
+                donors ids.
+            operationId: get_calculate_recipient_cpra
+            parameters:
+            -   description: the id of the recipient for whom we calculate cPRA
+                in: path
+                name: recipient_id
+                required: true
+                type: integer
+            -   default: default
+                description: Configuration ID or "default".
+                in: path
+                name: config_id
+                required: true
+                type: string
+            responses:
+                '200':
+                    description: cPRA [%] is successfully calculated
+                    schema:
+                        $ref: '#/definitions/RecipientCompatibilityInfoJson'
                 '400':
                     description: Wrong data format.
                     schema:
