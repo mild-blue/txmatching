@@ -1,3 +1,4 @@
+import dataclasses
 import os
 
 from sqlalchemy import and_
@@ -9,6 +10,8 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.database.db import db
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
@@ -25,7 +28,9 @@ from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
-from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
+from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
+                            MATCHING_NAMESPACE, PATIENT_NAMESPACE,
+                            TXM_EVENT_NAMESPACE)
 
 
 class TestPatientService(DbTests):
@@ -762,6 +767,77 @@ class TestPatientService(DbTests):
             self.assertEqual(406, res.status_code)
 
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
+    def test_default_config_not_working_when_patients_change(self):
+        # 1. fill db with patients
+        txm_event_db_id = self.fill_db_with_patients()
+
+        # 2. add configuration with required patients
+        configuration = ConfigParameters(
+            required_patient_db_ids=[1, 2],
+            manual_donor_recipient_scores=[
+                {
+                    "score": 1000,
+                    "donor_db_id": 1,
+                    "recipient_db_id": 2
+                }
+            ])
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              json=configuration,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+        # 3. set this configuration as default
+        with self.app.test_client() as client:
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/set-default',
+                             json={"id": 1},
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+        # 4. delete patient with db_id 1
+        with self.app.test_client() as client:
+            res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                                f'{PATIENT_NAMESPACE}/pairs/1',
+                                headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+        # 5. make recipient with db_id 2 invalid
+        RecipientModel.query.filter(RecipientModel.id == 2).update(
+            {"hla_typing_raw": {"hla_types_list": [{"raw_code": "B7"}, {"raw_code": "DR11"}]}}
+        )
+        RecipientModel.query.filter(RecipientModel.id == 2).update(
+            {"hla_typing": {"hla_per_groups": [{"hla_group": "B",
+                                                "hla_types": [{
+                                                    "raw_code": "B7",
+                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7", "group": "B"}}]},
+                                               {"hla_group": "DRB1",
+                                                "hla_types": [{
+                                                    "raw_code": "DR11",
+                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5", "group": "DRB1"}}]},
+                                               {"hla_group": "Other", "hla_types": []}]}}
+        )
+        db.session.commit()
+
+        # 6. get default configuration
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/default',
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+        default_config = res.get_json()
+
+        # 7. recalculate for configuration
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              json=default_config,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
 
     def test_calculate_recipient_cpra_endpoint(self):
         txm_event = get_txm_event_complete(
