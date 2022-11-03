@@ -1,9 +1,6 @@
 import dataclasses
 import logging
-from enum import Enum
 from typing import List, Optional, Tuple, Union
-
-import dacite
 
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         OverridingException)
@@ -32,7 +29,8 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
                                            HLAAntibody, HLAAntibodyRaw,
-                                           HLATypeRaw, HLATyping)
+                                           HLAPerGroup, HLAType, HLATypeRaw,
+                                           HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
@@ -102,6 +100,7 @@ def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> 
     if antibodies_dto.hla_antibodies_per_groups is None:
         raise ValueError(f'Parsed antibodies have invalid format. '
                          f'Running recompute-parsing api could help: ${antibodies_dto}')
+
     return HLAAntibodies(
         hla_antibodies_raw_list=sorted(
             antibodies_raw,
@@ -113,32 +112,29 @@ def get_hla_antibodies_from_recipient_model(recipient_model: RecipientModel) -> 
 
 
 def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAntibodiesDTO:
+    if not recipient_model.hla_antibodies:
+        raise ValueError('Parsed antibodies have invalid format. Try to run recompute-parsing api')
+
     return HLAAntibodiesDTO([
-                                AntibodiesPerGroup(hla_group=hla["hla_group"],
-                                                   hla_antibody_list=[HLAAntibody(
-                                                    raw_code=antibody['raw_code'],
-                                                    mfi=antibody["mfi"],
-                                                    cutoff=antibody["cutoff"],
-                                                    code=HLACode(high_res=antibody["code"]["high_res"],
-                                                                split=antibody["code"]["split"],
-                                                                broad=antibody["code"]["broad"],
-                                                                group=HLAGroup(antibody["code"]["group"]))
-                                                   ) for antibody in hla["hla_antibody_list"]])
-                                for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
+        AntibodiesPerGroup(hla_group=hla["hla_group"],
+                            hla_antibody_list=[HLAAntibody(
+                                raw_code=antibody['raw_code'],
+                                mfi=antibody["mfi"],
+                                cutoff=antibody["cutoff"],
+                                code=HLACode(high_res=antibody["code"]["high_res"],
+                                             split=antibody["code"]["split"],
+                                             broad=antibody["code"]["broad"],
+                                             group=HLAGroup(antibody["code"]["group"]))
+                            ) for antibody in hla["hla_antibody_list"]])
+        for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
 
 def _get_hla_typing_from_patient_model(
         patient_model: Union[DonorModel, RecipientModel],
 ) -> HLATyping:
-    hla_typing_dto: HLATypingDTO = dacite.from_dict(
-        data_class=HLATypingDTO, data=patient_model.hla_typing,
-        config=dacite.Config(cast=[Enum])
-    )
+    hla_typing_dto = _get_hla_typing_dto_from_patient_model(patient_model)
 
-    hla_typing_raw_dto: HLATypingRawDTO = dacite.from_dict(
-        data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw,
-        config=dacite.Config(cast=[Enum])
-    )
+    hla_typing_raw_dto = _get_hla_typing_raw_dto_from_patient_model(patient_model)
 
     if hla_typing_dto.hla_per_groups is None:
         raise ValueError(f'Parsed antigens have invalid format. '
@@ -147,6 +143,31 @@ def _get_hla_typing_from_patient_model(
         hla_types_raw_list=hla_typing_raw_dto.hla_types_list,
         hla_per_groups=hla_typing_dto.hla_per_groups,
     )
+
+
+def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingDTO:
+    if not patient_model.hla_typing:
+        raise ValueError('Parsed antigens have invalid format. Try to run recompute-parsing api')
+
+    return HLATypingDTO(
+        hla_per_groups=[HLAPerGroup(
+            hla_group=group["hla_group"],
+            hla_types=[HLAType(
+                raw_code=type["raw_code"],
+                code=HLACode(
+                    high_res=type["code"]["high_res"],
+                    split=type["code"]["split"],
+                    broad=type["code"]["broad"],
+                    group=type["code"]["group"])
+            ) for type in group["hla_types"]]
+        ) for group in patient_model.hla_typing["hla_per_groups"]])
+
+
+def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingRawDTO:
+    return HLATypingRawDTO(
+        hla_types_list=[HLATypeRaw(
+            raw_code=type["raw_code"],
+        ) for type in patient_model.hla_typing_raw["hla_types_list"]])
 
 
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tuple[List[ParsingIssue], dict]:
@@ -304,7 +325,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
 
     # Update hla_typing for donors and recipients
     for patient_model in donor_models + recipient_models:
-        hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+        hla_typing_raw = _get_hla_typing_raw_dto_from_patient_model(patient_model)
         patient_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
         if patient_model in donor_models:
             new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
