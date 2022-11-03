@@ -1250,6 +1250,77 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}/patients/recipient-compatibility-info/{recipient_id}/{config_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "cPRA [%] is successfully calculated",
+                        "schema": {
+                            "$ref": "#/definitions/RecipientCompatibilityInfoJson"
+                        }
+                    }
+                },
+                "description": "Endpoint returns recipients cPRA (in %) and list of suitable donors ids.",
+                "operationId": "get_calculate_recipient_cpra",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "the id of the recipient for whom we calculate cPRA"
+                    },
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/patients/recompute-parsing": {
             "parameters": [
                 {
@@ -3979,6 +4050,35 @@
                 },
                 "all_messages": {
                     "$ref": "#/definitions/AllMessages"
+                }
+            },
+            "type": "object"
+        },
+        "RecipientCompatibilityInfoJson": {
+            "required": [
+                "cPRA",
+                "compatible_donors"
+            ],
+            "properties": {
+                "cPRA": {
+                    "type": "number",
+                    "description": "recipient's cPRA [%].",
+                    "example": 95
+                },
+                "compatible_donors": {
+                    "type": "array",
+                    "example": [
+                        3,
+                        4,
+                        5,
+                        7,
+                        8,
+                        10,
+                        15
+                    ],
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             },
             "type": "object"
