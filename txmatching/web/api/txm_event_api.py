@@ -123,7 +123,8 @@ class TxmEventDeleteApi(Resource):
                 'description': 'Id of the TXM event to be deleted.',
                 'type': int,
                 'required': True,
-                'in': 'path'
+                'in': 'path',
+                'default': 2
             }
         },
         security='bearer',

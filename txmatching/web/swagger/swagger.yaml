@@ -2223,7 +2223,8 @@ paths:
             description: Endpoint that lets an ADMIN delete existing TXM event.
             operationId: delete_txm_event_delete_api
             parameters:
-            -   description: Id of the TXM event to be deleted.
+            -   default: 2
+                description: Id of the TXM event to be deleted.
                 in: path
                 name: txm_event_id
                 required: true
