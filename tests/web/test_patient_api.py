@@ -773,7 +773,15 @@ class TestPatientService(DbTests):
         txm_event_db_id = self.fill_db_with_patients()
 
         # 2. add configuration with required patients
-        configuration = ConfigParameters(required_patient_db_ids=[1, 2])
+        configuration = ConfigParameters(
+            required_patient_db_ids=[1, 2],
+            manual_donor_recipient_scores=[
+                {
+                    "score": 1000,
+                    "donor_db_id": 1,
+                    "recipient_db_id": 2
+                }
+            ])
 
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
