@@ -20,15 +20,12 @@ def solve_from_configuration(config_parameters: ConfigParameters, txm_event: Txm
 
 
 def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_event: TxmEvent) -> PairingResult:
-    # check if there are invalid patients in the config
-    for patient_db_id in config_parameters.required_patient_db_ids:
-        if patient_db_id not in txm_event.active_and_valid_recipients_dict:
-            config_parameters.required_patient_db_ids.remove(patient_db_id)
-
-    for pair in config_parameters.manual_donor_recipient_scores:
-        if pair.donor_db_id not in txm_event.active_and_valid_donors_dict \
-            or pair.recipient_db_id not in txm_event.active_and_valid_recipients_dict:
-            config_parameters.manual_donor_recipient_scores.remove(pair)
+    # remove invalid patients from config (if there are any)
+    config_parameters.required_patient_db_ids = [patient_db_id for patient_db_id in config_parameters.required_patient_db_ids
+                                                 if patient_db_id in txm_event.active_and_valid_recipients_dict]
+    config_parameters.manual_donor_recipient_scores = [pair for pair in config_parameters.manual_donor_recipient_scores
+                                                       if pair.donor_db_id in txm_event.active_and_valid_donors_dict
+                                                       or pair.recipient_db_id in txm_event.active_and_valid_recipients_dict]
 
     scorer = scorer_from_configuration(config_parameters)
     solver = solver_from_configuration(config_parameters,

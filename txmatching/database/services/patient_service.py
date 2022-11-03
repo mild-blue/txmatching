@@ -422,8 +422,10 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
         delete_parsing_issues_for_patient(recipient_id=maybe_recipient.db_id, txm_event_id=txm_event_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
-    for config in ConfigModel.query.all():
-        if maybe_recipient is not None and maybe_recipient.db_id in config.parameters["required_patient_db_ids"]:
+    for config in ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_id):
+        donors_in_manual_scores = [pair["donor_db_id"] for pair in config.parameters["manual_donor_recipient_scores"]]
+        if (maybe_recipient is not None and maybe_recipient.db_id in config.parameters["required_patient_db_ids"]
+                and maybe_recipient.db_id not in donors_in_manual_scores):
             config_dict = {
                 "id": config.id,
                 "txm_event_id": config.txm_event_id,
