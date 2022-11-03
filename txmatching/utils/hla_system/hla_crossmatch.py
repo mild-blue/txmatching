@@ -3,10 +3,11 @@ from typing import Callable, List, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_functions import (
+    is_all_antibodies_in_high_res,
+    is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
-from txmatching.utils.constants import \
-    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
@@ -229,23 +230,14 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
 
 
 def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
-    total_antibodies = 0
-    is_at_least_one_antibody_below_cutoff = False
-
+    total_antibodies = []
     for antibodies_per_group in recipient_antibodies.hla_antibodies_per_groups:
-        total_antibodies += len(antibodies_per_group.hla_antibody_list)
-        for hla_antibody in antibodies_per_group.hla_antibody_list:
-            # TODO the not in multiple sero codes list is ugly hack, improve in
-            #  https://github.com/mild-blue/txmatching/issues/1036
-            if hla_antibody.code.high_res is None and hla_antibody.code.split not in MULTIPLE_SERO_CODES_LIST:
-                return False
-            if hla_antibody.mfi < hla_antibody.cutoff:
-                is_at_least_one_antibody_below_cutoff = True
+        total_antibodies += antibodies_per_group.hla_antibody_list
 
-    if total_antibodies < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
+    if not is_all_antibodies_in_high_res(total_antibodies):
         return False
 
-    if not is_at_least_one_antibody_below_cutoff:
+    if not is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(total_antibodies):
         return False
 
     return True

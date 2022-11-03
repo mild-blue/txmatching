@@ -1,7 +1,7 @@
 import itertools
 import logging
 import re
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
@@ -16,6 +16,8 @@ from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_c
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
+from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
+    MULTIPLE_SERO_CODES_LIST
 
 logger = logging.getLogger(__name__)
 
@@ -151,28 +153,27 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
     return parsing_issues, hla_types_in_groups
 
 
-def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
-    if len(recipient_antibodies) == 0:
-        return False
-
+def is_all_antibodies_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
     for antibody in recipient_antibodies:
-        if antibody.code.high_res is None:
-            return False
-        if antibody.mfi < antibody.cutoff:
+        # TODO the not in multiple sero codes list is ugly hack, improve in
+        #  https://github.com/mild-blue/txmatching/issues/1036
+        if antibody.code.high_res is None and antibody.code.split not in MULTIPLE_SERO_CODES_LIST:
             return False
     return True
 
 
-def number_of_antigens_is_insufficient_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
-    if len(recipient_antibodies) == 0:
-        return False
+def is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(
+        recipient_antibodies: List[HLAAntibody]) -> Tuple[bool, Optional[ParsingIssueDetail]]:
+    assert is_all_antibodies_in_high_res(recipient_antibodies), \
+        'This method is available just for antibodies in high res.'
+
     is_some_antibody_below_cutoff = False
     for antibody in recipient_antibodies:
-        if antibody.code.high_res is None:
-            return False
         if antibody.mfi < antibody.cutoff:
             is_some_antibody_below_cutoff = True
 
-    if is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
-        return True
-    return False
+    if not is_some_antibody_below_cutoff:
+        return False, ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+    elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
+        return False, ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
+    return True, ParsingIssueDetail.SUCCESSFULLY_PARSED
