@@ -30,7 +30,6 @@ import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
 export class PatientsComponent extends AbstractLoggedComponent implements OnDestroy, OnInit {
   private _deleteDonorSubscription?: Subscription;
 
-  public patients?: PatientList;
   public pairs: PatientPair[] = [];
   public items: (Donor | PatientPair)[] = [];
   public activeItem?: Donor | PatientPair;
