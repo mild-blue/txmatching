@@ -12,10 +12,8 @@ export const parseCalculatedMatchings = (
   return {
     calculatedMatchings: parseMatchings(data.calculated_matchings, patients),
     configId: data.config_id,
-    foundMatchingsCount: data.found_matchings_count,
     numberOfPossibleTransplants: data.number_of_possible_transplants,
     numberOfPossibleRecipients: data.number_of_possible_recipients,
-    showNotAllMatchingsFound: data.show_not_all_matchings_found,
   };
 };
 

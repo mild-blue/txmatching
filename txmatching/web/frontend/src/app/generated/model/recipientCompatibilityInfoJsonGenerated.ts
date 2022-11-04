@@ -9,13 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MatchingGenerated } from './matchingGenerated';
 
 
-export interface CalculatedMatchingsGenerated { 
-    calculated_matchings: Array<MatchingGenerated>;
-    config_id: number;
-    number_of_possible_recipients?: number;
-    number_of_possible_transplants?: number;
+export interface RecipientCompatibilityInfoJsonGenerated { 
+    /**
+     * recipient\'s cPRA [%].
+     */
+    cPRA: number;
+    compatible_donors: Array<number>;
 }
 
