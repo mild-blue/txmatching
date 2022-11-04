@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 from collections import namedtuple
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
