@@ -5,7 +5,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     is_all_antibodies_in_high_res,
-    is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff)
+    parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
@@ -237,7 +237,8 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
     if not is_all_antibodies_in_high_res(total_antibodies):
         return False
 
-    if not is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(total_antibodies):
+    if not parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
+            total_antibodies).bool:
         return False
 
     return True

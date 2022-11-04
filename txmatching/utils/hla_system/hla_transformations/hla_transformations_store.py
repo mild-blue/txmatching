@@ -14,7 +14,7 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     create_hla_antibodies_per_groups_from_hla_antibodies,
     is_all_antibodies_in_high_res,
-    is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff,
+    parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff,
     split_hla_types_to_groups, split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
@@ -224,10 +224,10 @@ def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HL
     if not is_all_antibodies_in_high_res(recipient_antibodies):
         return None
 
-    _, parse_detail = \
-        is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(recipient_antibodies)
-    if parse_detail != ParsingIssueDetail.SUCCESSFULLY_PARSED:
+    parsing_issue = parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
+        recipient_antibodies).parsing_issue
+    if parsing_issue != ParsingIssueDetail.SUCCESSFULLY_PARSED:
         return ParsingIssueBase(hla_code_or_group='Antibodies',
-                                parsing_issue_detail=parse_detail,
-                                message=parse_detail.value)
+                                parsing_issue_detail=parsing_issue,
+                                message=parsing_issue.value)
     return None

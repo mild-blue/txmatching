@@ -1,6 +1,7 @@
 import itertools
 import logging
 import re
+from collections import namedtuple
 from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
@@ -162,8 +163,8 @@ def is_all_antibodies_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bo
     return True
 
 
-def is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(
-        recipient_antibodies: List[HLAAntibody]) -> Tuple[bool, Optional[ParsingIssueDetail]]:
+def parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
+        recipient_antibodies: List[HLAAntibody]) -> Tuple[bool, ParsingIssueDetail]:
     assert is_all_antibodies_in_high_res(recipient_antibodies), \
         'This method is available just for antibodies in high res.'
 
@@ -172,8 +173,13 @@ def is_high_res_antibodies_in_sufficient_amount_and_not_all_above_cutoff(
         if antibody.mfi < antibody.cutoff:
             is_some_antibody_below_cutoff = True
 
+    BoolParsingIssueNamedtuple = namedtuple('BoolParsingIssue', ['bool', 'parsing_issue'])
+
     if not is_some_antibody_below_cutoff:
-        return False, ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+        return BoolParsingIssueNamedtuple(False,
+                                          ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
     elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
-        return False, ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-    return True, ParsingIssueDetail.SUCCESSFULLY_PARSED
+        return BoolParsingIssueNamedtuple(False,
+                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+    return BoolParsingIssueNamedtuple(True,
+                                      ParsingIssueDetail.SUCCESSFULLY_PARSED)
