@@ -51,6 +51,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
             solution_score = sum([scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)
                                   for pair in solution])
             all_scores.append(solution_score)
+            print("the length of sol is ", len(solution))
         self.assertEqual(len(all_solutions[0]), 9)
         self.assertEqual(self._expected_max_score, max(all_scores))
 

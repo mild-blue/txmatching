@@ -57,7 +57,7 @@ def find_optimal_paths(compatibility_graph: CompatibilityGraph,
         )
 
     found_solutions = optimise_paths(paths_idx_with_the_same_donors, path_id_to_path_with_score, config_parameters,
-                                     required_paths_per_required_recipient)
+                                     required_paths_per_required_recipient, original_donor_idx_to_recipient_idx)
     for selected_cycles in found_solutions:
         yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, original_donor_idx_to_recipient_idx)
 

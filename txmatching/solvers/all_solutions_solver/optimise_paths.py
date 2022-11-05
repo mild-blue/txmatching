@@ -19,33 +19,19 @@ logger = logging.getLogger(__name__)
 def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
                    path_id_to_path_with_score: Dict[int, PathWithScore],
                    config: ConfigParameters,
-                   required_paths_per_recipient: List[List[int]]):
-    """Build and solve the lexicographic optimisation integer programming model.
+                   required_paths_per_recipient: List[List[int]],
+                   donor_idx_to_recipient_idx: Dict[int, int]):
+    """Build and solve the lexicographic optimisation integer programming model."""
 
-    Parameters:
-    ntpo -- number of possible cycles/chains
-    incomp -- list containing the incompatibilities between cycles/chains
-    weights -- weights of the cycles/chains according to the criteria given in lexicographic order
-    """
+    recipient_to_donors_dict = {recipient_id: [] for recipient_id in set(donor_idx_to_recipient_idx.values())}
+    for donor_id, recipient_id in donor_idx_to_recipient_idx.items():
+        recipient_to_donors_dict[recipient_id].append(donor_id)
 
     # model
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     path_id_to_var = {}
     for path_id in path_id_to_path_with_score:
         path_id_to_var[path_id] = ilp_model.add_var(var_type=mip.BINARY, name=f'path_id {path_id}')
-
-    max_score = max(path_info.score for path_info in path_id_to_path_with_score.values())
-    donor_count = len({donor_id for path in path_id_to_path_with_score.values() for donor_id in path.donor_ids})
-    # This multiplicator of number of donors in path ensures that we prioritize first number of donors in the cycle
-    # and only second the overall score. In the future this will be changed to include multiple criterions
-    # and then probably better solution will be to iteratively find optimality for first objective,
-    # then fix the value of the first and optimize the second. But this works well for the moment.
-    number_of_transplants_multiplier = max_score * donor_count + 1
-    ilp_model.objective = mip.xsum(
-        var * (path_id_to_path_with_score[path_id].score +
-               number_of_transplants_multiplier * path_id_to_path_with_score[path_id].length)
-        for path_id, var in path_id_to_var.items()
-    )
 
     for donor_id, path_ids in paths_ids_with_the_same_donors.items():
         ilp_model.add_constr(
@@ -57,11 +43,33 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
     if not possible:
         return
     matchings_to_search_for = min(config.max_number_of_matchings, config.max_matchings_in_all_solutions_solver)
+
+    # first criterion
+    donor_counts = [len(path_info.donor_ids) for path_info in path_id_to_path_with_score.values()]
+    # second criterion
+    scores = [path_info.score for path_info in path_id_to_path_with_score.values()]
+
+    criteria = [donor_counts, scores]
+    remaining_path_ids = set(path_id_to_path_with_score.keys())
+
     i = 0
     while i < matchings_to_search_for:
-        solve_with_logging(ilp_model)
+        previous_scores = []
 
-        status = mip_get_result_status(ilp_model)
+        # lexicographic optimisation
+        for index in range(len(criteria)):
+            if index > 0:
+                ilp_model.add_constr(mip.xsum(
+                    criteria[index - 1][path_index] * path_id_to_var[path_id] for path_index, path_id in
+                    enumerate(path_id_to_path_with_score)) >= previous_scores[index - 1],
+                                     name=f'Prev score at least {previous_scores[index - 1]}')
+            ilp_model.objective = mip.xsum(criteria[index][path_index] * path_id_to_var[path_id] for
+                                           path_index, path_id in enumerate(path_id_to_path_with_score))
+
+            solve_with_logging(ilp_model)
+
+            previous_scores.append(ilp_model.objective_value)
+            status = mip_get_result_status(ilp_model)
 
         if status == Status.OPTIMAL:
             # check there is no violation, this is a hack, there should be no violation in optimal solution,
@@ -71,27 +79,51 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
             constr_broken = False
             for constr in ilp_model.constrs:
                 if constr.expr.violation > 0:
+                    print("\n\n\n IM HERE")
                     constr_broken = True
                     break
             i = i + 1
             selected_path_ids = [path_id for path_id, var in path_id_to_var.items() if mip_var_to_bool(var)]
+            remaining_path_ids = _remove_selected_path_ids(remaining_path_ids, selected_path_ids,
+                                                           donor_idx_to_recipient_idx, recipient_to_donors_dict,
+                                                           path_id_to_path_with_score)
+
+            for index in range(len(criteria) - 1):
+                ilp_model.remove(ilp_model.constrs[-1])
+
             if not constr_broken:
                 yield selected_path_ids
-            missing = _add_constraints_removing_solution_return_missing_set(ilp_model, selected_path_ids,
-                                                                            path_id_to_var)
+
+            missing = _add_constraints_removing_solution_return_missing_set(ilp_model, path_id_to_var,
+                                                                            remaining_path_ids)
             if missing == set():
                 return
         else:
             break
 
 
-def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
-                                                          selected_path_ids: List[int],
-                                                          path_id_to_var: Dict[int, Var]) -> Set[int]:
-    not_used_path_ids = set(path_id_to_var.keys()) - set(selected_path_ids)
+def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model, path_id_to_var: Dict[int, Var],
+                                                          remaining_path_ids: List[int]) -> Set[int]:
+    ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in remaining_path_ids]) >= 0.5)
+    return remaining_path_ids
 
-    ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in not_used_path_ids]) >= 0.5)
-    return not_used_path_ids
+
+# TODO: improve this should be insanely slow asi urob ze id to chains with ending ked zostrojujes paths_ids_with_the_same_donors
+def _remove_selected_path_ids(remaining_path_ids, selected_path_ids: List[int],
+                              donor_idx_to_recipient_idx: Dict[int, int], recipient_to_donors_dict: Dict[int, int],
+                              path_id_to_path_with_score: Dict[int, PathWithScore]):
+    remaining_path_ids -= set(selected_path_ids)
+    for selected_path in selected_path_ids:
+        donor_ids = path_id_to_path_with_score[selected_path].donor_ids
+        if donor_ids[0] != donor_ids[-1]:
+            donor_to_check = donor_ids[-1]
+            for other_donor in recipient_to_donors_dict[donor_idx_to_recipient_idx[donor_to_check]]:
+                temp_donor_ids = list(donor_ids)
+                temp_donor_ids[-1] = other_donor
+                for id, path in path_id_to_path_with_score.items():
+                    if set(path.donor_ids) == set(temp_donor_ids) and id in remaining_path_ids:
+                        remaining_path_ids.remove(id)
+    return remaining_path_ids
 
 
 def _add_constraints_for_country_debt(path_id_to_path_with_score: Dict[int, PathWithScore],

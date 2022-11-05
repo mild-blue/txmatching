@@ -46,4 +46,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         ilp_scores = [sol.score for sol in solutions_ilp]
         all_sol_solver_scores = [sol.score for sol in solutions_all_sol_solver]
         self.maxDiff = None
+
+        for i in range(NUMBER_OF_SOLUTIONS):
+            print("ilp solver selected paths     ", [(pair.donor.db_id, pair.recipient.db_id) for pair in solutions_ilp[i].matching_pairs], solutions_ilp[i].score)
+            print("all sol solver selected paths ", [(pair.donor.db_id, pair.recipient.db_id) for pair in solutions_all_sol_solver[i].matching_pairs], solutions_all_sol_solver[i].score)
+            print()
         self.assertListEqual(ilp_scores, all_sol_solver_scores)
