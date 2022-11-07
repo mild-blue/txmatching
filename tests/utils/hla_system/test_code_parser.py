@@ -10,7 +10,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
-    is_all_antibodies_in_high_res,
+    IsSuccessfulParsingIssue, is_all_antibodies_in_high_res,
     parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff)
 from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.constants import \
@@ -292,13 +292,17 @@ class TestCodeParser(DbTests):
         antibodies = create_antibodies(TYPE_A_EXAMPLE_REC)
         for antibodies_per_group in antibodies.hla_antibodies_per_groups:
             # general case
-            self.assertEqual((True, ParsingIssueDetail.SUCCESSFULLY_PARSED),
+            expected = IsSuccessfulParsingIssue(True,
+                                                ParsingIssueDetail.SUCCESSFULLY_PARSED)
+            self.assertEqual(expected,
                              parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
                                  antibodies_per_group.hla_antibody_list))
 
             # insufficient amount of antibodies
             antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
-            self.assertEqual((False, ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES),
+            expected = IsSuccessfulParsingIssue(False,
+                                                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+            self.assertEqual(expected,
                              parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
                                  antibodies_per_group.hla_antibody_list[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES-1]))
 
@@ -307,7 +311,9 @@ class TestCodeParser(DbTests):
         for antibody in some_antibodies_list:
             antibody.cutoff = 2000
             antibody.mfi = 2100
-        self.assertEqual((False, ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES),
+        expected = IsSuccessfulParsingIssue(False,
+                                            ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
+        self.assertEqual(expected,
                          parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
                              some_antibodies_list))
 

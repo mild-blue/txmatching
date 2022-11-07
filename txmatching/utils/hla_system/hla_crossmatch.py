@@ -230,18 +230,15 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
 
 
 def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
-    total_antibodies = []
+    hla_antibodies_from_all_groups = []
     for antibodies_per_group in recipient_antibodies.hla_antibodies_per_groups:
-        total_antibodies += antibodies_per_group.hla_antibody_list
+        hla_antibodies_from_all_groups += antibodies_per_group.hla_antibody_list
 
-    if not is_all_antibodies_in_high_res(total_antibodies):
+    if not is_all_antibodies_in_high_res(hla_antibodies_from_all_groups):
         return False
 
-    if not parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
-            total_antibodies).bool:
-        return False
-
-    return True
+    return parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
+        hla_antibodies_from_all_groups).is_successful
 
 
 def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:

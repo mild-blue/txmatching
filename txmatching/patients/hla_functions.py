@@ -1,7 +1,7 @@
 import itertools
 import logging
 import re
-from collections import namedtuple
+from dataclasses import dataclass
 from typing import Dict, List, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
@@ -21,6 +21,12 @@ from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class IsSuccessfulParsingIssue:
+    is_successful: bool
+    parsing_issue: ParsingIssueDetail
 
 
 def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssueBase], List[HLAPerGroup]]:
@@ -164,7 +170,7 @@ def is_all_antibodies_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bo
 
 
 def parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
-        recipient_antibodies: List[HLAAntibody]) -> Tuple[bool, ParsingIssueDetail]:
+        recipient_antibodies: List[HLAAntibody]) -> IsSuccessfulParsingIssue:
     assert is_all_antibodies_in_high_res(recipient_antibodies), \
         'This method is available just for antibodies in high res.'
 
@@ -173,13 +179,11 @@ def parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
         if antibody.mfi < antibody.cutoff:
             is_some_antibody_below_cutoff = True
 
-    BoolParsingIssueNamedtuple = namedtuple('BoolParsingIssue', ['bool', 'parsing_issue'])
-
     if not is_some_antibody_below_cutoff:
-        return BoolParsingIssueNamedtuple(False,
-                                          ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
+        return IsSuccessfulParsingIssue(False,
+                                        ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
     elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
-        return BoolParsingIssueNamedtuple(False,
-                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
-    return BoolParsingIssueNamedtuple(True,
-                                      ParsingIssueDetail.SUCCESSFULLY_PARSED)
+        return IsSuccessfulParsingIssue(False,
+                                        ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+    return IsSuccessfulParsingIssue(True,
+                                    ParsingIssueDetail.SUCCESSFULLY_PARSED)
