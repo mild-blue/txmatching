@@ -99,7 +99,7 @@
       {{ errorMessage }}
     </h3>
     <app-item-list
-      *ngIf="!loading && matchings.length"
+      *ngIf="!loading && !errorMessage"
       [items]="matchings"
       [configuration]="configuration"
       [patients]="patients"
