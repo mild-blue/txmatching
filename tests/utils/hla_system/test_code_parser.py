@@ -52,9 +52,9 @@ codes = {
     'NONEXISTENTN': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'A*68:06': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'B*46:10': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'A*02:719': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'DQA1*01:03': (HLACode('DQA1*01:03', 'DQA1', 'DQA1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB01': (HLACode(None, None, 'DQ1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'C12': (HLACode(None, 'CW12', 'CW12'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
@@ -76,7 +76,6 @@ codes = {
     # low res regexp but not in transformation table
     'A*99': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table
-    'A*68:06:01': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'A*02:284N': (HLACode('A*02:284N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),

@@ -6,8 +6,8 @@ from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER,
     HIGH_RES_WITH_SUBUNITS_REGEX, LOW_RES_REGEX, SPLIT_RES_REGEX)
 from txmatching.utils.hla_system.hla_table import (
-    ALL_HIGH_RES_CODES, HIGH_RES_TO_SPLIT_OR_BROAD,
-    high_res_low_res_to_split_or_broad)
+    ALL_HIGH_RES_CODES, ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE,
+    HIGH_RES_TO_SPLIT_OR_BROAD, high_res_low_res_to_split_or_broad)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
@@ -87,5 +87,8 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
             return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return HlaCodeProcessingResult(None, exception_split_broad_code)
+    if standartized_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
+        return process_parsing_result(standartized_high_res, exception_split_broad_code,
+                                      ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
 
     return process_parsing_result(standartized_high_res, exception_split_broad_code)
