@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
@@ -24,9 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class IsSuccessfulParsingIssue:
-    is_successful: bool
-    parsing_issue: ParsingIssueDetail
+class HighResAntibodiesAnalysis:
+    is_type_a_compliant: bool
+    maybe_parsing_issue: Optional[ParsingIssueDetail]
 
 
 def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssueBase], List[HLAPerGroup]]:
@@ -169,8 +169,8 @@ def is_all_antibodies_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bo
     return True
 
 
-def parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
-        recipient_antibodies: List[HLAAntibody]) -> IsSuccessfulParsingIssue:
+def analyze_if_high_res_antibodies_are_type_a(
+        recipient_antibodies: List[HLAAntibody]) -> HighResAntibodiesAnalysis:
     assert is_all_antibodies_in_high_res(recipient_antibodies), \
         'This method is available just for antibodies in high res.'
 
@@ -180,10 +180,9 @@ def parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
             is_some_antibody_below_cutoff = True
 
     if not is_some_antibody_below_cutoff:
-        return IsSuccessfulParsingIssue(False,
-                                        ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
+        return HighResAntibodiesAnalysis(False,
+                                         ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
     elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
-        return IsSuccessfulParsingIssue(False,
-                                        ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
-    return IsSuccessfulParsingIssue(True,
-                                    ParsingIssueDetail.SUCCESSFULLY_PARSED)
+        return HighResAntibodiesAnalysis(False,
+                                         ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+    return HighResAntibodiesAnalysis(True, None)

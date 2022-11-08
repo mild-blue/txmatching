@@ -12,10 +12,10 @@ from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
 from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
+    analyze_if_high_res_antibodies_are_type_a,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    is_all_antibodies_in_high_res,
-    parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff,
-    split_hla_types_to_groups, split_hla_types_to_groups_other)
+    is_all_antibodies_in_high_res, split_hla_types_to_groups,
+    split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
@@ -224,10 +224,10 @@ def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HL
     if not is_all_antibodies_in_high_res(recipient_antibodies):
         return None
 
-    parsing_issue = parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
-        recipient_antibodies).parsing_issue
-    if parsing_issue != ParsingIssueDetail.SUCCESSFULLY_PARSED:
+    maybe_parsing_issue = analyze_if_high_res_antibodies_are_type_a(
+        recipient_antibodies).maybe_parsing_issue
+    if maybe_parsing_issue is not None:
         return ParsingIssueBase(hla_code_or_group='Antibodies',
-                                parsing_issue_detail=parsing_issue,
-                                message=parsing_issue.value)
+                                parsing_issue_detail=maybe_parsing_issue,
+                                message=maybe_parsing_issue.value)
     return None

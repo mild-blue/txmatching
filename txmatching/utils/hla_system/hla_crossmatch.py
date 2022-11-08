@@ -4,8 +4,7 @@ from typing import Callable, List, Set
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
-    is_all_antibodies_in_high_res,
-    parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff)
+    analyze_if_high_res_antibodies_are_type_a, is_all_antibodies_in_high_res)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
@@ -237,8 +236,8 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
     if not is_all_antibodies_in_high_res(hla_antibodies_from_all_groups):
         return False
 
-    return parse_if_high_res_antibodies_in_sufficient_amount_and_some_below_cutoff(
-        hla_antibodies_from_all_groups).is_successful
+    return analyze_if_high_res_antibodies_are_type_a(
+        hla_antibodies_from_all_groups).is_type_a_compliant
 
 
 def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
