@@ -1,5 +1,3 @@
-import pandas as pd
-
 from txmatching.utils.hla_system.rel_dna_ser_parsing import (
     PATH_TO_REL_DNA_SER, get_multiple_serological_codes_from_rel_dna_ser_df,
     parse_rel_dna_ser)
@@ -28,5 +26,5 @@ PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
 } | get_multiple_serological_codes_from_rel_dna_ser_df(
         parse_rel_dna_ser(PATH_TO_REL_DNA_SER, are_multiple_values_allowed=True))
 
-MULTIPLE_SERO_CODES_LIST = list(set([code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values()
-                                     for code in code_list]))
+MULTIPLE_SERO_CODES_LIST = list({code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values()
+                                 for code in code_list})

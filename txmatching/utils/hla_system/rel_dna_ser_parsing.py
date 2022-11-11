@@ -85,8 +85,8 @@ def get_multiple_serological_codes_from_rel_dna_ser_df(rel_dna_ser_df: pd.DataFr
                            Usually is recived from parse_rel_dna_ser(..., are_multiple_values_allowed=True)
     :return: {high_res: list of corresponding serological codes, ...} from rel_dna_ser_df.
     """
-    assert 'split' and 'split_number' in rel_dna_ser_df.columns, \
-        f'Wrong dataframe format for this method. Columns high_res and split are needed.'
+    assert 'split' in rel_dna_ser_df.columns and 'split_number' in rel_dna_ser_df.columns, \
+        'Wrong dataframe format for this method. Columns high_res and split are needed.'
 
     split_types = rel_dna_ser_df.split.where(lambda s: s.str.contains('/')).dropna()\
         .replace('[0-9/]', '', regex=True).to_dict()
