@@ -12,9 +12,9 @@ from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
 from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
-    all_samples_are_positive_in_high_res,
+    analyze_if_high_res_antibodies_are_type_a,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    number_of_antigens_is_insufficient_in_high_res, split_hla_types_to_groups,
+    is_all_antibodies_in_high_res, split_hla_types_to_groups,
     split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
@@ -53,6 +53,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     return parsing_issues, parsing_issue.maybe_hla_code
 
 
+# pylint: disable=too-many-locals
 def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         hla_antibodies_raw: List[HLAAntibodyRawModel]
 ) -> Tuple[List[ParsingIssueBase], HLAAntibodiesDTO]:
@@ -106,22 +107,9 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
             parsing_issues = parsing_issues + antibody_parsing_issues
 
     # 3. validate antibodies
-    if all_samples_are_positive_in_high_res(hla_antibodies_parsed):
-        parsing_issues.append(
-            ParsingIssueBase(
-                hla_code_or_group='Antibodies',
-                parsing_issue_detail=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
-                message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
-            )
-        )
-    if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
-        parsing_issues.append(
-            ParsingIssueBase(
-                hla_code_or_group='Antibodies',
-                parsing_issue_detail=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
-                message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
-            )
-        )
+    parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed)
+    if parsing_issue is not None:
+        parsing_issues.append(parsing_issue)
 
     # 4. split antibodies to groups (and join duplicates)
     antibodies_per_groups_parsing_issues, hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
@@ -227,3 +215,19 @@ def basic_group_is_empty(hla_types: List[HLAType]):
     if len(hla_types) == 0:
         return True
     return False
+
+
+def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HLAAntibody]) \
+        -> Optional[ParsingIssueBase]:
+    if len(recipient_antibodies) == 0:
+        return None
+    if not is_all_antibodies_in_high_res(recipient_antibodies):
+        return None
+
+    maybe_parsing_issue = analyze_if_high_res_antibodies_are_type_a(
+        recipient_antibodies).maybe_parsing_issue
+    if maybe_parsing_issue is not None:
+        return ParsingIssueBase(hla_code_or_group='Antibodies',
+                                parsing_issue_detail=maybe_parsing_issue,
+                                message=maybe_parsing_issue.value)
+    return None

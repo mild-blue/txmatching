@@ -7,8 +7,14 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_type)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_functions import (
+    HighResAntibodiesAnalysis, analyze_if_high_res_antibodies_are_type_a,
+    is_all_antibodies_in_high_res)
 from txmatching.patients.hla_model import HLAPerGroup
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
@@ -271,6 +277,43 @@ class TestCodeParser(DbTests):
                 (processing_result not in OK_PROCESSING_RESULTS and
                  processing_result not in WARNING_PROCESSING_RESULTS)
             )
+
+    def test_is_all_antibodies_in_high_res(self):
+        antibodies = create_antibodies(TYPE_A_EXAMPLE_REC)
+        for antibodies_per_group in antibodies.hla_antibodies_per_groups:
+            # general case
+            self.assertTrue(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
+
+            # not all in high res
+            antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
+            self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
+
+    def test_analyze_if_high_res_antibodies_are_type_a(self):
+        antibodies = create_antibodies(TYPE_A_EXAMPLE_REC)
+        for antibodies_per_group in antibodies.hla_antibodies_per_groups:
+            # general case
+            expected = HighResAntibodiesAnalysis(True, None)
+            self.assertEqual(expected,
+                             analyze_if_high_res_antibodies_are_type_a(
+                                 antibodies_per_group.hla_antibody_list))
+
+            # insufficient amount of antibodies
+            antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
+            expected = HighResAntibodiesAnalysis(False,
+                                                 ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+            self.assertEqual(expected,
+                             analyze_if_high_res_antibodies_are_type_a(
+                                 antibodies_per_group.hla_antibody_list[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES-1]))
+
+        # all antibodies are above cutoff:
+        some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list
+        for antibody in some_antibodies_list:
+            antibody.cutoff = 2000
+            antibody.mfi = 2100
+        expected = HighResAntibodiesAnalysis(False,
+                                             ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
+        self.assertEqual(expected,
+                         analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
 
     def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
         res = get_mfi_from_multiple_hla_codes(mfis, cutoff, 'test')
