@@ -1,3 +1,9 @@
+import pandas as pd
+
+from txmatching.utils.hla_system.rel_dna_ser_parsing import (
+    PATH_TO_REL_DNA_SER, get_multiple_serological_codes_from_rel_dna_ser_df,
+    parse_rel_dna_ser)
+
 PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS = {
     # Based on email communication with Matej Roder from 19.10.2020
     'B*82:02': 'B82',
@@ -19,7 +25,8 @@ PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS = {
 
 PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
     'C*04:03': ['CW4', 'CW6']
-}
+} | get_multiple_serological_codes_from_rel_dna_ser_df(
+        parse_rel_dna_ser(PATH_TO_REL_DNA_SER, are_multiple_values_allowed=True))
 
-MULTIPLE_SERO_CODES_LIST = [code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values() for code
-                            in code_list]
+MULTIPLE_SERO_CODES_LIST = list(set([code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values()
+                                     for code in code_list]))
