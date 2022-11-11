@@ -74,10 +74,11 @@ class TestCrossmatch(unittest.TestCase):
         self.assertTrue(is_recipient_type_a(create_antibodies(antibodies)))
 
         # not all antibodies are in high resolution
-        antibodies[0] = create_antibody('A9', 2100, 2000)
+        antibodies[0] = create_antibody('A9', 1900, 2000)
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
 
         # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
+        antibodies[0] = create_antibody('A*23:01', 2000, 2100)  # negative antibody to fulfill general criteria
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:-1])))
 
         # there is no antibody below the cutoff
