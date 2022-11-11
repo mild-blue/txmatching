@@ -29,7 +29,8 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS,
     WARNING_PROCESSING_RESULTS, ParsingIssueDetail)
-from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
+from txmatching.utils.hla_system.rel_dna_ser_parsing import (
+    get_multiple_serological_codes_from_rel_dna_ser_df, parse_rel_dna_ser)
 
 codes = {
     'A1': (HLACode(None, 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
@@ -143,6 +144,7 @@ class TestCodeParser(DbTests):
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
     def test_parse_hla_ser(self):
+        # multiple splits are not allowed
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
 
         self.assertEqual('A1', parsing_result.loc['A*01:01:01:01'].split)
@@ -152,6 +154,33 @@ class TestCodeParser(DbTests):
         self.assertEqual('DP2', parsing_result.loc['DPB1*02:01:06'].split)
         self.assertEqual('CW14', parsing_result.loc['C*14:02:01:01'].split)
         self.assertEqual('CW8', parsing_result.loc['C*09'].split)
+        self.assertTrue(pd.isna(parsing_result.loc['B*15:36'].split))
+        self.assertTrue(pd.isna(parsing_result.loc['B*15:218Q'].split))
+        self.assertTrue(pd.isna(parsing_result.loc['B*18:01:01:12Q'].split))
+
+        # multiple splits are allowed
+        parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'),
+                                           are_multiple_values_allowed=True)
+        self.assertEqual('A1', parsing_result.loc['A*01:01:01:01'].split)
+        self.assertEqual('B15/70', parsing_result.loc['B*15:36'].split)
+        self.assertTrue(pd.isna(parsing_result.loc['B*15:218Q'].split))
+        self.assertTrue(pd.isna(parsing_result.loc['B*18:01:01:12Q'].split))
+
+    def test_get_multiple_serological_codes_from_rel_dna_ser_df(self):
+        # general case
+        rel_dna_ser_df = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'),
+                                           are_multiple_values_allowed=True)
+        expected = {'B*15:36': ['B15', 'B70']}
+        self.assertEqual(expected, get_multiple_serological_codes_from_rel_dna_ser_df(rel_dna_ser_df))
+
+        # case: multiple values are not allowed during parsing of the rel_dna_ser.txt
+        rel_dna_ser_df = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
+        expected = {}
+        self.assertEqual(expected, get_multiple_serological_codes_from_rel_dna_ser_df(rel_dna_ser_df))
+
+        # case: rel_dna_ser_df in a bad format
+        self.assertRaises(AssertionError,
+                          get_multiple_serological_codes_from_rel_dna_ser_df, pd.DataFrame([1, 2, 3]))
 
     def test_preprocessing(self):
         self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
