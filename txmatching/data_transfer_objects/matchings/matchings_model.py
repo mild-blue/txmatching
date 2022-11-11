@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
 from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
     DonorRecipientModel
@@ -15,5 +15,3 @@ class MatchingModel:
 @dataclass
 class MatchingsModel:
     matchings: List[MatchingModel]
-    found_matchings_count: Optional[int]
-    show_not_all_matchings_found: bool

@@ -71,8 +71,6 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
                           etag=base_patient.etag,
                           related_donors_db_ids=related_donors_db_ids,
                           hla_antibodies=get_hla_antibodies_from_recipient_model(recipient_model),
-                          # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
-                          #       this conversion is not working properly now
                           acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                                    recipient_model.acceptable_blood],
                           recipient_cutoff=recipient_model.recipient_cutoff,
@@ -401,8 +399,6 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
         db_id=patient_model.id,
         medical_id=patient_model.medical_id,
         parameters=PatientParameters(
-            # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood by enum,
-            #       this conversion is not working properly now
             blood_group=patient_model.blood,
             country_code=patient_model.country,
             hla_typing=_get_hla_typing_from_patient_model(patient_model),
