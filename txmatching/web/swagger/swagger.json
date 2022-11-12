@@ -527,7 +527,8 @@
                         "in": "path",
                         "required": true,
                         "type": "integer",
-                        "description": "Id of the TXM event to be deleted."
+                        "description": "Id of the TXM event to be deleted.",
+                        "default": 2
                     }
                 ],
                 "security": [
