@@ -4,10 +4,8 @@ import { Round } from "@app/model/Round";
 export interface CalculatedMatchings {
   calculatedMatchings: Matching[];
   configId: number;
-  foundMatchingsCount?: number;
   numberOfPossibleTransplants?: number;
   numberOfPossibleRecipients?: number;
-  showNotAllMatchingsFound: boolean;
 }
 
 export interface Matching extends ListItem {

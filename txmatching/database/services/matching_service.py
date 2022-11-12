@@ -42,10 +42,8 @@ class MatchingsDetailed:
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
-    found_matchings_count: Optional[int]
     number_of_possible_transplants: Optional[int]
     number_of_possible_recipients: Optional[int]
-    show_not_all_matchings_found: bool
     max_transplant_score: float
 
 
@@ -101,10 +99,8 @@ def get_matchings_detailed_for_pairing_result_model(
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
-        matchings_model.found_matchings_count,
         number_of_possible_transplants,
         number_of_possible_recipients,
-        matchings_model.show_not_all_matchings_found,
         scorer.max_transplant_score
     )
 
@@ -177,10 +173,8 @@ def create_calculated_matchings_dto(
             count_of_transplants=get_count_of_transplants(matching)
         ) for matching in matchings
         ],
-        found_matchings_count=latest_matchings_detailed.found_matchings_count,
         number_of_possible_transplants=latest_matchings_detailed.number_of_possible_transplants,
         number_of_possible_recipients=latest_matchings_detailed.number_of_possible_recipients,
-        show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
         config_id=configuration_db_id
     )
 

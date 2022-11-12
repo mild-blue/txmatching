@@ -10,11 +10,9 @@ It consists of backend written in Python and an Angular frontend.
 
 Here is the board containing the next development plan: https://github.com/orgs/mild-blue/projects/13
 
-## How to run the app locally 
+## How to run the app locally
 
 The project runs on macOS, Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows.
-
-To run project on Mac with M-series chips, you will need Docker. Currently, there are unsupported packages like `openssl` that prevent running scripts from this project natively on ARM processors.
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
@@ -75,7 +73,7 @@ We have a swagger UI running on `/doc/` route (so for example, `localhost:8080/d
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
 The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
-and in case any changes are made, one needs to regenerated it using `local_testing_utilities/generate-swagger.py` by 
+and in case any changes are made, one needs to regenerated it using `local_testing_utilities/generate-swagger.py` by
 running `make generate-swagger-file` command.
 
 We also automatically generate TypeScript files that are used by FE. These files are generated from the swagger file
@@ -131,7 +129,7 @@ To run unittests use `make test` command. `make check` command runs linter and u
 
 ### Authentik
 We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
-After you run `docker-compose up` you must setup Authentik. You will do this only once. 
+After you run `docker-compose up` you must setup Authentik. You will do this only once.
 It might take some time (minute or two) before Authentik is ready.
 
 #### Create account and login
@@ -155,7 +153,7 @@ It might take some time (minute or two) before Authentik is ready.
 4. From providers select TXM (provider you created in previous steps)
 5. Scroll down and click on Create
 
-You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
+You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null
 In the future middleware should redirect you there.
 
 

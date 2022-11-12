@@ -87,7 +87,8 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
                 and donor_recipient_ci <= best_related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE_SCORE
         require_compatible_blood_group = self._get_setting_from_config_or_recipient(recipient,
-                                                                                    'require_compatible_blood_group')
+                                                                                    'require_compatible_blood_group') or \
+                                         self._configuration.require_compatible_blood_group
         # If required, the donor must have the compatible blood group with recipient
         if require_compatible_blood_group and not blood_groups_compatible(donor.parameters.blood_group,
                                                                           recipient.parameters.blood_group):
@@ -95,7 +96,6 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
 
         better_match_in_ci = self._get_setting_from_config_or_recipient(recipient,
                                                                         'require_better_match_in_compatibility_index')
-
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
         if better_match_in_ci and donor_recipient_ci <= best_related_donor_recipient_ci:
