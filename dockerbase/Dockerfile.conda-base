@@ -1,4 +1,4 @@
-FROM debian:11-slim
+FROM debian:11.5-slim
 LABEL description="Mild Blue - TXMatching base image with conda installed."
 LABEL project="mildblue:txmatching"
 
