@@ -42,9 +42,15 @@ class TestSwaggerEndpoints(DbTests):
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(ConfigParameters())
 
-        res = client.post(
-            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
-            json=conf_dto,
+        res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                          f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
+                          json=conf_dto,
+                          headers=self.auth_headers)
+
+        config_id = res.json['config_id']
+        res = client.get(
+            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+            f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
             headers=self.auth_headers
         )
         self.assertEqual(200, res.status_code)

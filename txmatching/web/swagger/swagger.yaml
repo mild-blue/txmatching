@@ -213,6 +213,14 @@ definitions:
         - use_binary_scoring
         - use_high_resolution
         type: object
+    ConfigurationId:
+        properties:
+            config_id:
+                example: 2
+                type: integer
+        required:
+        - config_id
+        type: object
     CopyPatients:
         properties:
             new_donor_ids:
@@ -2249,6 +2257,47 @@ paths:
             -   bearer: []
             tags:
             - txm-event
+    /v1/txm-event/{txm_event_id}/configuration/find-or-create-config:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            operationId: post_configuration_id_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/Configuration'
+            responses:
+                '200':
+                    description: If config exists, this endpoint returns config id,
+                        else creates new config and then returns config id.
+                    schema:
+                        $ref: '#/definitions/ConfigurationId'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - configuration
     /v1/txm-event/{txm_event_id}/configuration/set-default:
         parameters:
         -   in: path
@@ -2307,8 +2356,8 @@ paths:
                 type: string
             responses:
                 '200':
-                    description: Returns the latest matching configuration for the
-                        current user.
+                    description: Returns the specified matching configuration for
+                        the current user.
                     schema:
                         $ref: '#/definitions/Configuration'
                 '400':
@@ -2340,7 +2389,7 @@ paths:
             type: integer
         post:
             description: Export patients from provided country and TXM event. Make
-                the file ready to beuploaded again with already new txm event name
+                the file ready to be uploaded again with already new txm event name
                 ready.
             operationId: post_txm_export_event_api
             parameters:
@@ -2351,7 +2400,7 @@ paths:
                     $ref: '#/definitions/TxmEventExport'
             responses:
                 '200':
-                    description: Exported patients DTO, Ready to be uploaded tosome
+                    description: Exported patients DTO, Ready to be uploaded to some
                         other event
                     schema:
                         $ref: '#/definitions/UploadPatients'
@@ -2376,20 +2425,21 @@ paths:
             -   bearer: []
             tags:
             - txm-event
-    /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
+    /v1/txm-event/{txm_event_id}/matching/calculate-for-config/{config_id}:
         parameters:
         -   in: path
             name: txm_event_id
             required: true
             type: integer
-        post:
-            operationId: post_calculate_from_config
+        get:
+            operationId: get_calculate_from_config
             parameters:
-            -   in: body
-                name: payload
+            -   default: default
+                description: Configuration ID or "default".
+                in: path
+                name: config_id
                 required: true
-                schema:
-                    $ref: '#/definitions/Configuration'
+                type: string
             responses:
                 '200':
                     description: List of all matchings for given configuration.

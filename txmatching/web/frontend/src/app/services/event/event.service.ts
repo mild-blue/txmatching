@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { environment } from "@environments/environment";
 import { map } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
-import { LoggerService } from "@app/services/logger/logger.service";
 import { TxmEvent, TxmEvents } from "@app/model/Event";
 import { TxmEventGenerated, TxmEventsGenerated } from "@app/generated";
 import { parseTxmEvent, parseTxmEvents } from "@app/parsers/event.parsers";
@@ -19,7 +18,7 @@ export class EventService {
   // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
   private _configId?: number;
 
-  constructor(private _http: HttpClient, private _logger: LoggerService, private _authService: AuthService) {
+  constructor(private _http: HttpClient, private _authService: AuthService) {
     // Remove cached events when user changes
     this._userSubscription = this._authService.currentUser.subscribe((_) => {
       this._txmEvents = undefined;

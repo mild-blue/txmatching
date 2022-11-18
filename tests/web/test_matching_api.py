@@ -14,7 +14,7 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLACrossmatchLevel, HLAGroup, MatchType,
                                     Solver)
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
+from txmatching.web import API_VERSION, CONFIGURATION_NAMESPACE, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
 class TestSaveAndGetConfiguration(DbTests):
@@ -53,10 +53,15 @@ class TestSaveAndGetConfiguration(DbTests):
 
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(configuration_parameters)
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
+                              json=conf_dto,
+                              headers=self.auth_headers)
 
-            res = client.post(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
-                json=conf_dto,
+            config_id = res.json['config_id']
+            res = client.get(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
                 headers=self.auth_headers
             )
 
@@ -252,9 +257,15 @@ class TestSaveAndGetConfiguration(DbTests):
                                                            max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                             headers=self.auth_headers)
+
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, len(res.json['calculated_matchings']))
             self.assertEqual(157, res.json['number_of_possible_transplants'])
@@ -267,9 +278,15 @@ class TestSaveAndGetConfiguration(DbTests):
                                                             max_matchings_in_all_solutions_solver=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto2,
                               headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                             headers=self.auth_headers)
+
             self.assertEqual(200, res.status_code)
             self.assertEqual(20, len(res.json['calculated_matchings']))
             # should be the same as in the previous run as such configuration does not affect these counts
@@ -286,17 +303,27 @@ class TestSaveAndGetConfiguration(DbTests):
                                                            max_number_of_matchings=20))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                             headers=self.auth_headers)
             self.assertEqual(9, len(res.json['calculated_matchings']))
             self.assertEqual(200, res.status_code)
 
             txm_event_db_id_2 = create_or_overwrite_txm_event(name='test2').db_id
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id_2}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=conf_dto,
                               headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id_2}/'
+                             f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                             headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(0, len(res.json['calculated_matchings']))
             self.assertEqual(0, res.json['number_of_possible_transplants'])

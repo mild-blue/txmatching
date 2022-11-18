@@ -9,15 +9,17 @@ from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.user.user_auth_check import \
     require_user_edit_config_access
+from txmatching.configuration.config_parameters import ConfigurationId, ConfigParameters
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
-    ConfigIdPathParamDefinition, ConfigurationJson)
+    ConfigurationIdJson, ConfigIdPathParamDefinition, ConfigurationJson)
 from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,
                                                          SuccessDTOOut)
 from txmatching.data_transfer_objects.shared_swagger import (IdentifierJsonIn,
                                                              SuccessJsonOut)
 from txmatching.database.services.config_service import (
-    get_configuration_parameters_from_db_id_or_default, set_config_as_default)
+    get_configuration_parameters_from_db_id_or_default, get_config_for_parameters_or_save, set_config_as_default)
 from txmatching.database.services.txm_event_service import get_txm_event_base
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import configuration_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -31,7 +33,7 @@ class ConfigurationApi(Resource):
     )
     @configuration_api.require_user_login()
     @configuration_api.response_ok(model=ConfigurationJson,
-                                   description='Returns the latest matching configuration for the current user.')
+                                   description='Returns the specified matching configuration for the current user.')
     @configuration_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -56,3 +58,19 @@ class DefaultConfigurationApi(Resource):
         guard_open_txm_event(txm_event_id)
         set_config_as_default(txm_event_id=txm_event_id, configuration_db_id=identifier_dto.id)
         return response_ok(SuccessDTOOut(success=True))
+
+
+@configuration_api.route('/find-or-create-config', methods=['POST'])
+class ConfigurationIdApi(Resource):
+    @configuration_api.require_user_login()
+    @configuration_api.request_body(ConfigurationJson)
+    @configuration_api.response_ok(model=ConfigurationIdJson,
+                                   description='If config exists, this endpoint returns config id, else creates new config '
+                                               'and then returns config id.')
+    @configuration_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    @require_valid_txm_event_id()
+    def post(self, txm_event_id: int) -> str:
+        configuration_parameters = request_body(ConfigParameters)
+        user_id = get_current_user_id()
+        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event_id, user_id)
+        return response_ok(ConfigurationId(configuration.id))

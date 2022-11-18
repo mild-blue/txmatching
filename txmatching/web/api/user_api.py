@@ -143,7 +143,7 @@ class RegistrationApi(Resource):
         registration_dto = request_body(UserRegistrationDtoIn)
         token = register(registration_dto)
         password_reset_token_message = f'To reset password for the new user with email {registration_dto.email} go to:' \
-                                       f'{request.url_root}/#/reset-password/{token}'
+                                       f' {request.url_root}/#/reset-password/{token}'
         return response_ok(UserRegistrationDtoOut(
             role=registration_dto.role,
             email=registration_dto.email,

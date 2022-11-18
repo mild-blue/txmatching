@@ -39,6 +39,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public errorMessage?: string;
 
   public configuration?: Configuration;
+  public configurationId?: number;
 
   public configIcon = faCog;
   public configOpened: boolean = false;
@@ -215,9 +216,22 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configuration = configuration;
 
     try {
+      const response = await this._configService.findConfigurationId(this.defaultTxmEvent.id, this.configuration);
+      this.configurationId = response.configId;
+    } catch (e) {
+      this.errorMessage = getErrorMessage(e);
+      this._logger.error(`Error retrieving config id: "${getErrorMessage(e)}"`);
+    }
+
+    try {
+      if (!this.configurationId) {
+        this._logger.error(`Error no config id`);
+        return;
+      }
+      this._eventService.setConfigId(this.configurationId);
       const calculatedMatchings = await this._matchingService.calculate(
         this.defaultTxmEvent.id,
-        configuration,
+        this.configurationId,
         this.patients
       );
       this.matchings = calculatedMatchings.calculatedMatchings;
@@ -230,6 +244,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       this.errorMessage = getErrorMessage(e);
       this._logger.error(`Error calculating matchings: "${getErrorMessage(e)}"`);
     } finally {
+      if (this.matchings.length === 0) {
+        this.errorMessage = `No matchings were found. Try to change settings and recalculate.`;
+      }
       this._logger.log("End of calculation");
       this.loading = false;
     }

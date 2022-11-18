@@ -65,12 +65,10 @@ def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) ->
         # (see comment in sql_alchemy_schema), it can happen that default_config_id is set while corresponding config
         # is deleted. Such problem happens in TestSwaggerEndpoint. For this reason, we handle it by returning default
         # configuration instance.
-        logger.error(f'Configuration not found for db id {configuration_db_id}. Returning default configuration.')
-        return None
+        raise ValueError(f'Configuration not found for db id {configuration_db_id}.')
     if txm_event_id != config_model.txm_event_id:
-        logger.error(f'Configuration with db id {configuration_db_id} does '
-                     f'not belong to txm event {txm_event_id}. Returning default configuration')
-        return None
+        raise ValueError(f'Configuration with db id {configuration_db_id} does '
+                         f'not belong to txm event {txm_event_id}.')
 
     return configuration_from_config_model(config_model)
 

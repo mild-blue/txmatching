@@ -773,7 +773,7 @@ class TestPatientService(DbTests):
         txm_event_db_id = self.fill_db_with_patients()
 
         # 2. add configuration with required patients
-        configuration = ConfigParameters(
+        configuration_parameters = ConfigParameters(
             required_patient_db_ids=[1, 2],
             manual_donor_recipient_scores=[
                 {
@@ -783,15 +783,24 @@ class TestPatientService(DbTests):
                 }
             ])
 
-        with self.app.test_client() as client:
-            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
-                              json=configuration,
-                              headers=self.auth_headers)
-            self.assertEqual(200, res.status_code)
+        conf_dto = dataclasses.asdict(configuration_parameters)
 
         # 3. set this configuration as default
         with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
+                              json=conf_dto,
+                              headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(200, res.status_code)
+
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{CONFIGURATION_NAMESPACE}/set-default',
                              json={"id": 1},
@@ -834,9 +843,16 @@ class TestPatientService(DbTests):
         # 7. recalculate for configuration
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              f'{CONFIGURATION_NAMESPACE}/find-or-create-config',
                               json=default_config,
                               headers=self.auth_headers)
+
+            config_id = res.json['config_id']
+            res = client.get(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                f'{MATCHING_NAMESPACE}/calculate-for-config/{config_id}',
+                headers=self.auth_headers
+            )
             self.assertEqual(200, res.status_code)
 
     def test_calculate_recipient_cpra_endpoint(self):

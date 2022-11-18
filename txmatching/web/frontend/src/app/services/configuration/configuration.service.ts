@@ -3,9 +3,15 @@ import { environment } from "@environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { Configuration } from "@app/model/Configuration";
 import { map } from "rxjs/operators";
-import { parseConfiguration } from "@app/parsers/configuration.parsers";
-import { ConfigurationGenerated, IdentifierGenerated, SuccessGenerated } from "@app/generated";
+import { parseConfiguration, parseConfigurationId } from "@app/parsers/configuration.parsers";
+import {
+  ConfigurationGenerated,
+  ConfigurationIdGenerated,
+  IdentifierGenerated,
+  SuccessGenerated,
+} from "@app/generated";
 import { firstValueFrom } from "rxjs";
+import { ConfigurationId } from "@app/model";
 
 @Injectable({
   providedIn: "root",
@@ -30,6 +36,17 @@ export class ConfigurationService {
       this._http
         .put<SuccessGenerated>(`${environment.apiUrl}/txm-event/${txmEventId}/configuration/set-default`, payload)
         .pipe(map((_) => _.success))
+    );
+  }
+
+  public async findConfigurationId(txmEventId: number, payload: ConfigurationGenerated): Promise<ConfigurationId> {
+    return firstValueFrom(
+      this._http
+        .post<ConfigurationIdGenerated>(
+          `${environment.apiUrl}/txm-event/${txmEventId}/configuration/find-or-create-config`,
+          payload
+        )
+        .pipe(map(parseConfigurationId))
     );
   }
 }

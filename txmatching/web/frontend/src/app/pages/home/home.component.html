@@ -94,17 +94,12 @@
   </app-template-popup>
 
   <app-content>
-    <h3 *ngIf="!loading && matchings.length === 0">
-      <ng-container *ngIf="!errorMessage">
-        No matchings were found.<br />Try to change settings and recalculate.
-      </ng-container>
-      <ng-container *ngIf="errorMessage">
-        <mat-icon class="error-icon">error</mat-icon>
-        {{ errorMessage }}
-      </ng-container>
+    <h3 *ngIf="!loading && errorMessage">
+      <mat-icon class="error-icon">error</mat-icon>
+      {{ errorMessage }}
     </h3>
     <app-item-list
-      *ngIf="!loading && matchings.length"
+      *ngIf="!loading && !errorMessage"
       [items]="matchings"
       [configuration]="configuration"
       [patients]="patients"
