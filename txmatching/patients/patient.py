@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -106,7 +107,8 @@ class Recipient(Patient, PersistentlyHashable):
     hla_antibodies: HLAAntibodies
     parsing_issues: Optional[List[ParsingIssue]] = None
     recipient_cutoff: Optional[int] = None
-    recipient_requirements: RecipientRequirements = RecipientRequirements()
+    recipient_requirements: RecipientRequirements = dataclasses.field(default_factory=
+                                                                      RecipientRequirements)
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None
     internal_medical_id: Optional[str] = None
