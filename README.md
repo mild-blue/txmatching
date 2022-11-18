@@ -81,7 +81,7 @@ using `openapi-generator-cli` tool. To install this tool, please refer to [READM
 
 You can automatically generate both swagger file and TS files by running `make generate-swagger-all`.
 
-You should be able to create user with some rights to some events with `/v1/user/login` endpoint. Also you should be able to create a txm event
+You should be able to create user with some rights to some events and login with `/v1/user/login` endpoint. Also you should be able to create a txm event
 with duplicate patients from another event via the swagger endpoints.
 
 ## Development
