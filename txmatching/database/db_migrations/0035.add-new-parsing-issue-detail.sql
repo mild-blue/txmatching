@@ -3,4 +3,4 @@
 -- depends: 0034.add-comp-graph-to-pairing-result
 --
 
-ALTER TYPE parsing_issue_detail ADD VALUE 'HIGH_RES_WITH_ASSUMED_SPLIT_CODE'
+ALTER TYPE PARSING_ISSUE_DETAIL ADD VALUE 'HIGH_RES_WITH_ASSUMED_SPLIT_CODE';
