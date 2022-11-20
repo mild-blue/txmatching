@@ -5,7 +5,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
-    PathWithScore, find_all_cycles, find_all_sequences,
+    PathWithScore, find_all_cycles, find_all_sequences, find_chains_with_same_recipients_at_the_end,
     find_paths_with_same_donors, get_donor_to_compatible_donor_graph,
     get_compatible_donor_idxs_per_donor_idx, get_pairs_from_clique,
     keep_only_highest_scoring_paths)
@@ -56,8 +56,10 @@ def find_optimal_paths(compatibility_graph: CompatibilityGraph,
             required_donors_ids_per_required_recipient
         )
 
+    chains_idx_with_same_recipients_at_the_end = find_chains_with_same_recipients_at_the_end(highest_scoring_paths,
+                                                                                             original_donor_idx_to_recipient_idx)
     found_solutions = optimise_paths(paths_idx_with_the_same_donors, path_id_to_path_with_score, config_parameters,
-                                     required_paths_per_required_recipient)
+                                     required_paths_per_required_recipient, chains_idx_with_same_recipients_at_the_end)
     for selected_cycles in found_solutions:
         yield get_pairs_from_clique(selected_cycles, path_id_to_path_with_score, original_donor_idx_to_recipient_idx)
 
