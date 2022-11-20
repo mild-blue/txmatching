@@ -76,7 +76,7 @@ HLAAntibodyJsonIn = public_api.model('HLAAntibodyIn', {
                           description='HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) '
                                       'resolutions. In case of DP or DQ, when alpha and beta are provided, the expected'
                                       ' format is DQ[01:01,02:02] equivalently DP[01:01,02:02], and will result in two '
-                                      'separate antibodies with the same MFI.'),
+                                      'separate antibodies.'),
     'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
     'cutoff': fields.Integer(required=True,
                              example=2000,
