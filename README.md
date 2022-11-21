@@ -34,7 +34,7 @@ try to remove `node_modules` folder from `txmatching/web/frontend/`, run `npm ca
 
 ### Prepare Backend
 Backend is written in Python. We are using [conda](https://docs.conda.io/en/latest/miniconda.html) for
-dependency management. To be able to run the project you must have it istalled.
+dependency management. To be able to run the project you must have it installed.
 
 After you have conda ready and setup. Execute `make conda-create` which creates Conda env for you.
 
@@ -60,7 +60,7 @@ cd /tmp
 ### Prepare Database
 You need to have docker installed. And you need to have activated environment from the previous step.
 
-After that simply run `make setup-small-non-empty-db`
+After that simply run `make setup-small-non-empty-db` or `make setup-non-empty-db` for larger one.
 
 This runs postgres database in docker that has already some data inside.
 
@@ -81,7 +81,7 @@ using `openapi-generator-cli` tool. To install this tool, please refer to [READM
 
 You can automatically generate both swagger file and TS files by running `make generate-swagger-all`.
 
-You should be able to create user with some rights to some events. Also you should be able to create an txm event
+You should be able to create user with some rights to some events and login with `/v1/user/login` endpoint. Also you should be able to create a txm event
 with duplicate patients from another event via the swagger endpoints.
 
 ## Development
@@ -114,7 +114,7 @@ there are some githooks in this project. It is advised to use them. After instal
 pre-commit install
 ```
 then everytime you commit it first fails in case there were some changes done by the pre-commit script.
-If you recommit it will pass, because all the needed changes were done. Its especially so we do not push notebooks
+If you recommit it will pass, because all the needed changes were done. It's especially so we do not push notebooks
 that would contain data to git.
 
 ### Application Configuration

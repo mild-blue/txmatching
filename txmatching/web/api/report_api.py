@@ -96,8 +96,8 @@ class MatchingReport(Resource):
             directory,
             report_file_name,
             as_attachment=True,
-            attachment_filename=report_file_name,
-            cache_timeout=0
+            download_name=report_file_name,
+            max_age=0
         )
 
         response.headers['x-filename'] = report_file_name
@@ -130,8 +130,8 @@ class PatientsXLSReport(Resource):
         response = send_file(
             buffer,
             as_attachment=True,
-            attachment_filename=xls_file_name,
-            cache_timeout=0
+            download_name=xls_file_name,
+            max_age=0
         )
 
         response.headers['x-filename'] = xls_file_name
