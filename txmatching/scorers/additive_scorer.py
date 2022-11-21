@@ -64,7 +64,7 @@ class AdditiveScorer(ScorerBase):
     def get_compatibility_graph(self,
                                 recipients_dict: Dict[RecipientDbId, Recipient],
                                 donors_dict: Dict[DonorDbId, Donor]) -> CompatibilityGraph:
-        '''the compatibility graph has structure (new_donor_inex, new_recipient_index): score'''
+        '''the compatibility graph has structure (new_donor_index, new_recipient_index): score'''
 
         compatibility_graph = {}
 
@@ -76,7 +76,7 @@ class AdditiveScorer(ScorerBase):
                                                                                         recipient.related_donors_db_ids
                                                                                         if donor_db_id in donors_dict])
                 if score >= 0:
-                    compatibility_graph[(donor_enum, recipient_enum)] = int(score)
+                    compatibility_graph[(donor_enum, recipient_enum)] = {"score": int(score)}
 
         return compatibility_graph
 

@@ -1212,8 +1212,10 @@
                         "example": {
                             "donor_index": 1,
                             "recipient_index": 2,
-                            "hla_compatibility_score": 17,
-                            "donor_age_difference": 1
+                            "weights": {
+                                "hla_compatibility_score": 17,
+                                "donor_age_difference": 1
+                            }
                         }
                     }
                 },

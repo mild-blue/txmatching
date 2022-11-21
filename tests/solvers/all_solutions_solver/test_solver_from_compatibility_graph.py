@@ -48,7 +48,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         )
         all_scores = []
         for solution in all_solutions:
-            solution_score = sum([scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)
+            solution_score = sum([scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)['score']
                                   for pair in solution])
             all_scores.append(solution_score)
         self.assertEqual(len(all_solutions[0]), 9)
@@ -89,7 +89,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: 0, 1: 0, 2: 1, 3: 2}
 
-        compatibility_graph_test = {(0, 1): 11, (1, 2): 10, (2, 0): 10, (3, 0): 10}
+        compatibility_graph_test = {(0, 1): {"score": 11}, (1, 2): {"score": 10}, (2, 0): {"score": 10}, (3, 0): {"score": 10}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
@@ -154,7 +154,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: -1, 1: 0}
 
-        compatibility_graph_test = {(0, 0): 0}
+        compatibility_graph_test = {(0, 0): {'score': 0}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
@@ -209,7 +209,7 @@ def _get_compatibility_graph_from_score_matrix(score_matrix: np.array) -> Compat
     for row_enum, row in enumerate(score_matrix):
         for score_enum, score in enumerate(row):
             if score >= 0:
-                compatibility_graph[(row_enum, score_enum)] = score
+                compatibility_graph[(row_enum, score_enum)] = {"score": score}
     return compatibility_graph
 
 

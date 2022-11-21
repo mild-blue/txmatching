@@ -1,4 +1,3 @@
-import dataclasses
 from dataclasses import dataclass
 from typing import Dict, List
 
@@ -15,15 +14,12 @@ class CompatibilityGraphDto:
 
 
 def compatibility_graph_to_dict(compatibility_graph: CompatibilityGraph) -> Dict[str, List[List[int]]]:
-    list_of_lists = [[int(pair[0]), int(pair[1]), score] for pair, score in compatibility_graph.items()]
-    return dataclasses.asdict(CompatibilityGraphDto(list_of_lists))
+    return {"compatibility_graph_dto": [[int(pair[0]), int(pair[1]), weighths["score"]]
+                                        for pair, weighths in compatibility_graph.items()]}
 
 
 def compatibility_graph_from_dict(compatibility_graph_dict: Dict[str, List[List[int]]]) -> CompatibilityGraph:
-    compatibility_graph_dto = from_dict(data_class=CompatibilityGraphDto, data=compatibility_graph_dict)
-    compatibility_graph = {(int(single_list[0]), int(single_list[1])): int(single_list[2]) for single_list in
-                           compatibility_graph_dto.compatibility_graph_dto}
-    return compatibility_graph
+    return {(pair[0], pair[1]): {"score": pair[2]} for pair in compatibility_graph_dict["compatibility_graph_dto"]}
 
 
 def matchings_model_from_dict(calculated_matchings_dict: Dict[str, any]) -> MatchingsModel:

@@ -56,8 +56,10 @@ OptimizerRequestObjectJson = optimizer_api.model('OptimizerRequest', {
     'compatibility_graph': fields.List(required=True, cls_or_instance=DictItem(attribute="calling_args",
                                                                                example={"donor_index": 1,
                                                                                         "recipient_index": 2,
-                                                                                        "hla_compatibility_score": 17,
-                                                                                        "donor_age_difference": 1})),
+                                                                                        "weights": {
+                                                                                            "hla_compatibility_score": 17,
+                                                                                            "donor_age_difference": 1
+                                                                                        }})),
     'pairs': fields.List(reqired=True, cls_or_instance=fields.Nested(PairJson)),
     'configuration': fields.Nested(OptimizerConfigurationJson, required=True)
 })
