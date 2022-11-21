@@ -254,3 +254,6 @@ class Country(str, Enum):
     ZAF = 'ZAF'
     ZMB = 'ZMB'
     ZWE = 'ZWE'
+
+    def __format__(self, format_spec):
+        return f'{self.name}'
