@@ -26,9 +26,6 @@ class DonorType(str, Enum):
     BRIDGING_DONOR = 'BRIDGING_DONOR'
     NON_DIRECTED = 'NON_DIRECTED'
 
-    def __format__(self, format_spec):
-        return f'{self.name}'
-
 
 @dataclass
 class Patient(PersistentlyHashable):
