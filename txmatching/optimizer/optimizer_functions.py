@@ -5,7 +5,8 @@ import numpy as np
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.optimizer.optimizer_return_object import CycleOrChain, DonorToRecipient, OptimizerReturn, Statistics
-from txmatching.optimizer.optimizer_request_object import Limitations, OptimizerConfiguration, OptimizerRequest, Pair
+from txmatching.optimizer.optimizer_request_object import CompatibilityGraphEntry, Limitations, OptimizerConfiguration, \
+    OptimizerRequest, Pair
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -16,6 +17,7 @@ from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
 from txmatching.solvers.solver_from_config import solver_from_configuration
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Solver
+from txmatching.scorers.compatibility_graph import OptimizerCompatibilityGraph
 
 
 def calculate_from_optimizer_safe(optimizer_request_object: OptimizerRequest) -> OptimizerReturn:
@@ -139,7 +141,7 @@ def _get_statistics(best_matching: List[Tuple[int, int]], cycles: List[Tuple[int
 
 
 def _create_data_and_config_for_ilp(pairs: List[Pair], config_parameters: ConfigParameters,
-                                    comp_graph: List[Dict[str, int]]) -> DataAndConfigurationForILPSolver:
+                                    comp_graph: List[CompatibilityGraphEntry]) -> DataAndConfigurationForILPSolver:
     data_and_configuration = DataAndConfigurationForILPSolver(
         {}, {}, config_parameters
     )
@@ -194,7 +196,7 @@ def _create_graph(comp_matrix: np.array, non_directed_donors: List[int],
     return graph
 
 
-def _get_donor_score_matrix(comp_graph: List[Dict[str, int]], donor_to_recipient: Dict[int, int]) -> np.array:
+def _get_donor_score_matrix(comp_graph: List[CompatibilityGraphEntry], donor_to_recipient: Dict[int, int]) -> np.array:
     score_matrix = []
 
     for donor_id, recipient_id in donor_to_recipient.items():
@@ -211,11 +213,10 @@ def _get_donor_score_matrix(comp_graph: List[Dict[str, int]], donor_to_recipient
     return score_matrix
 
 
-def _hla_score_for_pair(donor_id: int, recipient_id: int, comp_graph: List[Dict[str, int]]) -> int:
+def _hla_score_for_pair(donor_id: int, recipient_id: int, comp_graph: List[CompatibilityGraphEntry]) -> int:
     for row in comp_graph:
-        if ("donor_id" in row and "recipient_id" in row and "hla_compatibility_score" in row and row[
-            "donor_id"] == donor_id and row["recipient_id"] == recipient_id):
-            return row["hla_compatibility_score"]
+        if row.donor_id == donor_id and row.recipient_id == recipient_id and "hla_compatibility_score" in row.weights:
+            return row.weights["hla_compatibility_score"]
     return -1
 
 
@@ -224,7 +225,8 @@ def _get_scores(patient_pairs: List[DonorToRecipient]) -> List[int]:
     return np.sum(scores, axis=0).tolist()
 
 
-def _get_patients_for_cycle_or_chain(cycle_or_chain: List[Tuple[int, int]], comp_graph: List[Dict[str, int]]) -> List[
+def _get_patients_for_cycle_or_chain(cycle_or_chain: List[Tuple[int, int]],
+                                     comp_graph: List[CompatibilityGraphEntry]) -> List[
     DonorToRecipient]:
     return [
         DonorToRecipient(
@@ -255,7 +257,8 @@ def get_optimizer_configuration(config: ConfigParameters) -> OptimizerConfigurat
 
 
 def get_compatibility_graph_for_optimizer_api(donors_dict: Dict[DonorDbId, Donor],
-                                      recipients_dict: Dict[RecipientDbId, Recipient]) -> List[Dict[str, int]]:
+                                              recipients_dict: Dict[
+                                                  RecipientDbId, Recipient]) -> OptimizerCompatibilityGraph:
     scorer = SplitScorer()
 
     compatibility_graph_from_scorer = scorer.get_compatibility_graph(recipients_dict, donors_dict)
@@ -267,7 +270,9 @@ def get_compatibility_graph_for_optimizer_api(donors_dict: Dict[DonorDbId, Donor
                 comp_graph_cell = {
                     "donor_id": donor_id,
                     "recipient_id": recipient_id,
-                    "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)])
+                    "weights": {
+                        "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)]['score'])
+                    }
                 }
                 compatibility_graph.append(comp_graph_cell)
     return compatibility_graph

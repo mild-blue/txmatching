@@ -13,6 +13,7 @@ from txmatching.web import API_VERSION, OPTIMIZER_NAMESPACE
 from txmatching.utils.enums import Solver
 from txmatching.utils.get_absolute_path import get_absolute_path
 
+
 class TestOptimizerApi(DbTests):
 
     def test_optimizer_api_works(self):
@@ -22,14 +23,14 @@ class TestOptimizerApi(DbTests):
                     {
                         "donor_id": 1,
                         "recipient_id": 2,
-                        "hla_compatibility_score": 17,
-                        "donor_age_difference": 1
+                        "weights": {"hla_compatibility_score": 17,
+                                    "donor_age_difference": 1}
                     },
                     {
                         "donor_id": 3,
                         "recipient_id": 4,
-                        "hla_compatibility_score": 10,
-                        "donor_age_difference": 17
+                        "weights": {"hla_compatibility_score": 10,
+                                    "donor_age_difference": 17}
                     }
                 ],
                 "pairs": [
@@ -77,7 +78,7 @@ class TestOptimizerApi(DbTests):
         self.assertEqual(1, res.json['statistics']['number_of_found_cycles_and_chains'])
         self.assertEqual(2, res.json['statistics']['number_of_found_transplants'])
 
-        total_score = sum([dic["hla_compatibility_score"] for dic in json_data["compatibility_graph"]])
+        total_score = sum([dic["weights"]["hla_compatibility_score"] for dic in json_data["compatibility_graph"]])
         self.assertEqual(total_score, res.json['cycles_and_chains'][0]['scores'][0])
         self.assertGreaterEqual(total_score, 0)
 
@@ -86,17 +87,17 @@ class TestOptimizerApi(DbTests):
         txm_event_db_id = get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME)
         txm_event = get_txm_event_complete(txm_event_db_id)
         config_parameters = ConfigParameters(
-                solver_constructor_name=Solver.ILPSolver,
-                max_sequence_length=4,
-                max_cycle_length=4,
-                max_number_of_matchings=1)
+            solver_constructor_name=Solver.ILPSolver,
+            max_sequence_length=4,
+            max_cycle_length=4,
+            max_number_of_matchings=1)
 
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
 
         with self.app.test_client() as client:
             # export the current event
             temp_res = client.get(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}/export/{txm_event_db_id}/default',
-                             headers=self.auth_headers)
+                                  headers=self.auth_headers)
             # compute the solution
             res = client.post(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}', headers=self.auth_headers, json=temp_res.json)
 
@@ -112,17 +113,17 @@ class TestOptimizerApi(DbTests):
         txm_event_db_id = get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME)
         txm_event = get_txm_event_complete(txm_event_db_id)
         config_parameters = ConfigParameters(
-                solver_constructor_name=Solver.ILPSolver,
-                max_sequence_length=4,
-                max_cycle_length=4,
-                max_number_of_matchings=1)
+            solver_constructor_name=Solver.ILPSolver,
+            max_sequence_length=4,
+            max_cycle_length=4,
+            max_number_of_matchings=1)
 
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
 
         with self.app.test_client() as client:
             # export the current event
             temp_res = client.get(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}/export/{txm_event_db_id}/default',
-                             headers=self.auth_headers)
+                                  headers=self.auth_headers)
             # compute the solution
             res = client.post(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}',
                               headers=self.auth_headers, json=temp_res.json)

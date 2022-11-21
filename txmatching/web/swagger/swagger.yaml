@@ -1143,10 +1143,11 @@ definitions:
             compatibility_graph:
                 items:
                     example:
-                        donor_age_difference: 1
                         donor_index: 1
-                        hla_compatibility_score: 17
                         recipient_index: 2
+                        weights:
+                            donor_age_difference: 1
+                            hla_compatibility_score: 17
                     type: object
                 type: array
             configuration:

@@ -1,4 +1,6 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
-# donor_idx, recipient_idx, score
-CompatibilityGraph = Dict[Tuple[int, int], int]
+
+CompatibilityGraph = Dict[Tuple[int, int], Dict[str, int]]
+
+OptimizerCompatibilityGraph = List[Dict[str, any]]
