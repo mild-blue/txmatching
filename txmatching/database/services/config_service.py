@@ -8,7 +8,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel, TxmEventModel
-from txmatching.patients.patient import TxmEvent
+from txmatching.patients.patient import TxmEventBase
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 
@@ -74,7 +74,7 @@ def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) ->
 
 
 def get_configuration_from_db_id_or_default(
-        txm_event: TxmEvent,
+        txm_event: TxmEventBase,
         configuration_db_id: Optional[int]
 ) -> Optional[Configuration]:
     """
@@ -92,7 +92,7 @@ def get_configuration_from_db_id_or_default(
 
 
 def get_configuration_parameters_from_db_id_or_default(
-        txm_event: TxmEvent,
+        txm_event: TxmEventBase,
         configuration_db_id: Optional[int]
 ) -> ConfigParameters:
     configuration = get_configuration_from_db_id_or_default(
