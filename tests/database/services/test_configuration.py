@@ -5,8 +5,8 @@ from txmatching.database.services.config_service import (
     configuration_parameters_from_dict,
     get_configuration_parameters_from_db_id_or_default,
     save_config_parameters_to_db, set_config_as_default)
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_base, get_txm_event_complete)
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Solver
 
@@ -24,7 +24,7 @@ class TestConfiguration(DbTests):
 
     def test_default_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
-        txm_event = get_txm_event_complete(txm_event_db_id)
+        txm_event = get_txm_event_base(txm_event_db_id)
         configuration_parameters_expected = ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
@@ -35,7 +35,7 @@ class TestConfiguration(DbTests):
         self.assertEqual(ConfigParameters(), actual_configuration_parameters)
 
         set_config_as_default(txm_event.db_id, configuration.id)
-        txm_event = get_txm_event_complete(txm_event_db_id)
+        txm_event = get_txm_event_base(txm_event_db_id)
 
         actual_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
         self.assertEqual(configuration_parameters_expected, actual_configuration_parameters)
