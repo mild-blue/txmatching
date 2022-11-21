@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List
+from typing import List
 
 import pandas as pd
 
@@ -9,7 +9,7 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 PATH_TO_REL_DNA_SER = get_absolute_path('./txmatching/utils/hla_system/rel_dna_ser.txt')
 
 
-def parse_rel_dna_ser(path_to_rel_dna_ser: str, are_multiple_values_allowed: bool = False) -> pd.DataFrame:
+def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
     rel_dna_ser_df = (
         pd.read_csv(path_to_rel_dna_ser, comment='#', delimiter=';', header=None)
 
@@ -36,9 +36,13 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str, are_multiple_values_allowed: boo
         rel_dna_ser_df[4]
             .fillna('')
             .astype(str)
-            .loc[lambda s: s != '']
-            .loc[lambda s: are_multiple_values_allowed | ~s.str.contains('/')]
+            .str.replace(r'?', '')
+            .replace('0/', '', regex=True)
+            .loc[lambda s: ~s.str.contains('/')]
             .loc[lambda s: ~s.str.contains('^0')]
+            .loc[lambda s: s != '']
+            .astype(int)
+            .astype(str)
             .to_frame(name='split_number')
             .assign(source='assumed')
     )
@@ -76,25 +80,6 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str, are_multiple_values_allowed: boo
     rel_dna_ser_df = rel_dna_ser_df[['high_res', 'split', 'split_number', 'source']]
     rel_dna_ser_df = rel_dna_ser_df.set_index('high_res')
     return rel_dna_ser_df
-
-
-def get_multiple_serological_codes_from_rel_dna_ser_df(rel_dna_ser_df: pd.DataFrame) -> \
-        Dict[str, List[str]]:
-    """
-    :param rel_dna_ser_df: pd.Dataframe, which contains multiple splits in n/m format (example B15/70).
-                           Usually is recived from parse_rel_dna_ser(..., are_multiple_values_allowed=True)
-    :return: {high_res: list of corresponding serological codes, ...} from rel_dna_ser_df.
-    """
-    assert 'split' in rel_dna_ser_df.columns and 'split_number' in rel_dna_ser_df.columns, \
-        'Wrong dataframe format for this method. Columns high_res and split are needed.'
-
-    split_types = rel_dna_ser_df.split.where(lambda s: s.str.contains('/')).dropna()\
-        .replace('[0-9/]', '', regex=True).to_dict()
-    split_nums = rel_dna_ser_df.split_number.where(lambda s: s.str.contains('/')).dropna()\
-        .str.split('/').to_dict()
-
-    return {high_res: [split_type + split_num for split_num in split_nums[high_res]]
-            for high_res, split_type in split_types.items()}
 
 
 def _matches_any_hla_group(high_res: str) -> bool:
