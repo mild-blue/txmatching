@@ -135,7 +135,7 @@ def find_chains_with_same_recipients_at_the_end(all_paths: List[PathWithScore],
         # if path is a chain
         if path_id_to_path[path_id].donor_ids[0] != path_id_to_path[path_id].donor_ids[-1]:
             for inner_path_id in path_ids:
-                if _chains_are_the_same_with_same_recipient_at_the_end(path_id_to_path[path_id],
+                if path_id != inner_path_id and _chains_are_the_same_with_same_recipient_at_the_end(path_id_to_path[path_id],
                                                                        path_id_to_path[inner_path_id],
                                                                        original_donor_idx_to_recipient_idx):
                     chains_with_the_same_recipients[path_id].add(inner_path_id)

@@ -90,11 +90,10 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
 def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
                                                           selected_path_ids: List[int],
                                                           path_id_to_var: Dict[int, Var],
-                                                          chains_idx_with_same_recipients_at_the_end: Dict[int, int]) -> \
-Set[int]:
+                                                          chains_to_remove: Dict[int, int]) -> Set[int]:
     not_used_path_ids = set(path_id_to_var.keys()) - set(selected_path_ids)
     for selected_path_id in selected_path_ids:
-        not_used_path_ids -= chains_idx_with_same_recipients_at_the_end[selected_path_id]
+        not_used_path_ids -= chains_to_remove[selected_path_id]
     ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in not_used_path_ids]) >= 0.5)
     return not_used_path_ids
 
