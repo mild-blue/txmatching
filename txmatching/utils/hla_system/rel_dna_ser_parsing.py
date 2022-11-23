@@ -35,10 +35,9 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
         rel_dna_ser_df[4]
             .fillna('')
             .astype(str)
-            .str.replace(r'?', '')
-            .replace('0/', '', regex=True)
-            .loc[lambda s: ~s.str.contains('/')]
-            .loc[lambda s: ~s.str.contains('^0')]
+            .str.split('/')
+            .apply(lambda s: [x for x in s if x not in ['0', '?']])
+            .apply(lambda s: s[0] if len(s) == 1 else '')
             .loc[lambda s: s != '']
             .astype(int)
             .astype(str)
