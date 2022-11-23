@@ -53,6 +53,7 @@ codes = {
     'NONEXISTENTN': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'B*15:36': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
     'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
