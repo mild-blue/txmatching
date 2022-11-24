@@ -71,7 +71,7 @@ def get_matchings_detailed_for_pairing_result_model(
 
     number_of_possible_recipients = len([
         recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
-        if recipient_has_at_least_one_donor(compatibility_graph_of_db_ids, recipient_db_id, txm_event.active_and_valid_donors_dict)] # just some text
+        if recipient_has_at_least_one_donor(compatibility_graph_of_db_ids, recipient_db_id, txm_event.active_and_valid_donors_dict)]  #
     )
 
     logger.debug('Getting compatible_blood dict with score')
