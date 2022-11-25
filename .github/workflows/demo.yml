@@ -1,6 +1,7 @@
 name: Demo Deployment
 
 env:
+  AWS_ECR_REPOSITORY: common-txmatching-euw1-be
   DEPLOYMENT_SERVICE: be
   SERVER_USERNAME: ubuntu
   SERVER_URL: txmatching.demo.mildblue.eu
