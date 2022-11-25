@@ -1,7 +1,7 @@
 name: Release Pipeline
 
 env:
-  AWS_ECR_REPOSITORY: prod-txm
+  AWS_ECR_REPOSITORY: common-txmatching-euw1-be"
 
 on:
   workflow_dispatch:

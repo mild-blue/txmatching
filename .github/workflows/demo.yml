@@ -1,8 +1,9 @@
 name: Demo Deployment
 
 env:
-  AWS_ECR_REPOSITORY: demo-txm
   DEPLOYMENT_SERVICE: be
+  SERVER_USERNAME: ubuntu
+  SERVER_URL: txmatching.demo.mildblue.eu
 
 on:
   # manual dispatch
@@ -22,8 +23,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.DEMO_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEMO_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
       - name: Login to Amazon ECR
@@ -61,4 +62,4 @@ jobs:
 
       - name: Redeploy application
         run: |
-          ssh "${{ secrets.DEMO_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
+          ssh "${SERVER_USERNAME}@${SERVER_URL}" "cd /srv/service/txmatching && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
