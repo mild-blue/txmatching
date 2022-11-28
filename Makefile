@@ -36,6 +36,8 @@ run:
 	export FLASK_APP=txmatching.web.app:app; \
 	export FLASK_ENV=development; \
 	export FLASK_DEBUG=true; \
+	DEACTIVATE_DATETIME_IN_LOGGER=${DEACTIVATE_DATETIME_IN_LOGGER} \
+	SHOW_USERS_ACTIONS=${SHOW_USERS_ACTIONS} \
 	flask run --port=8080 --host=localhost
 
 # run app in the docker-compose environment

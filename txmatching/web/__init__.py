@@ -1,6 +1,8 @@
 import logging
+import os
 import re
 import time
+import uuid
 from importlib import util as importing
 from typing import List, Tuple
 
@@ -81,6 +83,8 @@ class RequestPerformance:
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
         self._request_total_time = 0.0
+        self._request_id = None
+        self._user_ip = None
 
         # pylint: disable=too-many-arguments,unused-argument,unused-variable
         @event.listens_for(Engine, 'before_cursor_execute')
@@ -109,18 +113,17 @@ class RequestPerformance:
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
         self._request_total_time = 0.0
+        self._request_id = uuid.uuid4()
+        self._user_ip = request.remote_addr
+        logger.info(f'User {self._user_ip}: Request {self._request_id} started.')
 
     def finish(self) -> None:
         now = time.perf_counter()
-        request_duration = now - self._request_start_time
+        request_duration = int((now - self._request_start_time) * 1000)
         self._request_total_time += request_duration
-
-    def log(self):
-        logger.info(
-            f'Request performance: sql_queries: {len(self._sql_queries)}, '
-            f'sql_total_time: {self._sql_total_time:.6f}, '
-            f'request_total_time: {self._request_total_time:.6f}'
-        )
+        logger.info(f'User {self._user_ip}: Request {self._request_id} took {int(self._request_total_time)} ms. '
+                    f'Method: {request.method} {request.path}, arguments: {dict(request.args)}. '
+                    f'SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.')
 
 
 # pylint: disable=too-many-statements
@@ -256,12 +259,15 @@ def create_app() -> Flask:
 
         @app.before_request
         def before_request_callback():
+            if os.getenv('SHOW_USERS_ACTIONS') != 'true':
+                return
             request_performance.start()
 
         @app.after_request
         def after_request_callback(response):
+            if os.getenv('SHOW_USERS_ACTIONS') != 'true':
+                return response
             request_performance.finish()
-            request_performance.log()
             return response
 
     with app.app_context():
