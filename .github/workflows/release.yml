@@ -1,7 +1,7 @@
 name: Release Pipeline
 
 env:
-  AWS_ECR_REPOSITORY: prod-txm
+  AWS_ECR_REPOSITORY: common-txmatching-euw1-be
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set envs
-        # use latest tag as release version
+        # use the latest tag as release version
         run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
