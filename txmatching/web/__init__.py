@@ -31,7 +31,7 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
-from txmatching.web.web_utils.logging_config import setup_logging
+from txmatching.web.web_utils.logging_config import setup_logging, is_var_active_in_env
 from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  MATCHING_NAMESPACE,
                                                  OPTIMIZER_NAMESPACE,
@@ -259,13 +259,13 @@ def create_app() -> Flask:
 
         @app.before_request
         def before_request_callback():
-            if os.getenv('SHOW_USERS_ACTIONS') != 'true':
+            if not is_var_active_in_env(os.getenv('SHOW_USERS_ACTIONS')):
                 return
             request_performance.start()
 
         @app.after_request
         def after_request_callback(response):
-            if os.getenv('SHOW_USERS_ACTIONS') != 'true':
+            if not is_var_active_in_env(os.getenv('SHOW_USERS_ACTIONS')):
                 return response
             request_performance.finish()
             return response
