@@ -32,5 +32,5 @@ def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUpl
         raise InvalidArgumentException(f'There were the same donors in current data and in the data for upload:'
                                        f' {donor_duplicate_ids}')
     if recipient_duplicate_ids:
-        raise InvalidArgumentException(f'There were the same donors in current data and in the data for upload:'
+        raise InvalidArgumentException(f'There were the same recipients in current data and in the data for upload:'
                                        f' {recipient_duplicate_ids}')

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
@@ -25,6 +25,7 @@ def get_patients_upload_json_from_txm_event_for_country(
         txm_event_id: int,
         country_code: Country,
         txm_event_name: str,
+        donor_medical_ids: List[str] = None
 ) -> PatientUploadDTOIn:
     txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=True)
     donors = [
@@ -42,8 +43,12 @@ def get_patients_upload_json_from_txm_event_for_country(
             internal_medical_id=None
         )
         for donor in
-        txm_event.active_and_valid_donors_dict.values() if donor.parameters.country_code == country_code
+        txm_event.active_and_valid_donors_dict.values()
+        if donor.parameters.country_code == country_code and (
+                donor_medical_ids is None or donor.medical_id in donor_medical_ids)
     ]
+    related_recipient_medical_ids = [donor.related_recipient_medical_id for donor in donors]
+
     recipients = [
         RecipientUploadDTO(
             medical_id=recipient.medical_id,
@@ -65,7 +70,8 @@ def get_patients_upload_json_from_txm_event_for_country(
             acceptable_blood_groups=recipient.acceptable_blood_groups
         )
         for recipient in
-        txm_event.active_and_valid_recipients_dict.values() if recipient.parameters.country_code == country_code
+        txm_event.active_and_valid_recipients_dict.values()
+        if recipient.parameters.country_code == country_code and recipient.medical_id in related_recipient_medical_ids
     ]
 
     return PatientUploadDTOIn(
@@ -73,5 +79,5 @@ def get_patients_upload_json_from_txm_event_for_country(
         txm_event_name=txm_event_name,
         donors=donors,
         recipients=recipients,
-        add_to_existing_patients=False
+        add_to_existing_patients=True
     )

@@ -1,14 +1,17 @@
+from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmEventCopyPatientsDTOIn, TxmEventDTOIn, TxmEventUpdateDTOIn)
+from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.enums import TxmEventState
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
@@ -193,10 +196,7 @@ class TestMatchingApi(DbTests):
         self.assertIsNotNone(TxmEventModel.query.get(txm_event_model_to.db_id))
 
         donors = TxmEventModel.query.get(txm_event_model_from_db_id).donors
-        donor_ids = []
-
-        for donor in donors:
-            donor_ids.append(donor.id)
+        donor_ids = [donor.id for donor in donors]
 
         self.login_with_role(UserRole.ADMIN)
 
@@ -224,3 +224,80 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/json', res.content_type)
+
+    def test_txm_event_copy_between_events_not_working(self):
+        txm_event_model_from_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event_model_to = create_or_overwrite_txm_event(name='test_copy')
+
+        donor_ids = [14, 15]
+
+        self.login_with_role(UserRole.ADMIN)
+
+        # alter donor table so that there's 2 donors relating to the same recipient
+        donor_id_to_change = 15
+        recipient_id_for_error = 13
+        DonorModel.query.filter(DonorModel.id == donor_id_to_change).update(
+            {'recipient_id': recipient_id_for_error})
+        db.session.commit()
+
+        # copy patients from txm_event_from to txm_event_to
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/copy',
+                headers=self.auth_headers,
+                json=TxmEventCopyPatientsDTOIn(
+                    txm_event_id_from=txm_event_model_from_db_id,
+                    txm_event_id_to=txm_event_model_to.db_id,
+                    donor_ids=donor_ids
+                ).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+
+        # test for the case when three donors have the same recipient and they are copied in the separate endpoint calls
+        donor_ids_to_change = [17, 18]
+        recipient_id_for_error = 15
+
+        for donor_id in donor_ids_to_change:
+            DonorModel.query.filter(DonorModel.id == donor_id).update(
+                {'recipient_id': recipient_id_for_error})
+        db.session.commit()
+
+        # copy two donors
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/copy',
+                headers=self.auth_headers,
+                json=TxmEventCopyPatientsDTOIn(
+                    txm_event_id_from=txm_event_model_from_db_id,
+                    txm_event_id_to=txm_event_model_to.db_id,
+                    donor_ids=donor_ids_to_change
+                ).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(DonorModel.query.get(res.json['new_donor_ids'][0]).recipient_id)
+            self.assertIsNotNone(DonorModel.query.get(res.json['new_donor_ids'][1]).recipient_id)
+
+        # copy the remaining donor and assert that we get the error
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/copy',
+                headers=self.auth_headers,
+                json=TxmEventCopyPatientsDTOIn(
+                    txm_event_id_from=txm_event_model_from_db_id,
+                    txm_event_id_to=txm_event_model_to.db_id,
+                    donor_ids=[16]
+                ).__dict__
+            )
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('Recipient with medical id 130B-CZE-R already exists in event test_copy. Unfortunately,'
+                             ' we do not support copying donors with the related recipient that is already in '
+                             'TxmEventTo yet.',
+                             res.json['message'])
