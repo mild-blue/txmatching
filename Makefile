@@ -101,7 +101,9 @@ lint:
 	pylint local_testing_utilities
 
 test:
-	cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
+	cd tests; export PYTHONPATH=../
+	LOGGING_DISABLE_LEVEL_FOR_TESTING=${LOGGING_DISABLE_LEVEL_FOR_TESTING} \
+	python -m unittest discover -s . -t .
 
 check: lint test
 
