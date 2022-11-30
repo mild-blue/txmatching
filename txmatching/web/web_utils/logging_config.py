@@ -11,7 +11,6 @@ PATH_TO_LOG = '../logs'
 
 class ANSIEscapeColorCodes(str, Enum):
     BLUE = '\033[94m'
-    BOLD = '\033[1m'
     CYAN = '\033[96m'
     DARKCYAN = '\033[36m'
     GREEN = '\033[92m'
@@ -58,13 +57,13 @@ class LoggerColorfulTerminalOutputFilter(logging.Filter):
         return True
 
 
-def is_var_active_in_env(env_variable: str, default_env_variable: str = 'true') -> bool:
-    env_variable = default_env_variable if env_variable is None else env_variable
-    if env_variable == 'true':
+def is_var_active_in_env(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:
+    env_variable_value = default_env_variable_value if env_variable_value is None else env_variable_value
+    if env_variable_value == 'true':
         return True
-    elif env_variable == 'false':
+    elif env_variable_value == 'false':
         return False
-    raise ValueError(f'Invalid .env variable "{env_variable}".')
+    raise ValueError(f'Invalid .env variable "{env_variable_value}".')
 
 
 LOGGING_CONFIG = {
@@ -79,9 +78,9 @@ LOGGING_CONFIG = {
             'debug_color': None,
             'info_color': None,
             'warning_color': ANSIEscapeColorCodes.YELLOW if is_var_active_in_env(os.getenv(
-                "COLORFUL_ERROR_OUTPUT")) else None,
+                'COLORFUL_ERROR_OUTPUT')) else None,
             'error_color': ANSIEscapeColorCodes.RED if is_var_active_in_env(os.getenv(
-                "COLORFUL_ERROR_OUTPUT")) else None,
+                'COLORFUL_ERROR_OUTPUT')) else None,
             'critical_color': None
         }
     },
@@ -104,7 +103,7 @@ LOGGING_CONFIG = {
     },
     'handlers': {
         'debug_console_handler': {
-            'level': 'INFO',
+            'level': 'NOTSET',
             'filters': ['max_info_filter'],
             'formatter': 'info',
             'class': 'logging.StreamHandler',
@@ -146,11 +145,11 @@ LOGGING_CONFIG = {
     },
     'formatters': {
         'info': {
-            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable="false") else "%(asctime)s-"}'
+            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable_value="false") else "%(asctime)s-"}'
                       '%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s'
         },
         'error': {
-            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable="false") else "%(asctime)s-"}'
+            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable_value="false") else "%(asctime)s-"}'
                       '%(levelname)s-%(name)s-%(process)d::%(module)s|%(lineno)s:: %(message)s'
         },
     },
@@ -158,6 +157,9 @@ LOGGING_CONFIG = {
 
 
 def setup_logging():
+    if not is_var_active_in_env(os.getenv('LOGGER_DEBUG')):
+        # logger debug mode is inactive
+        logging.disable(logging.DEBUG)
     # Prepare logging folder if it does not exist
     Path(PATH_TO_LOG).mkdir(parents=True, exist_ok=True)
     dictConfig(LOGGING_CONFIG)
