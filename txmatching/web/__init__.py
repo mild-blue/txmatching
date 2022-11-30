@@ -31,7 +31,8 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
-from txmatching.web.web_utils.logging_config import setup_logging, is_var_active_in_env
+from txmatching.web.web_utils.logging_config import (is_var_active_in_env,
+                                                     setup_logging)
 from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  MATCHING_NAMESPACE,
                                                  OPTIMIZER_NAMESPACE,
@@ -255,7 +256,9 @@ def create_app() -> Flask:
 
     def log_request_performance():
         # Set log_queries=True to log sql queries with duration
-        request_performance = RequestPerformance(log_queries=False)
+        request_performance = RequestPerformance(log_queries=
+                                                 is_var_active_in_env(os.getenv('LOG_QUERIES'),
+                                                                      default_env_variable='false'))
 
         @app.before_request
         def before_request_callback():

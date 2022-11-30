@@ -39,6 +39,7 @@ run:
 	DEACTIVATE_DATETIME_IN_LOGGER=${DEACTIVATE_DATETIME_IN_LOGGER} \
 	SHOW_USERS_ACTIONS=${SHOW_USERS_ACTIONS} \
 	COLORFUL_ERROR_OUTPUT=${COLORFUL_ERROR_OUTPUT} \
+	LOG_QUERIES=${LOG_QUERIES} \
 	flask run --port=8080 --host=localhost
 
 # run app in the docker-compose environment
