@@ -76,7 +76,6 @@ class ApiWithProvidedSpecsUrl(Api):
         return self._specs_url
 
 
-# pylint: disable=too-many-instance-attributes
 class RequestPerformance:
     def __init__(self, log_queries):
         self._log_queries = log_queries
@@ -84,7 +83,6 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_total_time = 0.0
         self._request_id = None
         self._user_ip = None
 
@@ -114,16 +112,13 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_total_time = 0.0
         self._request_id = uuid.uuid4()
-        self._user_ip = request.remote_addr
+        self._user_ip = request.remote_addr or '-'
         logger.info(f'User {self._user_ip}: Request {self._request_id} started.')
 
     def finish(self) -> None:
-        now = time.perf_counter()
-        request_duration = int((now - self._request_start_time) * 1000)
-        self._request_total_time += request_duration
-        logger.info(f'User {self._user_ip}: Request {self._request_id} took {int(self._request_total_time)} ms. '
+        total_time = time.perf_counter() - self._request_start_time
+        logger.info(f'User {self._user_ip}: Request {self._request_id} took {int(total_time * 1000)} ms. '
                     f'Method: {request.method} {request.path}, arguments: {dict(request.args)}. '
                     f'SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.')
 

@@ -127,6 +127,34 @@ To obtain configuration in the code, one should call `get_application_configurat
 ### Testing
 To run unittests use `make test` command. `make check` command runs linter and unittests altogether.
 
+### Logging
+#### 1. Where?
+We collect logs in the `../logs` folder, which is created according to your current path.
+For example, in case we launch the app with `make run` from `some_direction/txmatching` direction,
+the direction of logs is `some_direction/logs`.
+If you run the app with the IDE from `/txmatching/txmatching/web/app.py`,
+logs would be saved in `/txmatching/txmatching/logs` direction.</br>
+We also print logs with DEBUG and INFO levels to stdout and
+with WARNING, ERROR and CRITICAL levels to stderr.
+#### 2. What?
+We log every user action with API endpoints, but you can disable this
+in the .env file by setting `SHOW_USERS_ACTIONS` to `false` (by default is `true`).</br>
+There is an ability to activate logging for SQL queries
+(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).
+#### 3. Logger configuration
+Logger configuration is located in the `logging_config.py`.
+All filters, handlers and formatters are configured there.
+You can interact with some of them through environment variables in .env,
+for example you can disable colorful output in terminal, datetime and logger debug mode.
+Environment variables are activated in Makefile before running.
+#### 4. Logger while testing
+While testing we disable logs to a certain level, which is configurable in .env.
+Because of this design choice, you aren't able to use `assertLogs` in unittests.
+Nevertheless, if you want to use this assertion, just set `LOGGING_DISABLE_LEVEL_FOR_TESTING`
+in .env.local and .env.pub to `NOTSET`.
+This means it's time to find another design choice for logging while testing,
+discuss it with a development team.
+
 ### Authentik
 We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
 After you run `docker-compose up` you must setup Authentik. You will do this only once.
