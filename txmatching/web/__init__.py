@@ -76,6 +76,7 @@ class ApiWithProvidedSpecsUrl(Api):
         return self._specs_url
 
 
+# pylint: disable=too-many-instance-attributes
 class RequestPerformance:
     def __init__(self, log_queries):
         self._log_queries = log_queries

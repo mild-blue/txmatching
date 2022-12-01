@@ -20,14 +20,17 @@ class ANSIEscapeColorCodes(str, Enum):
     END = '\033[0m'
 
 
+# pylint: disable=too-few-public-methods
 class LoggerMaxInfoFilter(logging.Filter):
 
     def filter(self, record: logging.LogRecord) -> bool:
         return record.levelno <= logging.INFO
 
 
+# pylint: disable=too-few-public-methods
 class LoggerColorfulTerminalOutputFilter(logging.Filter):
 
+    # pylint: disable=too-many-arguments
     def __init__(self,
                  debug_color=None,
                  info_color=None,
@@ -64,6 +67,12 @@ def is_var_active_in_env(env_variable_value: str, default_env_variable_value: st
     elif env_variable_value == 'false':
         return False
     raise ValueError(f'Invalid .env variable "{env_variable_value}".')
+
+
+def _get_datetime_format_for_logger():
+    return '' if is_var_active_in_env(os.getenv('DEACTIVATE_DATETIME_IN_LOGGER'),
+                                      default_env_variable_value='false') \
+              else '%(asctime)s-'
 
 
 LOGGING_CONFIG = {
@@ -145,12 +154,12 @@ LOGGING_CONFIG = {
     },
     'formatters': {
         'info': {
-            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable_value="false") else "%(asctime)s-"}'
-                      '%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s'
+            'format': f'{_get_datetime_format_for_logger()}'
+                      f'%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s'
         },
         'error': {
-            'format': f'{"" if is_var_active_in_env(os.getenv("DEACTIVATE_DATETIME_IN_LOGGER"), default_env_variable_value="false") else "%(asctime)s-"}'
-                      '%(levelname)s-%(name)s-%(process)d::%(module)s|%(lineno)s:: %(message)s'
+            'format': f'{_get_datetime_format_for_logger()}'
+                      f'%(levelname)s-%(name)s-%(process)d::%(module)s|%(lineno)s:: %(message)s'
         },
     },
 }
