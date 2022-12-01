@@ -256,7 +256,6 @@ def create_app() -> Flask:
             return response
 
     def log_request_performance():
-        # Set log_queries=True to log sql queries with duration
         request_performance = RequestPerformance(log_queries=
                                                  is_var_active_in_env(os.getenv('LOG_QUERIES'),
                                                                       default_env_variable_value='false'))

@@ -39,10 +39,10 @@ class LoggerColorfulTerminalOutputFilter(logging.Filter):
                  critical_color=None):
         super().__init__()
         self.debug_color = debug_color
-        self.info_color = info_color if info_color is not None else self.debug_color
-        self.warning_color = warning_color if warning_color is not None else self.info_color
-        self.error_color = error_color if error_color is not None else self.warning_color
-        self.critical_color = critical_color if critical_color is not None else self.error_color
+        self.info_color = info_color or self.debug_color
+        self.warning_color = warning_color or self.info_color
+        self.error_color = error_color or self.warning_color
+        self.critical_color = critical_color or self.error_color
         self.end_color = ANSIEscapeColorCodes.END
         self.levelno_color = {
             logging.DEBUG: self.debug_color,
@@ -61,7 +61,7 @@ class LoggerColorfulTerminalOutputFilter(logging.Filter):
 
 
 def is_var_active_in_env(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:
-    env_variable_value = default_env_variable_value if env_variable_value is None else env_variable_value
+    env_variable_value = env_variable_value or default_env_variable_value
     if env_variable_value == 'true':
         return True
     elif env_variable_value == 'false':
