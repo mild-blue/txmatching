@@ -83,8 +83,6 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_id = None
-        self._user_ip = None
 
         # pylint: disable=too-many-arguments,unused-argument,unused-variable
         @event.listens_for(Engine, 'before_cursor_execute')
@@ -112,15 +110,14 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_id = uuid.uuid4()
-        self._user_ip = request.remote_addr or '-'
-        logger.info(f'User {self._user_ip}: Request {self._request_id} started.')
+        request.request_id = uuid.uuid4()
+        logger.info(f'User {request.remote_addr}: Request {request.request_id} started.')
 
     def finish(self) -> None:
         total_time = time.perf_counter() - self._request_start_time
-        logger.info(f'User {self._user_ip}: Request {self._request_id} took {int(total_time * 1000)} ms. '
+        logger.info(f'User {request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. '
                     f'Method: {request.method} {request.path}, arguments: {dict(request.args)}. '
-                    f'SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.')
+                    f'SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time)} ms.')
 
 
 # pylint: disable=too-many-statements

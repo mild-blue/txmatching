@@ -1,12 +1,53 @@
+import json
 import logging
 import os
+from datetime import datetime, timezone
 from enum import Enum
 from logging.config import dictConfig
 from pathlib import Path
 
+from flask import has_request_context, request
+
 logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs from werkzeug
 
+old_factory = logging.getLogRecordFactory()
+
 PATH_TO_LOG = '../logs'
+
+
+def record_factory(*args, **kwargs):
+    record = old_factory(*args, **kwargs)
+    record.request_id = request.request_id if has_request_context() else '-'
+    record.remote_addr = request.remote_addr if has_request_context() else '-'
+    record.method = request.method if has_request_context() else '-'
+    record.path = request.path if has_request_context() else '-'
+    return record
+
+
+logging.setLogRecordFactory(factory=record_factory)
+
+
+class JsonFormatter(logging.Formatter):
+
+    @staticmethod
+    def __prepare_log_data(record):
+        data = {
+            'asctime': datetime.fromtimestamp(record.created, timezone.utc).strftime(
+                '%Y-%m-%dT%H:%M:%S.%fZ'),
+            'levelname': record.levelname,
+            'name': record.name,
+            'process': record.process,
+            'user': record.remote_addr,
+            'request_id': str(record.request_id),
+            'method': record.method,
+            'path': record.path,
+            'message': record.msg,
+        }
+        return data
+
+    def format(self, record):
+        data = self.__prepare_log_data(record)
+        return json.dumps(data)
 
 
 class ANSIEscapeColorCodes(str, Enum):
@@ -170,6 +211,9 @@ LOGGING_CONFIG = {
             'format': f'{_get_datetime_format_for_logger()}'
                       f'%(levelname)s-%(name)s-%(process)d::%(module)s|%(lineno)s:: %(message)s'
         },
+        'json': {
+            '()': JsonFormatter
+        }
     },
 }
 
