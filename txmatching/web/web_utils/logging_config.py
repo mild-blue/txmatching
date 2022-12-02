@@ -22,14 +22,18 @@ class ANSIEscapeColorCodes(str, Enum):
 
 # pylint: disable=too-few-public-methods
 class LoggerMaxInfoFilter(logging.Filter):
-
+    """
+    Logger filter, which allows logs only with level INFO or lower.
+    """
     def filter(self, record: logging.LogRecord) -> bool:
         return record.levelno <= logging.INFO
 
 
 # pylint: disable=too-few-public-methods
 class LoggerColorfulTerminalOutputFilter(logging.Filter):
-
+    """
+    Logger filter, which colors logs level name and message to a specific color according to logs level.
+    """
     # pylint: disable=too-many-arguments
     def __init__(self,
                  debug_color=None,
@@ -60,7 +64,12 @@ class LoggerColorfulTerminalOutputFilter(logging.Filter):
         return True
 
 
-def is_var_active_in_env(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:
+def is_env_variable_value_true(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:
+    """
+    :param env_variable_value: value from env_variable as string "true"/"false" or None
+    :param default_env_variable_value: value if env_variable_value is None
+    :return: True if value is "true", False if value is "false", otherwise raises ValueError
+    """
     env_variable_value = env_variable_value or default_env_variable_value
     if env_variable_value == 'true':
         return True
@@ -70,8 +79,8 @@ def is_var_active_in_env(env_variable_value: str, default_env_variable_value: st
 
 
 def _get_datetime_format_for_logger():
-    return '' if is_var_active_in_env(os.getenv('DEACTIVATE_DATETIME_IN_LOGGER'),
-                                      default_env_variable_value='false') \
+    return '' if is_env_variable_value_true(os.getenv('DEACTIVATE_DATETIME_IN_LOGGER'),
+                                            default_env_variable_value='false') \
               else '%(asctime)s-'
 
 
@@ -86,9 +95,9 @@ LOGGING_CONFIG = {
             '()': LoggerColorfulTerminalOutputFilter,
             'debug_color': None,
             'info_color': None,
-            'warning_color': ANSIEscapeColorCodes.YELLOW if is_var_active_in_env(os.getenv(
+            'warning_color': ANSIEscapeColorCodes.YELLOW if is_env_variable_value_true(os.getenv(
                 'COLORFUL_ERROR_OUTPUT')) else None,
-            'error_color': ANSIEscapeColorCodes.RED if is_var_active_in_env(os.getenv(
+            'error_color': ANSIEscapeColorCodes.RED if is_env_variable_value_true(os.getenv(
                 'COLORFUL_ERROR_OUTPUT')) else None,
             'critical_color': None
         }
@@ -166,7 +175,7 @@ LOGGING_CONFIG = {
 
 
 def setup_logging():
-    if not is_var_active_in_env(os.getenv('LOGGER_DEBUG')):
+    if not is_env_variable_value_true(os.getenv('LOGGER_DEBUG')):
         # logger debug mode is inactive
         logging.disable(logging.DEBUG)
     # Prepare logging folder if it does not exist

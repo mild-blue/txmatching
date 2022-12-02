@@ -31,8 +31,8 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
-from txmatching.web.web_utils.logging_config import (is_var_active_in_env,
-                                                     setup_logging)
+from txmatching.web.web_utils.logging_config import (
+    is_env_variable_value_true, setup_logging)
 from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  MATCHING_NAMESPACE,
                                                  OPTIMIZER_NAMESPACE,
@@ -252,18 +252,18 @@ def create_app() -> Flask:
 
     def log_request_performance():
         request_performance = RequestPerformance(log_queries=
-                                                 is_var_active_in_env(os.getenv('LOG_QUERIES'),
-                                                                      default_env_variable_value='false'))
+                                                 is_env_variable_value_true(os.getenv('LOG_QUERIES'),
+                                                                            default_env_variable_value='false'))
 
         @app.before_request
         def before_request_callback():
-            if not is_var_active_in_env(os.getenv('SHOW_USERS_ACTIONS')):
+            if not is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
                 return
             request_performance.start()
 
         @app.after_request
         def after_request_callback(response):
-            if not is_var_active_in_env(os.getenv('SHOW_USERS_ACTIONS')):
+            if not is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
                 return response
             request_performance.finish()
             return response
