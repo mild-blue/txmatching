@@ -68,6 +68,10 @@ _HIGH_RES_TO_SPLIT_DICT = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.dropna(
 
 ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE = {high_res for high_res, split in _HIGH_RES_TO_SPLIT_DICT.items()}
 
+ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE = set(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+                                                       .where(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.source == 'assumed')
+                                                       .dropna().split.to_dict().keys())
+
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
     return {split for high_res, split in _HIGH_RES_TO_SPLIT_DICT.items() if

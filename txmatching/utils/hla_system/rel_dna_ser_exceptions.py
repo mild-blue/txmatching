@@ -1,9 +1,12 @@
+
 PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS = {
     # Based on email communication with Matej Roder from 19.10.2020
     'B*82:02': 'B82',
     'DRB1*09:02': 'DR9',
     # Based on email communication with Matej Roder from 31.12.2020
-    'DQB1*03:19': 'DQ7',
+    'DQB1*03:19': 'DQ7',  # DQB1*03:19 is structurally closest to DQB1*03:01, which corresponds
+                          # to split DQ7. Although it is possible that some antibodies
+                          # may not be against this allele.
     'DRB1*07:07': 'DR7',
     # Based on email communication with Matej Roder from 12.7.2021
     'C*07:18': 'CW7',
@@ -21,5 +24,5 @@ PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
     'C*04:03': ['CW4', 'CW6']
 }
 
-MULTIPLE_SERO_CODES_LIST = [code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values() for code
-                            in code_list]
+MULTIPLE_SERO_CODES_LIST = list({code for code_list in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.values()
+                                 for code in code_list})

@@ -31,6 +31,20 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
             .assign(source='unambiguous')
     )
 
+    split_assumed = (
+        rel_dna_ser_df[4]
+            .fillna('')
+            .astype(str)
+            .str.split('/')
+            .apply(lambda s: [x for x in s if x not in ['0', '?']])
+            .apply(lambda s: s[0] if len(s) == 1 else '')
+            .loc[lambda s: s != '']
+            .astype(int)
+            .astype(str)
+            .to_frame(name='split_number')
+            .assign(source='assumed')
+    )
+
     split_dp = (
         rel_dna_ser_df
             .loc[lambda df: ~df.index.isin(split_unambiguous.index) & (df[2] == '?')]
@@ -47,7 +61,7 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
             .assign(source='dp_cw_fallback')
     )
 
-    split_numbers = pd.concat([split_dp, split_unambiguous])
+    split_numbers = pd.concat([split_dp, split_unambiguous, split_assumed])
 
     rel_dna_ser_df['split_type'] = (rel_dna_ser_df[0]
                                     # gene codes to serology codes as agreed with immunologists

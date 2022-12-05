@@ -49,12 +49,14 @@ codes = {
     'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DQB1*03:19:01:02Q': (HLACode('DQB1*03:19:01:02Q', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'NONEXISTENTN': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'A*68:06': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'B*46:10': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'A*02:719': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'B*15:36': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'DQA1*01:03': (HLACode('DQA1*01:03', 'DQA1', 'DQA1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB01': (HLACode(None, None, 'DQ1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'C12': (HLACode(None, 'CW12', 'CW12'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
@@ -76,7 +78,6 @@ codes = {
     # low res regexp but not in transformation table
     'A*99': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table
-    'A*68:06:01': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'A*02:284N': (HLACode('A*02:284N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
@@ -149,10 +150,12 @@ class TestCodeParser(DbTests):
         self.assertEqual('A1', parsing_result.loc['A*01:01:01:01'].split)
         self.assertTrue(pd.isna(parsing_result.loc['A*05:01:01:02N'].split))
         self.assertTrue(pd.isna(parsing_result.loc['A*06:01:01:02'].split))
+        self.assertTrue(pd.isna(parsing_result.loc['DPB1*936:01Q'].split))
         self.assertEqual('DR1', parsing_result.loc['DRB1*03:01:01:02'].split)
         self.assertEqual('DP2', parsing_result.loc['DPB1*02:01:06'].split)
         self.assertEqual('CW14', parsing_result.loc['C*14:02:01:01'].split)
         self.assertEqual('CW8', parsing_result.loc['C*09'].split)
+        self.assertEqual('CW3', parsing_result.loc['C*03:448Q'].split)
 
     def test_preprocessing(self):
         self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
