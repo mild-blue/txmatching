@@ -12,7 +12,7 @@ logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs
 
 old_factory = logging.getLogRecordFactory()
 
-PATH_TO_LOG = '../logs'
+PATH_TO_LOG = os.getenv('LOGS_FOLDER') or '../logs'
 
 
 def record_factory(*args, **kwargs):
@@ -32,7 +32,7 @@ class JsonFormatter(logging.Formatter):
     @staticmethod
     def __prepare_log_data(record):
         data = {
-            'asctime': datetime.fromtimestamp(record.created, timezone.utc).strftime(
+            'datetime': datetime.fromtimestamp(record.created, timezone.utc).strftime(
                 '%Y-%m-%dT%H:%M:%S.%fZ'),
             'levelname': record.levelname,
             'name': record.name,
@@ -45,7 +45,21 @@ class JsonFormatter(logging.Formatter):
         }
         return data
 
-    def format(self, record):
+    @staticmethod
+    def __insert_exception(record, data):
+        if not record.exc_info:
+            return
+        exception = {
+            'stacktrace': str(traceback.format_exception(record.exc_info[0],
+                                                         record.exc_info[1],
+                                                         record.exc_info[2]))
+        }
+        # TODO: sometimes json dumps fails for some reason... ??
+        # TODO: in order to keep logging alive, we must do this weird catch ??
+        json.dumps(exception)
+        data['exception'] = exception
+
+    def format(self, record: logging.LogRecord) -> str:
         data = self.__prepare_log_data(record)
         return json.dumps(data)
 
@@ -72,6 +86,7 @@ class LoggerMaxInfoFilter(logging.Filter):
 
 # pylint: disable=too-few-public-methods
 class LoggerColorfulTerminalOutputFilter(logging.Filter):
+    # TODO: fix: colors i files
     """
     Logger filter, which colors logs level name and message to a specific color according to logs level.
     """
@@ -164,14 +179,14 @@ LOGGING_CONFIG = {
         'debug_console_handler': {
             'level': 'NOTSET',
             'filters': ['max_info_filter'],
-            'formatter': 'info',
+            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'info',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
         'debug_error_console_handler': {
             'level': 'WARNING',
             'filters': ['colorful_terminal_output'],
-            'formatter': 'error',
+            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'error',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stderr',
         },
