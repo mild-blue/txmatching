@@ -17,10 +17,10 @@ PATH_TO_LOG = os.getenv('LOGS_FOLDER') or '../logs'
 
 def record_factory(*args, **kwargs):
     record = old_factory(*args, **kwargs)
-    record.request_id = request.request_id if has_request_context() else '-'
-    record.remote_addr = request.remote_addr if has_request_context() else '-'
-    record.method = request.method if has_request_context() else '-'
-    record.path = request.path if has_request_context() else '-'
+    record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else '-'
+    record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else '-'
+    record.method = request.method if has_request_context() and hasattr(request, 'method') else '-'
+    record.path = request.path if has_request_context() and hasattr(request, 'path') else '-'
     return record
 
 
