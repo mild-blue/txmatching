@@ -137,7 +137,14 @@ class TestAllSolutionsSolver(unittest.TestCase):
                 max_sequence_length=100,
                 max_cycle_length=100))
         )
+        set_of_solutions = []
+
+        for sol in solutions:
+            self.assertTrue(sol not in set_of_solutions)
+            set_of_solutions.append(sol)
+
         self.assertEqual(len(solutions), 1)
+
 
     def test_works_with_one_cycle_only(self):
         """
