@@ -27,10 +27,10 @@ def get_pairing_result_comparable_to_config_or_solve(
         txm_event: TxmEvent
 ) -> PairingResultModel:
     maybe_pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
-    if maybe_pairing_result_model is not None:
-        return maybe_pairing_result_model
-    else:
-        return solve_from_configuration_and_save(configuration, txm_event)
+    # if maybe_pairing_result_model is not None:
+    #     return maybe_pairing_result_model
+    # else:
+    return solve_from_configuration_and_save(configuration, txm_event)
 
 
 def get_pairing_result_comparable_to_config(

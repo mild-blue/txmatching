@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
                    path_id_to_path_with_score: Dict[int, PathWithScore],
                    config: ConfigParameters,
-                   required_paths_per_recipient: List[List[int]],
-                   chains_idx_with_same_recipients_at_the_end: Dict[int, int]):
+                   required_paths_per_recipient: List[List[int]]):
     """Build and solve the lexicographic optimisation integer programming model.
 
     Parameters:
@@ -79,8 +78,7 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
             if not constr_broken:
                 yield selected_path_ids
             missing = _add_constraints_removing_solution_return_missing_set(ilp_model, selected_path_ids,
-                                                                            path_id_to_var,
-                                                                            chains_idx_with_same_recipients_at_the_end)
+                                                                            path_id_to_var)
             if missing == set():
                 return
         else:
@@ -89,11 +87,8 @@ def optimise_paths(paths_ids_with_the_same_donors: Dict[int, List[int]],
 
 def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
                                                           selected_path_ids: List[int],
-                                                          path_id_to_var: Dict[int, Var],
-                                                          chains_to_remove: Dict[int, int]) -> Set[int]:
+                                                          path_id_to_var: Dict[int, Var]) -> Set[int]:
     not_used_path_ids = set(path_id_to_var.keys()) - set(selected_path_ids)
-    for selected_path_id in selected_path_ids:
-        not_used_path_ids -= chains_to_remove[selected_path_id]
     ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in not_used_path_ids]) >= 0.5)
     return not_used_path_ids
 
