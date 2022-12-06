@@ -139,6 +139,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         )
         set_of_solutions = []
 
+        # check that solutions are unique
         for sol in solutions:
             self.assertTrue(sol not in set_of_solutions)
             set_of_solutions.append(sol)
