@@ -1,0 +1,28 @@
+name: Demo Deployment
+
+env:
+  AWS_ECR_REPOSITORY: common-txmatching-euw1-be
+  DEPLOYMENT_SERVICE: be
+  SERVER_USERNAME: ubuntu
+  SERVER_URL: txmatching.demo.mild.blue
+
+on:
+  # manual dispatch
+  workflow_dispatch:
+
+jobs:
+  build_server:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEMO_SSH_KEY }}
+          known_hosts: ${{ secrets.DEMO_SSH_KNOWN_HOST }}
+
+      - name: Redeploy application
+        run: |
+          ssh "${SERVER_USERNAME}@${SERVER_URL}" "cd /srv/service/txmatching && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
