@@ -1,4 +1,5 @@
 include .env.local
+export
 
 CONDA_ENV=txmatching
 ROOT_FOLDER_NAME=txmatching
@@ -36,13 +37,6 @@ run:
 	export FLASK_APP=txmatching.web.app:app; \
 	export FLASK_ENV=development; \
 	export FLASK_DEBUG=true; \
-	LOGS_FOLDER=${LOGS_FOLDER} \
-	PRODUCTION_LOGGER=${PRODUCTION_LOGGER} \
-	LOGGER_DEBUG=${LOGGER_DEBUG} \
-	DEACTIVATE_DATETIME_IN_LOGGER=${DEACTIVATE_DATETIME_IN_LOGGER} \
-	SHOW_USERS_ACTIONS=${SHOW_USERS_ACTIONS} \
-	COLORFUL_ERROR_OUTPUT=${COLORFUL_ERROR_OUTPUT} \
-	LOG_QUERIES=${LOG_QUERIES} \
 	flask run --port=8080 --host=localhost
 
 # run app in the docker-compose environment
@@ -105,9 +99,7 @@ lint:
 	pylint local_testing_utilities
 
 test:
-	cd tests; export PYTHONPATH=../
-	LOGGING_DISABLE_LEVEL_FOR_TESTING=${LOGGING_DISABLE_LEVEL_FOR_TESTING} \
-	python -m unittest discover -s . -t .
+	cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
 
 check: lint test
 

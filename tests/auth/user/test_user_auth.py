@@ -1,5 +1,6 @@
 import datetime
 import random
+from copy import copy
 from unittest import TestCase, mock
 from uuid import uuid4
 
@@ -13,10 +14,17 @@ from txmatching.auth.user.totp import (generate_otp_for_user,
 from txmatching.auth.user.user_auth import (
     JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES, _send_sms_otp,
     refresh_user_token, user_login_flow, user_otp_login)
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
 class TestUserAuth(DbTests):
+
+    def _get_application_configuration_mock(self):
+        config = copy(self.app.config)
+        config.use_2fa = True
+        return config
 
     def test_user_login_flow_service(self):
         usr = AppUserModel(email='', pass_hash='', role=UserRole.SERVICE, second_factor_material='')
@@ -46,8 +54,10 @@ class TestUserAuth(DbTests):
             self.assertTrue(verify_otp_for_user(usr, token))
 
         with mock.patch('txmatching.auth.user.user_auth.send_sms', send_sms_mock):
-            token = user_login_flow(usr, 0)
-            self.assertEqual(expected, token)
+            with mock.patch('txmatching.auth.user.user_auth.get_application_configuration',
+                            self._get_application_configuration_mock):
+                token = user_login_flow(usr, 0)
+                self.assertEqual(expected, token)
 
     def test_user_login_flow_disabled_2fa(self):
         jwt_expiration_days = 9
@@ -161,4 +171,6 @@ class TestUserAuth(DbTests):
             self.assertEqual(f'{token} - use this code for TXMatching login.', message_body)
 
         with mock.patch('txmatching.auth.user.user_auth.send_sms', send_sms_mock):
-            _send_sms_otp(token, usr)
+            with mock.patch('txmatching.auth.user.user_auth.get_application_configuration',
+                            self._get_application_configuration_mock):
+                _send_sms_otp(token, usr)

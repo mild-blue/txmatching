@@ -71,6 +71,7 @@ class TestLoginFlow(DbTests):
         conf = mock.MagicMock()
         conf.jwt_expiration_days = get_application_configuration().jwt_expiration_days
         conf.jwt_secret = get_application_configuration().jwt_secret
+        conf.use_2fa = True
 
         def get_conf():
             return conf
@@ -81,10 +82,11 @@ class TestLoginFlow(DbTests):
             self.assertTrue(verify_otp_for_user(usr, token))
 
         with mock.patch('txmatching.auth.login_flow.get_application_configuration', get_conf):
-            with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
-                encoded = credentials_login(usr.email, pwd)
-                decoded = decode_auth_token(encoded, conf.jwt_secret)
-                self.assertEqual(expected, decoded)
+            with mock.patch('txmatching.auth.user.user_auth.get_application_configuration', get_conf):
+                with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
+                    encoded = credentials_login(usr.email, pwd)
+                    decoded = decode_auth_token(encoded, conf.jwt_secret)
+                    self.assertEqual(expected, decoded)
 
     def test__refresh_token(self):
         conf = get_application_configuration()
