@@ -115,9 +115,11 @@ class RequestPerformance:
 
     def finish(self) -> None:
         total_time = time.perf_counter() - self._request_start_time
-        logger.info(f'User {request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. '
-                    f'Method: {request.method} {request.path}, arguments: {dict(request.args)}. '
-                    f'SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time)} ms.')
+        log_msg = f'User {request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. ' \
+                  f'Method: {request.method} {request.path}, arguments: {dict(request.args)}.'
+        if is_env_variable_value_true(os.getenv('LOG_SQL_DURATION')):
+            log_msg += f' SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.'
+        logger.info(log_msg)
 
 
 # pylint: disable=too-many-statements

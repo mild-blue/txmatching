@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import traceback
+from copy import copy
 from datetime import datetime, timezone
 from enum import Enum
 from logging.config import dictConfig
@@ -10,9 +12,9 @@ from flask import has_request_context, request
 
 logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs from werkzeug
 
-old_factory = logging.getLogRecordFactory()
-
 PATH_TO_LOG = os.getenv('LOGS_FOLDER') or '../logs'
+
+old_factory = logging.getLogRecordFactory()
 
 
 def record_factory(*args, **kwargs):
@@ -25,6 +27,54 @@ def record_factory(*args, **kwargs):
 
 
 logging.setLogRecordFactory(factory=record_factory)
+
+
+class ANSIEscapeColorCodes(str, Enum):
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    GREEN = '\033[92m'
+    PURPLE = '\033[95m'
+    RED = '\033[91m'
+    YELLOW = '\033[93m'
+    END = '\033[0m'
+
+
+class BaseFormatter(logging.Formatter):
+    # pylint: disable=too-many-arguments
+    def __init__(self,
+                 is_colorful_output=False,
+                 debug_color=ANSIEscapeColorCodes.END,
+                 info_color=ANSIEscapeColorCodes.END,
+                 warning_color=ANSIEscapeColorCodes.END,
+                 error_color=ANSIEscapeColorCodes.END,
+                 critical_color=ANSIEscapeColorCodes.END):
+        super().__init__()
+        self.is_colorful_output = is_colorful_output
+        self.levelno_color = {
+            logging.DEBUG: debug_color,
+            logging.INFO: info_color,
+            logging.WARNING: warning_color,
+            logging.ERROR: error_color,
+            logging.CRITICAL: critical_color
+        }
+
+    @staticmethod
+    def __color_string(string: str, color: str) -> str:
+        return color + string + ANSIEscapeColorCodes.END
+
+    def format(self, record: logging.LogRecord) -> str:
+        time = datetime.fromtimestamp(record.created,
+                                      timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+        tmp_levelname = copy(record.levelname)
+        tmp_msg = copy(record.msg)
+        if self.is_colorful_output:
+            tmp_levelname = self.__color_string(string=tmp_levelname,
+                                                color=self.levelno_color[record.levelno])
+            tmp_msg = self.__color_string(string=tmp_msg,
+                                          color=self.levelno_color[record.levelno])
+        return f'{time}-{tmp_levelname}-{record.name}-{record.process}:: ' \
+               f'{record.module}|{record.lineno}:: {tmp_msg}'
 
 
 class JsonFormatter(logging.Formatter):
@@ -54,25 +104,18 @@ class JsonFormatter(logging.Formatter):
                                                          record.exc_info[1],
                                                          record.exc_info[2]))
         }
-        # TODO: sometimes json dumps fails for some reason... ??
-        # TODO: in order to keep logging alive, we must do this weird catch ??
-        json.dumps(exception)
-        data['exception'] = exception
+        try:
+            json.dumps(exception)
+            data['exception'] = exception
+        except TypeError as ex:
+            logger = logging.getLogger('JsonLogFormatter')
+            logger.error(f'Json dumps failed with {ex} for original exception {exception}. '
+                         f'Original record: {record}.')
 
     def format(self, record: logging.LogRecord) -> str:
         data = self.__prepare_log_data(record)
+        self.__insert_exception(record, data)
         return json.dumps(data)
-
-
-class ANSIEscapeColorCodes(str, Enum):
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    GREEN = '\033[92m'
-    PURPLE = '\033[95m'
-    RED = '\033[91m'
-    YELLOW = '\033[93m'
-    END = '\033[0m'
 
 
 # pylint: disable=too-few-public-methods
@@ -82,42 +125,6 @@ class LoggerMaxInfoFilter(logging.Filter):
     """
     def filter(self, record: logging.LogRecord) -> bool:
         return record.levelno <= logging.INFO
-
-
-# pylint: disable=too-few-public-methods
-class LoggerColorfulTerminalOutputFilter(logging.Filter):
-    # TODO: fix: colors i files
-    """
-    Logger filter, which colors logs level name and message to a specific color according to logs level.
-    """
-    # pylint: disable=too-many-arguments
-    def __init__(self,
-                 debug_color=None,
-                 info_color=None,
-                 warning_color=None,
-                 error_color=None,
-                 critical_color=None):
-        super().__init__()
-        self.debug_color = debug_color
-        self.info_color = info_color or self.debug_color
-        self.warning_color = warning_color or self.info_color
-        self.error_color = error_color or self.warning_color
-        self.critical_color = critical_color or self.error_color
-        self.end_color = ANSIEscapeColorCodes.END
-        self.levelno_color = {
-            logging.DEBUG: self.debug_color,
-            logging.INFO: self.info_color,
-            logging.WARNING: self.warning_color,
-            logging.ERROR: self.error_color,
-            logging.CRITICAL: self.critical_color
-        }
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        color_for_record = self.levelno_color[record.levelno]
-        if color_for_record is not None:
-            record.levelname = color_for_record + record.levelname + self.end_color
-            record.msg = color_for_record + record.msg + self.end_color
-        return True
 
 
 def is_env_variable_value_true(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:
@@ -134,28 +141,12 @@ def is_env_variable_value_true(env_variable_value: str, default_env_variable_val
     raise ValueError(f'Invalid .env variable "{env_variable_value}".')
 
 
-def _get_datetime_format_for_logger():
-    return '' if is_env_variable_value_true(os.getenv('DEACTIVATE_DATETIME_IN_LOGGER'),
-                                            default_env_variable_value='false') \
-              else '%(asctime)s-'
-
-
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': True,
     'filters': {
         'max_info_filter': {
             '()': LoggerMaxInfoFilter,
-        },
-        'colorful_terminal_output': {
-            '()': LoggerColorfulTerminalOutputFilter,
-            'debug_color': None,
-            'info_color': None,
-            'warning_color': ANSIEscapeColorCodes.YELLOW if is_env_variable_value_true(os.getenv(
-                'COLORFUL_ERROR_OUTPUT')) else None,
-            'error_color': ANSIEscapeColorCodes.RED if is_env_variable_value_true(os.getenv(
-                'COLORFUL_ERROR_OUTPUT')) else None,
-            'critical_color': None
         }
     },
     'loggers': {
@@ -179,20 +170,19 @@ LOGGING_CONFIG = {
         'debug_console_handler': {
             'level': 'NOTSET',
             'filters': ['max_info_filter'],
-            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'info',
+            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'terminal_info',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
         'debug_error_console_handler': {
             'level': 'WARNING',
-            'filters': ['colorful_terminal_output'],
-            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'error',
+            'formatter': 'json' if is_env_variable_value_true(os.getenv('PRODUCTION_LOGGER')) else 'terminal_error',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stderr',
         },
         'info_rotating_file_handler': {
             'level': 'INFO',
-            'formatter': 'info',
+            'formatter': 'file_info',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': f'{PATH_TO_LOG}/info.log',
             'mode': 'a',
@@ -201,7 +191,7 @@ LOGGING_CONFIG = {
         },
         'error_file_handler': {
             'level': 'WARNING',
-            'formatter': 'error',
+            'formatter': 'file_error',
             'class': 'logging.FileHandler',
             'filename': f'{PATH_TO_LOG}/error.log',
             'mode': 'a',
@@ -209,7 +199,7 @@ LOGGING_CONFIG = {
         # Just a sample of email logger, not used now
         'critical_mail_handler': {
             'level': 'CRITICAL',
-            'formatter': 'error',
+            'formatter': 'file_error',
             'class': 'logging.handlers.SMTPHandler',
             'mailhost': 'localhost',
             'fromaddr': 'error.handler@mild.blue',
@@ -218,13 +208,23 @@ LOGGING_CONFIG = {
         }
     },
     'formatters': {
-        'info': {
-            'format': f'{_get_datetime_format_for_logger()}'
-                      f'%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s'
+        'terminal_info': {
+            '()': BaseFormatter,
         },
-        'error': {
-            'format': f'{_get_datetime_format_for_logger()}'
-                      f'%(levelname)s-%(name)s-%(process)d::%(module)s|%(lineno)s:: %(message)s'
+        'terminal_error': {
+            '()': BaseFormatter,
+            'is_colorful_output': is_env_variable_value_true(os.getenv('COLORFUL_ERROR_OUTPUT')),
+            'warning_color': ANSIEscapeColorCodes.YELLOW,
+            'error_color': ANSIEscapeColorCodes.RED,
+            'critical_color': ANSIEscapeColorCodes.RED
+        },
+        'file_info': {
+            '()': BaseFormatter,
+            'is_colorful_output': False
+        },
+        'file_error': {
+            '()': BaseFormatter,
+            'is_colorful_output': False
         },
         'json': {
             '()': JsonFormatter
