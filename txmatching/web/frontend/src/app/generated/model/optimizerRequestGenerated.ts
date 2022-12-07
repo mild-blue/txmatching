@@ -11,10 +11,11 @@
  */
 import { PairGenerated } from './pairGenerated';
 import { OptimizerConfigurationGenerated } from './optimizerConfigurationGenerated';
+import { CompatibilityGraphEntryGenerated } from './compatibilityGraphEntryGenerated';
 
 
 export interface OptimizerRequestGenerated { 
-    compatibility_graph: Array<object>;
+    compatibility_graph: Array<CompatibilityGraphEntryGenerated>;
     configuration: OptimizerConfigurationGenerated;
     pairs?: Array<PairGenerated>;
 }

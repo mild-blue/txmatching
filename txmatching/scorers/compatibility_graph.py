@@ -1,5 +1,4 @@
-from typing import Dict, Tuple, List
-
+from typing import Dict, List, Tuple
 
 CompatibilityGraph = Dict[Tuple[int, int], Dict[str, int]]
 

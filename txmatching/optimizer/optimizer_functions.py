@@ -4,11 +4,16 @@ import networkx as nx
 import numpy as np
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.optimizer.optimizer_return_object import CycleOrChain, DonorToRecipient, OptimizerReturn, Statistics
-from txmatching.optimizer.optimizer_request_object import CompatibilityGraphEntry, Limitations, OptimizerConfiguration, \
-    OptimizerRequest, Pair
-from txmatching.patients.patient_types import DonorDbId, RecipientDbId
+from txmatching.optimizer.optimizer_request_object import (
+    CompatibilityGraphEntry, Limitations, OptimizerConfiguration,
+    OptimizerRequest, Pair)
+from txmatching.optimizer.optimizer_return_object import (CycleOrChain,
+                                                          DonorToRecipient,
+                                                          OptimizerReturn,
+                                                          Statistics)
 from txmatching.patients.patient import Donor, Recipient
+from txmatching.patients.patient_types import DonorDbId, RecipientDbId
+from txmatching.scorers.compatibility_graph import OptimizerCompatibilityGraph
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.solve_service.solver_lock import run_with_solver_lock
@@ -17,7 +22,6 @@ from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
 from txmatching.solvers.solver_from_config import solver_from_configuration
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Solver
-from txmatching.scorers.compatibility_graph import OptimizerCompatibilityGraph
 
 
 def calculate_from_optimizer_safe(optimizer_request_object: OptimizerRequest) -> OptimizerReturn:
