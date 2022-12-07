@@ -129,11 +129,8 @@ To run unittests use `make test` command. `make check` command runs linter and u
 
 ### Logging
 #### 1. Where?
-We collect logs in the `../logs` folder, which is created according to your current path.
-For example, in case we launch the app with `make run` from `some_direction/txmatching` direction,
-the direction of logs is `some_direction/logs`.
-If you run the app with the IDE from `/txmatching/txmatching/web/app.py`,
-logs would be saved in `/txmatching/txmatching/logs` direction.</br>
+We can set the logging direction in the .env file using `LOGS_FOLDER` variable,
+otherwise, the logs will be collected in the `../logs` folder.
 We also print logs with DEBUG and INFO levels to stdout and
 with WARNING, ERROR and CRITICAL levels to stderr.
 #### 2. What?
@@ -145,8 +142,11 @@ There is an ability to activate logging for SQL queries
 Logger configuration is located in the `logging_config.py`.
 All filters, handlers and formatters are configured there.
 You can interact with some of them through environment variables in .env,
-for example you can disable colorful output in terminal, datetime and logger debug mode.
-Environment variables are activated in Makefile before running.
+for example you can disable colorful output in terminal, sql duration and logger debug mode.
+One of the most important options is `PRODUCTION_LOGGER` which activates the json formatter.
+It's really useful to log this way during production,
+because we can easily filter all logs in real time.</br>
+P.S. Timezone in the logs is UTC+00:00.
 #### 4. Logger while testing
 While testing we disable logs to a certain level, which is configurable in .env.
 Because of this design choice, you aren't able to use `assertLogs` in unittests.
