@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 
 import responses
+from responses.matchers import json_params_matcher
 
 from txmatching.auth.exceptions import CouldNotSendOtpUsingSmsServiceException
 from txmatching.auth.user.sms_service import _send_otp_ikem
@@ -31,7 +32,7 @@ class TestSmsService(TestCase):
             url=app_config.sms_service_url,
             status=200,
             match=[
-                responses.json_params_matcher(expected_json)
+                json_params_matcher(expected_json)
             ]
         )
 
