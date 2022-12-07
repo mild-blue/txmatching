@@ -52,14 +52,16 @@ OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
                                              [{"hla_compatibility_score": 3}, {"donor_age_difference": 20}]])
 })
 
+CompGraphEntry = optimizer_api.model("CompatibilityGraphEntry", {
+    "donor_id": fields.Integer(required=True, example=1),
+    "recipient_id": fields.Integer(required=True, example=2),
+    "weights": DictItem(attribute="calling_args", example={"hla_compatibility_score": 17,
+                                                           "donor_age_difference": 1
+                                                           })
+})
+
 OptimizerRequestObjectJson = optimizer_api.model('OptimizerRequest', {
-    'compatibility_graph': fields.List(required=True, cls_or_instance=DictItem(attribute="calling_args",
-                                                                               example={"donor_index": 1,
-                                                                                        "recipient_index": 2,
-                                                                                        "weights": {
-                                                                                            "hla_compatibility_score": 17,
-                                                                                            "donor_age_difference": 1
-                                                                                        }})),
+    'compatibility_graph': fields.List(required=True, cls_or_instance=fields.Nested(CompGraphEntry)),
     'pairs': fields.List(reqired=True, cls_or_instance=fields.Nested(PairJson)),
     'configuration': fields.Nested(OptimizerConfigurationJson, required=True)
 })

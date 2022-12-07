@@ -22,6 +22,7 @@ export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
     SuccessfullyParsed = 'SUCCESSFULLY_PARSED',
     HighResWithoutSplit = 'HIGH_RES_WITHOUT_SPLIT',
     HighResWithLetter = 'HIGH_RES_WITH_LETTER',
+    HighResWithAssumedSplitCode = 'HIGH_RES_WITH_ASSUMED_SPLIT_CODE',
     MultipleSplitsOrBroadsFound = 'MULTIPLE_SPLITS_OR_BROADS_FOUND',
     IrrelevantCode = 'IRRELEVANT_CODE',
     UnexpectedSplitResCode = 'UNEXPECTED_SPLIT_RES_CODE',

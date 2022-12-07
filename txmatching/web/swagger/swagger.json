@@ -2307,6 +2307,30 @@
             },
             "type": "object"
         },
+        "CompatibilityGraphEntry": {
+            "required": [
+                "donor_id",
+                "recipient_id"
+            ],
+            "properties": {
+                "donor_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "recipient_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "weights": {
+                    "type": "object",
+                    "example": {
+                        "hla_compatibility_score": 17,
+                        "donor_age_difference": 1
+                    }
+                }
+            },
+            "type": "object"
+        },
         "Configuration": {
             "required": [
                 "blood_group_compatibility_bonus",
@@ -3698,15 +3722,7 @@
                 "compatibility_graph": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "example": {
-                            "donor_index": 1,
-                            "recipient_index": 2,
-                            "weights": {
-                                "hla_compatibility_score": 17,
-                                "donor_age_difference": 1
-                            }
-                        }
+                        "$ref": "#/definitions/CompatibilityGraphEntry"
                     }
                 },
                 "pairs": {

@@ -108,6 +108,23 @@ definitions:
         - calculated_matchings
         - config_id
         type: object
+    CompatibilityGraphEntry:
+        properties:
+            donor_id:
+                example: 1
+                type: integer
+            recipient_id:
+                example: 2
+                type: integer
+            weights:
+                example:
+                    donor_age_difference: 1
+                    hla_compatibility_score: 17
+                type: object
+        required:
+        - donor_id
+        - recipient_id
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -1142,13 +1159,7 @@ definitions:
         properties:
             compatibility_graph:
                 items:
-                    example:
-                        donor_index: 1
-                        recipient_index: 2
-                        weights:
-                            donor_age_difference: 1
-                            hla_compatibility_score: 17
-                    type: object
+                    $ref: '#/definitions/CompatibilityGraphEntry'
                 type: array
             configuration:
                 $ref: '#/definitions/OptimizerConfiguration'
