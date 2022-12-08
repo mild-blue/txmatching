@@ -9,14 +9,7 @@ PATH_TO_REL_DNA_SER = get_absolute_path('./txmatching/utils/hla_system/rel_dna_s
 
 
 def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
-    rel_dna_ser_df = (
-        pd.read_csv(path_to_rel_dna_ser, comment='#', delimiter=';', header=None)
-
-    )
-
-    rel_dna_ser_df = rel_dna_ser_df.loc[lambda df: df[0].apply(_matches_any_hla_group)]
-
-    rel_dna_ser_df['high_res'] = rel_dna_ser_df[0] + rel_dna_ser_df[1]
+    rel_dna_ser_df = _get_rel_dna_ser_df(path_to_rel_dna_ser)
 
     split_unambiguous = (
         rel_dna_ser_df[2]
@@ -61,8 +54,32 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
             .assign(source='dp_cw_fallback')
     )
 
-    split_numbers = pd.concat([split_dp, split_unambiguous, split_assumed])
+    return _compound_rel_dna_ser_df_columns(rel_dna_ser_df, pd.concat([split_dp,
+                                                                       split_unambiguous,
+                                                                       split_assumed]))
 
+
+def _get_rel_dna_ser_df(path_to_rel_dna_ser: str) -> pd.DataFrame:
+    """
+    :param path_to_rel_dna_se: absolute path to csv-table
+    :return: pd.Dataframe from csv-table
+    """
+    rel_dna_ser_df = (
+        pd.read_csv(path_to_rel_dna_ser, comment='#', delimiter=';', header=None)
+
+    )
+    rel_dna_ser_df = rel_dna_ser_df.loc[lambda df: df[0].apply(_matches_any_hla_group)]
+    rel_dna_ser_df['high_res'] = rel_dna_ser_df[0] + rel_dna_ser_df[1]
+    return rel_dna_ser_df
+
+
+def _compound_rel_dna_ser_df_columns(rel_dna_ser_df: pd.DataFrame, split_numbers: pd.DataFrame) -> pd.DataFrame:
+    """
+    Compounds all split numbers, types, sources for high_res as index into one rel_dna_ser_df.
+    :param rel_dna_ser_df: primary pd.Dataframe
+    :param split_numbers: pd.Dataframe with split numbers
+    :return: pd.Dataframe as [high_res* | split | split_number | source]
+    """
     rel_dna_ser_df['split_type'] = (rel_dna_ser_df[0]
                                     # gene codes to serology codes as agreed with immunologists
                                     .str.replace(r'C\*', 'CW', regex=True)
