@@ -65,13 +65,14 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
 
     rel_dna_ser_df['split_type'] = (rel_dna_ser_df[0]
                                     # gene codes to serology codes as agreed with immunologists
-                                    .str.replace(r'C\*', 'CW')
-                                    .str.replace(r'DQB1', 'DQ')
-                                    .str.replace(r'DQA1', 'DQA')
-                                    .str.replace(r'DPB1', 'DP')
-                                    .str.replace(r'DPA1', 'DPA')
-                                    .str.replace(r'(DRB1)|(DRB3)|(DRB4)|(DRB5)|(DRA1)', 'DR')
-                                    .str.replace(r'\*', '')
+                                    .str.replace(r'C\*', 'CW', regex=True)
+                                    .str.replace(r'DQB1', 'DQ', regex=True)
+                                    .str.replace(r'DQA1', 'DQA', regex=True)
+                                    .str.replace(r'DPB1', 'DP', regex=True)
+                                    .str.replace(r'DPA1', 'DPA', regex=True)
+                                    .str.replace(r'(DRB1)|(DRB3)|(DRB4)|(DRB5)|(DRA1)', 'DR',
+                                                 regex=True)
+                                    .str.replace(r'\*', '', regex=True)
                                     )
     rel_dna_ser_df = rel_dna_ser_df.join(split_numbers)
     rel_dna_ser_df['split'] = rel_dna_ser_df['split_type'] + rel_dna_ser_df['split_number']
