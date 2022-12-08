@@ -59,6 +59,25 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
                                                                        split_assumed]))
 
 
+def parse_rel_dna_ser_expert_exceptions(path_to_rel_dna_ser: str) -> pd.DataFrame:
+    """Parses last column "Expert assigned exceptions" in rel_dna_ser.txt csv-table."""
+    rel_dna_ser_df = _get_rel_dna_ser_df(path_to_rel_dna_ser)
+    split_exceptions = (
+        rel_dna_ser_df[5]
+            .fillna('')
+            .astype(str)
+            .str.split('/')
+            .apply(lambda s: [x for x in s if x not in ['0', '?']])
+            .apply(lambda s: s[0] if len(s) == 1 else '')
+            .loc[lambda s: s != '']
+            .astype(int)
+            .astype(str)
+            .to_frame(name='split_number')
+            .assign(source='expert assigned exceptions')
+    )
+    return _compound_rel_dna_ser_df_columns(rel_dna_ser_df, split_exceptions)
+
+
 def _get_rel_dna_ser_df(path_to_rel_dna_ser: str) -> pd.DataFrame:
     """
     :param path_to_rel_dna_se: absolute path to csv-table
