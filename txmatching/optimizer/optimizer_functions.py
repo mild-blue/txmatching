@@ -262,7 +262,7 @@ def get_optimizer_configuration(config: ConfigParameters) -> OptimizerConfigurat
 
 def get_compatibility_graph_for_optimizer_api(donors_dict: Dict[DonorDbId, Donor],
                                               recipients_dict: Dict[
-                                                  RecipientDbId, Recipient]) -> OptimizerCompatibilityGraph:
+                                              RecipientDbId, Recipient]) -> OptimizerCompatibilityGraph:
     scorer = SplitScorer()
 
     compatibility_graph_from_scorer = scorer.get_compatibility_graph(recipients_dict, donors_dict)
@@ -271,12 +271,12 @@ def get_compatibility_graph_for_optimizer_api(donors_dict: Dict[DonorDbId, Donor
     for i, donor_id in enumerate(donors_dict):
         for j, recipient_id in enumerate(recipients_dict):
             if (i, j) in compatibility_graph_from_scorer:
-                comp_graph_cell = {
-                    "donor_id": donor_id,
-                    "recipient_id": recipient_id,
-                    "weights": {
+                comp_graph_entry = CompatibilityGraphEntry(
+                    donor_id=donor_id,
+                    recipient_id=recipient_id,
+                    weights={
                         "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)]['score'])
                     }
-                }
-                compatibility_graph.append(comp_graph_cell)
+                )
+                compatibility_graph.append(comp_graph_entry)
     return compatibility_graph
