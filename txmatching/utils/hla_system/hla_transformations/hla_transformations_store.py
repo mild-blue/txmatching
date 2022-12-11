@@ -3,6 +3,8 @@ import logging
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationHLAParsing, get_application_configuration)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
@@ -183,17 +185,21 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 
     # TODO https://github.com/mild-blue/txmatching/issues/790 hla_code should be nullable
     # 5. check if a basic group is missing
-    for group in hla_per_groups:
-        if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
-            invalid_hla_groups.append(group.hla_group.name)
-            group_name = 'Group ' + group.hla_group.name
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=group_name,
-                    parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-                    message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
+    forgiving_hla_parsing = get_application_configuration() is not None and \
+        get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+
+    if not forgiving_hla_parsing:
+        for group in hla_per_groups:
+            if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
+                invalid_hla_groups.append(group.hla_group.name)
+                group_name = 'Group ' + group.hla_group.name
+                parsing_issues.append(
+                    ParsingIssueBase(
+                        hla_code_or_group=group_name,
+                        parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                        message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
+                    )
                 )
-            )
 
     return (parsing_issues, HLATypingDTO(
         hla_per_groups=[

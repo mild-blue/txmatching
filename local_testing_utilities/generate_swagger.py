@@ -34,6 +34,7 @@ class SwaggerGenApp:
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
         self.app.config['ENVIRONMENT'] = 'PRODUCTION'
+        self.app.config['HLA_PARSING'] = 'STRICT'
         self.app.config['COLOUR_SCHEME'] = 'IKEM'
         self.app.config['USE_2FA'] = 'FALSE'
         self.app.config['AUTHENTIC_CLIENT_ID'] = 'f5c6b6a72ff4f7bbdde383a26bdac192b2200707'
@@ -59,6 +60,7 @@ class PublicSwaggerGenApp:
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
         self.app.config['ENVIRONMENT'] = 'PRODUCTION'
+        self.app.config['HLA_PARSING'] = 'STRICT'
         self.app.config['COLOUR_SCHEME'] = 'IKEM'
         self.app.config['USE_2FA'] = 'FALSE'
         self.app.config['AUTHENTIC_CLIENT_ID'] = 'f5c6b6a72ff4f7bbdde383a26bdac192b2200707'

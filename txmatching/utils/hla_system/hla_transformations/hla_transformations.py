@@ -2,6 +2,8 @@ import logging
 import re
 from typing import List, Optional
 
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationHLAParsing, get_application_configuration)
 from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER,
     HIGH_RES_WITH_SUBUNITS_REGEX, LOW_RES_REGEX, SPLIT_RES_REGEX)
@@ -24,6 +26,11 @@ logger = logging.getLogger(__name__)
 # pylint: disable=too-many-return-statements
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     if hla_raw_code in PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS:
+        forgiving_hla_parsing = get_application_configuration() is not None and \
+            get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+        if forgiving_hla_parsing:
+            return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
+                                          ParsingIssueDetail.SUCCESSFULLY_PARSED)
         return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
     if re.match(LOW_RES_REGEX, hla_raw_code):
@@ -82,6 +89,11 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
         None
     )
     if exception_split_broad_code is None:
+        forgiving_hla_parsing = get_application_configuration() is not None and \
+            get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+        if forgiving_hla_parsing:
+            return process_parsing_result(standartized_high_res, exception_split_broad_code,
+                                          ParsingIssueDetail.SUCCESSFULLY_PARSED)
         if hla_raw_code in ALL_HIGH_RES_CODES:
             return HlaCodeProcessingResult(None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
         else:
@@ -89,6 +101,11 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return HlaCodeProcessingResult(None, exception_split_broad_code)
     if standartized_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
+        forgiving_hla_parsing = get_application_configuration() is not None and \
+            get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+        if forgiving_hla_parsing:
+            return process_parsing_result(standartized_high_res, exception_split_broad_code,
+                                          ParsingIssueDetail.SUCCESSFULLY_PARSED)
         return process_parsing_result(standartized_high_res, exception_split_broad_code,
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
 

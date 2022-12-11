@@ -2,6 +2,8 @@ import logging
 import re
 from typing import List, Optional
 
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationHLAParsing, get_application_configuration)
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.hla_system.hla_regexes import (
     B_SEROLOGICAL_CODE_WITH_W_REGEX, CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX,
@@ -84,4 +86,16 @@ def process_parsing_result(high_res: Optional[str],
         )
     if split_or_broad_raw in IRRELEVANT_CODES:
         return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.IRRELEVANT_CODE)
+
+    forgiving_hla_parsing = get_application_configuration() is not None and \
+        get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+    if forgiving_hla_parsing:
+        return HlaCodeProcessingResult(
+            HLACode(
+                high_res=None,
+                split=split_or_broad_raw,
+                broad=split_or_broad_raw
+            ),
+            detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
+        )
     return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)

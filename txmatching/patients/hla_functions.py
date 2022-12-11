@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationHLAParsing, get_application_configuration)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
@@ -135,8 +137,8 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
 
 
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssueBase], Dict[HLAGroup,
-                                                                                                    List[
-                                                                                                        HLACodeAlias]]]:
+List[
+    HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
@@ -179,10 +181,14 @@ def analyze_if_high_res_antibodies_are_type_a(
         if antibody.mfi < antibody.cutoff:
             is_some_antibody_below_cutoff = True
 
-    if not is_some_antibody_below_cutoff:
-        return HighResAntibodiesAnalysis(False,
-                                         ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
-    elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
-        return HighResAntibodiesAnalysis(False,
-                                         ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+    forgiving_hla_parsing = get_application_configuration() is not None and \
+        get_application_configuration().hla_parsing == ApplicationHLAParsing.FORGIVING
+
+    if not forgiving_hla_parsing:
+        if not is_some_antibody_below_cutoff:
+            return HighResAntibodiesAnalysis(False,
+                                             ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
+        elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
+            return HighResAntibodiesAnalysis(False,
+                                             ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
     return HighResAntibodiesAnalysis(True, None)

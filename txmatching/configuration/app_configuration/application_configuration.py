@@ -28,6 +28,14 @@ class ApplicationColourScheme(str, Enum):
     MILD_BLUE = 'MILD_BLUE'
 
 
+class ApplicationHLAParsing(str, Enum):
+    """
+    Enum representing the strictness of HLA parsing.
+    """
+    STRICT = 'STRICT'
+    FORGIVING = 'FORGIVING'
+
+
 @dataclass(frozen=True)
 class ApplicationConfiguration:
     """
@@ -38,6 +46,7 @@ class ApplicationConfiguration:
 
     code_version: str
     environment: ApplicationEnvironment
+    hla_parsing: ApplicationHLAParsing
     colour_scheme: ApplicationColourScheme
     # Postgres configuration
     postgres_user: str
@@ -78,6 +87,7 @@ def _build_application_configuration() -> ApplicationConfiguration:
     """
     logger.debug('Building configuration.')
     environment = ApplicationEnvironment(_get_prop('ENVIRONMENT'))
+    hla_parsing = ApplicationHLAParsing(_get_prop('HLA_PARSING'))
     colour_scheme = ApplicationColourScheme(_get_prop('COLOUR_SCHEME'))
     use_2fa = _get_prop('USE_2FA', default='true').lower() in {'true', 't'}
     code_version = _get_version()
@@ -85,6 +95,7 @@ def _build_application_configuration() -> ApplicationConfiguration:
     config = ApplicationConfiguration(
         code_version=code_version,
         environment=environment,
+        hla_parsing=hla_parsing,
         colour_scheme=colour_scheme,
         postgres_user=_get_prop('POSTGRES_USER'),
         postgres_password=_get_prop('POSTGRES_PASSWORD'),
