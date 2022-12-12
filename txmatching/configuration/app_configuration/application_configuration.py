@@ -31,6 +31,8 @@ class ApplicationColourScheme(str, Enum):
 class ApplicationHLAParsing(str, Enum):
     """
     Enum representing the strictness of HLA parsing.
+    Strict = normal parsing, no exceptions being made.
+    Forgiving = some parsing errors and warnings are overlooked for the sake of including recipients in a matching.
     """
     STRICT = 'STRICT'
     FORGIVING = 'FORGIVING'
