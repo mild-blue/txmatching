@@ -83,12 +83,13 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                              config_parameters.max_cycle_length)
 
     non_filtered_sequences = find_all_sequences(donor_to_compatible_donor_graph,
-                                   config_parameters.max_sequence_length,
-                                   donors,
-                                   config_parameters.max_number_of_distinct_countries_in_round,
-                                   original_donor_idx_to_recipient_idx)
+                                                config_parameters.max_sequence_length,
+                                                donors,
+                                                config_parameters.max_number_of_distinct_countries_in_round,
+                                                original_donor_idx_to_recipient_idx)
 
-    filtered_sequences = _filter_repeating_sequences(non_filtered_sequences, original_donor_idx_to_recipient_idx)
+    filtered_sequences = _filter_sequences_with_same_recipient_at_the_end(non_filtered_sequences,
+                                                                          original_donor_idx_to_recipient_idx)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         cycles,
@@ -106,7 +107,8 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
     return highest_scoring_paths
 
 
-def _filter_repeating_sequences(paths: List[Path], original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+def _filter_sequences_with_same_recipient_at_the_end(paths: List[Path],
+                                                     original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
     filtered_paths = []
     set_of_added = []
     for path in paths:

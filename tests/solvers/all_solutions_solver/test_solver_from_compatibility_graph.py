@@ -115,7 +115,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
                 raise Exception(
                     f'Recipient/recipients with id/ids {duplicates} is/are present in a matching more than once')
 
-    def test_handling_correctly_multiple_donors_with_the_same_recipient_chains(self):
+    def test_handling_correctly_multiple_donors_with_the_same_recipient_at_the_end_of_chain(self):
         """
         situation
         D1 __ R1
