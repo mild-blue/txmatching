@@ -89,6 +89,10 @@ setup-small-non-empty-db:
 	make setup-empty-db
 	cd local_testing_utilities; PYTHONPATH=$${PYTHONPATH:-..} python populate_small_db.py
 
+setup-multiple-donors-non-empty-db:
+	make setup-empty-db
+	cd local_testing_utilities; PYTHONPATH=$${PYTHONPATH:-..} python populate_db_multiple_donors.py
+
 lint:
 	pylint txmatching
 	pylint local_testing_utilities

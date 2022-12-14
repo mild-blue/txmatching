@@ -89,7 +89,6 @@ def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
                                                           selected_path_ids: List[int],
                                                           path_id_to_var: Dict[int, Var]) -> Set[int]:
     not_used_path_ids = set(path_id_to_var.keys()) - set(selected_path_ids)
-
     ilp_model.add_constr(mip.xsum([path_id_to_var[path_id] for path_id in not_used_path_ids]) >= 0.5)
     return not_used_path_ids
 

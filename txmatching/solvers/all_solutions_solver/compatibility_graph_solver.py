@@ -5,7 +5,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
-    PathWithScore, find_all_cycles, find_all_sequences,
+    Path, PathWithScore, find_all_cycles, find_all_sequences,
     find_paths_with_same_donors, get_donor_to_compatible_donor_graph,
     get_compatible_donor_idxs_per_donor_idx, get_pairs_from_clique,
     keep_only_highest_scoring_paths)
@@ -82,11 +82,14 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                              original_donor_idx_to_recipient_idx,
                              config_parameters.max_cycle_length)
 
-    sequences = find_all_sequences(donor_to_compatible_donor_graph,
-                                   config_parameters.max_sequence_length,
-                                   donors,
-                                   config_parameters.max_number_of_distinct_countries_in_round,
-                                   original_donor_idx_to_recipient_idx)
+    non_filtered_sequences = find_all_sequences(donor_to_compatible_donor_graph,
+                                                config_parameters.max_sequence_length,
+                                                donors,
+                                                config_parameters.max_number_of_distinct_countries_in_round,
+                                                original_donor_idx_to_recipient_idx)
+
+    filtered_sequences = _filter_sequences_with_same_recipient_at_the_end(non_filtered_sequences,
+                                                                          original_donor_idx_to_recipient_idx)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         cycles,
@@ -95,10 +98,23 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
         donors=donors,
         recipients=recipients
     ) + keep_only_highest_scoring_paths(
-        sequences,
+        filtered_sequences,
         compatibility_graph=compatibility_graph,
         donor_idx_to_recipient_idx=original_donor_idx_to_recipient_idx,
         donors=donors,
         recipients=recipients
     )
     return highest_scoring_paths
+
+
+def _filter_sequences_with_same_recipient_at_the_end(paths: List[Path],
+                                                     original_donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+    filtered_paths = []
+    set_of_added = []
+    for path in paths:
+        intermediate_path = list(path[:-1]) + [original_donor_idx_to_recipient_idx[path[-1]]]
+        if intermediate_path not in set_of_added:
+            set_of_added.append(intermediate_path)
+            filtered_paths.append(path)
+
+    return filtered_paths

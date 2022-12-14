@@ -270,8 +270,8 @@ def find_paths_with_same_donors(all_paths: List[PathWithScore],
     return paths_with_the_same_donors, path_id_to_path, required_paths_per_recipient
 
 
-def _donor_id_or_its_recipient_in_path(donor_id, path: PathWithScore,
-                                       original_donor_idx_to_recipient_idx: Dict[int, int]):
+def _donor_id_or_its_recipient_in_path(donor_id: int, path: PathWithScore,
+                                       original_donor_idx_to_recipient_idx: Dict[int, int]) -> bool:
     donor_in_path = donor_id in path.donor_ids
     donors_recipient_in_path = _is_recipient_id_in_path(original_donor_idx_to_recipient_idx[donor_id],
                                                         path,
