@@ -66,45 +66,52 @@ class TestUserApi(DbTests):
             self.generated_otp = token
             self.triggered_times += 1
 
+        def get_conf():
+            conf = mock.MagicMock()
+            conf.use_2fa = True
+            return conf
+
         with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
-            with self.app.test_client() as client:
-                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
-                                       json={'email': user.email, 'password': password})
-                self.assertEqual(200, response.status_code)
-                self.assertIsNotNone(self.generated_otp)
+            with mock.patch('txmatching.auth.user.user_auth.get_application_configuration',
+                            get_conf):
+                with self.app.test_client() as client:
+                    response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
+                                           json={'email': user.email, 'password': password})
+                    self.assertEqual(200, response.status_code)
+                    self.assertIsNotNone(self.generated_otp)
 
-                temp_otp_login_token = response.json['auth_token']
-                decoded_token = parse_request_token(
-                    auth_header=f'Bearer {temp_otp_login_token}',
-                    jwt_secret=get_application_configuration().jwt_secret
-                )
-                self.assertEqual(TokenType.OTP, decoded_token.type)
-                self.assertEqual(1, self.triggered_times)
+                    temp_otp_login_token = response.json['auth_token']
+                    decoded_token = parse_request_token(
+                        auth_header=f'Bearer {temp_otp_login_token}',
+                        jwt_secret=get_application_configuration().jwt_secret
+                    )
+                    self.assertEqual(TokenType.OTP, decoded_token.type)
+                    self.assertEqual(1, self.triggered_times)
 
-                # test malformed token without Bearer prefix
-                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
-                                       json={'otp': self.generated_otp},
-                                       headers={'Authorization': temp_otp_login_token})
-                self.assertEqual(401, response.status_code)
+                    # test malformed token without Bearer prefix
+                    response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
+                                           json={'otp': self.generated_otp},
+                                           headers={'Authorization': temp_otp_login_token})
+                    self.assertEqual(401, response.status_code)
 
-                # test resending token
-                response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/otp',
-                                      headers={'Authorization': f'Bearer {temp_otp_login_token}'})
-                self.assertEqual(200, response.status_code)
-                self.assertEqual(True, response.json['success'])
-                self.assertEqual(2, self.triggered_times)
+                    # test resending token
+                    response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/otp',
+                                          headers={'Authorization': f'Bearer {temp_otp_login_token}'})
+                    self.assertEqual(200, response.status_code)
+                    self.assertEqual(True, response.json['success'])
+                    self.assertEqual(2, self.triggered_times)
 
-                # try to login with correct structure and valid token
-                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
-                                       json={'otp': self.generated_otp},
-                                       headers={'Authorization': f'Bearer {temp_otp_login_token}'})
-                self.assertEqual(200, response.status_code)
-                login_token = response.json['auth_token']
-                decoded_token = parse_request_token(
-                    auth_header=f'Bearer {login_token}',
-                    jwt_secret=get_application_configuration().jwt_secret
-                )
-                self.assertEqual(TokenType.ACCESS, decoded_token.type)
+                    # try to login with correct structure and valid token
+                    response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
+                                           json={'otp': self.generated_otp},
+                                           headers={'Authorization': f'Bearer {temp_otp_login_token}'})
+                    self.assertEqual(200, response.status_code)
+                    login_token = response.json['auth_token']
+                    decoded_token = parse_request_token(
+                        auth_header=f'Bearer {login_token}',
+                        jwt_secret=get_application_configuration().jwt_secret
+                    )
+                    self.assertEqual(TokenType.ACCESS, decoded_token.type)
 
     def test_refresh_token(self):
         self.login_with_role(UserRole.ADMIN)

@@ -270,7 +270,7 @@ def _log_unexpected_error(error_code: int):
 
 
 def _format_exception(ex: Exception) -> str:
-    return f'{type(ex)}: - {str(ex)}'
+    return f'{type(ex).__name__}: - {str(ex)}'
 
 
 def _get_code_from_error_else_500(error: Exception):

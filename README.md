@@ -127,6 +127,34 @@ To obtain configuration in the code, one should call `get_application_configurat
 ### Testing
 To run unittests use `make test` command. `make check` command runs linter and unittests altogether.
 
+### Logging
+#### 1. Where?
+We can set the logging direction in the .env file using `LOGS_FOLDER` variable,
+otherwise, the logs will be collected in the `../logs` folder.
+We also print logs with DEBUG and INFO levels to stdout and
+with WARNING, ERROR and CRITICAL levels to stderr.
+#### 2. What?
+We log every user action with API endpoints, but you can disable this
+in the .env file by setting `SHOW_USERS_ACTIONS` to `false` (by default is `true`).</br>
+There is an ability to activate logging for SQL queries
+(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).
+#### 3. Logger configuration
+Logger configuration is located in the `logging_config.py`.
+All filters, handlers and formatters are configured there.
+You can interact with some of them through environment variables in .env,
+for example you can disable colorful output in terminal, sql duration and logger debug mode.
+One of the most important options is `PRODUCTION_LOGGER` which activates the json formatter.
+It's really useful to log this way during production,
+because we can easily filter all logs in real time.</br>
+P.S. Timezone in the logs is UTC+00:00.
+#### 4. Logger while testing
+While testing we disable logs to a certain level, which is configurable in .env.
+Because of this design choice, you aren't able to use `assertLogs` in unittests.
+Nevertheless, if you want to use this assertion, just set `LOGGING_DISABLE_LEVEL_FOR_TESTING`
+in .env.local and .env.pub to `NOTSET`.
+This means it's time to find another design choice for logging while testing,
+discuss it with a development team.
+
 ### Authentik
 We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
 After you run `docker-compose up` you must setup Authentik. You will do this only once.

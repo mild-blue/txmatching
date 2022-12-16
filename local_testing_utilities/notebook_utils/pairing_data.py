@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import asdict, dataclass
 from typing import Optional, Tuple
@@ -6,6 +7,8 @@ import pandas as pd
 
 from local_testing_utilities.notebook_utils.utils import (
     parse_acceptable_blood, parse_hla)
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -125,7 +128,7 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
                            'recipient_acceptable_blood'
                        }}
     if len(missing_columns) > 0:
-        print(f'Missing columns in {filename}: {missing_columns}.\n -- {set(row.keys())}')
+        logger.warning(f'Missing columns in {filename}: {missing_columns}.\n -- {set(row.keys())}')
         # raise ValueError(f'Missing columns: {missing_columns}. {filename}: {set(row.keys())}')
 
     if pd.isnull(col_map_dict['donor_typization']) or pd.isnull(col_map_dict['recipient_typization']):

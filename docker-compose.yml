@@ -13,7 +13,7 @@ services:
     depends_on:
       - db
     volumes:
-      - /var/log/txmatching:/logs
+      - /var/log/txmatching:/var/logs/mildblue/txm
     extra_hosts:
       - "host.docker.internal:host-gateway"
 

@@ -1,4 +1,5 @@
 include .env.local
+export
 
 CONDA_ENV=txmatching
 ROOT_FOLDER_NAME=txmatching

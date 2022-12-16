@@ -1,6 +1,8 @@
 import logging
+import os
 import re
 import time
+import uuid
 from importlib import util as importing
 from typing import List, Tuple
 
@@ -29,7 +31,8 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
-from txmatching.web.web_utils.logging_config import setup_logging
+from txmatching.web.web_utils.logging_config import (
+    is_env_variable_value_true, setup_logging)
 from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  MATCHING_NAMESPACE,
                                                  OPTIMIZER_NAMESPACE,
@@ -80,7 +83,6 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_total_time = 0.0
 
         # pylint: disable=too-many-arguments,unused-argument,unused-variable
         @event.listens_for(Engine, 'before_cursor_execute')
@@ -108,19 +110,16 @@ class RequestPerformance:
         self._sql_start_time = 0.0
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
-        self._request_total_time = 0.0
+        request.request_id = uuid.uuid4()
+        logger.info(f'User {request.remote_addr}: Request {request.request_id} started.')
 
     def finish(self) -> None:
-        now = time.perf_counter()
-        request_duration = now - self._request_start_time
-        self._request_total_time += request_duration
-
-    def log(self):
-        logger.info(
-            f'Request performance: sql_queries: {len(self._sql_queries)}, '
-            f'sql_total_time: {self._sql_total_time:.6f}, '
-            f'request_total_time: {self._request_total_time:.6f}'
-        )
+        total_time = time.perf_counter() - self._request_start_time
+        log_msg = f'User {request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. ' \
+                  f'Method: {request.method} {request.path}, arguments: {dict(request.args)}.'
+        if is_env_variable_value_true(os.getenv('LOG_SQL_DURATION')):
+            log_msg += f' SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.'
+        logger.info(log_msg)
 
 
 # pylint: disable=too-many-statements
@@ -251,17 +250,19 @@ def create_app() -> Flask:
             return response
 
     def log_request_performance():
-        # Set log_queries=True to log sql queries with duration
-        request_performance = RequestPerformance(log_queries=False)
+        request_performance = RequestPerformance(log_queries=
+                                                 is_env_variable_value_true(os.getenv('LOG_QUERIES'),
+                                                                            default_env_variable_value='false'))
 
         @app.before_request
         def before_request_callback():
-            request_performance.start()
+            if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
+                request_performance.start()
 
         @app.after_request
         def after_request_callback(response):
-            request_performance.finish()
-            request_performance.log()
+            if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
+                request_performance.finish()
             return response
 
     with app.app_context():
