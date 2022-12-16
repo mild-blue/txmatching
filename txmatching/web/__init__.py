@@ -256,15 +256,13 @@ def create_app() -> Flask:
 
         @app.before_request
         def before_request_callback():
-            if not is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
-                return
-            request_performance.start()
+            if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
+                request_perfomance.start()
 
         @app.after_request
         def after_request_callback(response):
-            if not is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
-                return response
-            request_performance.finish()
+            if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
+                request_performance.finish()
             return response
 
     with app.app_context():
