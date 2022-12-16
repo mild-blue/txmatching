@@ -257,7 +257,7 @@ def create_app() -> Flask:
         @app.before_request
         def before_request_callback():
             if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
-                request_perfomance.start()
+                request_performance.start()
 
         @app.after_request
         def after_request_callback(response):
