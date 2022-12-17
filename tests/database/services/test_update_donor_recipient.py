@@ -10,7 +10,7 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
+    get_txm_event_base, get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
@@ -35,6 +35,7 @@ class TestUpdateDonorRecipient(DbTests):
             RecipientModel.query.get(recipient_db_id).recipient_requirements[
                 'require_better_match_in_compatibility_index'])
         etag = RecipientModel.query.get(recipient_db_id).etag
+        txm_event_base = get_txm_event_base(txm_event_db_id)
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
             hla_antibodies=HLAAntibodiesUpdateDTO([HLAAntibodyUpdateDTO(mfi=20, raw_code='B42'),
@@ -47,7 +48,7 @@ class TestUpdateDonorRecipient(DbTests):
             recipient_requirements=RecipientRequirements(require_better_match_in_compatibility_index=True),
             db_id=recipient_db_id,
             etag=etag
-        ), txm_event_db_id)
+        ), txm_event_base)
 
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
         self.assertEqual(1, len(configs))
@@ -75,11 +76,12 @@ class TestUpdateDonorRecipient(DbTests):
                             {hla_antibody.cutoff for hla_antibody in
                              RecipientModel.query.get(recipient_db_id).hla_antibodies_raw})
         etag = RecipientModel.query.get(recipient_db_id).etag
+        txm_event_base = get_txm_event_base(txm_event_db_id)
         update_recipient(RecipientUpdateDTO(
             cutoff=new_cutoff,
             db_id=recipient_db_id,
             etag=etag
-        ), txm_event_db_id)
+        ), txm_event_base)
         self.assertEqual(new_cutoff, RecipientModel.query.get(recipient_db_id).recipient_cutoff)
         self.assertSetEqual({new_cutoff},
                             {code.cutoff for code in RecipientModel.query.get(recipient_db_id).hla_antibodies_raw})
@@ -99,6 +101,7 @@ class TestUpdateDonorRecipient(DbTests):
                              hla_type in
                              hla_group['hla_types']})
 
+        txm_event_base = get_txm_event_complete(txm_event_db_id)
         update_donor(DonorUpdateDTO(
             hla_typing=HLATypingUpdateDTO([
                 HLATypeUpdateDTO('A11'),
@@ -106,7 +109,7 @@ class TestUpdateDonorRecipient(DbTests):
             ]),
             db_id=donor_db_id,
             etag=etag
-        ), txm_event_db_id)
+        ), txm_event_base)
 
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
         self.assertEqual(1, len(configs))
@@ -125,11 +128,12 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertIn(original_donor_model.id, original_txm_event.active_and_valid_donors_dict.keys())
         self.assertIn(original_donor_model.recipient_id, original_txm_event.active_and_valid_recipients_dict.keys())
         etag = DonorModel.query.get(donor_db_id).etag
+        txm_event_base = get_txm_event_base(txm_event_db_id)
         update_donor(DonorUpdateDTO(
             active=False,
             db_id=donor_db_id,
             etag=etag
-        ), txm_event_db_id)
+        ), txm_event_base)
         new_txm_event = get_txm_event_complete(txm_event_db_id)
 
         self.assertEqual(False, DonorModel.query.get(donor_db_id).active)

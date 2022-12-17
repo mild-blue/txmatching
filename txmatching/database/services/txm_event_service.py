@@ -36,7 +36,7 @@ def get_newest_txm_event_db_id() -> int:
         raise ValueError('There are no TXM events in the database.')
 
 
-def create_txm_event(name: str, strictness_type: StrictnessType) -> TxmEvent:
+def create_txm_event(name: str, strictness_type: StrictnessType = StrictnessType.STRICT) -> TxmEvent:
     if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) > 0:
         raise InvalidArgumentException(f'TXM event "{name}" already exists.')
     txm_event_model = TxmEventModel(name=name, strictness_type=strictness_type)

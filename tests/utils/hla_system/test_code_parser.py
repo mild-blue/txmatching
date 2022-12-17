@@ -15,7 +15,7 @@ from txmatching.patients.hla_functions import (
 from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, StrictnessType
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
 from txmatching.utils.hla_system.hla_table import \
@@ -89,11 +89,29 @@ codes = {
     'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
 }
 
+codes_forgiving_parsing = {
+    'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
+    'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
+    'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
+    'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C1': (HLACode(None, 'CW1', 'CW1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DPB13': (HLACode(None, 'DP13', 'DP13'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A9': (HLACode(None, None, 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A23': (HLACode(None, 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
+}
 
 class TestCodeParser(DbTests):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
             result = parse_hla_raw_code_with_details(code)
+            self.assertTupleEqual((expected_result_detail, expected_result),
+                                  (result.result_detail, result.maybe_hla_code),
+                                  f'{code} was processed to {result.maybe_hla_code} '
+                                  f'with result {result.result_detail} expected was: '
+                                  f'{expected_result} with result {expected_result_detail}')
+        for code, (expected_result, expected_result_detail) in codes_forgiving_parsing.items():
+            result = parse_hla_raw_code_with_details(code, strictness_type=StrictnessType.FORGIVING)
             self.assertTupleEqual((expected_result_detail, expected_result),
                                   (result.result_detail, result.maybe_hla_code),
                                   f'{code} was processed to {result.maybe_hla_code} '
@@ -316,6 +334,11 @@ class TestCodeParser(DbTests):
                                              ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
         self.assertEqual(expected,
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
+
+        expected = HighResAntibodiesAnalysis(True, None)
+        self.assertEqual(expected,
+                         analyze_if_high_res_antibodies_are_type_a(some_antibodies_list,
+                                                                   strictness_type=StrictnessType.FORGIVING))
 
     def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
         res = get_mfi_from_multiple_hla_codes(mfis, cutoff, 'test')

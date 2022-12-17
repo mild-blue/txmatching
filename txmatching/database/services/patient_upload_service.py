@@ -206,7 +206,7 @@ def _donor_upload_dto_to_donor_model(
             maybe_related_recipient is None):
         raise InvalidArgumentException(
             f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
-            f'"{donor.related_recipient_medical_id}"), which was not found among recipients in txm event {txm_event_db_id}.'
+            f'"{donor.related_recipient_medical_id}"), which was not found among recipients in txm event {txm_event_base.db_id}.'
         )
 
     if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
