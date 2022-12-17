@@ -49,9 +49,9 @@ class CalculateFromConfig(Resource):
                                                                    configuration.id)
         configuration_parameters = configuration.parameters
         calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
-            :configuration_parameters.max_number_of_matchings]
+                                                        :configuration_parameters.max_number_of_matchings]
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
-                :configuration_parameters.max_matchings_to_show_to_viewer]
+                                                            :configuration_parameters.max_matchings_to_show_to_viewer]
         logging.debug('Collected matchings and sending them')
         return response_ok(calculated_matchings_dto)

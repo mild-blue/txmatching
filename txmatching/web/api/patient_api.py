@@ -169,7 +169,8 @@ class AlterRecipient(Resource):
         recipient_update_dto = request_body(RecipientUpdateDTO)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
         guard_open_txm_event(txm_event_id)
-        updated_recipient = update_recipient(recipient_update_dto, txm_event_id)
+        txm_event_base = get_txm_event_base(txm_event_id)
+        updated_recipient = update_recipient(recipient_update_dto, txm_event_base)
 
         return response_ok(
             UpdatedRecipientDTOOut(
@@ -199,7 +200,8 @@ class AlterDonor(Resource):
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
                                                                                       configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration_parameters)
-        updated_donor = update_donor(donor_update_dto, txm_event_id)
+        txm_event_base = get_txm_event_base(txm_event_id)
+        updated_donor = update_donor(donor_update_dto, txm_event_base)
 
         return response_ok(
             UpdatedDonorDTOOut(
@@ -277,7 +279,9 @@ class RecomputeParsing(Resource):
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
-        result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
+        txm_event_base = get_txm_event_base(txm_event_id)
+        result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id,
+                                                                                    txm_event_base.strictness_type)
         return response_ok(result)
 
 
@@ -368,7 +372,7 @@ class CalculateRecipientCPRA(Resource):
         cpra, compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(txm_event,
                                                                                          recipient,
                                                                                          config_parameters)
-        result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
+        result = {'cPRA': round(cpra * 100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
         return response_ok(result)
 
 

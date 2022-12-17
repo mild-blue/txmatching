@@ -1137,6 +1137,8 @@ definitions:
         properties:
             name:
                 type: string
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
         required:
         - name
         type: object
@@ -1248,6 +1250,7 @@ definitions:
                 - HIGH_RES_WITHOUT_SPLIT
                 - HIGH_RES_WITH_LETTER
                 - HIGH_RES_WITH_ASSUMED_SPLIT_CODE
+                - FORGIVING_HLA_PARSING
                 - MULTIPLE_SPLITS_OR_BROADS_FOUND
                 - IRRELEVANT_CODE
                 - UNEXPECTED_SPLIT_RES_CODE
@@ -1617,6 +1620,12 @@ definitions:
         - number_of_found_cycles_and_chains
         - number_of_found_transplants
         type: object
+    StrictnessType:
+        description: Level of strictness for HLA parsing.
+        enum:
+        - STRICT
+        - FORGIVING
+        type: string
     Success:
         properties:
             success:
@@ -1672,10 +1681,13 @@ definitions:
                 type: string
             state:
                 $ref: '#/definitions/TxmEventState'
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
         required:
         - id
         - name
         - state
+        - strictness_type
         type: object
     TxmEventCopy:
         properties:

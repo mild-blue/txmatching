@@ -1,13 +1,15 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.enums_swagger import (CountryCodeJson,
+                                                            StrictnessTypeEnumJson,
                                                             TxmEventStateJson)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueJson
 from txmatching.web.web_utils.namespaces import txm_event_api
 
 TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
-    'name': fields.String(required=True)
+    'name': fields.String(required=True),
+    'strictness_type': fields.Nested(StrictnessTypeEnumJson, required=False)
 })
 
 TxmDefaultEventJsonIn = txm_event_api.model('DefaultTxmEvent', {
@@ -19,6 +21,7 @@ TxmEventJsonOut = txm_event_api.model('TxmEvent', {
     'name': fields.String(required=True),
     'default_config_id': fields.Integer(required=False),
     'state': fields.Nested(TxmEventStateJson, required=True),
+    'strictness_type': fields.Nested(StrictnessTypeEnumJson, required=True)
 })
 
 PatientsRecomputeParsingSuccessJson = txm_event_api.model('PatientsRecomputeParsingSuccess', {

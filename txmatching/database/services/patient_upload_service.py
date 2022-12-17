@@ -27,13 +27,13 @@ from txmatching.database.services.parsing_utils import (
 from txmatching.database.services.patient_service import \
     get_hla_antibodies_from_recipient_model
 from txmatching.database.services.txm_event_service import (
-    get_txm_event_complete, get_txm_event_db_id_by_name,
+    get_txm_event_base, get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.hla_model import HLATypeRaw
-from txmatching.patients.patient import DonorType, calculate_cutoff
+from txmatching.patients.patient import DonorType, calculate_cutoff, StrictnessType, TxmEventBase
 from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
@@ -113,7 +113,7 @@ def replace_or_add_patients_from_excel(patient_upload_dtos: List[PatientUploadDT
 def _recipient_upload_dto_to_recipient_model(
         recipient: RecipientUploadDTO,
         country_code: Country,
-        txm_event_db_id: int
+        txm_event_base: TxmEventBase
 ) -> RecipientModel:
     acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
         else recipient.acceptable_blood_groups
@@ -134,7 +134,7 @@ def _recipient_upload_dto_to_recipient_model(
         ],
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
-        txm_event_id=txm_event_db_id,
+        txm_event_id=txm_event_base.db_id,
         waiting_since=parse_date_to_datetime(recipient.waiting_since),
         weight=recipient.weight,
         height=recipient.height,
@@ -144,8 +144,10 @@ def _recipient_upload_dto_to_recipient_model(
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id
     )
-    hla_typing_parsing_issues = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
-    hla_antibodies_parsing_issues = _parse_and_update_hla_antibodies_in_model(recipient_model)
+    hla_typing_parsing_issues = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model,
+                                                                      strictness_type=txm_event_base.strictness_type)
+    hla_antibodies_parsing_issues = _parse_and_update_hla_antibodies_in_model(recipient_model,
+                                                                              strictness_type=txm_event_base.strictness_type)
     parsing_issues = hla_typing_parsing_issues + hla_antibodies_parsing_issues
     parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
@@ -156,23 +158,29 @@ def _recipient_upload_dto_to_recipient_model(
     return recipient_model
 
 
-def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None) -> \
+def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None,
+                                          strictness_type: StrictnessType = StrictnessType.STRICT) -> \
         List[ParsingIssueBase]:
     if donor_model is not None:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=donor_model.hla_typing_raw)
-        parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
+        parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw,
+                                                                                        strictness_type=strictness_type)
         donor_model.hla_typing = dataclasses.asdict(hla_typing)
     else:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
-        parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
+        parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw,
+                                                                                        strictness_type=strictness_type)
         recipient_model.hla_typing = dataclasses.asdict(hla_typing)
     return parsing_issues
 
 
-def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -> List[ParsingIssueBase]:
+def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel,
+                                              strictness_type: StrictnessType = StrictnessType.STRICT) -> List[
+    ParsingIssueBase]:
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
     parsing_issues, hla_antibodies_parsed = parse_hla_antibodies_raw_and_return_parsing_issue_list(
-        hla_antibodies_raw
+        hla_antibodies_raw,
+        strictness_type
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
     transformed_hla_antibodies = get_hla_antibodies_from_recipient_model(recipient_model)
@@ -184,7 +192,7 @@ def _donor_upload_dto_to_donor_model(
         donor: DonorUploadDTO,
         recipient_models_dict: Dict[str, RecipientModel],
         country_code: Country,
-        txm_event_db_id: int
+        txm_event_base: TxmEventBase
 ) -> DonorModel:
     maybe_related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
 
@@ -227,11 +235,12 @@ def _donor_upload_dto_to_donor_model(
         sex=donor.sex,
         yob=donor.year_of_birth,
         note=donor.note,
-        txm_event_id=txm_event_db_id,
+        txm_event_id=txm_event_base.db_id,
         internal_medical_id=donor.internal_medical_id
     )
 
-    parsing_issues = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
+    parsing_issues = _parse_and_update_hla_typing_in_model(donor_model=donor_model,
+                                                           strictness_type=txm_event_base.strictness_type)
     parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
         txm_event_id=donor_model.txm_event_id,
@@ -261,9 +270,9 @@ def _add_patients_from_one_country(
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 
-    txm_event_db_id = txm_event.db_id
+    txm_event_base = get_txm_event_base(txm_event.db_id)
     recipient_models = [
-        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
+        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_base)
         for recipient in recipients
     ]
     db.session.add_all(recipient_models)
@@ -271,7 +280,7 @@ def _add_patients_from_one_country(
     dublicate_recipients = [
         recipient for recipient in initial_recipients if recipient.medical_id in recipient_duplicate_ids]
     dublicate_recipient_models = [
-        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
+        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_base)
         for recipient in dublicate_recipients
     ]
     recipient_models_dict = {recipient_model.medical_id: recipient_model
@@ -282,7 +291,7 @@ def _add_patients_from_one_country(
             donor=donor,
             recipient_models_dict=recipient_models_dict,
             country_code=country_code,
-            txm_event_db_id=txm_event_db_id)
+            txm_event_base=txm_event_base)
         for donor in donors
     ]
     db.session.add_all(donor_models)

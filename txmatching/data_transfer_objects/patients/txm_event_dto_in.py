@@ -6,18 +6,20 @@ from txmatching.database.services.patient_service import \
 from txmatching.database.services.txm_event_service import \
     raise_error_if_txm_event_does_not_exist
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import TxmEventState
+from txmatching.utils.enums import StrictnessType, TxmEventState
 
 
 @dataclass
 class TxmEventDTOIn:
     name: str
+    strictness_type: StrictnessType = StrictnessType.STRICT
 
 
 @dataclass
 class TxmDefaultEventDTOIn:
     # pylint:disable=invalid-name
     id: int
+
     # pylint:enable=invalid-name
 
     def __post_init__(self):

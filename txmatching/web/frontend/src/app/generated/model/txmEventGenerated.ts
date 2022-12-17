@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { StrictnessTypeGenerated } from './strictnessTypeGenerated';
 import { TxmEventStateGenerated } from './txmEventStateGenerated';
 
 
@@ -17,5 +18,6 @@ export interface TxmEventGenerated {
     id: number;
     name: string;
     state: TxmEventStateGenerated;
+    strictness_type: StrictnessTypeGenerated;
 }
 

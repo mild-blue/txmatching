@@ -9,11 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { StrictnessTypeGenerated } from './strictnessTypeGenerated';
 
 
-export interface NewTxmEventGenerated { 
-    name: string;
-    strictness_type?: StrictnessTypeGenerated;
-}
+/**
+ * Level of strictness for HLA parsing.
+ */
+export enum StrictnessTypeGenerated {
+    Strict = 'STRICT',
+    Forgiving = 'FORGIVING'
+};
 
