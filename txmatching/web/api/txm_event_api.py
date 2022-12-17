@@ -156,7 +156,8 @@ class TxmExportEventApi(Resource):
         txm_event_json = get_patients_upload_json_from_txm_event_for_country(
             txm_event_id=txm_event_id,
             country_code=export_dto.country,
-            txm_event_name=export_dto.new_txm_event_name
+            txm_event_name=export_dto.new_txm_event_name,
+            strictness_type=export_dto.strictness_type
         )
         return response_ok(txm_event_json)
 

@@ -1535,6 +1535,14 @@
             },
             "type": "object"
         },
+        "StrictnessType": {
+            "enum": [
+                "STRICT",
+                "FORGIVING"
+            ],
+            "type": "string",
+            "description": "Level of strictness for HLA parsing."
+        },
         "Success": {
             "required": [
                 "success"
@@ -1578,6 +1586,9 @@
                     "type": "boolean",
                     "description": "If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.",
                     "default": false
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"

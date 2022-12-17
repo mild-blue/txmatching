@@ -12,7 +12,7 @@ class TxmEventDTOOut:
     name: str
     default_config_id: Optional[int]
     state: TxmEventState
-    strictness_type: StrictnessType
+    strictness_type: Optional[StrictnessType] = StrictnessType.STRICT
 
 
 @dataclass

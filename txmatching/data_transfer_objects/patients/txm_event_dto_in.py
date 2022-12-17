@@ -12,7 +12,7 @@ from txmatching.utils.enums import StrictnessType, TxmEventState
 @dataclass
 class TxmEventDTOIn:
     name: str
-    strictness_type: StrictnessType = StrictnessType.STRICT
+    strictness_type: Optional[StrictnessType] = StrictnessType.STRICT
 
 
 @dataclass
@@ -35,6 +35,7 @@ class TxmEventUpdateDTOIn:
 class TxmEventExportDTOIn:
     country: Country
     new_txm_event_name: str
+    strictness_type: Optional[StrictnessType] = StrictnessType.STRICT
 
 
 @dataclass

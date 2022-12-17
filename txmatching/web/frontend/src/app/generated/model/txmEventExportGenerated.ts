@@ -10,10 +10,12 @@
  * Do not edit the class manually.
  */
 import { CountryCodeGenerated } from './countryCodeGenerated';
+import { StrictnessTypeGenerated } from './strictnessTypeGenerated';
 
 
 export interface TxmEventExportGenerated { 
     country: CountryCodeGenerated;
     new_txm_event_name: string;
+    strictness_type?: StrictnessTypeGenerated;
 }
 

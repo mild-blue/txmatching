@@ -44,7 +44,7 @@ export class EventService {
   public async getDefaultEvent(): Promise<TxmEvent> {
     if (!this._defaultTxmEvent) {
       this._defaultTxmEvent = firstValueFrom(
-        this._http.get<TxmEvent>(`${environment.apiUrl}/txm-event/default`).pipe(map(parseTxmEvent))
+        this._http.get<TxmEventGenerated>(`${environment.apiUrl}/txm-event/default`).pipe(map(parseTxmEvent))
       );
     }
     return this._defaultTxmEvent;

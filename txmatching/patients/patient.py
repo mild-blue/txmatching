@@ -137,7 +137,7 @@ class TxmEventBase:
     name: str
     default_config_id: Optional[int]
     state: TxmEventState
-    strictness_type: StrictnessType = StrictnessType.STRICT
+    strictness_type: Optional[StrictnessType] = StrictnessType.STRICT
 
 
 @dataclass(init=False)

@@ -12,6 +12,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.patients.patient import Donor, TxmEvent
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import StrictnessType
 
 
 def get_id_or_none(donor: Optional[Donor], txm_event: TxmEvent) -> Optional[str]:
@@ -25,7 +26,8 @@ def get_patients_upload_json_from_txm_event_for_country(
         txm_event_id: int,
         country_code: Country,
         txm_event_name: str,
-        donor_medical_ids: List[str] = None
+        donor_medical_ids: List[str] = None,
+        strictness_type: StrictnessType = StrictnessType.STRICT
 ) -> PatientUploadDTOIn:
     txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=True)
     donors = [
@@ -79,5 +81,6 @@ def get_patients_upload_json_from_txm_event_for_country(
         txm_event_name=txm_event_name,
         donors=donors,
         recipients=recipients,
-        add_to_existing_patients=True
+        add_to_existing_patients=True,
+        strictness_type=strictness_type
     )
