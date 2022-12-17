@@ -93,12 +93,9 @@ codes_forgiving_parsing = {
     'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
     'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
     'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
-    'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'C1': (HLACode(None, 'CW1', 'CW1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'DPB13': (HLACode(None, 'DP13', 'DP13'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'A9': (HLACode(None, None, 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'A23': (HLACode(None, 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
+    'A*33:02': (HLACode('A*33:02', None, None), ParsingIssueDetail.FORGIVING_HLA_PARSING),
+    'CW70': (HLACode(None, 'CW70', 'CW70'), ParsingIssueDetail.FORGIVING_HLA_PARSING),
+    'B6': (HLACode(None, 'B6', 'B6'), ParsingIssueDetail.FORGIVING_HLA_PARSING)
 }
 
 class TestCodeParser(DbTests):

@@ -8,6 +8,7 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import StrictnessType
 
+
 @dataclass
 class PatientUploadDTOIn:
     country: Country

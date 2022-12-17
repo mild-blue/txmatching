@@ -1,6 +1,6 @@
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import TxmEventModel
-from txmatching.patients.patient import TxmEvent, StrictnessType
+from txmatching.patients.patient import StrictnessType, TxmEvent
 
 
 def create_or_overwrite_txm_event(name: str, strictness_type: StrictnessType = StrictnessType.STRICT) -> TxmEvent:

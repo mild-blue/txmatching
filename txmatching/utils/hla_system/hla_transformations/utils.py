@@ -93,6 +93,6 @@ def process_parsing_result(high_res: Optional[str],
                 split=split_or_broad_raw,
                 broad=split_or_broad_raw
             ),
-            detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
+            detail if detail is not None else ParsingIssueDetail.FORGIVING_HLA_PARSING
         )
     return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)
