@@ -1298,6 +1298,7 @@
                         "HIGH_RES_WITHOUT_SPLIT",
                         "HIGH_RES_WITH_LETTER",
                         "HIGH_RES_WITH_ASSUMED_SPLIT_CODE",
+                        "FORGIVING_HLA_PARSING",
                         "MULTIPLE_SPLITS_OR_BROADS_FOUND",
                         "IRRELEVANT_CODE",
                         "UNEXPECTED_SPLIT_RES_CODE",

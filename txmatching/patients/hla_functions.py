@@ -12,7 +12,7 @@ from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
                                     HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES,
-                                    HLAGroup)
+                                    HLAGroup, StrictnessType)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
@@ -135,8 +135,8 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
 
 
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssueBase], Dict[HLAGroup,
-                                                                                                    List[
-                                                                                                        HLACodeAlias]]]:
+List[
+    HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
@@ -170,7 +170,8 @@ def is_all_antibodies_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bo
 
 
 def analyze_if_high_res_antibodies_are_type_a(
-        recipient_antibodies: List[HLAAntibody]) -> HighResAntibodiesAnalysis:
+        recipient_antibodies: List[HLAAntibody],
+        strictness_type: StrictnessType = StrictnessType.STRICT) -> HighResAntibodiesAnalysis:
     assert is_all_antibodies_in_high_res(recipient_antibodies), \
         'This method is available just for antibodies in high res.'
 
@@ -179,7 +180,7 @@ def analyze_if_high_res_antibodies_are_type_a(
         if antibody.mfi < antibody.cutoff:
             is_some_antibody_below_cutoff = True
 
-    if not is_some_antibody_below_cutoff:
+    if not is_some_antibody_below_cutoff and strictness_type == StrictnessType.STRICT:
         return HighResAntibodiesAnalysis(False,
                                          ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
     elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:

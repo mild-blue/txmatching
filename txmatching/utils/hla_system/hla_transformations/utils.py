@@ -3,6 +3,7 @@ import re
 from typing import List, Optional
 
 from txmatching.patients.hla_code import HLACode
+from txmatching.utils.enums import StrictnessType
 from txmatching.utils.hla_system.hla_regexes import (
     B_SEROLOGICAL_CODE_WITH_W_REGEX, CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX,
     DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX)
@@ -49,7 +50,8 @@ def _cleanup_split_or_broad_code(serological_hla_code: str) -> str:
 
 def process_parsing_result(high_res: Optional[str],
                            split_or_broad_raw: Optional[str],
-                           detail: Optional[ParsingIssueDetail] = None) -> HlaCodeProcessingResult:
+                           detail: Optional[ParsingIssueDetail] = None,
+                           strictness_type: StrictnessType = StrictnessType.STRICT) -> HlaCodeProcessingResult:
     if split_or_broad_raw is None:
         assert detail is not None
         return HlaCodeProcessingResult(
@@ -84,4 +86,13 @@ def process_parsing_result(high_res: Optional[str],
         )
     if split_or_broad_raw in IRRELEVANT_CODES:
         return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.IRRELEVANT_CODE)
+    if strictness_type == StrictnessType.FORGIVING:
+        return HlaCodeProcessingResult(
+            HLACode(
+                high_res=None,
+                split=split_or_broad_raw,
+                broad=split_or_broad_raw
+            ),
+            detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
+        )
     return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)

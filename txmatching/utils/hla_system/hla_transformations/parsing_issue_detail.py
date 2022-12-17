@@ -10,7 +10,8 @@ class ParsingIssueDetail(str, Enum):
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
     HIGH_RES_WITH_LETTER = 'High res code has letter in the end. Such codes are not converted to split and broad.'
     HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'There is currently no information about the serological equivalent of an allele. ' \
-                               'The assumed serology code was taken by the first two digits of the allele name.'
+                                       'The assumed serology code was taken by the first two digits of the allele name.'
+    FORGIVING_HLA_PARSING = 'This code would not have been parsed normally, but forgiving parsing was set.'
 
     # returning no value (hla code)
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
@@ -45,7 +46,8 @@ class ParsingIssueDetail(str, Enum):
 OK_PROCESSING_RESULTS = {
     ParsingIssueDetail.SUCCESSFULLY_PARSED,
     ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT,
-    ParsingIssueDetail.HIGH_RES_WITH_LETTER
+    ParsingIssueDetail.HIGH_RES_WITH_LETTER,
+    ParsingIssueDetail.FORGIVING_HLA_PARSING
 }
 
 WARNING_PROCESSING_RESULTS = {

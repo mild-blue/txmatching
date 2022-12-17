@@ -17,7 +17,7 @@ from txmatching.patients.hla_functions import (
     is_all_antibodies_in_high_res, split_hla_types_to_groups,
     split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
-from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
+from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup, StrictnessType
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
@@ -29,7 +29,8 @@ MAX_ANTIGENS_PER_GROUP = 2
 
 
 def parse_hla_raw_code_and_return_parsing_issue_list(
-        hla_raw_code: str
+        hla_raw_code: str,
+        strictness_type: StrictnessType = StrictnessType.STRICT
 ) -> Tuple[List[ParsingIssueBase], Optional[HLACode]]:
     """
     Method to store information about issues during parsing HLA code.
@@ -41,7 +42,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     :return:
     """
     parsing_issues = []
-    parsing_issue = parse_hla_raw_code_with_details(hla_raw_code)
+    parsing_issue = parse_hla_raw_code_with_details(hla_raw_code, strictness_type)
     if not parsing_issue.maybe_hla_code or parsing_issue.result_detail not in OK_PROCESSING_RESULTS:
         parsing_issues.append(
             ParsingIssueBase(
@@ -55,7 +56,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
 
 # pylint: disable=too-many-locals
 def parse_hla_antibodies_raw_and_return_parsing_issue_list(
-        hla_antibodies_raw: List[HLAAntibodyRawModel]
+        hla_antibodies_raw: List[HLAAntibodyRawModel], strictness_type: StrictnessType = StrictnessType.STRICT
 ) -> Tuple[List[ParsingIssueBase], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
@@ -94,7 +95,8 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
 
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
-            antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
+            antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code,
+                                                                                             strictness_type=strictness_type)
             if code is not None:
                 hla_antibodies_parsed.append(
                     HLAAntibody(
@@ -107,7 +109,8 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
             parsing_issues = parsing_issues + antibody_parsing_issues
 
     # 3. validate antibodies
-    parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed)
+    parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed,
+                                                                   strictness_type=strictness_type)
     if parsing_issue is not None:
         parsing_issues.append(parsing_issue)
 
@@ -125,6 +128,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
 
 def parse_hla_typing_raw_and_return_parsing_issue_list(
         hla_typing_raw: HLATypingRawDTO,
+        strictness_type: StrictnessType = StrictnessType.STRICT
 ) -> Tuple[List[ParsingIssueBase], HLATypingDTO]:
     parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
@@ -137,7 +141,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
-        raw_codes_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)
+        raw_codes_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code, strictness_type)
         if code is not None:
             hla_types_parsed.append(
                 HLAType(
@@ -183,17 +187,18 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 
     # TODO https://github.com/mild-blue/txmatching/issues/790 hla_code should be nullable
     # 5. check if a basic group is missing
-    for group in hla_per_groups:
-        if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
-            invalid_hla_groups.append(group.hla_group.name)
-            group_name = 'Group ' + group.hla_group.name
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=group_name,
-                    parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-                    message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
+    if strictness_type == StrictnessType.STRICT:
+        for group in hla_per_groups:
+            if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
+                invalid_hla_groups.append(group.hla_group.name)
+                group_name = 'Group ' + group.hla_group.name
+                parsing_issues.append(
+                    ParsingIssueBase(
+                        hla_code_or_group=group_name,
+                        parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                        message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
+                    )
                 )
-            )
 
     return (parsing_issues, HLATypingDTO(
         hla_per_groups=[
@@ -217,7 +222,8 @@ def basic_group_is_empty(hla_types: List[HLAType]):
     return False
 
 
-def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HLAAntibody]) \
+def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HLAAntibody],
+                                                   strictness_type: StrictnessType = StrictnessType.STRICT) \
         -> Optional[ParsingIssueBase]:
     if len(recipient_antibodies) == 0:
         return None
@@ -225,7 +231,7 @@ def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HL
         return None
 
     maybe_parsing_issue = analyze_if_high_res_antibodies_are_type_a(
-        recipient_antibodies).maybe_parsing_issue
+        recipient_antibodies, strictness_type=strictness_type).maybe_parsing_issue
     if maybe_parsing_issue is not None:
         return ParsingIssueBase(hla_code_or_group='Antibodies',
                                 parsing_issue_detail=maybe_parsing_issue,

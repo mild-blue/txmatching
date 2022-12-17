@@ -32,9 +32,9 @@ from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
                                            HLAPerGroup, HLAType, HLATypeRaw,
                                            HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
-                                         RecipientRequirements, TxmEvent)
+                                         RecipientRequirements, TxmEvent, TxmEventBase)
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.utils.enums import HLAGroup
+from txmatching.utils.enums import HLAGroup, StrictnessType
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
@@ -115,15 +115,15 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
 
     return HLAAntibodiesDTO([
         AntibodiesPerGroup(hla_group=hla["hla_group"],
-                            hla_antibody_list=[HLAAntibody(
-                                raw_code=antibody['raw_code'],
-                                mfi=antibody["mfi"],
-                                cutoff=antibody["cutoff"],
-                                code=HLACode(high_res=antibody["code"]["high_res"],
-                                             split=antibody["code"]["split"],
-                                             broad=antibody["code"]["broad"],
-                                             group=HLAGroup(antibody["code"]["group"]))
-                            ) for antibody in hla["hla_antibody_list"]])
+                           hla_antibody_list=[HLAAntibody(
+                               raw_code=antibody['raw_code'],
+                               mfi=antibody["mfi"],
+                               cutoff=antibody["cutoff"],
+                               code=HLACode(high_res=antibody["code"]["high_res"],
+                                            split=antibody["code"]["split"],
+                                            broad=antibody["code"]["broad"],
+                                            group=HLAGroup(antibody["code"]["group"]))
+                           ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
 
@@ -168,7 +168,8 @@ def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, 
         ) for type in patient_model.hla_typing_raw["hla_types_list"]])
 
 
-def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tuple[List[ParsingIssue], dict]:
+def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO, txm_event_base: TxmEventBase) -> Tuple[
+    List[ParsingIssue], dict]:
     patient_update_dict = {}
     parsing_issues = []
     if patient_update_dto.blood_group is not None:
@@ -179,7 +180,8 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tu
         )
         patient_update_dict['hla_typing_raw'] = dataclasses.asdict(hla_typing_raw)
         parsing_issues, hla_typing_dict = parse_hla_typing_raw_and_return_parsing_issue_list(
-            hla_typing_raw
+            hla_typing_raw,
+            txm_event_base.strictness_type
         )
         patient_update_dict['hla_typing'] = dataclasses.asdict(hla_typing_dict)
 
@@ -196,17 +198,18 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tu
     return parsing_issues, patient_update_dict
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
+def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_base: TxmEventBase) -> Recipient:
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     parsing_issues = []
 
     if recipient_update_dto.recipient_requirements:
         _check_if_recipient_requirements_are_valid(recipient_update_dto.recipient_requirements)
 
-    if txm_event_db_id != old_recipient_model.txm_event_id:
+    if txm_event_base.db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
-    updated_parsing_issues, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
+    updated_parsing_issues, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto,
+                                                                                     txm_event_base)
     updated_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=updated_parsing_issues,
                                                             recipient_id=old_recipient_model.id,
                                                             txm_event_id=old_recipient_model.txm_event_id)
@@ -259,7 +262,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
         # Change parsed hla_antibodies for a given patient in db
         antibody_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
-            new_hla_antibody_raw_models,
+            new_hla_antibody_raw_models, strictness_type=txm_event_base.strictness_type
         )
         updated_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=antibody_parsing_issues,
                                                                 recipient_id=old_recipient_model.id,
@@ -280,12 +283,12 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         RecipientModel.query.get(recipient_update_dto.db_id))
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
+def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_base: TxmEventBase) -> Donor:
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
-    if txm_event_db_id != old_donor_model.txm_event_id:
+    if txm_event_base.db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
-    parsing_issues, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
+    parsing_issues, donor_update_dict = _create_patient_update_dict_base(donor_update_dto, txm_event_base)
     parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=parsing_issues,
                                                     donor_id=old_donor_model.id,
                                                     txm_event_id=old_donor_model.txm_event_id)
@@ -305,7 +308,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 
 
 def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
-        txm_event_id: int
+        txm_event_id: int, strictness_type: StrictnessType = StrictnessType.STRICT
 ) -> PatientsRecomputeParsingSuccessDTOOut:
     result = PatientsRecomputeParsingSuccessDTOOut(
         patients_checked_antigens=0,
@@ -320,11 +323,11 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     # Get donors and recipients
     donor_models = DonorModel.query.filter(DonorModel.txm_event_id == txm_event_id).all()
     recipient_models = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_id).all()
-
     # Update hla_typing for donors and recipients
     for patient_model in donor_models + recipient_models:
         hla_typing_raw = _get_hla_typing_raw_dto_from_patient_model(patient_model)
-        patient_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
+        patient_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw,
+                                                                                                strictness_type=strictness_type)
         if patient_model in donor_models:
             new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
                                                                 donor_id=patient_model.id,
@@ -348,7 +351,8 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     for recipient_model in recipient_models:
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
         patient_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
-            hla_antibodies_raw)
+            hla_antibodies_raw,
+            strictness_type=strictness_type)
         new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
                                                             recipient_id=recipient_model.id,
                                                             txm_event_id=recipient_model.txm_event_id)

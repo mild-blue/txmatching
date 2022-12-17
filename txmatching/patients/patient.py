@@ -10,7 +10,7 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import TxmEventState
+from txmatching.utils.enums import StrictnessType, TxmEventState
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
@@ -137,6 +137,7 @@ class TxmEventBase:
     name: str
     default_config_id: Optional[int]
     state: TxmEventState
+    strictness_type: StrictnessType = StrictnessType.STRICT
 
 
 @dataclass(init=False)
@@ -149,8 +150,9 @@ class TxmEvent(TxmEventBase):
     # pylint: disable=too-many-arguments
     # I think it is reasonable to have multiple arguments here
     def __init__(self, db_id: int, name: str, default_config_id: Optional[int], state: TxmEventState,
-                 all_donors: List[Donor], all_recipients: List[Recipient]):
-        super().__init__(db_id=db_id, name=name, default_config_id=default_config_id, state=state)
+                 strictness_type: StrictnessType, all_donors: List[Donor], all_recipients: List[Recipient]):
+        super().__init__(db_id=db_id, name=name, default_config_id=default_config_id, state=state,
+                         strictness_type=strictness_type)
         self.all_donors = all_donors
         self.all_recipients = all_recipients
         (
@@ -195,7 +197,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent, 
             # crossmatch test is negative -> donor is compatible to recipient
             compatible_donors.add(donor.db_id)
 
-    return 1 - len(compatible_donors)/len(active_donors), compatible_donors
+    return 1 - len(compatible_donors) / len(active_donors), compatible_donors
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(

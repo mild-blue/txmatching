@@ -3653,6 +3653,9 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"
@@ -3830,6 +3833,7 @@
                         "HIGH_RES_WITHOUT_SPLIT",
                         "HIGH_RES_WITH_LETTER",
                         "HIGH_RES_WITH_ASSUMED_SPLIT_CODE",
+                        "FORGIVING_HLA_PARSING",
                         "MULTIPLE_SPLITS_OR_BROADS_FOUND",
                         "IRRELEVANT_CODE",
                         "UNEXPECTED_SPLIT_RES_CODE",
@@ -4448,6 +4452,14 @@
             },
             "type": "object"
         },
+        "StrictnessType": {
+            "enum": [
+                "STRICT",
+                "FORGIVING"
+            ],
+            "type": "string",
+            "description": "Level of strictness for HLA parsing."
+        },
         "Success": {
             "required": [
                 "success"
@@ -4615,7 +4627,8 @@
             "required": [
                 "id",
                 "name",
-                "state"
+                "state",
+                "strictness_type"
             ],
             "properties": {
                 "id": {
@@ -4629,6 +4642,9 @@
                 },
                 "state": {
                     "$ref": "#/definitions/TxmEventState"
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"

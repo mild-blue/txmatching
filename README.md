@@ -190,3 +190,10 @@ Crossmatch happens because of a match of the recipient's antibody with the donor
 There are six types of crossmatches. You will be able to read about them in the future in [TXM knowledge base](documentation/README.md).
 
 To generate patients with crossmatches warnings set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
+
+### HLA Parsing Strictness
+In the txm event attributes, there is an attribute called "strictness_type" that can be set to either "STRICT" or "FORGIVING".
+
+STRICT = normal parsing, no exceptions being made.
+
+FORGIVING = some parsing errors and warnings are overlooked for the sake of including recipients in a matching. It is used especially when we need to parse data from other KEPs that recognize different set of HLAs.
