@@ -88,6 +88,9 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
             return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return HlaCodeProcessingResult(None, exception_split_broad_code)
+    if standartized_high_res in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES:
+        return process_parsing_result(standartized_high_res, exception_split_broad_code,
+                                      ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND)
     if standartized_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
         return process_parsing_result(standartized_high_res, exception_split_broad_code,
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
