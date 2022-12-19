@@ -26,10 +26,6 @@ logger = logging.getLogger(__name__)
 def parse_hla_raw_code_with_details(hla_raw_code: str,
                                     strictness_type: StrictnessType = StrictnessType.STRICT) -> HlaCodeProcessingResult:
     if hla_raw_code in PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS:
-        # TODO
-        if strictness_type == StrictnessType.FORGIVING:
-            return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
-                                          ParsingIssueDetail.FORGIVING_HLA_PARSING)
         return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE,
                                       strictness_type=strictness_type)
