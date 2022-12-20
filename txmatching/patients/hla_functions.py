@@ -186,4 +186,6 @@ def analyze_if_high_res_antibodies_are_type_a(
     elif is_some_antibody_below_cutoff and len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES:
         return HighResAntibodiesAnalysis(False,
                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+    elif strictness_type == StrictnessType.FORGIVING:
+        return HighResAntibodiesAnalysis(True, ParsingIssueDetail.FORGIVING_HLA_PARSING)
     return HighResAntibodiesAnalysis(True, None)

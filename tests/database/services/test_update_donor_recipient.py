@@ -101,7 +101,7 @@ class TestUpdateDonorRecipient(DbTests):
                              hla_type in
                              hla_group['hla_types']})
 
-        txm_event_base = get_txm_event_complete(txm_event_db_id)
+        txm_event_base = get_txm_event_base(txm_event_db_id)
         update_donor(DonorUpdateDTO(
             hla_typing=HLATypingUpdateDTO([
                 HLATypeUpdateDTO('A11'),
