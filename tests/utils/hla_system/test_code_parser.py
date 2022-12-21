@@ -332,7 +332,7 @@ class TestCodeParser(DbTests):
         self.assertEqual(expected,
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
 
-        expected = HighResAntibodiesAnalysis(True, None)
+        expected = HighResAntibodiesAnalysis(True, ParsingIssueDetail.FORGIVING_HLA_PARSING)
         self.assertEqual(expected,
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list,
                                                                    strictness_type=StrictnessType.FORGIVING))
