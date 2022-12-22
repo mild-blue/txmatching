@@ -104,7 +104,7 @@ test:
 check: lint test
 
 build-fe:
-	cd txmatching/web/frontend; npm install -g && npm run build
+	cd txmatching/web/frontend; npm install && npm run build
 
 build-fe-prod:
 	cd txmatching/web/frontend; npm install && npm run build-prod
