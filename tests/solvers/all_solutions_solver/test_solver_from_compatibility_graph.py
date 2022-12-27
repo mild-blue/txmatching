@@ -125,7 +125,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: 0, 1: 0, 2: -1}
 
-        compatibility_graph_test = {(2, 0): 15}
+        compatibility_graph_test = {(2, 0): {"score": 15}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
