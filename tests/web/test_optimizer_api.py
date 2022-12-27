@@ -1,3 +1,5 @@
+from typing import List
+
 from local_testing_utilities.generate_patients import (
     GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
     SMALL_DATA_FOLDER_MULTIPLE_DONORS, store_generated_patients_from_folder)
@@ -7,6 +9,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.optimizer.optimizer_functions import get_compatibility_graph_for_optimizer_api
+from txmatching.optimizer.optimizer_request_object import CompatibilityGraphEntry
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.web import API_VERSION, OPTIMIZER_NAMESPACE
@@ -144,11 +147,20 @@ class TestOptimizerApi(DbTests):
         # number of pairs in response equal to the number of active and valid pairs in txm event
         self.assertEqual(len(txm_event.active_and_valid_donors_dict), len(res.json['pairs']))
 
+        # compatibility graph in response is equal to compatibility graph received through function
         compatibility_graph = get_compatibility_graph_for_optimizer_api(txm_event.active_and_valid_donors_dict,
                                                                         txm_event.active_and_valid_recipients_dict)
-        self.assertEqual(len(compatibility_graph), len(res.json['compatibility_graph']))
+        compatibility_graph_dict = _comp_graph_dataclass_list_to_dict_list(compatibility_graph)
+        self.assertCountEqual(compatibility_graph_dict, res.json['compatibility_graph'])
 
         # we are calling txm event with default configuration
         def_config = ConfigParameters()
         self.assertEqual(def_config.max_sequence_length, res.json['configuration']['limitations']['max_chain_length'])
         self.assertEqual(def_config.max_cycle_length, res.json['configuration']['limitations']['max_cycle_length'])
+
+
+def _comp_graph_dataclass_list_to_dict_list(dataclass_list: List[CompatibilityGraphEntry]):
+    return [{"donor_id": entry.donor_id,
+             "recipient_id": entry.recipient_id,
+             "weights": {"hla_compatibility_score": entry.weights["hla_compatibility_score"]}}
+            for entry in dataclass_list]
