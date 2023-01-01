@@ -3,7 +3,7 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient)
-from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
+from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssuePublicJson
 from txmatching.web.web_utils.namespaces import public_api
@@ -39,7 +39,8 @@ UploadPatientsJson = public_api.model(
                                                    description='If *true* the currently uploaded patients will be added'
                                                                ' to the patients already in the system. If *false* the'
                                                                ' data in the system will be overwritten by the'
-                                                               ' currently uploaded data.')
+                                                               ' currently uploaded data.'),
+        'strictness_type': fields.Nested(StrictnessTypeEnumJson, required=False)
     }
 )
 

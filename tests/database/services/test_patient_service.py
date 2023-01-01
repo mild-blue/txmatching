@@ -27,7 +27,7 @@ from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
 from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import Sex, TxmEventState
+from txmatching.utils.enums import Sex, StrictnessType, TxmEventState
 from txmatching.utils.logged_user import get_current_user_id
 
 TXM_EVENT_NAME = 'test'
@@ -227,7 +227,7 @@ class TestPatientService(DbTests):
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(
-            1, 'event_name_1', None, TxmEventState.OPEN,
+            1, 'event_name_1', None, TxmEventState.OPEN, StrictnessType.STRICT,
             all_donors=get_test_donors(),
             all_recipients=get_test_recipients()
         )
@@ -236,7 +236,7 @@ class TestPatientService(DbTests):
 
         # changing event db id or event name does not change the hash
         txm_event_2 = TxmEvent(
-            2, 'event_name_2', None, TxmEventState.OPEN,
+            2, 'event_name_2', None, TxmEventState.OPEN, StrictnessType.STRICT,
             all_donors=get_test_donors(),
             all_recipients=get_test_recipients()
         )
@@ -245,7 +245,7 @@ class TestPatientService(DbTests):
 
         # Changing donors changes the hash
         txm_event_3 = TxmEvent(
-            1, 'event_name_1', None, TxmEventState.OPEN,
+            1, 'event_name_1', None, TxmEventState.OPEN, StrictnessType.STRICT,
             all_donors=[],
             all_recipients=get_test_recipients()
         )
@@ -254,7 +254,7 @@ class TestPatientService(DbTests):
 
         # Changing recipients changes the hash
         txm_event_4 = TxmEvent(
-            1, 'event_name_1', None, TxmEventState.OPEN,
+            1, 'event_name_1', None, TxmEventState.OPEN, StrictnessType.STRICT,
             all_donors=get_test_donors(),
             all_recipients=[]
         )
@@ -270,7 +270,7 @@ class TestPatientService(DbTests):
         new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0] = create_hla_type('A3')
 
         txm_event_5 = TxmEvent(
-            1, 'event_name_1', None, TxmEventState.OPEN,
+            1, 'event_name_1', None, TxmEventState.OPEN, StrictnessType.STRICT,
             all_donors=new_donors,
             all_recipients=get_test_recipients()
         )

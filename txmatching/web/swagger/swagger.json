@@ -3653,6 +3653,9 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"
@@ -4448,6 +4451,14 @@
             },
             "type": "object"
         },
+        "StrictnessType": {
+            "enum": [
+                "STRICT",
+                "FORGIVING"
+            ],
+            "type": "string",
+            "description": "Level of strictness for HLA parsing."
+        },
         "Success": {
             "required": [
                 "success"
@@ -4615,7 +4626,8 @@
             "required": [
                 "id",
                 "name",
-                "state"
+                "state",
+                "strictness_type"
             ],
             "properties": {
                 "id": {
@@ -4629,6 +4641,9 @@
                 },
                 "state": {
                     "$ref": "#/definitions/TxmEventState"
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"
@@ -4666,6 +4681,9 @@
                 },
                 "new_txm_event_name": {
                     "type": "string"
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"
@@ -4767,6 +4785,9 @@
                     "type": "boolean",
                     "description": "If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.",
                     "default": false
+                },
+                "strictness_type": {
+                    "$ref": "#/definitions/StrictnessType"
                 }
             },
             "type": "object"

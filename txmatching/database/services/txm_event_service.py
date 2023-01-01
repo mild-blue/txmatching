@@ -21,6 +21,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     UploadedDataModel,
                                                     UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent, TxmEventBase
+from txmatching.utils.enums import StrictnessType
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
@@ -36,15 +37,16 @@ def get_newest_txm_event_db_id() -> int:
         raise ValueError('There are no TXM events in the database.')
 
 
-def create_txm_event(name: str) -> TxmEvent:
+def create_txm_event(name: str, strictness_type: StrictnessType = StrictnessType.STRICT) -> TxmEvent:
     if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) > 0:
         raise InvalidArgumentException(f'TXM event "{name}" already exists.')
-    txm_event_model = TxmEventModel(name=name)
+    txm_event_model = TxmEventModel(name=name, strictness_type=strictness_type)
     db.session.add(txm_event_model)
     db.session.commit()
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name,
                     default_config_id=txm_event_model.default_config_id,
-                    state=TxmEventState.OPEN, all_donors=[], all_recipients=[])
+                    state=TxmEventState.OPEN, strictness_type=txm_event_model.strictness_type,
+                    all_donors=[], all_recipients=[])
 
 
 def delete_txm_event(txm_event_id: int):
@@ -160,7 +162,7 @@ def get_txm_event_base(txm_event_db_id: int) -> TxmEventBase:
 def _get_txm_event_base_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEventBase:
     return TxmEventBase(db_id=txm_event_model.id, name=txm_event_model.name,
                         default_config_id=txm_event_model.default_config_id,
-                        state=txm_event_model.state)
+                        state=txm_event_model.state, strictness_type=txm_event_model.strictness_type)
 
 
 def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEvent:
@@ -182,6 +184,7 @@ def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEv
                     name=txm_event_model.name,
                     default_config_id=txm_event_model.default_config_id,
                     state=TxmEventState.OPEN,
+                    strictness_type=txm_event_model.strictness_type,
                     all_donors=all_donors,
                     all_recipients=all_recipients)
 
@@ -236,7 +239,8 @@ def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOu
         id=txm_event_base.db_id,
         name=txm_event_base.name,
         default_config_id=txm_event_base.default_config_id,
-        state=txm_event_base.state
+        state=txm_event_base.state,
+        strictness_type=txm_event_base.strictness_type
     )
 
 

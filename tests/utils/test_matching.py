@@ -77,33 +77,33 @@ class TestMatching(DbTests):
 
         # A32
         result = calculate_compatibility_index_for_group(donors[0], recipients[0], HLAGroup.A)
-        self.assertEquals(1, result)
+        self.assertEqual(1, result)
 
         result = calculate_compatibility_index_for_group(donors[0], recipients[0], HLAGroup.B)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         result = calculate_compatibility_index_for_group(donors[0], recipients[0], HLAGroup.DRB1)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         # No match
         result = calculate_compatibility_index_for_group(donors[0], recipients[1], HLAGroup.A)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         result = calculate_compatibility_index_for_group(donors[0], recipients[1], HLAGroup.B)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         result = calculate_compatibility_index_for_group(donors[0], recipients[1], HLAGroup.DRB1)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         # A32, B7
         result = calculate_compatibility_index_for_group(donors[1], recipients[0], HLAGroup.A)
-        self.assertEquals(2, result)
+        self.assertEqual(2, result)
 
         result = calculate_compatibility_index_for_group(donors[1], recipients[0], HLAGroup.B)
-        self.assertEquals(6, result)
+        self.assertEqual(6, result)
 
         result = calculate_compatibility_index_for_group(donors[1], recipients[0], HLAGroup.DRB1)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
     def test_get_count_of_transplants(self):
         donors = get_test_donors()
