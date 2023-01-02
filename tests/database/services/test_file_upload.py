@@ -148,7 +148,7 @@ class TestUpdateDonorRecipient(DbTests):
             for recipient_enum, recipient, expected_score in zip(
                     recipient_enums, txm_event.active_and_valid_recipients_dict.values(), expected_score_row):
                 if expected_score >= 0:
-                    calculated_score = calculated_scores[(donor_enum, recipient_enum)]["score"]
+                    calculated_score = calculated_scores[(donor_enum, recipient_enum)]["hla_compatibility_score"]
                     self.assertEqual(expected_score, calculated_score,
                                      f'Not true for expected {expected_score} vs real {calculated_score} '
                                      f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '

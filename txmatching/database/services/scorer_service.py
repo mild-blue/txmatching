@@ -14,12 +14,13 @@ class CompatibilityGraphDto:
 
 
 def compatibility_graph_to_dict(compatibility_graph: CompatibilityGraph) -> Dict[str, List[List[int]]]:
-    return {"compatibility_graph_dto": [[int(pair[0]), int(pair[1]), weighths["score"]]
+    return {"compatibility_graph_dto": [[int(pair[0]), int(pair[1]), weighths["hla_compatibility_score"]]
                                         for pair, weighths in compatibility_graph.items()]}
 
 
 def compatibility_graph_from_dict(compatibility_graph_dict: Dict[str, List[List[int]]]) -> CompatibilityGraph:
-    return {(pair[0], pair[1]): {"score": pair[2]} for pair in compatibility_graph_dict["compatibility_graph_dto"]}
+    return {(pair[0], pair[1]): {"hla_compatibility_score": pair[2]} for pair in
+            compatibility_graph_dict["compatibility_graph_dto"]}
 
 
 def matchings_model_from_dict(calculated_matchings_dict: Dict[str, any]) -> MatchingsModel:

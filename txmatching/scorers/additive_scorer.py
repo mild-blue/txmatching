@@ -76,7 +76,7 @@ class AdditiveScorer(ScorerBase):
                                                                                         recipient.related_donors_db_ids
                                                                                         if donor_db_id in donors_dict])
                 if score >= 0:
-                    compatibility_graph[(donor_enum, recipient_enum)] = {"score": int(score)}
+                    compatibility_graph[(donor_enum, recipient_enum)] = {"hla_compatibility_score": int(score)}
 
         return compatibility_graph
 

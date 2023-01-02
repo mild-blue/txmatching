@@ -67,9 +67,9 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                              txm_event.active_and_valid_donors_dict,
                                                                              compatibility_graph)
 
-    number_of_possible_transplants = len([weights['score']
+    number_of_possible_transplants = len([weights['hla_compatibility_score']
                                           for weights in compatibility_graph_of_db_ids.values() if
-                                          weights["score"] >= 0])
+                                          weights["hla_compatibility_score"] >= 0])
 
     number_of_possible_recipients = len([
         recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
@@ -148,7 +148,8 @@ def create_calculated_matchings_dto(
         )
 
         return TransplantDTOOut(
-            score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)]['score'],
+            score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)][
+                'hla_compatibility_score'],
             max_score=latest_matchings_detailed.max_transplant_score,
             compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)],
@@ -246,5 +247,6 @@ def recipient_has_at_least_one_donor(score_dict, recipient_db_id, active_and_val
     """
     Returns true if the recipient has at least one donor, otherwise returns false.
     """
-    return sum(score_dict.get((item, recipient_db_id), -1)['score'] >= 0 for item in active_and_valid_donors_dict.keys()
+    return sum(score_dict.get((item, recipient_db_id), -1)['hla_compatibility_score'] >= 0 for item in
+               active_and_valid_donors_dict.keys()
                if isinstance(score_dict.get((item, recipient_db_id), -1), dict)) > 0
