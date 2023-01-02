@@ -45,21 +45,10 @@ def split_hla_types_to_groups_other(
     for hla_group in HLA_GROUPS_OTHER:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:
-        match_found = False
         for hla_group in HLA_GROUPS_OTHER:
             if _is_hla_type_in_group(hla_type, hla_group):
                 hla_types_in_groups[hla_group] += [hla_type]
-                match_found = True
                 break
-        if not match_found:
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=hla_type.raw_code,
-                    parsing_issue_detail=ParsingIssueDetail.OTHER_PROBLEM,
-                    message=f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any OTHER group. '
-                            f'This should never happen. This unexpected HLA will be ignored.'
-                )
-            )
     return (parsing_issues, hla_types_in_groups)
 
 
@@ -151,14 +140,6 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
         if not match_found:
             # TODO toto?
             hla_types_in_groups[HLAGroup.Other].append(hla_type)
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=hla_type.raw_code,
-                    parsing_issue_detail=ParsingIssueDetail.OTHER_PROBLEM,
-                    message=f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '
-                            f'This should never happen. This unexpected HLA will be ignored.',
-                )
-            )
     return parsing_issues, hla_types_in_groups
 
 

@@ -71,13 +71,13 @@ class TestMatchingApi(DbTests):
             create_hla_typing(
                 [
                     'A1', 'A23',
-                    'B*01:01N', 'Invalid'
+                    'B*01:01N', 'Invalid', 'BW4'
                 ]
             ).hla_per_groups,
             txm_event.all_donors[0].parameters.hla_typing.hla_per_groups
         )
-        self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.all_donors[0]))
-        self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.all_recipients[0]))
+        self.assertSetEqual({'A1', 'A23', 'B*01:01N', 'INVALID', 'BW4'}, _get_hla_typing_split_or_broad_codes(txm_event.all_donors[0]))
+        self.assertSetEqual({'A9', 'SDFSDFAFAF'}, _get_hla_antibodies_split_or_broad_codes(txm_event.all_recipients[0]))
         self.assertEqual('D1', txm_event.all_donors[0].medical_id)
         self.assertEqual('TEST_INTERNAL_MEDICAL_ID', txm_event.all_donors[0].internal_medical_id)
 
