@@ -31,8 +31,11 @@ class HLACode:
         self.broad = broad
         if group:
             self.group = group
-        else:
+        elif self.group_from_hla_code is not None:
             self.group = self.group_from_hla_code
+        else:
+            # TODO
+            self.group = HLAGroup.Other
 
     def __repr__(self):
         return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'
