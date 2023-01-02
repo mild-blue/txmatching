@@ -1,4 +1,4 @@
 export enum TxmEventStateType {
-    OPEN = "OPEN",
-    CLOSED = "CLOSED",
-  }
+  OPEN = "OPEN",
+  CLOSED = "CLOSED",
+}

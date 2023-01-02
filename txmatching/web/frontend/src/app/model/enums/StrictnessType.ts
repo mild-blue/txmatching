@@ -1,4 +1,4 @@
 export enum StrictnessType {
-    STRICT = "STRICT",
-    FORGIVING = "FORGIVING",
-  }
+  STRICT = "STRICT",
+  FORGIVING = "FORGIVING",
+}
