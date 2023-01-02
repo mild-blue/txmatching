@@ -149,6 +149,8 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
                 match_found = True
                 break
         if not match_found:
+            # TODO toto?
+            hla_types_in_groups[HLAGroup.Other].append(hla_type)
             parsing_issues.append(
                 ParsingIssueBase(
                     hla_code_or_group=hla_type.raw_code,

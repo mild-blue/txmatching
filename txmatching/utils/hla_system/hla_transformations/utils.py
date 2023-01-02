@@ -83,5 +83,15 @@ def process_parsing_result(high_res: Optional[str],
             detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
         )
     if split_or_broad_raw in IRRELEVANT_CODES:
-        return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.IRRELEVANT_CODE)
-    return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)
+        return HlaCodeProcessingResult(
+            HLACode(
+                high_res=high_res,
+                split=split_or_broad_raw,
+                broad=split_or_broad_raw
+            ), detail if detail else ParsingIssueDetail.IRRELEVANT_CODE)
+    return HlaCodeProcessingResult(
+        HLACode(
+            high_res=high_res,
+            split=split_or_broad_raw,
+            broad=split_or_broad_raw
+        ), detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)

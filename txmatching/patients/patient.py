@@ -155,10 +155,16 @@ class TxmEvent(TxmEventBase):
                          strictness_type=strictness_type)
         self.all_donors = all_donors
         self.all_recipients = all_recipients
-        (
-            self.active_and_valid_donors_dict,
-            self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(all_donors, all_recipients)
+        if strictness_type == StrictnessType.STRICT:
+            (
+                self.active_and_valid_donors_dict,
+                self.active_and_valid_recipients_dict,
+            ) = _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(all_donors, all_recipients)
+        else:
+            (
+                self.active_and_valid_donors_dict,
+                self.active_and_valid_recipients_dict,
+            ) = _return_all_patients(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -198,6 +204,21 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent, 
             compatible_donors.add(donor.db_id)
 
     return 1 - len(compatible_donors) / len(active_donors), compatible_donors
+
+
+def _return_all_patients(
+        donors: List[Donor], recipients: List[Recipient]
+) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
+    return_donors = {
+        patient.db_id: patient
+        for patient in donors
+    }
+    return_recipients = {
+        patient.db_id: patient
+        for patient in recipients
+    }
+
+    return return_donors, return_recipients
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(
