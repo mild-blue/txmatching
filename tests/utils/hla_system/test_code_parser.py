@@ -102,6 +102,8 @@ codes = {
     'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     # Based on data from Italy from 26.10.2022
     'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # See file rel_dna_ser_exceptions.py for explanation of this conversion
+    'DQB1*03:19': (HLACode('DQB1*03:19', 'DQ7', 'DQ3'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
 }
 
 

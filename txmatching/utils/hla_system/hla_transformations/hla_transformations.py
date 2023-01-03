@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     if hla_raw_code in PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS:
         return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
-                                      ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
+                                      ParsingIssueDetail.SUCCESSFULLY_PARSED)
     if re.match(LOW_RES_REGEX, hla_raw_code):
         exception_split_broad_code = high_res_low_res_to_split_or_broad(hla_raw_code)
         if isinstance(exception_split_broad_code, ParsingIssueDetail):
