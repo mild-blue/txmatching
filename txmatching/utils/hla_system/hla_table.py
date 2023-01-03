@@ -64,8 +64,8 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   }
 
 
-_get_high_res_or_ultra_high_res = lambda ultra_high_res: try_convert_ultra_high_res(ultra_high_res) \
-                                                         or ultra_high_res
+def _get_high_res_or_ultra_high_res(ultra_high_res: str):
+    return try_convert_ultra_high_res(ultra_high_res) or ultra_high_res
 
 
 PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
