@@ -87,22 +87,15 @@ codes = {
     'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    # Based on email communication with Matej Roder from 31.12.2020
-    'DRB1*07:07': (HLACode('DRB1*07:07', 'DR7', 'DR7'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on email communication with Matej Roder from 19.10.2020
-    'B*82:02': (HLACode('B*82:02', 'B82', 'B82'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    'DRB1*09:02': (HLACode('DRB1*09:02', 'DR9', 'DR9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on email communication with Matej Roder from 12.7.2021
-    'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on email communication with Matej Roder from 11.1.2022
-    'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on email communication with Matej Roder from 8.6.2022
-    'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on slack with Matej Roder from 17.10.2022
-    'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # Based on data from Italy from 26.10.2022
-    'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-    # See file rel_dna_ser_exceptions.py for explanation of this conversion
+    # See file rel_dna_ser_exceptions.py for explanation of the conversions below
+    'DRB1*07:07': (HLACode('DRB1*07:07', 'DR7', 'DR7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B*82:02': (HLACode('B*82:02', 'B82', 'B82'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB1*09:02': (HLACode('DRB1*09:02', 'DR9', 'DR9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB1*03:19': (HLACode('DQB1*03:19', 'DQ7', 'DQ3'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
 }
 
