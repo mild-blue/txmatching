@@ -8,10 +8,13 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 
 
 @dataclass
-class HLAType(PersistentlyHashable):
+class HLABase:
     raw_code: str
     code: HLACode
 
+
+@dataclass
+class HLAType(HLABase, PersistentlyHashable):
     def __eq__(self, other):
         """
         Needed for List[HLAType].remove()
@@ -56,9 +59,7 @@ class HLATyping(PersistentlyHashable):
 
 
 @dataclass
-class HLAAntibody(PersistentlyHashable):
-    raw_code: str
-    code: HLACode
+class HLAAntibody(HLABase, PersistentlyHashable):
     mfi: int
     cutoff: int
 
