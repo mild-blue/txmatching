@@ -5,15 +5,15 @@ from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmEventCopyPatientsDTOIn, TxmEventDTOIn, TxmEventUpdateDTOIn)
 from txmatching.database.db import db
-from txmatching.database.services.txm_event_service import get_txm_event_base
+from txmatching.database.services.txm_event_service import get_txm_event_base, get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
-from txmatching.utils.enums import TxmEventState
+from txmatching.patients.patient import DonorType
+from txmatching.utils.enums import StrictnessType, TxmEventState
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
-
+from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 class TestMatchingApi(DbTests):
 
@@ -301,3 +301,46 @@ class TestMatchingApi(DbTests):
                              ' we do not support copying donors with the related recipient that is already in '
                              'TxmEventTo yet.',
                              res.json['message'])
+
+    def test_forgiving_txm_event(self):
+        donor_medical_id = 'donor_test'
+        recipient_medical_id = 'recipient_test'
+        invalid_pair = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value,
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies': [],
+                },
+                'country_code': 'CZE'
+            }
+
+        # strict event
+        txm_event = create_or_overwrite_txm_event(name='test', strictness_type=StrictnessType.STRICT)
+        with self.app.test_client() as client:
+            client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
+                        f'{PATIENT_NAMESPACE}/pairs',
+                        headers=self.auth_headers, json=invalid_pair)
+
+        txm_event = get_txm_event_complete(txm_event.db_id)
+        self.assertNotEqual(len(txm_event.all_donors), len(txm_event.active_and_valid_donors_dict))
+        self.assertNotEqual(len(txm_event.all_recipients), len(txm_event.active_and_valid_recipients_dict))
+
+        # forgiving event
+        txm_event = create_or_overwrite_txm_event(name='test', strictness_type=StrictnessType.FORGIVING)
+        with self.app.test_client() as client:
+            client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
+                        f'{PATIENT_NAMESPACE}/pairs',
+                        headers=self.auth_headers, json=invalid_pair)
+
+        txm_event = get_txm_event_complete(txm_event.db_id)
+        self.assertEqual(len(txm_event.all_donors), len(txm_event.active_and_valid_donors_dict))
+        self.assertEqual(len(txm_event.all_recipients), len(txm_event.active_and_valid_recipients_dict))

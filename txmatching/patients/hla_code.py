@@ -34,7 +34,6 @@ class HLACode:
         elif self.group_from_hla_code is not None:
             self.group = self.group_from_hla_code
         else:
-            # TODO
             self.group = HLAGroup.Other
 
     def __repr__(self):
