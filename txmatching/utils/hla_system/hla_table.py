@@ -68,26 +68,26 @@ _get_high_res_or_ultra_high_res = lambda ultra_high_res: try_convert_ultra_high_
                                                          or ultra_high_res
 
 
-PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
-ALL_HIGH_RES_CODES = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
-_HIGH_RES_TO_SPLIT_DICT = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.dropna().split.to_dict()
+PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
+ALL_ULTRA_HIGH_RES_CODES = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
+_ULTRA_HIGH_RES_TO_SPLIT_DICT = PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS.dropna().split.to_dict()
 
-ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE = {high_res for high_res, split in _HIGH_RES_TO_SPLIT_DICT.items()}
+ALL_ULTRA_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE = {high_res for high_res, split in _ULTRA_HIGH_RES_TO_SPLIT_DICT.items()}
 
 ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE = set(map(_get_high_res_or_ultra_high_res,
-                                                           PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
-                                                            .where(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
-                                                                   .source == 'assumed')
-                                                            .dropna().split.to_dict().keys()))
+                                                           PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
+                                                           .where(PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
+                                                                  .source == 'assumed')
+                                                           .dropna().split.to_dict().keys()))
 
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
-    return {split for high_res, split in _HIGH_RES_TO_SPLIT_DICT.items() if
+    return {split for high_res, split in _ULTRA_HIGH_RES_TO_SPLIT_DICT.items() if
             high_res.startswith(f'{high_res_code}:')}
 
 
 def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, ParsingIssueDetail]:
-    maybe_split_code = _HIGH_RES_TO_SPLIT_DICT.get(high_res_code)
+    maybe_split_code = _ULTRA_HIGH_RES_TO_SPLIT_DICT.get(high_res_code)
     if maybe_split_code:
         return maybe_split_code
     else:
@@ -105,7 +105,7 @@ def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, Parsing
 
 
 ALL_NON_ULTRA_HIGH_RES_CODES = {try_convert_ultra_high_res(high_res) for high_res in
-                                ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE}
+                                ALL_ULTRA_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE}
 
 HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: high_res_low_res_to_split_or_broad(high_res) for high_res in
                               ALL_NON_ULTRA_HIGH_RES_CODES}

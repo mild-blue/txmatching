@@ -6,7 +6,7 @@ from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER,
     HIGH_RES_WITH_SUBUNITS_REGEX, LOW_RES_REGEX, SPLIT_RES_REGEX)
 from txmatching.utils.hla_system.hla_table import (
-    ALL_HIGH_RES_CODES, ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE,
+    ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE, ALL_ULTRA_HIGH_RES_CODES,
     HIGH_RES_TO_SPLIT_OR_BROAD, high_res_low_res_to_split_or_broad)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
@@ -44,8 +44,8 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
     standartized_high_res_letter_match = _get_standartized_high_res(hla_raw_code, HIGH_RES_REGEX_ENDING_WITH_LETTER)
     if standartized_high_res_letter_match:
-        if (standartized_high_res_letter_match in ALL_HIGH_RES_CODES
-                or hla_raw_code in ALL_HIGH_RES_CODES
+        if (standartized_high_res_letter_match in ALL_ULTRA_HIGH_RES_CODES
+                or hla_raw_code in ALL_ULTRA_HIGH_RES_CODES
                 or standartized_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
             return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.HIGH_RES_WITH_LETTER)
         else:
@@ -82,7 +82,7 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
         None
     )
     if exception_split_broad_code is None:
-        if hla_raw_code in ALL_HIGH_RES_CODES:
+        if hla_raw_code in ALL_ULTRA_HIGH_RES_CODES:
             return HlaCodeProcessingResult(None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
         else:
             return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
