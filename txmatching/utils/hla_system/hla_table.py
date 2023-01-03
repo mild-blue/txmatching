@@ -62,15 +62,23 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ8': 'DQ3',
                   'DQ9': 'DQ3'
                   }
+
+
+_get_high_res_or_ultra_high_res = lambda ultra_high_res: try_convert_ultra_high_res(ultra_high_res) \
+                                                         or ultra_high_res
+
+
 PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
 ALL_HIGH_RES_CODES = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
 _HIGH_RES_TO_SPLIT_DICT = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.dropna().split.to_dict()
 
 ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE = {high_res for high_res, split in _HIGH_RES_TO_SPLIT_DICT.items()}
 
-ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE = set(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
-                                                       .where(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.source == 'assumed')
-                                                       .dropna().split.to_dict().keys())
+ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE = set(map(_get_high_res_or_ultra_high_res,
+                                                           PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+                                                            .where(PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+                                                                   .source == 'assumed')
+                                                            .dropna().split.to_dict().keys()))
 
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:

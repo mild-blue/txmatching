@@ -95,14 +95,13 @@ codes = {
     # Based on email communication with Matej Roder from 12.7.2021
     'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     # Based on email communication with Matej Roder from 11.1.2022
-    'A*26:12': (HLACode('A*26:12', 'A26', 'A26'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     # Based on email communication with Matej Roder from 8.6.2022
-    'A*32:03': (HLACode('A*32:03', 'A32', 'A32'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     # Based on slack with Matej Roder from 17.10.2022
-    'A*24:95': (HLACode('A*24:95', 'A24', 'A24'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     # Based on data from Italy from 26.10.2022
     'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
-
 }
 
 
