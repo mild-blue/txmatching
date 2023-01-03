@@ -9,7 +9,7 @@ class ParsingIssueDetail(str, Enum):
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
     HIGH_RES_WITH_LETTER = 'High res code has letter in the end. Such codes are not converted to split and broad.'
-    HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'The information about the serological equivalent of an allele is only assumed' \
+    HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'The information about the serological equivalent of the allele is only assumed' \
                                        ' in our datasource so the conversion is not 100% reliable. ' \
                                        'Please check that the conversion is correct.'
 
