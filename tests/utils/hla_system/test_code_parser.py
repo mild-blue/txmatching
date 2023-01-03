@@ -19,7 +19,7 @@ from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
 from txmatching.utils.hla_system.hla_table import \
-    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+    PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
@@ -86,7 +86,22 @@ codes = {
     'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
+    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    # Based on email communication with Matej Roder from 31.12.2020
+    'DRB1*07:07': (HLACode('DRB1*07:07', 'DR7', 'DR7'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on email communication with Matej Roder from 19.10.2020
+    'B*82:02': (HLACode('B*82:02', 'B82', 'B82'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    'DRB1*09:02': (HLACode('DRB1*09:02', 'DR9', 'DR9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on email communication with Matej Roder from 12.7.2021
+    'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on email communication with Matej Roder from 11.1.2022
+    'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on email communication with Matej Roder from 8.6.2022
+    'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on slack with Matej Roder from 17.10.2022
+    'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
+    # Based on data from Italy from 26.10.2022
+    'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
 }
 
 
@@ -239,7 +254,7 @@ class TestCodeParser(DbTests):
         ultra high res codes.
         """
         high_res_to_splits = {}
-        all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
+        all_codes = PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS.split.to_dict()
         for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:
                 continue
@@ -305,7 +320,8 @@ class TestCodeParser(DbTests):
                                                  ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
             self.assertEqual(expected,
                              analyze_if_high_res_antibodies_are_type_a(
-                                 antibodies_per_group.hla_antibody_list[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES-1]))
+                                 antibodies_per_group.hla_antibody_list[
+                                 :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list
