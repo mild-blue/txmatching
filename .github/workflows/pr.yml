@@ -65,4 +65,5 @@ jobs:
           conda activate txmatching
           cd tests
           export PYTHONPATH=../
+          export LOGGING_DISABLE_LEVEL_FOR_TESTING=ERROR
           python -m unittest discover -s . -t .
