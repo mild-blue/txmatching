@@ -50,6 +50,17 @@ sudo apt install wget xfonts-75dpi
 cd /tmp
 ```
 
+To successfully install `wkhtmltopdf` you need `libssl1.1.1` 
+(You may need to install it manually because in newer versions of Ubuntu (e.g. 22.04 LTS) is used newer version of libssl, 
+which is not compatible with wkhtmltopdf).
+
+``` 
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+sudo dpkg -i libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
+sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+```
+
 `wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
 
 `sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
