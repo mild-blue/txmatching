@@ -10,6 +10,7 @@ from txmatching.patients.hla_model import HLAAntibodies, HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
+from txmatching.scorers.scorer_constants import HLA_SCORE
 from txmatching.solvers.all_solutions_solver.compatibility_graph_solver import \
     find_optimal_paths
 from txmatching.solvers.donor_recipient_pair_idx_only import \
@@ -49,7 +50,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         all_scores = []
         for solution in all_solutions:
             solution_score = sum(
-                [scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)['hla_compatibility_score']
+                [scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)[HLA_SCORE]
                  for pair in solution])
             all_scores.append(solution_score)
         self.assertEqual(len(all_solutions[0]), 9)
@@ -90,8 +91,8 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: 0, 1: 0, 2: 1, 3: 2}
 
-        compatibility_graph_test = {(0, 1): {"hla_compatibility_score": 11}, (1, 2): {"hla_compatibility_score": 10},
-                                    (2, 0): {"hla_compatibility_score": 10}, (3, 0): {"hla_compatibility_score": 10}}
+        compatibility_graph_test = {(0, 1): {HLA_SCORE: 11}, (1, 2): {HLA_SCORE: 10},
+                                    (2, 0): {HLA_SCORE: 10}, (3, 0): {HLA_SCORE: 10}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
@@ -127,7 +128,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: 0, 1: 0, 2: -1}
 
-        compatibility_graph_test = {(2, 0): {"hla_compatibility_score": 15}}
+        compatibility_graph_test = {(2, 0): {HLA_SCORE: 15}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
@@ -155,7 +156,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         original_donor_idx_to_recipient_idx = {0: -1, 1: 0}
 
-        compatibility_graph_test = {(0, 0): {'hla_compatibility_score': 0}}
+        compatibility_graph_test = {(0, 0): {HLA_SCORE: 0}}
 
         solutions = list(find_optimal_paths(
             compatibility_graph_test,
@@ -210,7 +211,7 @@ def _get_compatibility_graph_from_score_matrix(score_matrix: np.array) -> Compat
     for row_enum, row in enumerate(score_matrix):
         for score_enum, score in enumerate(row):
             if score >= 0:
-                compatibility_graph[(row_enum, score_enum)] = {"hla_compatibility_score": score}
+                compatibility_graph[(row_enum, score_enum)] = {HLA_SCORE: score}
     return compatibility_graph
 
 

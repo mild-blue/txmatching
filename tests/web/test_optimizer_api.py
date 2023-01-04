@@ -6,15 +6,18 @@ from local_testing_utilities.generate_patients import (
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete, get_txm_event_db_id_by_name
-from txmatching.optimizer.optimizer_functions import get_compatibility_graph_for_optimizer_api
-from txmatching.optimizer.optimizer_request_object import CompatibilityGraphEntry
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_complete, get_txm_event_db_id_by_name)
+from txmatching.optimizer.optimizer_functions import \
+    get_compatibility_graph_for_optimizer_api
+from txmatching.optimizer.optimizer_request_object import \
+    CompatibilityGraphEntry
+from txmatching.scorers.scorer_constants import HLA_SCORE
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.web import API_VERSION, OPTIMIZER_NAMESPACE
 from txmatching.utils.enums import Solver
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.web import API_VERSION, OPTIMIZER_NAMESPACE
 
 
 class TestOptimizerApi(DbTests):
@@ -26,13 +29,13 @@ class TestOptimizerApi(DbTests):
                     {
                         "donor_id": 1,
                         "recipient_id": 2,
-                        "weights": {"hla_compatibility_score": 17,
+                        "weights": {HLA_SCORE: 17,
                                     "donor_age_difference": 1}
                     },
                     {
                         "donor_id": 3,
                         "recipient_id": 4,
-                        "weights": {"hla_compatibility_score": 10,
+                        "weights": {HLA_SCORE: 10,
                                     "donor_age_difference": 17}
                     }
                 ],
@@ -65,7 +68,7 @@ class TestOptimizerApi(DbTests):
                         ],
                         [
                             {
-                                "hla_compatibility_score": 3
+                                HLA_SCORE: 3
                             },
                             {
                                 "donor_age_difference": 10
@@ -81,7 +84,7 @@ class TestOptimizerApi(DbTests):
         self.assertEqual(1, res.json['statistics']['number_of_found_cycles_and_chains'])
         self.assertEqual(2, res.json['statistics']['number_of_found_transplants'])
 
-        total_score = sum([dic["weights"]["hla_compatibility_score"] for dic in json_data["compatibility_graph"]])
+        total_score = sum([dic["weights"][HLA_SCORE] for dic in json_data["compatibility_graph"]])
         self.assertEqual(total_score, res.json['cycles_and_chains'][0]['scores'][0])
         self.assertGreaterEqual(total_score, 0)
 
@@ -162,5 +165,5 @@ class TestOptimizerApi(DbTests):
 def _comp_graph_dataclass_list_to_dict_list(dataclass_list: List[CompatibilityGraphEntry]):
     return [{"donor_id": entry.donor_id,
              "recipient_id": entry.recipient_id,
-             "weights": {"hla_compatibility_score": entry.weights["hla_compatibility_score"]}}
+             "weights": {HLA_SCORE: entry.weights[HLA_SCORE]}}
             for entry in dataclass_list]

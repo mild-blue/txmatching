@@ -14,6 +14,7 @@ from txmatching.optimizer.optimizer_return_object import (CycleOrChain,
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.compatibility_graph import OptimizerCompatibilityGraph
+from txmatching.scorers.scorer_constants import HLA_SCORE
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.solve_service.solver_lock import run_with_solver_lock
@@ -219,8 +220,8 @@ def _get_donor_score_matrix(comp_graph: List[CompatibilityGraphEntry], donor_to_
 
 def _hla_score_for_pair(donor_id: int, recipient_id: int, comp_graph: List[CompatibilityGraphEntry]) -> int:
     for row in comp_graph:
-        if row.donor_id == donor_id and row.recipient_id == recipient_id and "hla_compatibility_score" in row.weights:
-            return row.weights["hla_compatibility_score"]
+        if row.donor_id == donor_id and row.recipient_id == recipient_id and HLA_SCORE in row.weights:
+            return row.weights[HLA_SCORE]
     return -1
 
 
@@ -253,7 +254,7 @@ def get_optimizer_configuration(config: ConfigParameters) -> OptimizerConfigurat
         max_chain_length=config.max_sequence_length,
         custom_algorithm_settings={}
     )
-    scoring = [[{"hla_compatibility_score": 1}]]
+    scoring = [[{HLA_SCORE: 1}]]
     return OptimizerConfiguration(
         limitations=limitations,
         scoring=scoring
@@ -275,8 +276,8 @@ def get_compatibility_graph_for_optimizer_api(donors_dict: Dict[DonorDbId, Donor
                     donor_id=donor_id,
                     recipient_id=recipient_id,
                     weights={
-                        "hla_compatibility_score": int(
-                            compatibility_graph_from_scorer[(i, j)]['hla_compatibility_score'])
+                        HLA_SCORE: int(
+                            compatibility_graph_from_scorer[(i, j)][HLA_SCORE])
                     }
                 )
                 compatibility_graph.append(comp_graph_entry)
