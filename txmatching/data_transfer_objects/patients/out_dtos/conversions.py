@@ -153,7 +153,7 @@ def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = No
 
     if get_txm_event_base(txm_event_id).strictness_type == StrictnessType.FORGIVING:
         return {
-            'infos': [warning for warning in parsing_issues],
+            'infos': [parsing_issue for parsing_issue in parsing_issues],
             'warnings': [],
             'errors': []
         }
