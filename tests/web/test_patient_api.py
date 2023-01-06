@@ -899,3 +899,39 @@ class TestPatientService(DbTests):
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient-compatibility-info/1/default')
             self.assertEqual(401, res.status_code)  # Authentication failed.
+
+    def test_upload_patients_with_same_medical_id_not_working(self):
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+        donor_medical_id = 'identical_id'
+        recipient_medical_id = 'identical_id'
+
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value,
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 3000,
+                    'hla_antibodies': [],
+                },
+                'country_code': 'CZE'
+            }
+
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+
+        self.assertEqual(400, res.status_code)
+
+        txm_event = get_txm_event_complete(txm_event_db_id)
+
+        self.assertEqual([], txm_event.all_donors)
+        self.assertEqual([], txm_event.all_recipients)
+
