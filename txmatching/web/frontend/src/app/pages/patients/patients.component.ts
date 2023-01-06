@@ -5,7 +5,6 @@ import { AlertService } from "@app/services/alert/alert.service";
 import { AuthService } from "@app/services/auth/auth.service";
 import { UploadDownloadStatus } from "@app/components/header/header.interface";
 import { ConfigurationService } from "@app/services/configuration/configuration.service";
-import { PatientList } from "@app/model/PatientList";
 import { PatientPair } from "@app/model/PatientPair";
 import { Donor } from "@app/model/Donor";
 import { PatientPairItemComponent } from "@app/components/patient-pair-item/patient-pair-item.component";
@@ -15,12 +14,12 @@ import { PatientDonorDetailWrapperComponent } from "@app/components/patient-dono
 import { EventService } from "@app/services/event/event.service";
 import { AbstractLoggedComponent } from "@app/pages/abstract-logged/abstract-logged.component";
 import { Subscription } from "rxjs";
-import { TxmEventStateGenerated } from "@app/generated";
 import { PatientPairToAdd } from "@app/services/patient/patient.service.interface";
 import { DonorType } from "@app/model/enums/DonorType";
 import { ReportService } from "@app/services/report/report.service";
 import { getErrorMessage } from "@app/helpers/error";
 import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
+import { TxmEventStateType } from "@app/model/enums/TxmEventStateType";
 
 @Component({
   selector: "app-patients",
@@ -207,6 +206,6 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnDest
   }
 
   get canModifyPatients(): boolean {
-    return this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
+    return this.defaultTxmEvent?.state === TxmEventStateType.OPEN;
   }
 }

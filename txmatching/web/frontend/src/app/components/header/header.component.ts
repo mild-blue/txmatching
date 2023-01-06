@@ -5,7 +5,7 @@ import { AuthService } from "@app/services/auth/auth.service";
 import { UploadDownloadStatus } from "@app/components/header/header.interface";
 import { TxmEvent, TxmEvents } from "@app/model/Event";
 import { MatSelectionListChange } from "@angular/material/list";
-import { TxmEventStateGenerated } from "@app/generated";
+import { TxmEventStateType } from "@app/model/enums/TxmEventStateType";
 
 @Component({
   selector: "app-header",
@@ -34,7 +34,7 @@ export class HeaderComponent {
   public infoIcon = faQuestionCircle;
 
   public uploadDownloadStatus: typeof UploadDownloadStatus = UploadDownloadStatus;
-  public txmEventState: typeof TxmEventStateGenerated = TxmEventStateGenerated;
+  public txmEventState: typeof TxmEventStateType = TxmEventStateType;
 
   constructor(private _authService: AuthService) {}
 

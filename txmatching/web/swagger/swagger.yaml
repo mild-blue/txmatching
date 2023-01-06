@@ -1120,6 +1120,8 @@ definitions:
         properties:
             name:
                 type: string
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
         required:
         - name
         type: object
@@ -1605,6 +1607,12 @@ definitions:
         - number_of_found_cycles_and_chains
         - number_of_found_transplants
         type: object
+    StrictnessType:
+        description: Level of strictness for HLA parsing.
+        enum:
+        - STRICT
+        - FORGIVING
+        type: string
     Success:
         properties:
             success:
@@ -1660,10 +1668,13 @@ definitions:
                 type: string
             state:
                 $ref: '#/definitions/TxmEventState'
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
         required:
         - id
         - name
         - state
+        - strictness_type
         type: object
     TxmEventCopy:
         properties:
@@ -1686,6 +1697,8 @@ definitions:
                 $ref: '#/definitions/CountryCode'
             new_txm_event_name:
                 type: string
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
         required:
         - country
         - new_txm_event_name
@@ -1751,6 +1764,8 @@ definitions:
                 items:
                     $ref: '#/definitions/RecipientInput'
                 type: array
+            strictness_type:
+                $ref: '#/definitions/StrictnessType'
             txm_event_name:
                 description: The TXM event name has to be provided by an ADMIN.
                 example: 2020-10-example_event
