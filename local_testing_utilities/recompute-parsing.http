@@ -1,0 +1,33 @@
+GET {{url}}/v1/service/version
+Content-Type: application/json
+
+
+###
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+POST {{url}}/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": "675785"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+
+POST {{url}}/v1/txm-event/20/patients/recompute-parsing
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###

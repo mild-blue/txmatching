@@ -9,8 +9,8 @@ from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
-from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_model import HLAAntibodyRaw
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a,
     create_hla_antibodies_per_groups_from_hla_antibodies,
@@ -32,29 +32,25 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
 ) -> Tuple[List[ParsingIssueBase], Optional[HLACode]]:
     """
     Method to store information about issues during parsing HLA code.
-    This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
-    It must be in separated file with little redundancy caused by cyclic import:
-    txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->
-    txmatching.patients.patient_parameters -> txmatching.utils.hla_system.hla_transformations
     :param hla_raw_code: HLA raw code
     :return:
     """
     parsing_issues = []
-    parsing_issue = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_issue.maybe_hla_code or parsing_issue.result_detail not in OK_PROCESSING_RESULTS:
+    processing_result = parse_hla_raw_code_with_details(hla_raw_code)
+    if not processing_result.maybe_hla_code or processing_result.result_detail not in OK_PROCESSING_RESULTS:
         parsing_issues.append(
             ParsingIssueBase(
                 hla_code_or_group=hla_raw_code,
-                parsing_issue_detail=parsing_issue.result_detail,
-                message=parsing_issue.result_detail.value,
+                parsing_issue_detail=processing_result.result_detail,
+                message=processing_result.result_detail.value,
             )
         )
-    return parsing_issues, parsing_issue.maybe_hla_code
+    return parsing_issues, processing_result.maybe_hla_code
 
 
 # pylint: disable=too-many-locals
 def parse_hla_antibodies_raw_and_return_parsing_issue_list(
-        hla_antibodies_raw: List[HLAAntibodyRawModel]
+        hla_antibodies_raw: List[HLAAntibodyRaw]
 ) -> Tuple[List[ParsingIssueBase], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
@@ -94,15 +90,14 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
             antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
-            if code is not None:
-                hla_antibodies_parsed.append(
-                    HLAAntibody(
-                        raw_code=hla_antibody.raw_code,
-                        code=code,
-                        mfi=hla_antibody.mfi,
-                        cutoff=hla_antibody.cutoff,
-                    )
+            hla_antibodies_parsed.append(
+                HLAAntibody(
+                    raw_code=hla_antibody.raw_code,
+                    code=code,
+                    mfi=hla_antibody.mfi,
+                    cutoff=hla_antibody.cutoff,
                 )
+            )
             parsing_issues = parsing_issues + antibody_parsing_issues
 
     # 3. validate antibodies
@@ -137,13 +132,12 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
         raw_codes_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)
-        if code is not None:
-            hla_types_parsed.append(
-                HLAType(
-                    raw_code=raw_code,
-                    code=code
-                )
+        hla_types_parsed.append(
+            HLAType(
+                raw_code=raw_code,
+                code=code
             )
+        )
         parsing_issues = parsing_issues + raw_codes_parsing_issues
 
     # 3. split hla_types_parsed to the groups

@@ -14,10 +14,10 @@ import { Report } from "@app/services/report/report.interface";
 import { finalize, first } from "rxjs/operators";
 import { EventService } from "@app/services/event/event.service";
 import { AbstractLoggedComponent } from "@app/pages/abstract-logged/abstract-logged.component";
-import { TxmEventStateGenerated } from "@app/generated";
 import { TemplatePopupStyle } from "@app/components/template-popup/template-popup.interface";
 import { ReportConfig } from "@app/components/generate-report/generate-report.interface";
 import { getErrorMessage } from "@app/helpers/error";
+import { TxmEventStateType } from "@app/model/enums/TxmEventStateType";
 
 @Component({
   selector: "app-home",
@@ -109,7 +109,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   get canSetDefaultConfig(): boolean {
-    const txmEventOpen = this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
+    const txmEventOpen = this.defaultTxmEvent?.state === TxmEventStateType.OPEN;
     const configIdDefined = !!this._eventService.getConfigId();
     return txmEventOpen && configIdDefined;
   }

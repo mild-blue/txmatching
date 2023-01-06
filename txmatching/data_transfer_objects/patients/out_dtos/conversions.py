@@ -8,10 +8,12 @@ from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import
     RecipientDTOOut
 from txmatching.database.services.parsing_issue_service import \
     get_parsing_issues_for_patients
+from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
+from txmatching.utils.enums import StrictnessType
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index,
     get_detailed_compatibility_index_without_recipient)
@@ -148,6 +150,13 @@ def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = No
         recipient_id = [recipient_id]
 
     parsing_issues = get_parsing_issues_for_patients(txm_event_id, donor_id, recipient_id)
+
+    if get_txm_event_base(txm_event_id).strictness_type == StrictnessType.FORGIVING:
+        return {
+            'infos': list(parsing_issues),
+            'warnings': [],
+            'errors': []
+        }
 
     return {
         'infos': [],

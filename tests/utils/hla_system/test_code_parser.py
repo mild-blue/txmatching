@@ -19,7 +19,7 @@ from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
 from txmatching.utils.hla_system.hla_table import \
-    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+    PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
@@ -50,10 +50,10 @@ codes = {
     'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DQB1*03:19:01:02Q': (HLACode('DQB1*03:19:01:02Q', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
-    'NONEXISTENTN': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'NONEXISTENT': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'NONEXISTENT*11': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'B*15:36': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'NONEXISTENTN': (HLACode('NONEXISTENTN', 'NONEXISTENTN', 'NONEXISTENTN'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'NONEXISTENT': (HLACode('NONEXISTENT', 'NONEXISTENT', 'NONEXISTENT'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'NONEXISTENT*11': (HLACode('NONEXISTENT*11', 'NONEXISTENT*11', 'NONEXISTENT*11'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'B*15:36': (HLACode('B*15:36', 'B*15:36', 'B*15:36'), ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
     'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'A*02:719': (HLACode('A*02:719', 'A2', 'A2'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
@@ -71,22 +71,32 @@ codes = {
     'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'A*01': (HLACode(None, 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'BW4': (None, ParsingIssueDetail.IRRELEVANT_CODE),
-    'BW6': (None, ParsingIssueDetail.IRRELEVANT_CODE),
-    'BW42': (None, ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
-    'A99': (None, ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
+    'BW4': (HLACode(None, 'BW4', 'BW4'), ParsingIssueDetail.IRRELEVANT_CODE),
+    'BW6': (HLACode(None, 'BW6', 'BW6'), ParsingIssueDetail.IRRELEVANT_CODE),
+    'BW42': (HLACode(None, 'BW42', 'BW42'), ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
+    'A99': (HLACode(None, 'A99', 'A99'), ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
     # low res regexp but not in transformation table
-    'A*99': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'A*99': (HLACode('A*99', 'A*99', 'A*99'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table
     'A*02:284N': (HLACode('A*02:284N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'A*11:11:11:11N': (HLACode('A*11:11:11:11N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
-    'DOA*01:04N': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'DOA*01:04N': (HLACode('DOA*01:04N', 'DOA*01:04N', 'DOA*01:04N'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'B*83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
-    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED)
+    'B83': (HLACode(None, 'B83', 'B83'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    # See file rel_dna_ser_exceptions.py for explanation of the conversions below
+    'DRB1*07:07': (HLACode('DRB1*07:07', 'DR7', 'DR7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B*82:02': (HLACode('B*82:02', 'B82', 'B82'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB1*09:02': (HLACode('DRB1*09:02', 'DR9', 'DR9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB1*10:03': (HLACode('DRB1*10:03', 'DR10', 'DR10'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DQB1*03:19': (HLACode('DQB1*03:19', 'DQ7', 'DQ3'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
 }
 
 
@@ -239,7 +249,7 @@ class TestCodeParser(DbTests):
         ultra high res codes.
         """
         high_res_to_splits = {}
-        all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
+        all_codes = PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS.split.to_dict()
         for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:
                 continue
@@ -305,7 +315,8 @@ class TestCodeParser(DbTests):
                                                  ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
             self.assertEqual(expected,
                              analyze_if_high_res_antibodies_are_type_a(
-                                 antibodies_per_group.hla_antibody_list[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES-1]))
+                                 antibodies_per_group.hla_antibody_list[
+                                 :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list

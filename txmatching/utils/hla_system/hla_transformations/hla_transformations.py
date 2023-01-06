@@ -6,7 +6,7 @@ from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER,
     HIGH_RES_WITH_SUBUNITS_REGEX, LOW_RES_REGEX, SPLIT_RES_REGEX)
 from txmatching.utils.hla_system.hla_table import (
-    ALL_HIGH_RES_CODES, ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE,
+    ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE, ALL_ULTRA_HIGH_RES_CODES,
     HIGH_RES_TO_SPLIT_OR_BROAD, high_res_low_res_to_split_or_broad)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
@@ -25,11 +25,11 @@ logger = logging.getLogger(__name__)
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     if hla_raw_code in PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS:
         return process_parsing_result(hla_raw_code, PARSE_HIGH_RES_HLA_CODE_EXCEPTIONS[hla_raw_code],
-                                      ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
+                                      ParsingIssueDetail.SUCCESSFULLY_PARSED)
     if re.match(LOW_RES_REGEX, hla_raw_code):
         exception_split_broad_code = high_res_low_res_to_split_or_broad(hla_raw_code)
         if isinstance(exception_split_broad_code, ParsingIssueDetail):
-            return HlaCodeProcessingResult(None, exception_split_broad_code)
+            return process_parsing_result(hla_raw_code, hla_raw_code, exception_split_broad_code)
         logger.warning(f'Low res code {hla_raw_code} parsed as split code {exception_split_broad_code}')
         return process_parsing_result(None, exception_split_broad_code)
 
@@ -44,14 +44,11 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
     standartized_high_res_letter_match = _get_standartized_high_res(hla_raw_code, HIGH_RES_REGEX_ENDING_WITH_LETTER)
     if standartized_high_res_letter_match:
-        if (standartized_high_res_letter_match in ALL_HIGH_RES_CODES
-                or hla_raw_code in ALL_HIGH_RES_CODES
+        if (standartized_high_res_letter_match in ALL_ULTRA_HIGH_RES_CODES
+                or hla_raw_code in ALL_ULTRA_HIGH_RES_CODES
                 or standartized_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
             return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.HIGH_RES_WITH_LETTER)
-        else:
-            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
-
-    return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
+    return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
 
 
 def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
@@ -76,18 +73,18 @@ def _get_standartized_high_res(hla_raw_code: str, regex=HIGH_RES_REGEX) -> Optio
     return None
 
 
-def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str):
+def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str) -> HlaCodeProcessingResult:
     exception_split_broad_code = HIGH_RES_TO_SPLIT_OR_BROAD.get(
         standartized_high_res,
         None
     )
     if exception_split_broad_code is None:
-        if hla_raw_code in ALL_HIGH_RES_CODES:
-            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
+        if hla_raw_code in ALL_ULTRA_HIGH_RES_CODES:
+            return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
         else:
-            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
+            return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
-        return HlaCodeProcessingResult(None, exception_split_broad_code)
+        return process_parsing_result(hla_raw_code, hla_raw_code, exception_split_broad_code)
     if standartized_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
         return process_parsing_result(standartized_high_res, exception_split_broad_code,
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)

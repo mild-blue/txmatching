@@ -28,8 +28,9 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import \
     HIGH_RES_REGEX_ENDING_WITH_LETTER
 from txmatching.utils.hla_system.hla_table import (
-    HIGH_RES_TO_SPLIT_OR_BROAD, PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS,
-    SPLIT_TO_BROAD, high_res_low_res_to_split_or_broad)
+    HIGH_RES_TO_SPLIT_OR_BROAD,
+    PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS, SPLIT_TO_BROAD,
+    high_res_low_res_to_split_or_broad)
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
@@ -138,7 +139,7 @@ def try_convert_high_res_with_letter(high_res_or_ultra_high_res: str) -> Optiona
 
 def get_sample_of_codes_with_letter(hla_group: HLAGroup):
     all_high_res_with_letter = [try_convert_high_res_with_letter(high_res) for high_res in
-                                PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.index.tolist()]
+                                PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS.index.tolist()]
 
     all_high_res_with_letter_grouped = [code for code in all_high_res_with_letter if
                                         re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, code)]

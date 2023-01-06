@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.utils.enums import TxmEventState
+from txmatching.utils.enums import StrictnessType, TxmEventState
 
 
 @dataclass
@@ -12,6 +12,7 @@ class TxmEventDTOOut:
     name: str
     default_config_id: Optional[int]
     state: TxmEventState
+    strictness_type: Optional[StrictnessType] = StrictnessType.STRICT
 
 
 @dataclass

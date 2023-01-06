@@ -12,6 +12,7 @@
 import { RecipientInputGenerated } from './recipientInputGenerated';
 import { CountryCodeGenerated } from './countryCodeGenerated';
 import { DonorInputGenerated } from './donorInputGenerated';
+import { StrictnessTypeGenerated } from './strictnessTypeGenerated';
 
 
 export interface UploadPatientsGenerated { 
@@ -22,6 +23,7 @@ export interface UploadPatientsGenerated {
     country: CountryCodeGenerated;
     donors: Array<DonorInputGenerated>;
     recipients: Array<RecipientInputGenerated>;
+    strictness_type?: StrictnessTypeGenerated;
     /**
      * The TXM event name has to be provided by an ADMIN.
      */

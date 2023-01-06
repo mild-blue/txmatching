@@ -43,8 +43,8 @@ class TxmEventApi(Resource):
     @txm_event_api.response_errors(exceptions={NonUniquePatient}, add_default_namespace_errors=True)
     @require_role(UserRole.ADMIN)
     def post(self):
-        tmx_event = request_body(TxmEventDTOIn)
-        created_event = create_txm_event(tmx_event.name)
+        txm_event = request_body(TxmEventDTOIn)
+        created_event = create_txm_event(txm_event.name, txm_event.strictness_type)
         return response_ok(
             convert_txm_event_base_to_dto(created_event),
             code=201)
@@ -89,6 +89,7 @@ class TxmDefaultEventApi(Resource):
     def get(self) -> str:
         txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
         return response_ok(convert_txm_event_base_to_dto(txm_event))
+
 
 # noinspection PyUnresolvedReferences
 
