@@ -27,7 +27,6 @@ class HLAGroup(str, Enum):
     DQA = 'DQA'
     DQB = 'DQB'
     OTHER_DR = 'OTHER_DR'
-    Other = 'Other'
     ALL = 'ALL'
 
 
@@ -98,26 +97,31 @@ HLA_GROUPS_PROPERTIES = {
         split_code_regex=r'^DR5[123]',
         high_res_code_regex=r'DRB[^1]\*',
         max_count_per_patient=2
+    ),
+    # TODO
+    "default": HLAGroupProperties(
+        name='default',
+        split_code_regex=r'',
+        high_res_code_regex=r'',
+        max_count_per_patient=2
     )
 }
 
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + [HLAGroup.Other]
-GENE_HLA_GROUPS_WITH_OTHER_DETAILED = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
-assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
+GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
+assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.ALL]) == set(HLAGroup)
 
 
 def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupProperties:
     return HLAGroupProperties(
-        HLAGroup.Other.name,
+        HLAGroup.ALL.name,
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].split_code_regex for hla_group in group_list]) + ')',
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex for hla_group in group_list]) + ')',
         sum(HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list)
     )
 
 
-HLA_GROUPS_PROPERTIES[HLAGroup.Other] = _combine_properties_of_groups(HLA_GROUPS_OTHER)
 HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(GENE_HLA_GROUPS_WITH_OTHER)
 
 

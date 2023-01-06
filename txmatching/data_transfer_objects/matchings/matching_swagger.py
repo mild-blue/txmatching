@@ -43,12 +43,6 @@ EXAMPLE_DETAILED_SCORE = [
      'recipient_matches': [],
      'antibody_matches': [],
      'group_compatibility_index': 0.0
-     },
-    {'hla_group': HLAGroup.Other.name,
-     'donor_matches': [],
-     'recipient_matches': [],
-     'antibody_matches': [],
-     'group_compatibility_index': 0.0
      }
 ]
 

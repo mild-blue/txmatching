@@ -14,10 +14,9 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    is_all_antibodies_in_high_res, split_hla_types_to_groups,
-    split_hla_types_to_groups_other)
+    is_all_antibodies_in_high_res, split_hla_types_to_groups)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
-from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
+from txmatching.utils.enums import GENE_HLA_GROUPS
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
@@ -156,7 +155,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 
     # 4. check if there are max 2 hla_types per group
     for group in hla_per_groups:
-        if group.hla_group != HLAGroup.Other and group_exceedes_max_number_of_hla_types(group.hla_types):
+        if group_exceedes_max_number_of_hla_types(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
             parsing_issues.append(
@@ -166,25 +165,11 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
                     message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
                 )
             )
-        if group.hla_group == HLAGroup.Other:
-            codes_per_group_parsing_issues, hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types)
-            parsing_issues = parsing_issues + codes_per_group_parsing_issues
-            for hla_group in HLA_GROUPS_OTHER:
-                if group_exceedes_max_number_of_hla_types(hla_codes_per_group_other[hla_group]):
-                    invalid_hla_groups.append(hla_group.name)
-                    group_name = 'Group ' + hla_group.name
-                    parsing_issues.append(
-                        ParsingIssueBase(
-                            hla_code_or_group=group_name,
-                            parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                            message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
-                        )
-                    )
 
     # TODO https://github.com/mild-blue/txmatching/issues/790 hla_code should be nullable
     # 5. check if a basic group is missing
     for group in hla_per_groups:
-        if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
+        if group.hla_group in GENE_HLA_GROUPS and basic_group_is_empty(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
             parsing_issues.append(

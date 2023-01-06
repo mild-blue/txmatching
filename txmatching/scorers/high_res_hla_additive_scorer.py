@@ -14,7 +14,7 @@ EQUAL_BONUS_PER_GROUPS = {
     HLAGroup.A: 1,
     HLAGroup.B: 1,
     HLAGroup.DRB1: 1,
-    HLAGroup.Other: 1
+    "default": 1
 }
 
 
@@ -28,7 +28,8 @@ class HighResScorerCIConfiguration(CIConfiguration):
     @property
     def hla_typing_bonus_per_groups(self):
         bonus = EQUAL_BONUS_PER_GROUPS.copy()
-        bonus[HLAGroup.Other] = 0
+        # TODO
+        # bonus[HLAGroup.Other] = 0
         return bonus
 
 

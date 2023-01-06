@@ -8,7 +8,7 @@ from txmatching.patients.hla_functions import (
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
-                                    HLAGroup)
+                                    HLAGroup, HLA_GROUPS_OTHER)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -93,7 +93,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        # _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -196,7 +196,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        # _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -323,11 +323,9 @@ def _add_broad_typization(hla_type: HLAType,
 def _add_undecidable_typization(antibodies: List[HLAAntibody],
                                 hla_per_group: HLAPerGroup,
                                 positive_matches: Set[AntibodyMatch]):
-    if hla_per_group.hla_group == HLAGroup.Other:
-        groups_other = {hla_type.code.group for hla_type in hla_per_group.hla_types}
+    if hla_per_group.hla_group in HLA_GROUPS_OTHER and hla_per_group.hla_types == []:
         for antibody in antibodies:
-            if antibody.code.group not in groups_other:
-                positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
+            positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 
 
 def _add_none_typization(antibodies: List[HLAAntibody],

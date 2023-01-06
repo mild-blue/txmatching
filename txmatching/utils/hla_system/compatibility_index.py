@@ -47,7 +47,10 @@ class CIConfiguration:
         raise NotImplementedError('Has to be overridden')
 
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup):
-        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
+        if hla_group in self.hla_typing_bonus_per_groups:
+            return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
+        else:
+            return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups["default"]
 
 
 class DefaultCIConfiguration(CIConfiguration):
@@ -66,7 +69,7 @@ class DefaultCIConfiguration(CIConfiguration):
             HLAGroup.A: 0,
             HLAGroup.B: 0,
             HLAGroup.DRB1: 0,
-            HLAGroup.Other: 0
+            "default": 0
         }
 
 
@@ -95,12 +98,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 
     hla_compatibility_index_detailed = []
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
-        if hla_group in GENE_HLA_GROUPS:
-            donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-            recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
-        else:
-            donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
-            recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+        recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_types_in_group(
             donor_hla_types=donor_hla_types,
@@ -117,10 +116,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
-        if hla_group in GENE_HLA_GROUPS:
-            donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        else:
-            donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
         donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
@@ -290,13 +286,14 @@ def _get_ci_for_recipient_donor_types_in_group(
 
 
 # if a group is a gene group, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
-def _hla_types_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
-    hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+def _hla_types_for_gene_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+    hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
 
-    if len(hla_types) not in {1, 2}:
+    # TODO ktore mozu mat kolko teda non basic prazdne?
+    if hla_group in GENE_HLA_GROUPS and len(hla_types) not in {1, 2}:
         logger.error(
             f'Invalid list of alleles for gene {hla_group.name} - there have to be 1 or 2 per gene.'
-            f'\nList of patient_alleles: {donor_hla_typing.hla_per_groups}')
+            f'\nList of patient_alleles: {hla_typing.hla_per_groups}')
         return hla_types
     if len(hla_types) == 1:
         return hla_types + hla_types

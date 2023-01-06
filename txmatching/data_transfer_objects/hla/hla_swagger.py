@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.utils.enums import GENE_HLA_GROUPS_WITH_OTHER, GENE_HLA_GROUPS_WITH_OTHER_DETAILED, HLAGroup
+from txmatching.utils.enums import GENE_HLA_GROUPS_WITH_OTHER, HLAGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [
@@ -13,7 +13,7 @@ HLA_TYPES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.DRB1.name,
      'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'DR7'},
                     'raw_code': 'DR7'}]},
-    {'hla_group': HLAGroup.Other.name,
+    {'hla_group': HLAGroup.CW.name,
      'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'CW4'},
                     'raw_code': 'CW4'}]}
 ]
@@ -33,7 +33,7 @@ HLA_ANTIBODIES_PER_GROUPS_EXAMPLE = [
          'code': {'high_res': None, 'split': None, 'broad': 'DR7'},
          'raw_code': 'DR7', 'mfi': 0, 'cutoff': 300
      }]},
-    {'hla_group': HLAGroup.Other.name,
+    {'hla_group': HLAGroup.CW.name,
      'hla_antibody_list': [{
          'code': {'high_res': None, 'split': None, 'broad': 'CW4'},
          'raw_code': 'CW4', 'mfi': 500, 'cutoff': 500
@@ -47,7 +47,7 @@ HLACode = patient_api.model('HlaCode', {
     'high_res': fields.String(required=False),
     'split': fields.String(required=False),
     'broad': fields.String(required=True),
-    'group': fields.String(required=False, enum=[group.name for group in GENE_HLA_GROUPS_WITH_OTHER_DETAILED]),
+    'group': fields.String(required=False, enum=[group.name for group in GENE_HLA_GROUPS_WITH_OTHER]),
 })
 
 HLAType = patient_api.model('HlaType', {

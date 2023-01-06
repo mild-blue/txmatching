@@ -121,8 +121,7 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
                                 cutoff=antibody["cutoff"],
                                 code=HLACode(high_res=antibody["code"]["high_res"],
                                              split=antibody["code"]["split"],
-                                             broad=antibody["code"]["broad"],
-                                             group=HLAGroup(antibody["code"]["group"]))
+                                             broad=antibody["code"]["broad"])
                             ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
@@ -155,8 +154,7 @@ def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, Reci
                 code=HLACode(
                     high_res=type["code"]["high_res"],
                     split=type["code"]["split"],
-                    broad=type["code"]["broad"],
-                    group=type["code"]["group"])
+                    broad=type["code"]["broad"])
             ) for type in group["hla_types"]]
         ) for group in patient_model.hla_typing["hla_per_groups"]])
 
