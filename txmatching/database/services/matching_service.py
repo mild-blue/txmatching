@@ -216,7 +216,7 @@ def get_transplant_messages(
                           if possible_crossmatch.match_type in [AntibodyMatchTypes.SPLIT,
                                                                 AntibodyMatchTypes.HIGH_RES_WITH_SPLIT]}
 
-    undecidable_crossmatches = {possible_crossmatch.hla_antibody.code.group.name for possible_crossmatch
+    undecidable_crossmatches = {possible_crossmatch.hla_antibody.code.display_code for possible_crossmatch
                                 in possible_crossmatches if
                                 possible_crossmatch.match_type == AntibodyMatchTypes.UNDECIDABLE and
                                 possible_crossmatch.hla_antibody.code}

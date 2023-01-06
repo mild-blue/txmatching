@@ -93,7 +93,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        # _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -196,7 +196,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        # _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:

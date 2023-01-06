@@ -28,8 +28,6 @@ class HighResScorerCIConfiguration(CIConfiguration):
     @property
     def hla_typing_bonus_per_groups(self):
         bonus = EQUAL_BONUS_PER_GROUPS.copy()
-        # TODO
-        # bonus[HLAGroup.Other] = 0
         return bonus
 
 
