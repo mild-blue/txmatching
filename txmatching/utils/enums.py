@@ -107,13 +107,6 @@ HLA_GROUPS_PROPERTIES = {
         split_code_regex=r'^DR5[123]',
         high_res_code_regex=r'DRB[^1]\*',
         max_count_per_patient=2
-    ),
-    # TODO
-    "default": HLAGroupProperties(
-        name='default',
-        split_code_regex=r'',
-        high_res_code_regex=r'',
-        max_count_per_patient=2
     )
 }
 

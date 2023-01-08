@@ -232,7 +232,7 @@ class TestPatientService(DbTests):
             all_recipients=get_test_recipients()
         )
         hash_1 = get_patients_persistent_hash(txm_event_1)
-        self.assertEqual(9100441963031536076, hash_1)
+        self.assertEqual(3860694731564956033, hash_1)
 
         # changing event db id or event name does not change the hash
         txm_event_2 = TxmEvent(

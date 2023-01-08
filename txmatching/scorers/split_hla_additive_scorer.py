@@ -22,7 +22,12 @@ class SplitScorerCIConfiguration(CIConfiguration):
             HLAGroup.A: 1,
             HLAGroup.B: 3,
             HLAGroup.DRB1: 9,
-            "default": 1
+            HLAGroup.CW: 1,
+            HLAGroup.DPA: 1,
+            HLAGroup.DPB: 1,
+            HLAGroup.DQA: 1,
+            HLAGroup.DQB: 1,
+            HLAGroup.OTHER_DR: 1
         }
 
 

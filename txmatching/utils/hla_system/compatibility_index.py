@@ -47,10 +47,7 @@ class CIConfiguration:
         raise NotImplementedError('Has to be overridden')
 
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup):
-        if hla_group in self.hla_typing_bonus_per_groups:
-            return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
-        else:
-            return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups["default"]
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
 
 
 class DefaultCIConfiguration(CIConfiguration):
@@ -69,7 +66,12 @@ class DefaultCIConfiguration(CIConfiguration):
             HLAGroup.A: 0,
             HLAGroup.B: 0,
             HLAGroup.DRB1: 0,
-            "default": 0
+            HLAGroup.CW: 0,
+            HLAGroup.DPA: 0,
+            HLAGroup.DPB: 0,
+            HLAGroup.DQA: 0,
+            HLAGroup.DQB: 0,
+            HLAGroup.OTHER_DR: 0
         }
 
 

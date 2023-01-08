@@ -28,8 +28,7 @@ class TestSaveAndGetConfiguration(DbTests):
         return {
             'high_res': hla_code.high_res,
             'split': hla_code.split,
-            'broad': hla_code.broad,
-            'group': hla_code.group
+            'broad': hla_code.broad
         }
 
     def test_get_matchings(self):
@@ -75,6 +74,14 @@ class TestSaveAndGetConfiguration(DbTests):
                                     'hla_group': 'B'},
                                    {'antibody_matches': [],
                                     'hla_group': 'DRB1'},
+                                   {'antibody_matches': [],
+                                    'hla_group': 'CW'},
+                                   {'antibody_matches': [],
+                                    'hla_group': 'DPA'},
+                                   {'antibody_matches': [],
+                                    'hla_group': 'DPB'},
+                                   {'antibody_matches': [],
+                                    'hla_group': 'DQA'},
                                    {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ5', 'DQ1')},
@@ -83,7 +90,9 @@ class TestSaveAndGetConfiguration(DbTests):
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ6', 'DQ1')},
                                                           'match_type': 'UNDECIDABLE'}],
-                                    'hla_group': 'Other'}]
+                                    'hla_group': 'DQB'},
+                                   {'antibody_matches': [],
+                                    'hla_group': 'OTHER_DR'}]
 
         expected_score = [
             {
@@ -124,14 +133,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchType.SPLIT.name}],
                 'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
-            },
-            {
-                'hla_group': HLAGroup.Other.name,
-                'donor_matches': [],
-                'recipient_matches': [],
-                'group_compatibility_index': 0.0,
-                'antibody_matches': expected_antibodies[3],
-            },
+            }
         ]
         expected_score2 = [
             {
@@ -172,14 +174,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchType.SPLIT.name}],
                 'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
-            },
-            {
-                'hla_group': HLAGroup.Other.name,
-                'donor_matches': [],
-                'recipient_matches': [],
-                'antibody_matches': expected_antibodies[3],
-                'group_compatibility_index': 0.0
-            },
+            }
         ]
         # cannot be compared directly as we do not need to keep the order, but is left here as a reference
         expected = [
@@ -218,9 +213,9 @@ class TestSaveAndGetConfiguration(DbTests):
 
         self.maxDiff = None
 
-        self.assertCountEqual(expected_antibodies[3]['antibody_matches'],
+        self.assertCountEqual(expected_antibodies[7]['antibody_matches'],
                               res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
-                                  'detailed_score_per_group'][3][
+                                  'detailed_score_per_group'][7][
                                   'antibody_matches'])
         self.assertEqual(expected_antibodies[3]['hla_group'],
                          res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1]['detailed_score_per_group'][

@@ -21,22 +21,22 @@ class TestHlaScorer(DbTests):
     high_res_other_hla_types_scorer = HighResWithDQDPScorer()
 
     def test_scorer_max_scores(self):
-        self.assertEqual(26, self.split_scorer.max_transplant_score)
-        self.assertEqual(18, self.high_res_scorer.max_transplant_score)
+        self.assertEqual(46, self.split_scorer.max_transplant_score)
+        self.assertEqual(78, self.high_res_scorer.max_transplant_score)
         self.assertEqual(78, self.high_res_other_hla_types_scorer.max_transplant_score)
 
     def test_scorers_on_some_patients(self):
         donor = _create_donor(['A*01:01', 'A3', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6'])
         recipient = _create_recipient(['A*01:01', 'A2', 'B27', 'B37', 'DR1', 'DR10', 'DQ6'])
 
-        self._test_all_scorers(donor, recipient, (4, 5, 7))
+        self._test_all_scorers(donor, recipient, (5, 7, 7))
 
     def test_scorers_on_some_other_patients(self):
         with self.app.test_client():
             donor = _create_donor(
                 ['A*01:01', 'A23', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6', 'DPA1*01:03'])
             recipient = _create_recipient(['A*01:01', 'A9', 'B27', 'B37', 'DR1', 'DR10', 'DQ6', 'DPA1*01:04'])
-        self._test_all_scorers(donor, recipient, (5, 6, 10))
+        self._test_all_scorers(donor, recipient, (8, 12, 12))
 
     def test_scorers_duplicate_gene_of_donor(self):
         with self.app.test_client():

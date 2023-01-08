@@ -29,8 +29,8 @@ class TestPersistentHash(unittest.TestCase):
             self._assert_hash({'a': 'b'}, 'e4625008dde72175d331df31f62572e9')
         self._assert_hash(None, '6af5817033462a81dfdff478e27e824d')
         self._assert_hash(create_hla_type('A9'), 'b81f11cc22faf6f2dc6259676d9c87ed')
-        self._assert_hash(get_test_donors(), '5d00efd538cfa210244c9e47bc9532b9')
-        self._assert_hash(get_test_recipients(), '455ffbcac9fbbc3559d54cfcdad03456')
+        self._assert_hash(get_test_donors(), '263630d92246553182408d3a25efdbce')
+        self._assert_hash(get_test_recipients(), '251f9d0696319b973295951d5a87d703')
 
     def test_functions_update_persistent_hash(self):
         value = create_hla_type('A9')

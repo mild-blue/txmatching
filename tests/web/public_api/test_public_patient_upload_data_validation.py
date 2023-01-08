@@ -54,6 +54,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual(4, len(txm_event.all_donors))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
+        print([parsing_issue for parsing_issue in res.json['parsing_issues']])
         self.assertCountEqual(
             [
                 'SDFSDFAFAF', 'INVALID',

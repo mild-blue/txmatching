@@ -10,7 +10,7 @@ class TestCodeParser(DbTests):
     def _assert_split_to_groups(self, hla_type: HLAType, expected_group: HLAGroup):
         hla_per_groups = split_hla_types_to_groups([hla_type])[1]
 
-        self.assertEqual(4, len(hla_per_groups))
+        self.assertEqual(9, len(hla_per_groups))
         group_found = False
         for group in hla_per_groups:
             if group.hla_group == expected_group:
@@ -38,17 +38,17 @@ class TestCodeParser(DbTests):
         self._assert_split_to_groups(create_hla_type('A*01:01'), HLAGroup.A)
         self._assert_split_to_groups(create_hla_type('A*01'), HLAGroup.A)
         self._assert_split_to_groups(create_hla_type('B*15:10'), HLAGroup.B)
-        self._assert_split_to_groups(create_hla_type('DQA1*01:03'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('DRB4*01:01'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('C*01:02'), HLAGroup.Other)
+        self._assert_split_to_groups(create_hla_type('DQA1*01:03'), HLAGroup.DQA)
+        self._assert_split_to_groups(create_hla_type('DRB4*01:01'), HLAGroup.OTHER_DR)
+        self._assert_split_to_groups(create_hla_type('C*01:02'), HLAGroup.CW)
 
         # high res with letter
         self._assert_split_to_groups(create_hla_type('A*02:284N'), HLAGroup.A)
         self._assert_split_to_groups(create_hla_type('A*11:21N'), HLAGroup.A)
-        self._assert_split_to_groups(create_hla_type('C*01:37N'), HLAGroup.Other)
+        self._assert_split_to_groups(create_hla_type('C*01:37N'), HLAGroup.CW)
         self._assert_split_to_groups(create_hla_type('DRB1*01:33N'), HLAGroup.DRB1)
         self._assert_split_to_groups(create_hla_type('DRB1*04:280N'), HLAGroup.DRB1)
-        self._assert_split_to_groups(create_hla_type('DPA1*01:29N'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('DQA1*01:15N'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('DRB3*01:26N'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('DPB1*120:01N'), HLAGroup.Other)
+        self._assert_split_to_groups(create_hla_type('DPA1*01:29N'), HLAGroup.DPA)
+        self._assert_split_to_groups(create_hla_type('DQA1*01:15N'), HLAGroup.DQA)
+        self._assert_split_to_groups(create_hla_type('DRB3*01:26N'), HLAGroup.OTHER_DR)
+        self._assert_split_to_groups(create_hla_type('DPB1*120:01N'), HLAGroup.DPB)
