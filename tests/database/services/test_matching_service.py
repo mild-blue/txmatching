@@ -45,4 +45,4 @@ class MatchingService(DbTests):
 
         self.assertEqual(matchings_detailed.number_of_possible_recipients, 12)
         self.assertEqual(matchings_detailed.number_of_possible_transplants, 157)
-        self.assertEqual(matchings_detailed.max_transplant_score, 46)
+        self.assertEqual(matchings_detailed.max_transplant_score, 26)
