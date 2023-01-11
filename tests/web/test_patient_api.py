@@ -10,6 +10,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
@@ -902,36 +903,74 @@ class TestPatientService(DbTests):
 
     def test_upload_patients_with_same_medical_id_not_working(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+
+        json_data = {
+            'donor': {
+                'medical_id': '',
+                'blood_group': 'A',
+                'hla_typing': [],
+                'donor_type': DonorType.DONOR.value,
+            },
+            'recipient': {
+                'medical_id': '',
+                'acceptable_blood_groups': [],
+                'blood_group': 'A',
+                'hla_typing': [],
+                'recipient_cutoff': 3000,
+                'hla_antibodies': [],
+            },
+            'country_code': 'CZE'
+        }
+
+        existing_recipient_medical_id = 'ExistingRecipientMedicalId'
+        existing_donor_medical_id = 'ExistingDonorMedicalId'
+        donor_medical_id = "D1"
+        recipient_medical_id = "R1"
+
+        with self.app.test_client() as client:
+            json_data['donor']['medical_id'] = existing_donor_medical_id
+            json_data['recipient']['medical_id'] = existing_recipient_medical_id
+
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+
+        # test case 1: add DONOR with id that is already used by some RECIPIENT in the same txm_event
+        with self.app.test_client() as client:
+            json_data['donor']['medical_id'] = existing_recipient_medical_id
+            json_data['recipient']['medical_id'] = recipient_medical_id
+
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+            self.assertEqual(400, res.status_code)
+            self.assertEqual(res.json['message'], 'Donor medical id "{\'ExistingRecipientMedicalId\'}" '
+                                                  'is already in use by a recipient in given txm event')
+
+        # test case 2: add RECIPIENT with id that is already used by some DONOR in the same txm_event
+        with self.app.test_client() as client:
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['recipient']['medical_id'] = existing_donor_medical_id
+
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+            self.assertEqual(400, res.status_code)
+            self.assertEqual(res.json['message'], 'Recipient medical id "{\'ExistingDonorMedicalId\'}" '
+                                                  'is already in use by a donor in given txm event')
+        # test case 3: add patients with the same medical id
         donor_medical_id = 'identical_id'
         recipient_medical_id = 'identical_id'
 
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': donor_medical_id,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value,
-                },
-                'recipient': {
-                    'medical_id': recipient_medical_id,
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 3000,
-                    'hla_antibodies': [],
-                },
-                'country_code': 'CZE'
-            }
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['recipient']['medical_id'] = recipient_medical_id
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
 
         self.assertEqual(400, res.status_code)
-
-        txm_event = get_txm_event_complete(txm_event_db_id)
-
-        self.assertEqual([], txm_event.all_donors)
-        self.assertEqual([], txm_event.all_recipients)
-
+        self.assertEqual(res.json['message'], 'Donor medical id "{\'identical_id\'}" is the same '
+                                              'as recipient "medical id {\'identical_id\'}"')
