@@ -268,14 +268,15 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(recipient_models)
 
-    dublicate_recipients = [
+    # duplicate recipient models save donor-recipient relationship when recipient already in db.
+    duplicate_recipients = [
         recipient for recipient in initial_recipients if recipient.medical_id in recipient_duplicate_ids]
-    dublicate_recipient_models = [
+    duplicate_recipient_models = [
         _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
-        for recipient in dublicate_recipients
+        for recipient in duplicate_recipients
     ]
     recipient_models_dict = {recipient_model.medical_id: recipient_model
-                             for recipient_model in (recipient_models + dublicate_recipient_models)}
+                             for recipient_model in (recipient_models + duplicate_recipient_models)}
 
     donor_models = [
         _donor_upload_dto_to_donor_model(

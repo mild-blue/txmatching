@@ -227,7 +227,7 @@ SPECIAL_DONORS_SPECIAL_HLA_CODES = [
         'hla_typing': [
             'DQ[01:03,      06:03]', 'B7'
         ],
-        'medical_id': 'R1',
+        'medical_id': 'D1',
         'blood_group': 'A',
         'related_recipient_medical_id': 'R1'
     }

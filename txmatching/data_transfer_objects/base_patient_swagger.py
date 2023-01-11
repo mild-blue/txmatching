@@ -27,8 +27,12 @@ Etag = {
     'etag': fields.Integer(required=True, description='Number of updates of a patient', example=1),
 }
 
-MedicalId = {
+DonorMedicalId = {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
+}
+
+RecipientMedicalId = {
+    'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
 }
 
 HLAAntibodyToUpdateJson = patient_api.model('HlaAntibodyToUpdate', {
@@ -93,7 +97,7 @@ BasePatient = {
     'note': fields.String(required=False, example='donor note', default=''),
 }
 
-NewPatient = {**BasePatient, **MedicalId, **{
+NewPatient = {**BasePatient, **{
     'internal_medical_id': fields.String(required=False,
                                          example='123456',
                                          description='Custom medical ID that will not be shown in UI, but will be'

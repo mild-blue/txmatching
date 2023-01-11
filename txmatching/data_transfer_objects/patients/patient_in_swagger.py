@@ -1,9 +1,9 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    AllMessagesJson, DbId, DonorToUpdate, Etag, MedicalId,
+    AllMessagesJson, DbId, DonorToUpdate, Etag,
     PatientParametersJson, PatientToUpdate, RecipientRequirements,
-    RecipientToUpdate)
+    RecipientToUpdate, DonorMedicalId, RecipientMedicalId)
 from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
                                                             DonorTypeEnumJson)
@@ -18,7 +18,7 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import (
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
-DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **Etag, **{
+DonorJson = patient_api.model('Donor', {**DbId, **DonorMedicalId, **Etag, **{
     'active': fields.Boolean(required=True, description='Whether the user shall be used in pairing calculation'),
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
@@ -46,7 +46,7 @@ DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **Etag, **{
     'all_messages': fields.Nested(required=False, model=AllMessagesJson)
 }})
 
-RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
+RecipientJson = patient_api.model('Recipient', {**DbId, **RecipientMedicalId, **Etag, **{
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'internal_medical_id': fields.String(required=False, description='Internal medical id of the patient'),

@@ -3065,11 +3065,6 @@
                     "default": "",
                     "example": "donor note"
                 },
-                "medical_id": {
-                    "type": "string",
-                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-                    "example": "D1037"
-                },
                 "internal_medical_id": {
                     "type": "string",
                     "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
@@ -3094,6 +3089,11 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "D1037"
                 },
                 "donor_type": {
                     "$ref": "#/definitions/DonorType"
@@ -4094,7 +4094,7 @@
                 "medical_id": {
                     "type": "string",
                     "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-                    "example": "D1037"
+                    "example": "R1037"
                 },
                 "etag": {
                     "type": "integer",
@@ -4216,11 +4216,6 @@
                     "default": "",
                     "example": "donor note"
                 },
-                "medical_id": {
-                    "type": "string",
-                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-                    "example": "D1037"
-                },
                 "internal_medical_id": {
                     "type": "string",
                     "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
@@ -4245,6 +4240,11 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "R1037"
                 },
                 "acceptable_blood_groups": {
                     "type": "array",

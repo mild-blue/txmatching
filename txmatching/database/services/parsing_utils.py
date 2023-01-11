@@ -28,9 +28,26 @@ def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUpl
     new_recipient_ids = {recipient.medical_id for recipient in recipients}
     current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
     recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
+
+    donor_recipient_duplicate_ids = new_donor_ids.intersection(new_recipient_ids)
+    new_donor_current_recipient_ids = new_donor_ids.intersection(current_recipient_ids)
+    new_recipient_current_donor_ids = new_recipient_ids.intersection(current_donor_ids)
+
     if donor_duplicate_ids:
         raise InvalidArgumentException(f'There were the same donors in current data and in the data for upload:'
                                        f' {donor_duplicate_ids}')
     if recipient_duplicate_ids:
         raise InvalidArgumentException(f'There were the same recipients in current data and in the data for upload:'
                                        f' {recipient_duplicate_ids}')
+
+    if donor_recipient_duplicate_ids:
+        raise InvalidArgumentException(f'Donor medical id "{donor_recipient_duplicate_ids}" is the same as recipient '
+                                       f'"medical id {donor_recipient_duplicate_ids}"')
+
+    if new_donor_current_recipient_ids:
+        raise InvalidArgumentException(f'Donor medical id "{new_donor_current_recipient_ids}" is already in use by '
+                                       'a recipient in given txm event')
+
+    if new_recipient_current_donor_ids:
+        raise InvalidArgumentException(f'Recipient medical id "{new_recipient_current_donor_ids}" is already in use by '
+                                       f'a donor in given txm event')

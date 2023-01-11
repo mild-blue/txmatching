@@ -25,9 +25,9 @@ def prepare_txm_event_with_many_solutions():
     replace_or_add_patients_from_excel(patients)
     add_donor_recipient_pair(
         DonorRecipientPairDTO(
-            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t2', blood_group=BloodGroup.AB,
+            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t2_d', blood_group=BloodGroup.AB,
                                  related_recipient_medical_id=None, hla_typing=[]),
-            recipient=RecipientUploadDTO(medical_id='t2', blood_group=BloodGroup.AB, hla_typing=[],
+            recipient=RecipientUploadDTO(medical_id='t2_r', blood_group=BloodGroup.AB, hla_typing=[],
                                          acceptable_blood_groups=[], hla_antibodies=[]),
             country_code=Country.CZE
         ),
@@ -35,9 +35,9 @@ def prepare_txm_event_with_many_solutions():
     )
     add_donor_recipient_pair(
         DonorRecipientPairDTO(
-            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t1', blood_group=BloodGroup.AB,
+            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t1_d', blood_group=BloodGroup.AB,
                                  related_recipient_medical_id=None, hla_typing=[]),
-            recipient=RecipientUploadDTO(medical_id='t1', blood_group=BloodGroup.AB, hla_typing=[],
+            recipient=RecipientUploadDTO(medical_id='t1_r', blood_group=BloodGroup.AB, hla_typing=[],
                                          acceptable_blood_groups=[], hla_antibodies=[]),
             country_code=Country.CZE
         ),
@@ -57,9 +57,9 @@ def prepare_txm_event_with_too_many_solutions():
     replace_or_add_patients_from_excel(patients)
     add_donor_recipient_pair(
         DonorRecipientPairDTO(
-            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t2', blood_group=BloodGroup.ZERO,
+            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t2_d', blood_group=BloodGroup.ZERO,
                                  related_recipient_medical_id=None, hla_typing=['A3', 'B7', 'DR11']),
-            recipient=RecipientUploadDTO(medical_id='t2', blood_group=BloodGroup.AB, hla_typing=['A3', 'B7', 'DR11'],
+            recipient=RecipientUploadDTO(medical_id='t2_r', blood_group=BloodGroup.AB, hla_typing=['A3', 'B7', 'DR11'],
                                          acceptable_blood_groups=[BloodGroup.A, BloodGroup.ZERO], hla_antibodies=[]),
             country_code=Country.CZE
         ),
@@ -67,9 +67,9 @@ def prepare_txm_event_with_too_many_solutions():
     )
     add_donor_recipient_pair(
         DonorRecipientPairDTO(
-            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t1', blood_group=BloodGroup.ZERO,
+            donor=DonorUploadDTO(donor_type=DonorType.DONOR, medical_id='t1_d', blood_group=BloodGroup.ZERO,
                                  related_recipient_medical_id=None, hla_typing=['A3', 'B7', 'DR11']),
-            recipient=RecipientUploadDTO(medical_id='t1', blood_group=BloodGroup.AB, hla_typing=['A3', 'B7', 'DR11'],
+            recipient=RecipientUploadDTO(medical_id='t1_r', blood_group=BloodGroup.AB, hla_typing=['A3', 'B7', 'DR11'],
                                          acceptable_blood_groups=[BloodGroup.A, BloodGroup.ZERO], hla_antibodies=[]),
             country_code=Country.CZE
         ),

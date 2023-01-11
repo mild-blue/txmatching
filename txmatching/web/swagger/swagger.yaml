@@ -701,7 +701,7 @@ definitions:
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id012
+            hla_typing: &id011
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
                 - A1
@@ -718,12 +718,12 @@ definitions:
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id013
+            internal_medical_id: &id012
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id011
+            medical_id:
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
@@ -1415,7 +1415,13 @@ definitions:
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id011
+            medical_id: &id013
+                description: Medical ID of the patient. This ID is unique thorough
+                    the system and can be used for the identification of a specific
+                    patient in your system. Typically, this is the patient ID used
+                    in your internal system.
+                example: R1037
+                type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_issues:
@@ -1487,9 +1493,9 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id012
-            internal_medical_id: *id013
-            medical_id: *id011
+            hla_typing: *id011
+            internal_medical_id: *id012
+            medical_id: *id013
             note: *id006
             previous_transplants: &id015
                 description: Number of previous kidney transplants.

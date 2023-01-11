@@ -1,9 +1,9 @@
-
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    NewDonor, NewPatient, NewRecipient)
+    NewDonor, NewPatient, NewRecipient, DonorMedicalId, RecipientMedicalId)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
+
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssuePublicJson
 from txmatching.web.web_utils.namespaces import public_api
@@ -18,9 +18,9 @@ PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
                                   description='Errors and warnings that occurred in HLA codes parsing'),
 })
 
-DonorJsonIn = public_api.model('DonorInput', {**NewPatient, **NewDonor})
+DonorJsonIn = public_api.model('DonorInput', {**NewPatient, **DonorMedicalId, **NewDonor})
 
-RecipientJsonIn = public_api.model('RecipientInput', {**NewPatient, **NewRecipient})
+RecipientJsonIn = public_api.model('RecipientInput', {**NewPatient, **RecipientMedicalId, **NewRecipient})
 
 UploadPatientsJson = public_api.model(
     'UploadPatients',
