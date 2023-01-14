@@ -8,7 +8,7 @@ from txmatching.patients.hla_functions import (
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
-                                    HLAGroup, HLA_GROUPS_OTHER)
+                                    HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -323,7 +323,7 @@ def _add_broad_typization(hla_type: HLAType,
 def _add_undecidable_typization(antibodies: List[HLAAntibody],
                                 hla_per_group: HLAPerGroup,
                                 positive_matches: Set[AntibodyMatch]):
-    if hla_per_group.hla_group in HLA_GROUPS_OTHER and hla_per_group.hla_types == []:
+    if hla_per_group.hla_types == []:
         for antibody in antibodies:
             positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 

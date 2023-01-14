@@ -112,7 +112,7 @@ HLA_GROUPS_PROPERTIES = {
 
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
+HLA_GROUPS = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
 assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.ALL]) == set(HLAGroup)
 
 
@@ -125,7 +125,7 @@ def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupPropert
     )
 
 
-HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(GENE_HLA_GROUPS_WITH_OTHER)
+HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(HLA_GROUPS)
 
 
 # BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html

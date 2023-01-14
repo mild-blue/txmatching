@@ -25,6 +25,7 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 logger = logging.getLogger(__name__)
 
 MAX_ANTIGENS_PER_GROUP = 2
+MAX_ANTIGENS_PER_OTHER_DR = 3
 
 
 def parse_hla_raw_code_and_return_parsing_issue_list(
@@ -147,9 +148,9 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 
     invalid_hla_groups = []
 
-    # 4. check if there are max 2 hla_types per group
+    # 4. check if there are max 2 hla_types per group and max 3 hla_types if it is OTHER_DR
     for group in hla_per_groups:
-        if group.hla_group is not HLAGroup.OTHER_DR and group_exceedes_max_number_of_hla_types(group.hla_types):
+        if group.hla_group is not HLAGroup.OTHER_DR and group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group):
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
             parsing_issues.append(
@@ -184,8 +185,10 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     ))
 
 
-def group_exceedes_max_number_of_hla_types(hla_types: List[HLAType]):
-    if len(hla_types) > MAX_ANTIGENS_PER_GROUP:
+def group_exceedes_max_number_of_hla_types(hla_types: List[HLAType], hla_group: HLAGroup):
+    if hla_group is HLAGroup.OTHER_DR and len(hla_types) > MAX_ANTIGENS_PER_OTHER_DR:
+        return True
+    elif hla_group is not HLAGroup.OTHER_DR and len(hla_types) > MAX_ANTIGENS_PER_GROUP:
         return True
     return False
 

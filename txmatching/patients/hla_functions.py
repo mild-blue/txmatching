@@ -10,7 +10,7 @@ from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
+from txmatching.utils.enums import (HLA_GROUPS,
                                     HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES,
                                     HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
@@ -128,11 +128,11 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
                                                                                                         HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
-    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
+    for hla_group in HLA_GROUPS:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:
         match_found = False
-        for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
+        for hla_group in HLA_GROUPS:
             if _is_hla_type_in_group(hla_type, hla_group):
                 hla_types_in_groups[hla_group].append(hla_type)
                 match_found = True

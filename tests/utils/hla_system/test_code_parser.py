@@ -130,7 +130,7 @@ class TestCodeParser(DbTests):
 
         expected = {'A', 'DRB1'}
         raw_codes_with_wrong_number_per_group = {group.hla_group.name for group in codes_per_group if
-                                                 group_exceedes_max_number_of_hla_types(group.hla_types)}
+                                                 group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group)}
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
