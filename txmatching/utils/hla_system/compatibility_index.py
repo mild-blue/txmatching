@@ -98,7 +98,7 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
         ci_configuration = DefaultCIConfiguration()
 
     hla_compatibility_index_detailed = []
-    for hla_group in HLA_GROUPS:
+    for hla_group in HLA_GROUPS + [HLAGroup.INVALID_CODES]:
         donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
         recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
 

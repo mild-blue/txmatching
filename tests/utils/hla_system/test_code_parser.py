@@ -299,8 +299,9 @@ class TestCodeParser(DbTests):
             self.assertTrue(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
 
             # not all in high res
-            antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
-            self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
+            if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
+                antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
+                self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
 
     def test_analyze_if_high_res_antibodies_are_type_a(self):
         antibodies = create_antibodies(TYPE_A_EXAMPLE_REC)
@@ -314,13 +315,14 @@ class TestCodeParser(DbTests):
 
         for antibodies_per_group in antibodies.hla_antibodies_per_groups:
             # insufficient amount of antibodies
-            antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
-            expected = HighResAntibodiesAnalysis(False,
-                                                 ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
-            self.assertEqual(expected,
-                             analyze_if_high_res_antibodies_are_type_a(
-                                 antibodies_per_group.hla_antibody_list[
-                                 :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
+            if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
+                antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
+                expected = HighResAntibodiesAnalysis(False,
+                                                    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+                self.assertEqual(expected,
+                                analyze_if_high_res_antibodies_are_type_a(
+                                    antibodies_per_group.hla_antibody_list[
+                                    :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list

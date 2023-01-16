@@ -128,7 +128,7 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
                                                                                                         HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
-    for hla_group in HLA_GROUPS:
+    for hla_group in HLA_GROUPS + [HLAGroup.INVALID_CODES]:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:
         match_found = False
@@ -138,7 +138,7 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
                 match_found = True
                 break
         if not match_found:
-            hla_types_in_groups[HLAGroup.OTHER_DR].append(hla_type)
+            hla_types_in_groups[HLAGroup.INVALID_CODES].append(hla_type)
     return parsing_issues, hla_types_in_groups
 
 

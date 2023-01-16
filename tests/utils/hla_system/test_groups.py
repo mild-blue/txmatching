@@ -10,7 +10,7 @@ class TestCodeParser(DbTests):
     def _assert_split_to_groups(self, hla_type: HLAType, expected_group: HLAGroup):
         hla_per_groups = split_hla_types_to_groups([hla_type])[1]
 
-        self.assertEqual(9, len(hla_per_groups))
+        self.assertEqual(10, len(hla_per_groups))
         group_found = False
         for group in hla_per_groups:
             if group.hla_group == expected_group:

@@ -27,6 +27,7 @@ class HLAGroup(str, Enum):
     DQA = 'DQA'
     DQB = 'DQB'
     OTHER_DR = 'OTHER_DR'
+    INVALID_CODES = 'INVALID_CODES'
     ALL = 'ALL'
 
 
@@ -102,6 +103,11 @@ HLA_GROUPS_PROPERTIES = {
         high_res_code_regex=r'DQB1\*',
         max_count_per_patient=4
     ),
+    # Na zaklade emailu od Mateje Rodera z 12.5.2020:
+    # U DRB3,4,5 (dr51,52,53 ve split) je to tak, že každý může mít 0 až 2 geny pro DRB3, 0 až 2 geny pro DRB4 a 0 až 2
+    # geny pro DRB5. Zároveň však platí, že může mít pouze 0 až 2 jakékoliv geny DRB345. Čili neexistuje jedinec, který
+    # by měl například 1 funkční protein DRB3, DRB4 i DRB5, protože pak by jich měl dohromady 3, což není možné, rsp.
+    # to zatím u žádného člověka nebylo objeveno.
     HLAGroup.OTHER_DR: HLAGroupProperties(
         name='OTHER_DR',
         split_code_regex=r'^DR5[123]',
@@ -112,8 +118,9 @@ HLA_GROUPS_PROPERTIES = {
 
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
+SPECIAL_HLA_GROUPS = [HLAGroup.OTHER_DR, HLAGroup.INVALID_CODES]
 HLA_GROUPS = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
-assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.ALL]) == set(HLAGroup)
+assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + SPECIAL_HLA_GROUPS + [HLAGroup.ALL]) == set(HLAGroup)
 
 
 def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupProperties:
