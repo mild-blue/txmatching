@@ -38,6 +38,6 @@ dependencies:
       - pylint-flask==0.6
       - pylint-flask-sqlalchemy==0.2.0
       - pylint-plugin-utils==0.7
-      - swagger-unittest==0.3.5
+      - swagger-unittest==0.3.6
       - yoyo-migrations==7.3.2
       - flask-restx==1.0.3
