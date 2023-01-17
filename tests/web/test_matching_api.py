@@ -74,14 +74,6 @@ class TestSaveAndGetConfiguration(DbTests):
                                     'hla_group': 'B'},
                                    {'antibody_matches': [],
                                     'hla_group': 'DRB1'},
-                                   {'antibody_matches': [],
-                                    'hla_group': 'CW'},
-                                   {'antibody_matches': [],
-                                    'hla_group': 'DPA'},
-                                   {'antibody_matches': [],
-                                    'hla_group': 'DPB'},
-                                   {'antibody_matches': [],
-                                    'hla_group': 'DQA'},
                                    {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ5', 'DQ1')},
@@ -90,9 +82,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ6', 'DQ1')},
                                                           'match_type': 'UNDECIDABLE'}],
-                                    'hla_group': 'DQB'},
-                                   {'antibody_matches': [],
-                                    'hla_group': 'OTHER_DR'}]
+                                    'hla_group': 'DQB'}]
 
         expected_score = [
             {
@@ -213,9 +203,9 @@ class TestSaveAndGetConfiguration(DbTests):
 
         self.maxDiff = None
 
-        self.assertCountEqual(expected_antibodies[7]['antibody_matches'],
+        self.assertCountEqual(expected_antibodies[3]['antibody_matches'],
                               res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
-                                  'detailed_score_per_group'][7][
+                                  'detailed_score_per_group'][3][
                                   'antibody_matches'])
         self.assertEqual(expected_antibodies[3]['hla_group'],
                          res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1]['detailed_score_per_group'][

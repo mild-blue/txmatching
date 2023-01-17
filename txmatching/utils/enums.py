@@ -103,11 +103,11 @@ HLA_GROUPS_PROPERTIES = {
         high_res_code_regex=r'DQB1\*',
         max_count_per_patient=4
     ),
-    # Na zaklade emailu od Mateje Rodera z 12.5.2020:
-    # U DRB3,4,5 (dr51,52,53 ve split) je to tak, že každý může mít 0 až 2 geny pro DRB3, 0 až 2 geny pro DRB4 a 0 až 2
-    # geny pro DRB5. Zároveň však platí, že může mít pouze 0 až 2 jakékoliv geny DRB345. Čili neexistuje jedinec, který
-    # by měl například 1 funkční protein DRB3, DRB4 i DRB5, protože pak by jich měl dohromady 3, což není možné, rsp.
-    # to zatím u žádného člověka nebylo objeveno.
+    # Based on email communication with Matej Roder from 12.5.2020:
+    # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for DRB5.
+    # But, there can be only 0 to 2 genes from DRB3,4,5 in total. E.g. there can't be a person with DRB3, DRB4, DRB5 at
+    # the same time, because that would mean they have 3 genes from this group in total, which is not possible (at least
+    # not found in anybody till now).
     HLAGroup.OTHER_DR: HLAGroupProperties(
         name='OTHER_DR',
         split_code_regex=r'^DR5[123]',

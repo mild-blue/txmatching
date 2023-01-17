@@ -33,7 +33,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
                 donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event
             ) for donor in txm_event.all_donors],
             key=lambda donor: (
-            not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
+                not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
         'recipients': sorted([
             recipient_to_recipient_dto_out(
                 recipient, txm_event.db_id
@@ -118,7 +118,8 @@ def donor_to_donor_dto_out(donor: Donor,
                 group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
                 antibody_matches=[],
                 donor_matches=compatibility_index_detailed_group.donor_matches
-            ) for compatibility_index_detailed_group in compatibility_index_detailed
+            ) for compatibility_index_detailed_group in compatibility_index_detailed if
+            len(compatibility_index_detailed_group.donor_matches) != 0
         ]
 
     return donor_dto
@@ -130,20 +131,22 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
     detailed_scores = []
     for antibody_group, compatibility_index_detailed_group in zip(antibodies, compatibility_index_detailed):
         assert antibody_group.hla_group == compatibility_index_detailed_group.hla_group
-        detailed_scores.append(
-            DetailedScoreForHLAGroup(
-                recipient_matches=compatibility_index_detailed_group.recipient_matches,
-                hla_group=compatibility_index_detailed_group.hla_group,
-                group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
-                antibody_matches=antibody_group.antibody_matches,
-                donor_matches=compatibility_index_detailed_group.donor_matches
+        if not (len(compatibility_index_detailed_group.recipient_matches) == 0 and len(
+                compatibility_index_detailed_group.donor_matches) == 0 and len(antibody_group.antibody_matches) == 0):
+            detailed_scores.append(
+                DetailedScoreForHLAGroup(
+                    recipient_matches=compatibility_index_detailed_group.recipient_matches,
+                    hla_group=compatibility_index_detailed_group.hla_group,
+                    group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
+                    antibody_matches=antibody_group.antibody_matches,
+                    donor_matches=compatibility_index_detailed_group.donor_matches
+                )
             )
-        )
     return detailed_scores
 
 
 def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = None) -> Dict[
-        str, List[ParsingIssue]]:
+    str, List[ParsingIssue]]:
     if donor_id is not None:
         donor_id = [donor_id]
     if recipient_id is not None:
