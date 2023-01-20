@@ -1,4 +1,4 @@
-import dacite
+# import dacite
 
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.create_dataclasses import (get_test_donors,
@@ -370,3 +370,24 @@ class TestPatientService(DbTests):
 
         # Get event works properly
         get_txm_event_complete(txm_event_id)
+
+    def test_upload_patients_with_same_medical_id(self):
+        # Create txm events and few patients
+        create_or_overwrite_txm_event(name=TXM_EVENT_NAME).db_id
+        replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
+
+        identical_medical_id = "identical_medical_id"
+
+        DONOR_UPLOAD_DTOS[0].medical_id = identical_medical_id
+        DONOR_UPLOAD_DTOS[1].medical_id = identical_medical_id
+
+        # Upload patient with same medical ids
+        with self.assertRaises(InvalidArgumentException):
+            replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
+
+        RECIPIENT_UPLOAD_DTOS[0].medical_id = identical_medical_id
+        RECIPIENT_UPLOAD_DTOS[1].medical_id = identical_medical_id
+
+        # Upload patient with same medical ids
+        with self.assertRaises(InvalidArgumentException):
+            replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)

@@ -10,7 +10,6 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
@@ -197,7 +196,7 @@ class TestPatientService(DbTests):
                             'mfi': 2000,
                             'name': 'test',
                             'cutoff': 2000
-                    }],
+                        }],
                 },
                 'country_code': 'CZE'
             }
@@ -626,7 +625,7 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
 
             self.assertEqual(None, warning_issue.confirmed_by)
 
@@ -688,7 +687,7 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
 
             self.assertEqual(None, error_issue.confirmed_by)
 
@@ -742,7 +741,7 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
             self.assertEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -823,11 +822,13 @@ class TestPatientService(DbTests):
             {"hla_typing": {"hla_per_groups": [{"hla_group": "B",
                                                 "hla_types": [{
                                                     "raw_code": "B7",
-                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7", "group": "B"}}]},
+                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7",
+                                                             "group": "B"}}]},
                                                {"hla_group": "DRB1",
                                                 "hla_types": [{
                                                     "raw_code": "DR11",
-                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5", "group": "DRB1"}}]},
+                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5",
+                                                             "group": "DRB1"}}]},
                                                {"hla_group": "Other", "hla_types": []}]}}
         )
         db.session.commit()
@@ -945,7 +946,7 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(400, res.status_code)
-            self.assertEqual(res.json['message'], 'Donor medical id "{\'ExistingRecipientMedicalId\'}" '
+            self.assertEqual(res.json['message'], 'Donor medical id {\'ExistingRecipientMedicalId\'} '
                                                   'is already in use by a recipient in given txm event')
 
         # test case 2: add RECIPIENT with id that is already used by some DONOR in the same txm_event
@@ -957,8 +958,9 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(400, res.status_code)
-            self.assertEqual(res.json['message'], 'Recipient medical id "{\'ExistingDonorMedicalId\'}" '
+            self.assertEqual(res.json['message'], 'Recipient medical id {\'ExistingDonorMedicalId\'} '
                                                   'is already in use by a donor in given txm event')
+
         # test case 3: add patients with the same medical id
         donor_medical_id = 'identical_id'
         recipient_medical_id = 'identical_id'
@@ -972,5 +974,5 @@ class TestPatientService(DbTests):
                               headers=self.auth_headers, json=json_data)
 
         self.assertEqual(400, res.status_code)
-        self.assertEqual(res.json['message'], 'Donor medical id "{\'identical_id\'}" is the same '
-                                              'as recipient "medical id {\'identical_id\'}"')
+        self.assertEqual(res.json['message'], 'Donor medical id {\'identical_id\'} is the same '
+                                              'as recipient medical id {\'identical_id\'}')
