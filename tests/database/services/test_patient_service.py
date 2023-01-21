@@ -378,16 +378,16 @@ class TestPatientService(DbTests):
 
         identical_medical_id = "identical_medical_id"
 
+        # test case 1: Upload DONORS with the same medical id
         DONOR_UPLOAD_DTOS[0].medical_id = identical_medical_id
         DONOR_UPLOAD_DTOS[1].medical_id = identical_medical_id
 
-        # Upload patient with same medical ids
         with self.assertRaises(InvalidArgumentException):
             replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
+        # test case 2: Upload RECIPIENTS with the same medical id
         RECIPIENT_UPLOAD_DTOS[0].medical_id = identical_medical_id
         RECIPIENT_UPLOAD_DTOS[1].medical_id = identical_medical_id
 
-        # Upload patient with same medical ids
         with self.assertRaises(InvalidArgumentException):
             replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)

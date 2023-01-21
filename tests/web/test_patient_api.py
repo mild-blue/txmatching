@@ -946,8 +946,8 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(400, res.status_code)
-            self.assertEqual(res.json['message'], 'Donor medical id {\'ExistingRecipientMedicalId\'} '
-                                                  'is already in use by a recipient in given txm event')
+            self.assertEqual(res.json['message'], 'Medical ids {\'ExistingRecipientMedicalId\'} '
+                                                  'are already in use in given txm event.')
 
         # test case 2: add RECIPIENT with id that is already used by some DONOR in the same txm_event
         with self.app.test_client() as client:
@@ -958,8 +958,8 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(400, res.status_code)
-            self.assertEqual(res.json['message'], 'Recipient medical id {\'ExistingDonorMedicalId\'} '
-                                                  'is already in use by a donor in given txm event')
+            self.assertEqual(res.json['message'], 'Medical ids {\'ExistingDonorMedicalId\'} '
+                                                  'are already in use in given txm event.')
 
         # test case 3: add patients with the same medical id
         donor_medical_id = 'identical_id'
@@ -973,6 +973,6 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
 
-        self.assertEqual(400, res.status_code)
-        self.assertEqual(res.json['message'], 'Donor medical id {\'identical_id\'} is the same '
-                                              'as recipient medical id {\'identical_id\'}')
+            self.assertEqual(400, res.status_code)
+            self.assertEqual(res.json['message'], 'Duplicate medical ids {\'identical_id\'} '
+                                                  'in data for upload.')
