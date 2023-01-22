@@ -19,31 +19,14 @@ def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:
                                        ' "2020-12-31".') from ex
 
 
-# pylint: disable=too-many-locals
 def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUploadDTO],
                                       recipients: List[RecipientUploadDTO]):
-    # get medical ids
-    new_donor_ids = {donor.medical_id for donor in donors}
-    new_recipient_ids = {recipient.medical_id for recipient in recipients}
-    current_donor_ids = {donor.medical_id for donor in txm_event.all_donors}
-    current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
+    new_ids = [donor.medical_id for donor in donors] + [recipient.medical_id for recipient in recipients]
+    old_ids = [donor.medical_id for donor in txm_event.all_donors] + [recipient.medical_id for recipient in
+                                                                      txm_event.all_recipients]
 
-    # find duplicates
-    donor_duplicate_ids = new_donor_ids.intersection(current_donor_ids)
-    recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
-    donor_recipient_duplicate_ids = new_donor_ids.intersection(new_recipient_ids)
-    new_donor_current_recipient_duplicate_ids = new_donor_ids.intersection(current_recipient_ids)
-    new_recipient_current_donor_duplicate_ids = new_recipient_ids.intersection(current_donor_ids)
-    new_donor_medical_id_duplicates = _find_duplicates_in_list([donor.medical_id for donor in donors])
-    new_recipient_medical_id_duplicates = _find_duplicates_in_list([recipient.medical_id for recipient in recipients])
-
-    # union all duplicate ids
-    db_duplicate_medical_ids = donor_duplicate_ids.union(recipient_duplicate_ids,
-                                                         new_donor_current_recipient_duplicate_ids,
-                                                         new_recipient_current_donor_duplicate_ids)
-
-    new_patient_duplicates = set(new_donor_medical_id_duplicates + new_recipient_medical_id_duplicates)
-    upload_duplicate_medical_ids = donor_recipient_duplicate_ids.union(new_patient_duplicates)
+    upload_duplicate_medical_ids = _find_duplicates_in_list(new_ids)
+    db_duplicate_medical_ids = set(old_ids).intersection(new_ids)
 
     if upload_duplicate_medical_ids:
         raise InvalidArgumentException(f'Duplicate medical ids {upload_duplicate_medical_ids} in data for upload.')
@@ -53,4 +36,5 @@ def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUpl
 
 
 def _find_duplicates_in_list(list_to_check: List[str]) -> List[str]:
-    return [item for item in set(list_to_check) if list_to_check.count(item) > 1]
+    seen = set()
+    return {x for x in list_to_check if x in seen or seen.add(x)}
