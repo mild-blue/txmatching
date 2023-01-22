@@ -26,18 +26,19 @@ and if only one is present, it is duplicated. This is the same as for serologica
 
 Antigens from groups DP, DQ, and DR are a little more complex because they are composed of more genes.
 
-### DP and DQ
+### DQ
 
-TODO
+These genes are composed of two chains: A and B. That means, that for their high resolution, we need 4 sequences
+(two for A and two for B). Else the square brackets can be used for this, e.g.: DQ[01:03,06:02], where the first part
+is describing A, and the second one describing B.
 
-Ty se skladaji ze dvou: DA a DB takze pro jejich popis je potreba v high res 4 sekvenci (2 pro A a dve pro B). nebo se
-pouzivaji hranate zavorky DQ[01:03,06:02], kde prvni cast odkazuje na A a druha na B.
+For conversion of DQ genes to serological notation, it is needed to use the table from https://en.wikipedia.org/wiki/HLA-DQ,
+where a certain combination of DQA and DQB gives a specific DQ HLA code.
 
-Pri prevodu na serologicke znaceni je v pripade DQ potreba pouzit tabulku https://en.wikipedia.org/wiki/HLA-DQ, kde
-jista kombinace DQA a DQB da nejaky DQ HLA kod
+### DP
 
-V pripade DP se pri prevodu proste vezme jen DP a prvni cislo z DPB genu, ale tento prevod neni vubec standartni a spis
-bychom meli zustavat v high res.
+In the case of DP genes, during conversion, we only take "DP" and the first number of the DPB gene, but this conversion
+isn't a standardized one, and we should consider primarily DP genes in high resolution.
 
 ### DR
 This is the most complex group of antigens. 
