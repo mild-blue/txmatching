@@ -21,16 +21,16 @@ to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. T
 We are currently considering 6 groups of HLA antigens: A, B, C, DR, RP, and DQ. All of the other groups are not relevant to
 the immune system. The most important groups are A, B, and DR. 
 
-For every antigen from groups A, B, and C the patient has exactly 2 HLA codes (one from the mother and one from the father),
-and if only one is present, it is duplicated. This is the same as for serological notation as for high resolution.
+For every antigen from groups A, B, and C, the patient has exactly 2 HLA codes (one from the mother and one from the father),
+and if only one is present, it is duplicated. This is the same for serological notation as for high resolution.
 
-Antigens from groups DP, DQ, and DR are a little more complex because they are composed of more genes.
+Antigens from groups DP, DQ, and DR are a little more complex, because they are composed of more genes.
 
 ### DQ
 
-These genes are composed of two chains: A and B. That means, that for their high resolution, we need 4 sequences
-(two for A and two for B). Else the square brackets can be used for this, e.g.: DQ[01:03,06:02], where the first part
-is describing A, and the second one describing B.
+These genes are composed of two chains: A and B. That means, that for their high resolution, we need 4 sequences specified
+(two for A and two for B). The square brackets can be used for this, e.g.: DQ[01:03,06:02], where the first part
+describes A, and the second describes B.
 
 For conversion of DQ genes to serological notation, it is needed to use the table from https://en.wikipedia.org/wiki/HLA-DQ,
 where a certain combination of DQA and DQB gives a specific DQ HLA code.
@@ -47,7 +47,7 @@ It is composed of 5 types of genes:
 
 **DRB1** - this type contains most of the variants, DR1-DR18.
 
-**DRB3, DRB4, DRB5** - each of these genes is always present or not, but at most 2 out of these 3 can be present (meaning
+**DRB3, DRB4, DRB5** - each of these genes is either present or not, but at most 2 out of these 3 can be present (meaning
 also 0 or 1 can be present). In the serological notation, they are listed as DR52, DR53, and DR51 if present.
 
 **DRA1** - this gene is not changing, and it is not considered at all. 
