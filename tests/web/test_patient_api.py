@@ -899,3 +899,65 @@ class TestPatientService(DbTests):
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient-compatibility-info/1/default')
             self.assertEqual(401, res.status_code)  # Authentication failed.
+
+    def test_patient_upload_correctly_handles_multiple_donors(self):
+        ''' tests the case when to upload a donor that relates to a recipient that is already in db'''
+
+        # 1. create txm_event
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+
+        # 2. add donor recipient pair to db
+        donor_medical_id = 'donor_test'
+        recipient_medical_id = 'recipient_test'
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value,
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies': [],
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(1, res.json['recipients_uploaded'])
+        self.assertEqual(1, res.json['donors_uploaded'])
+
+        # 3, upload donor related to recipient in db
+        donor_medical_id = 'donor_test1'
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value,
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies': [],
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(0, res.json['recipients_uploaded'])
+            self.assertEqual(1, res.json['donors_uploaded'])
