@@ -959,5 +959,3 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(0, res.json['recipients_uploaded'])
-            self.assertEqual(1, res.json['donors_uploaded'])

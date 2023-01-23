@@ -57,6 +57,20 @@ def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipien
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
+    # get recipients for given txm_event from db
+    recipients = RecipientModel.query.filter_by(txm_event_id=txm_event_db_id).all()
+    related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
+    if related_recipient_medical_id in [recipient.medical_id for recipient in recipients]:
+        recipient_model = \
+        [recipient for recipient in recipients if recipient.medical_id == related_recipient_medical_id][0]
+        current_recipient_models_dict = {related_recipient_medical_id: recipient_model}
+
+        donor_model = _donor_upload_dto_to_donor_model(donor_recipient_pair_dto.donor,
+                                                       current_recipient_models_dict,
+                                                       donor_recipient_pair_dto.country_code,
+                                                       txm_event_db_id)
+        return [donor_model], []
+
     donors, recipients = _add_patients_from_one_country(
         donors=[donor_recipient_pair_dto.donor],
         recipients=[donor_recipient_pair_dto.recipient] if donor_recipient_pair_dto.recipient else [],
@@ -249,15 +263,6 @@ def _add_patients_from_one_country(
         txm_event_db_id: int,
 ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event = get_txm_event_complete(txm_event_db_id)
-    initial_recipients = recipients.copy()
-
-    new_recipient_ids = {recipient.medical_id for recipient in recipients}
-    current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
-    recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
-
-    if recipient_duplicate_ids:
-        for medical_id in recipient_duplicate_ids:
-            recipients.remove(next(recipient for recipient in recipients if recipient.medical_id == medical_id))
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 
@@ -268,14 +273,8 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(recipient_models)
 
-    dublicate_recipients = [
-        recipient for recipient in initial_recipients if recipient.medical_id in recipient_duplicate_ids]
-    dublicate_recipient_models = [
-        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
-        for recipient in dublicate_recipients
-    ]
     recipient_models_dict = {recipient_model.medical_id: recipient_model
-                             for recipient_model in (recipient_models + dublicate_recipient_models)}
+                             for recipient_model in recipient_models}
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
