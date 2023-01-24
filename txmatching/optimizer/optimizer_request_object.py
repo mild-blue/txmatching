@@ -23,7 +23,14 @@ class OptimizerConfiguration:
 
 
 @dataclass
+class CompatibilityGraphEntry:
+    donor_id: int
+    recipient_id: int
+    weights: Dict[str, int]
+
+
+@dataclass
 class OptimizerRequest:
-    compatibility_graph: List[Dict[str, int]]
+    compatibility_graph: List[CompatibilityGraphEntry]
     pairs: List[Pair]
     configuration: OptimizerConfiguration
