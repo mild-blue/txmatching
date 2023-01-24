@@ -18,7 +18,7 @@ to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. T
 
 ## Gene groups
 
-We are currently considering 6 groups of HLA antigens: A, B, C, DR, RP, and DQ. All of the other groups are not relevant to
+We are currently considering 6 groups of HLA antigens: A, B, C, DR, DP, and DQ. All of the other groups are not relevant to
 the immune system. The most important groups are A, B, and DR. 
 
 For every antigen from groups A, B, and C, the patient has exactly 2 HLA codes (one from the mother and one from the father),
