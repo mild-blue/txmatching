@@ -16,6 +16,45 @@ and Class III.
 person has 2 antigens within each of these groups. One is inherited from the mother, the other one from the father. It is important
 to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. This set is known as a "haplotype".*
 
+## Gene groups
+
+We are currently considering 6 groups of HLA antigens: A, B, C, DR, DP, and DQ. All of the other groups are not relevant to
+the immune system. The most important groups are A, B, and DR. 
+
+For every antigen from groups A, B, and C, the patient has exactly 2 HLA codes (one from the mother and one from the father),
+and if only one is present, it is duplicated. This is the same for serological notation as for high resolution.
+
+Antigens from groups DP, DQ, and DR are a little more complex, because they are composed of more genes.
+
+### DQ
+
+These genes are composed of two chains: A and B. That means, that for their high resolution, we need 4 sequences specified
+(two for A and two for B). The square brackets can be used for this, e.g.: DQ[01:03,06:02], where the first part
+describes A, and the second describes B.
+
+For conversion of DQ genes to serological notation, it is needed to use the table from https://en.wikipedia.org/wiki/HLA-DQ,
+where a certain combination of DQA and DQB gives a specific DQ HLA code.
+
+### DP
+
+In the case of DP genes, during conversion, we only take "DP" and the first number of the DPB gene, but this conversion
+isn't a standardized one, and we should consider primarily DP genes in high resolution.
+
+### DR
+This is the most complex group of antigens. 
+
+It is composed of 5 types of genes:
+
+**DRB1** - this type contains most of the variants, DR1-DR18.
+
+**DRB3, DRB4, DRB5** - each of these genes is either present or not, but at most 2 out of these 3 can be present (meaning
+also 0 or 1 can be present). In the serological notation, they are listed as DR52, DR53, and DR51 if present.
+
+**DRA1** - this gene is not changing, and it is not considered at all. 
+
+In conclusion, from this group, we can have 2 HLA codes from DR1-DR18 (or one code duplicated) and 0-2 codes from
+DR51-DR53.
+
 ## Broad, split, high resolution (Nomenclature)
 
 There are several “levels” on which the HLA antigen can be specified. For example:
@@ -164,6 +203,7 @@ Example for case 3:
 - and we received the following antibodies for the recipient:
   - DRB1\*08:02 with MFI 2500
   - DRB1\*08:03 with MFI 1800
+
 #### BROAD
 1. Donor antigen is in broad resolution and the recipient has a matching antibody in split/broad/high resolution
 2. Donor antigen is in high/split/broad resolution and the recipient is type B and the recipient has a matching antibody in broad resolution
