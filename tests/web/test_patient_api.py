@@ -936,11 +936,11 @@ class TestPatientService(DbTests):
         self.assertEqual(1, res.json['donors_uploaded'])
 
         # 3, upload donor related to recipient in db
-        donor_medical_id = 'donor_test1'
+        donor_medical_id_1 = 'donor_test1'
         with self.app.test_client() as client:
             json_data = {
                 'donor': {
-                    'medical_id': donor_medical_id,
+                    'medical_id': donor_medical_id_1,
                     'blood_group': 'A',
                     'hla_typing': [],
                     'donor_type': DonorType.DONOR.value,
@@ -959,3 +959,11 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
+            # self.assertEqual(1, res.json['recipients_uploaded']) # jeste budu muset nakodit aby to nepsalo
+            # ze pridavam recipienta.
+            self.assertEqual(1, res.json['donors_uploaded'])
+            
+            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertEqual(1, len(txm_event.all_recipients))
+            self.assertEqual(2, len(txm_event.all_donors))
+            self.assertIsNotNone(txm_event.all_donors[0].related_recipient_db_id)

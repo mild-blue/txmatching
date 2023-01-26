@@ -56,13 +56,15 @@ def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipien
                                          txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
+        related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
+    else:
+        related_recipient_medical_id = None
 
     # get recipients for given txm_event from db
     recipients = RecipientModel.query.filter_by(txm_event_id=txm_event_db_id).all()
-    related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
     if related_recipient_medical_id in [recipient.medical_id for recipient in recipients]:
         recipient_model = \
-        [recipient for recipient in recipients if recipient.medical_id == related_recipient_medical_id][0]
+            [recipient for recipient in recipients if recipient.medical_id == related_recipient_medical_id][0]
         current_recipient_models_dict = {related_recipient_medical_id: recipient_model}
 
         donor_model = _donor_upload_dto_to_donor_model(donor_recipient_pair_dto.donor,
