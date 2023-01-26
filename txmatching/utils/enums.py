@@ -104,10 +104,10 @@ HLA_GROUPS_PROPERTIES = {
         max_count_per_patient=4
     ),
     # Based on email communication with Matej Roder from 12.5.2020:
-    # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for DRB5.
-    # But, there can be only 0 to 2 genes from DRB3,4,5 in total. E.g. there can't be a person with DRB3, DRB4, DRB5 at
-    # the same time, because that would mean they have 3 genes from this group in total, which is not possible (at least
-    # not found in anybody till now).
+    # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for
+    # DRB5. But, there can be only 0 to 2 genes from DRB3,4,5 in total. E.g. there can't be a person with DRB3, DRB4,
+    # DRB5 at the same time, because that would mean they have 3 genes from this group in total, which is not possible
+    # (at least not found in anybody till now).
     HLAGroup.OTHER_DR: HLAGroupProperties(
         name='OTHER_DR',
         split_code_regex=r'^DR5[123]',

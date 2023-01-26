@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { PatientService } from "@app/services/patient/patient.service";
 import { Configuration } from "@app/model/Configuration";
 import { DetailedScorePerGroup } from "@app/model/Hla";
 import { Recipient, RecipientRequirements } from "@app/model/Recipient";
@@ -26,6 +27,8 @@ export class MatchingTransplantComponent {
   @Input() globalMessage: string = "";
 
   public patientPairStyles = PatientPairStyle;
+
+  constructor(private _patientService: PatientService) {}
 
   public getAntigenMatchClass(match: AntigenMatchType): string {
     if (match === AntigenMatchType.BROAD || match === AntigenMatchType.HIGH_RES || match === AntigenMatchType.SPLIT) {
