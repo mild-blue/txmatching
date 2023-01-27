@@ -1,4 +1,8 @@
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
-# donor_idx, recipient_idx, score
-CompatibilityGraph = Dict[Tuple[int, int], int]
+from txmatching.optimizer.optimizer_request_object import \
+    CompatibilityGraphEntry
+
+CompatibilityGraph = Dict[Tuple[int, int], Dict[str, int]]
+
+OptimizerCompatibilityGraph = List[CompatibilityGraphEntry]

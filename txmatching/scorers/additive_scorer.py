@@ -6,7 +6,8 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.scorers.scorer_base import ScorerBase
-from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
+from txmatching.scorers.scorer_constants import (
+    HLA_SCORE, ORIGINAL_DONOR_RECIPIENT_SCORE)
 from txmatching.solvers.matching.matching import Matching
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
@@ -64,7 +65,7 @@ class AdditiveScorer(ScorerBase):
     def get_compatibility_graph(self,
                                 recipients_dict: Dict[RecipientDbId, Recipient],
                                 donors_dict: Dict[DonorDbId, Donor]) -> CompatibilityGraph:
-        '''the compatibility graph has structure (new_donor_inex, new_recipient_index): score'''
+        '''the compatibility graph has structure (new_donor_index, new_recipient_index): score'''
 
         compatibility_graph = {}
 
@@ -76,7 +77,7 @@ class AdditiveScorer(ScorerBase):
                                                                                         recipient.related_donors_db_ids
                                                                                         if donor_db_id in donors_dict])
                 if score >= 0:
-                    compatibility_graph[(donor_enum, recipient_enum)] = int(score)
+                    compatibility_graph[(donor_enum, recipient_enum)] = {HLA_SCORE: int(score)}
 
         return compatibility_graph
 

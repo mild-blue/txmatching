@@ -74,7 +74,6 @@ class TestReport(DbTests):
         #       when you changed the report template
 
         self.assertEqual(html_s, html_r)
-
         # print diffs
         diff = difflib.unified_diff(
             html_s,

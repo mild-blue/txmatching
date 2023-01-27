@@ -14,6 +14,7 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, HLAAntibodyRawModel,
     PairingResultModel, RecipientAcceptableBloodModel, RecipientModel)
+from txmatching.scorers.scorer_constants import HLA_SCORE
 from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -148,7 +149,7 @@ class TestUpdateDonorRecipient(DbTests):
             for recipient_enum, recipient, expected_score in zip(
                     recipient_enums, txm_event.active_and_valid_recipients_dict.values(), expected_score_row):
                 if expected_score >= 0:
-                    calculated_score = calculated_scores[(donor_enum, recipient_enum)]
+                    calculated_score = calculated_scores[(donor_enum, recipient_enum)][HLA_SCORE]
                     self.assertEqual(expected_score, calculated_score,
                                      f'Not true for expected {expected_score} vs real {calculated_score} '
                                      f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '
