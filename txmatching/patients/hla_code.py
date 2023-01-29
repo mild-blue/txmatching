@@ -2,8 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER_DETAILED,
-                                    HLA_GROUPS_PROPERTIES, HLAGroup)
+from txmatching.utils.enums import (HLA_GROUPS_PROPERTIES, HLAGroup)
 
 
 @dataclass
@@ -11,7 +10,6 @@ class HLACode:
     high_res: Optional[str]
     split: Optional[str]
     broad: Optional[str]
-    group: Optional[HLAGroup] = None
 
     @property
     def display_code(self) -> str:
@@ -24,17 +22,11 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str], group: HLAGroup = None):
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
         assert high_res is not None or broad is not None
         self.high_res = high_res
         self.split = split
         self.broad = broad
-        if group:
-            self.group = group
-        elif self.group_from_hla_code is not None:
-            self.group = self.group_from_hla_code
-        else:
-            self.group = HLAGroup.Other
 
     def __repr__(self):
         return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'
@@ -42,12 +34,6 @@ class HLACode:
     def __hash__(self):
         return hash((self.high_res, self.split, self.broad))
 
-    @property
-    def group_from_hla_code(self) -> Optional[HLAGroup]:
-        for hla_group in GENE_HLA_GROUPS_WITH_OTHER_DETAILED:
-            if self._is_raw_code_in_group(hla_group):
-                return hla_group
-        return None
 
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
         if self.broad is not None:

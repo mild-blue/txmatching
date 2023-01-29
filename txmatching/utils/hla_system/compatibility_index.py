@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List
 
 from txmatching.patients.hla_model import HLAType, HLATyping
-from txmatching.utils.enums import (GENE_HLA_GROUPS,
-                                    GENE_HLA_GROUPS_WITH_OTHER, HLAGroup,
+from txmatching.utils.enums import (HLA_GROUPS, HLAGroup,
                                     MatchType)
 
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
@@ -66,7 +65,12 @@ class DefaultCIConfiguration(CIConfiguration):
             HLAGroup.A: 0,
             HLAGroup.B: 0,
             HLAGroup.DRB1: 0,
-            HLAGroup.Other: 0
+            HLAGroup.CW: 0,
+            HLAGroup.DPA: 0,
+            HLAGroup.DPB: 0,
+            HLAGroup.DQA: 0,
+            HLAGroup.DQB: 0,
+            HLAGroup.OTHER_DR: 0
         }
 
 
@@ -94,13 +98,9 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
         ci_configuration = DefaultCIConfiguration()
 
     hla_compatibility_index_detailed = []
-    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
-        if hla_group in GENE_HLA_GROUPS:
-            donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-            recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
-        else:
-            donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
-            recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
+    for hla_group in HLA_GROUPS + [HLAGroup.INVALID_CODES]:
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+        recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_types_in_group(
             donor_hla_types=donor_hla_types,
@@ -116,11 +116,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATyping,
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
-    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
-        if hla_group in GENE_HLA_GROUPS:
-            donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        else:
-            donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+    for hla_group in HLA_GROUPS:
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
         donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
@@ -290,15 +287,15 @@ def _get_ci_for_recipient_donor_types_in_group(
 
 
 # if a group is a gene group, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
-def _hla_types_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
-    hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+def _hla_types_for_gene_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+    hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
 
-    if len(hla_types) not in {1, 2}:
+    if len(hla_types) > 2:
         logger.error(
-            f'Invalid list of alleles for gene {hla_group.name} - there have to be 1 or 2 per gene.'
-            f'\nList of patient_alleles: {donor_hla_typing.hla_per_groups}')
+            f'Invalid list of alleles for gene {hla_group.name} - there have to be maximum 2 per gene.'
+            f'\nList of patient_alleles: {hla_typing.hla_per_groups}')
         return hla_types
-    if len(hla_types) == 1:
+    if len(hla_types) == 1 and hla_group is not HLAGroup.OTHER_DR:
         return hla_types + hla_types
     return hla_types
 

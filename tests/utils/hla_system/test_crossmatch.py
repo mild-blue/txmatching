@@ -232,8 +232,7 @@ class TestCrossmatch(unittest.TestCase):
         res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=[]),
                                       create_antibodies(hla_antibodies_list=hla_antibodies),
                                       use_high_resolution=True)
-
-        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[3].antibody_matches[0].match_type)
+        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[7].antibody_matches[0].match_type)
 
         # Antibody undecidable in type B
         hla_antibodies = [create_antibody('DQ6', 2100, 2000)]
@@ -241,7 +240,7 @@ class TestCrossmatch(unittest.TestCase):
                                       create_antibodies(hla_antibodies_list=hla_antibodies),
                                       use_high_resolution=True)
 
-        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[3].antibody_matches[0].match_type)
+        self.assertEqual(AntibodyMatchTypes.UNDECIDABLE, res[7].antibody_matches[0].match_type)
 
         # Antibody below cutoff, should not be returned in type a
         hla_antibodies = [create_antibody('DQB1*04:02', 1900, 2000)]
@@ -249,7 +248,7 @@ class TestCrossmatch(unittest.TestCase):
                                       create_antibodies(hla_antibodies_list=hla_antibodies),
                                       use_high_resolution=True)
 
-        self.assertEqual([], res[3].antibody_matches)
+        self.assertEqual([], res[7].antibody_matches)
 
         # Antibody below cutoff, should not be returned in type b
         hla_antibodies = [create_antibody('DQ6', 1900, 2000)]
@@ -257,7 +256,7 @@ class TestCrossmatch(unittest.TestCase):
                                       create_antibodies(hla_antibodies_list=hla_antibodies),
                                       use_high_resolution=True)
 
-        self.assertEqual([], res[3].antibody_matches)
+        self.assertEqual([], res[7].antibody_matches)
 
     def _assert_matches_equal(self,
                               hla_type: str, hla_antibodies: List[HLAAntibody],

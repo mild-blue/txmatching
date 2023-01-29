@@ -43,7 +43,12 @@ definitions:
                 - A
                 - B
                 - DRB1
-                - Other
+                - CW
+                - DPA
+                - DPB
+                - DQA
+                - DQB
+                - OTHER_DR
                 example: A
                 type: string
         required:
@@ -553,7 +558,12 @@ definitions:
                 - A
                 - B
                 - DRB1
-                - Other
+                - CW
+                - DPA
+                - DPB
+                - DQA
+                - DQB
+                - OTHER_DR
                 example: A
                 type: string
             recipient_matches:
@@ -642,11 +652,6 @@ definitions:
                     donor_matches: []
                     group_compatibility_index: 0.0
                     hla_group: DRB1
-                    recipient_matches: []
-                -   antibody_matches: []
-                    donor_matches: []
-                    group_compatibility_index: 0.0
-                    hla_group: Other
                     recipient_matches: []
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
@@ -877,7 +882,7 @@ definitions:
                         cutoff: 500
                         mfi: 500
                         raw_code: CW4
-                    hla_group: Other
+                    hla_group: CW
                 items:
                     $ref: '#/definitions/AntibodiesPerGroup'
                 type: array
@@ -970,7 +975,12 @@ definitions:
                 - A
                 - B
                 - DRB1
-                - Other
+                - CW
+                - DPA
+                - DPB
+                - DQA
+                - DQB
+                - OTHER_DR
                 example: A
                 type: string
             hla_types:
@@ -1040,7 +1050,7 @@ definitions:
                             high_res: null
                             split: null
                         raw_code: DR7
-                -   hla_group: Other
+                -   hla_group: CW
                     hla_types:
                     -   code:
                             broad: CW4

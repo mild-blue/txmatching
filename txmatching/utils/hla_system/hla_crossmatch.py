@@ -323,11 +323,9 @@ def _add_broad_typization(hla_type: HLAType,
 def _add_undecidable_typization(antibodies: List[HLAAntibody],
                                 hla_per_group: HLAPerGroup,
                                 positive_matches: Set[AntibodyMatch]):
-    if hla_per_group.hla_group == HLAGroup.Other:
-        groups_other = {hla_type.code.group for hla_type in hla_per_group.hla_types}
+    if len(hla_per_group.hla_types) == 0:
         for antibody in antibodies:
-            if antibody.code.group not in groups_other:
-                positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
+            positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 
 
 def _add_none_typization(antibodies: List[HLAAntibody],

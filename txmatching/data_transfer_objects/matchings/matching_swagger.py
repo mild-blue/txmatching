@@ -2,7 +2,7 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
-from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
+from txmatching.utils.enums import (HLA_GROUPS,
                                     AntibodyMatchTypes, HLAGroup, MatchType)
 from txmatching.web.web_utils.namespaces import matching_api
 
@@ -43,12 +43,6 @@ EXAMPLE_DETAILED_SCORE = [
      'recipient_matches': [],
      'antibody_matches': [],
      'group_compatibility_index': 0.0
-     },
-    {'hla_group': HLAGroup.Other.name,
-     'donor_matches': [],
-     'recipient_matches': [],
-     'antibody_matches': [],
-     'group_compatibility_index': 0.0
      }
 ]
 
@@ -66,7 +60,7 @@ AntibodyMatchJson = matching_api.model('AntibodyMatch', {
 })
 
 DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
-    'hla_group': fields.String(required=True, enum=[group.name for group in GENE_HLA_GROUPS_WITH_OTHER]),
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS]),
     'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'group_compatibility_index': fields.Float(required=True, example=2.0),

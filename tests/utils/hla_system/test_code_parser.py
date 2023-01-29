@@ -130,7 +130,7 @@ class TestCodeParser(DbTests):
 
         expected = {'A', 'DRB1'}
         raw_codes_with_wrong_number_per_group = {group.hla_group.name for group in codes_per_group if
-                                                 group_exceedes_max_number_of_hla_types(group.hla_types)}
+                                                 group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group)}
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
@@ -138,9 +138,11 @@ class TestCodeParser(DbTests):
         codes_per_group = [
             HLAPerGroup(HLAGroup.A, []),
             HLAPerGroup(HLAGroup.B, []),
-            HLAPerGroup(HLAGroup.Other, [
+            HLAPerGroup(HLAGroup.DPA, [
                 create_hla_type('DPA1*01:03'),
-                create_hla_type('DPA1*01:07'),
+                create_hla_type('DPA1*01:07')
+            ]),
+            HLAPerGroup(HLAGroup.DPB, [
                 create_hla_type('DPB1*04:01'),
                 create_hla_type('DPB1*09:01')
 
@@ -213,7 +215,7 @@ class TestCodeParser(DbTests):
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2500),
                                     create_antibody('DQA1*01:01', cutoff=2000, mfi=10)
                                 ]
-                            ).hla_antibodies_per_groups_over_cutoff[3].hla_antibody_list})
+                            ).hla_antibodies_per_groups_over_cutoff[6].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
         # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
         # The antibody is not removed.
@@ -224,7 +226,7 @@ class TestCodeParser(DbTests):
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=1800)
                                 ]
-                            ).hla_antibodies_per_groups[3].hla_antibody_list})
+                            ).hla_antibodies_per_groups[6].hla_antibody_list})
 
         self.assertSetEqual({
             create_antibody(raw_code='DQA1*01:01', mfi=3000, cutoff=2000),
@@ -236,7 +238,7 @@ class TestCodeParser(DbTests):
                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
                     create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
-            ).hla_antibodies_per_groups[3].hla_antibody_list))
+            ).hla_antibodies_per_groups[6].hla_antibody_list))
         # When MFI quite close to each other but one below and one above cutoff
         self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
         # no warning in case the values are all quite low:
@@ -297,26 +299,30 @@ class TestCodeParser(DbTests):
             self.assertTrue(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
 
             # not all in high res
-            antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
-            self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
+            if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
+                antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
+                self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
 
     def test_analyze_if_high_res_antibodies_are_type_a(self):
         antibodies = create_antibodies(TYPE_A_EXAMPLE_REC)
-        for antibodies_per_group in antibodies.hla_antibodies_per_groups:
-            # general case
-            expected = HighResAntibodiesAnalysis(True, None)
-            self.assertEqual(expected,
-                             analyze_if_high_res_antibodies_are_type_a(
-                                 antibodies_per_group.hla_antibody_list))
 
+        # general case
+        expected = HighResAntibodiesAnalysis(True, None)
+        antibodies_list = []
+        for antibodies_per_group in antibodies.hla_antibodies_per_groups:
+            antibodies_list.extend(antibodies_per_group.hla_antibody_list)
+        self.assertEqual(expected, analyze_if_high_res_antibodies_are_type_a(antibodies_list))
+
+        for antibodies_per_group in antibodies.hla_antibodies_per_groups:
             # insufficient amount of antibodies
-            antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
-            expected = HighResAntibodiesAnalysis(False,
-                                                 ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
-            self.assertEqual(expected,
-                             analyze_if_high_res_antibodies_are_type_a(
-                                 antibodies_per_group.hla_antibody_list[
-                                 :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
+            if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
+                antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
+                expected = HighResAntibodiesAnalysis(False,
+                                                    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+                self.assertEqual(expected,
+                                analyze_if_high_res_antibodies_are_type_a(
+                                    antibodies_per_group.hla_antibody_list[
+                                    :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list

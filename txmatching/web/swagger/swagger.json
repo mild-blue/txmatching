@@ -2215,7 +2215,12 @@
                         "A",
                         "B",
                         "DRB1",
-                        "Other"
+                        "CW",
+                        "DPA",
+                        "DPB",
+                        "DQA",
+                        "DQB",
+                        "OTHER_DR"
                     ]
                 },
                 "hla_antibody_list": {
@@ -2821,7 +2826,12 @@
                         "A",
                         "B",
                         "DRB1",
-                        "Other"
+                        "CW",
+                        "DPA",
+                        "DPB",
+                        "DQA",
+                        "DQB",
+                        "OTHER_DR"
                     ]
                 },
                 "donor_matches": {
@@ -2999,13 +3009,6 @@
                         },
                         {
                             "hla_group": "DRB1",
-                            "donor_matches": [],
-                            "recipient_matches": [],
-                            "antibody_matches": [],
-                            "group_compatibility_index": 0.0
-                        },
-                        {
-                            "hla_group": "Other",
                             "donor_matches": [],
                             "recipient_matches": [],
                             "antibody_matches": [],
@@ -3284,7 +3287,7 @@
                             ]
                         },
                         {
-                            "hla_group": "Other",
+                            "hla_group": "CW",
                             "hla_antibody_list": [
                                 {
                                     "code": {
@@ -3424,7 +3427,12 @@
                         "A",
                         "B",
                         "DRB1",
-                        "Other"
+                        "CW",
+                        "DPA",
+                        "DPB",
+                        "DQA",
+                        "DQB",
+                        "OTHER_DR"
                     ]
                 },
                 "hla_types": {
@@ -3540,7 +3548,7 @@
                             ]
                         },
                         {
-                            "hla_group": "Other",
+                            "hla_group": "CW",
                             "hla_types": [
                                 {
                                     "code": {
@@ -4606,13 +4614,6 @@
                         },
                         {
                             "hla_group": "DRB1",
-                            "donor_matches": [],
-                            "recipient_matches": [],
-                            "antibody_matches": [],
-                            "group_compatibility_index": 0.0
-                        },
-                        {
-                            "hla_group": "Other",
                             "donor_matches": [],
                             "recipient_matches": [],
                             "antibody_matches": [],

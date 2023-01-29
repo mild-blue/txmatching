@@ -34,7 +34,6 @@ from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.utils.enums import HLAGroup
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
@@ -121,8 +120,7 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
                                 cutoff=antibody["cutoff"],
                                 code=HLACode(high_res=antibody["code"]["high_res"],
                                              split=antibody["code"]["split"],
-                                             broad=antibody["code"]["broad"],
-                                             group=HLAGroup(antibody["code"]["group"]) if antibody["code"]["group"] else None)
+                                             broad=antibody["code"]["broad"])
                             ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
@@ -155,8 +153,7 @@ def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, Reci
                 code=HLACode(
                     high_res=type["code"]["high_res"],
                     split=type["code"]["split"],
-                    broad=type["code"]["broad"],
-                    group=type["code"]["group"])
+                    broad=type["code"]["broad"])
             ) for type in group["hla_types"]]
         ) for group in patient_model.hla_typing["hla_per_groups"]])
 

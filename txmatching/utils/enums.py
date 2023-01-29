@@ -27,7 +27,7 @@ class HLAGroup(str, Enum):
     DQA = 'DQA'
     DQB = 'DQB'
     OTHER_DR = 'OTHER_DR'
-    Other = 'Other'
+    INVALID_CODES = 'INVALID_CODES'
     ALL = 'ALL'
 
 
@@ -103,6 +103,11 @@ HLA_GROUPS_PROPERTIES = {
         high_res_code_regex=r'DQB1\*',
         max_count_per_patient=4
     ),
+    # Based on email communication with Matej Roder from 12.5.2020:
+    # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for
+    # DRB5. But, there can be only 0 to 2 genes from DRB3,4,5 in total. E.g. there can't be a person with DRB3, DRB4,
+    # DRB5 at the same time, because that would mean they have 3 genes from this group in total, which is not possible
+    # (at least not found in anybody till now).
     HLAGroup.OTHER_DR: HLAGroupProperties(
         name='OTHER_DR',
         split_code_regex=r'^DR5[123]',
@@ -113,22 +118,21 @@ HLA_GROUPS_PROPERTIES = {
 
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + [HLAGroup.Other]
-GENE_HLA_GROUPS_WITH_OTHER_DETAILED = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
-assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
+SPECIAL_HLA_GROUPS = [HLAGroup.OTHER_DR, HLAGroup.INVALID_CODES]
+HLA_GROUPS = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
+assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + SPECIAL_HLA_GROUPS + [HLAGroup.ALL]) == set(HLAGroup)
 
 
 def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupProperties:
     return HLAGroupProperties(
-        HLAGroup.Other.name,
+        HLAGroup.ALL.name,
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].split_code_regex for hla_group in group_list]) + ')',
         '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex for hla_group in group_list]) + ')',
         sum(HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list)
     )
 
 
-HLA_GROUPS_PROPERTIES[HLAGroup.Other] = _combine_properties_of_groups(HLA_GROUPS_OTHER)
-HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(GENE_HLA_GROUPS_WITH_OTHER)
+HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(HLA_GROUPS)
 
 
 # BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html

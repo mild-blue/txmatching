@@ -24,7 +24,12 @@ export enum DetailedScoreForGroupGeneratedHlaGroupEnum {
     A = 'A',
     B = 'B',
     Drb1 = 'DRB1',
-    Other = 'Other'
+    Cw = 'CW',
+    Dpa = 'DPA',
+    Dpb = 'DPB',
+    Dqa = 'DQA',
+    Dqb = 'DQB',
+    OtherDr = 'OTHER_DR'
 };
 
 
