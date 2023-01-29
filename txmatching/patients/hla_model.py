@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import HLAGroup
@@ -35,6 +35,15 @@ class HLATypeRaw:
     Antigen in a format as uploaded without being parsed
     """
     raw_code: str
+
+
+@dataclass
+class HLATypeRawBothChains:
+    """
+    Antigen in a format as uploaded without being parsed, with the possibility of both chains being defined
+    """
+    raw_code: str
+    secondary_raw_code: Optional[str] = None
 
 
 @dataclass

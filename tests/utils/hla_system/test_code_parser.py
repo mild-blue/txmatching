@@ -169,10 +169,13 @@ class TestCodeParser(DbTests):
         self.assertEqual('CW3', parsing_result.loc['C*03:448Q'].split)
 
     def test_preprocessing(self):
-        self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
-        self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))
+        hla_code_1 = preprocess_hla_code_in('DP4[01:03, 04:02]')[0]
+        hla_code_2 = preprocess_hla_code_in('DQ[01:03, 06:03]')[0]
+        hla_code_3 = preprocess_hla_code_in('DP[01:03, 02:01]')[0]
+        self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(hla_code_1.__dict__.values()))
+        self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(hla_code_2.__dict__.values()))
         self.assertSetEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')},
-                            set(create_hla_type(code).code for code in preprocess_hla_code_in('DP[01:03,02:01]')))
+                            set(create_hla_type(code).code for code in set(hla_code_3.__dict__.values())))
 
     def test_group_assignment(self):
         self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BWA1'))
