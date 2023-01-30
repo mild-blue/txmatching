@@ -57,15 +57,7 @@ npm install -g @openapitools/openapi-generator-cli
 
 (In Ubuntu based system you may need to run it with superuser rights)
 
-Here comes very interesting part: openapi generator from npm comes in a quite old version
-(at the time it is written) that is not very suitable us. Which shouldn't be a problem,
-because it is updated during the first run of `make generate-swagger-all`,
-but at least in Ubuntu it cannot be updated without superuser rights, so `make` commands will not work
-(by some reason it is not possible to run `make` commands with superuser rights in Ubuntu).
-So the part of the installation is to run any openapi-generator command with superuser rights.
-For example: `sudo openapi-generator-cli validate -i txmatching/web/swagger/swagger.yaml ` - this should
-update openapi-generator as well as validate swagger.yaml. Further runs of commands from Makefile related
-to swagger should not have any problems.
+Also make sure that you have Java installed on your machine, as it is required by _openapi-generator_.
 
 ---
 
