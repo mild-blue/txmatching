@@ -11,6 +11,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.configuration.subclasses import ManualDonorRecipientScore
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
@@ -776,11 +777,11 @@ class TestPatientService(DbTests):
         configuration_parameters = ConfigParameters(
             required_patient_db_ids=[1, 2],
             manual_donor_recipient_scores=[
-                {
-                    "score": 1000,
-                    "donor_db_id": 1,
-                    "recipient_db_id": 2
-                }
+                ManualDonorRecipientScore(
+                    score=1000,
+                    donor_db_id=1,
+                    recipient_db_id=2
+                )
             ])
 
         conf_dto = dataclasses.asdict(configuration_parameters)
@@ -959,10 +960,9 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
-            # self.assertEqual(1, res.json['recipients_uploaded']) # jeste budu muset nakodit aby to nepsalo
-            # ze pridavam recipienta.
             self.assertEqual(1, res.json['donors_uploaded'])
-            
+            self.assertEqual(0, res.json['recipients_uploaded'])
+
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertEqual(1, len(txm_event.all_recipients))
             self.assertEqual(2, len(txm_event.all_donors))

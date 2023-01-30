@@ -1,7 +1,7 @@
 import dataclasses
 from typing import List
 
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.schema import (CheckConstraint, Column, ForeignKey,
                                UniqueConstraint)
 from sqlalchemy.sql import func
@@ -108,6 +108,7 @@ class RecipientModel(db.Model):
     parsing_issues = relationship('ParsingIssueModel', backref='recipient', passive_deletes=True)
     etag = Column(BIGINT, unique=False, nullable=False, default=1)
     UniqueConstraint('medical_id', 'txm_event_id')
+    donors = relationship('DonorModel', back_populates='recipient')
 
     def __repr__(self):
         return f'<RecipientModel {self.id} (medical_id={self.medical_id})>'
@@ -136,10 +137,10 @@ class DonorModel(db.Model):
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DATETIME(timezone=True), nullable=True)
-    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE',
-                                              ondelete='CASCADE'), unique=False, nullable=True)
-    recipient = relationship('RecipientModel', backref=backref('donor', uselist=False),
-                             passive_deletes=True,
+    recipient_id = Column(INTEGER, ForeignKey('recipient.id', ondelete='CASCADE', onupdate='CASCADE',
+                                              ), unique=False, nullable=True)
+    recipient = relationship('RecipientModel', back_populates='donors',
+                             passive_deletes=False,
                              lazy='joined')
     parsing_issues = relationship('ParsingIssueModel', backref='donor', passive_deletes=True)
     etag = Column(BIGINT, unique=False, nullable=False, default=1)
