@@ -59,17 +59,16 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         raw_code: str
         mfi: int
         cutoff: int
+        secondary_raw_code: Optional[str] = None
 
     parsing_issues = []
 
-    hla_antibodies_preprocessed = []
-    for hla_antibody_raw in hla_antibodies_raw:
-        for preprocessed_hla_type in preprocess_hla_code_in(hla_antibody_raw.raw_code):
-            hla_antibodies_preprocessed.append(HLAAntibodyPreprocessedDTO(
-                preprocessed_hla_type.raw_code, hla_antibody_raw.mfi, hla_antibody_raw.cutoff))
-            if preprocessed_hla_type.secondary_raw_code:
-                hla_antibodies_preprocessed.append(HLAAntibodyPreprocessedDTO(
-                    preprocessed_hla_type.secondary_raw_code, hla_antibody_raw.mfi, hla_antibody_raw.cutoff))
+    hla_antibodies_preprocessed = [
+        HLAAntibodyPreprocessedDTO(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
+                                   hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
+        for hla_antibody_raw in hla_antibodies_raw
+        for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
+    ]
 
     # 2. parse preprocessed codes and keep only valid ones
     grouped_hla_antibodies = itertools.groupby(
@@ -126,12 +125,11 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 ) -> Tuple[List[ParsingIssueBase], HLATypingDTO]:
     parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
-    raw_codes_preprocessed = []
-    for hla_type_raw in hla_typing_raw.hla_types_list:
-        for raw_code_preprocessed in preprocess_hla_code_in(hla_type_raw.raw_code):
-            raw_codes_preprocessed.append(raw_code_preprocessed.raw_code)
-            if raw_code_preprocessed.secondary_raw_code:
-                raw_codes_preprocessed.append(raw_code_preprocessed.secondary_raw_code)
+    raw_codes_preprocessed = [
+        preprocessed_antigen.raw_code
+        for hla_type_raw in hla_typing_raw.hla_types_list
+        for preprocessed_antigen in preprocess_hla_code_in(hla_type_raw.raw_code)
+    ]
 
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []

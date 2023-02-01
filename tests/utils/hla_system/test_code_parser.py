@@ -169,13 +169,15 @@ class TestCodeParser(DbTests):
         self.assertEqual('CW3', parsing_result.loc['C*03:448Q'].split)
 
     def test_preprocessing(self):
-        hla_code_1 = preprocess_hla_code_in('DP4[01:03, 04:02]')[0]
-        hla_code_2 = preprocess_hla_code_in('DQ[01:03, 06:03]')[0]
-        hla_code_3 = preprocess_hla_code_in('DP[01:03, 02:01]')[0]
-        self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(hla_code_1.__dict__.values()))
-        self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(hla_code_2.__dict__.values()))
-        self.assertSetEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')},
-                            set(create_hla_type(code).code for code in set(hla_code_3.__dict__.values())))
+        hla_code_1 = preprocess_hla_code_in('DP4[01:03, 04:02]')
+        hla_code_2 = preprocess_hla_code_in('DQ[01:03, 06:03]')
+        hla_code_3 = preprocess_hla_code_in('DP[01:03, 02:01]')
+        self.assertCountEqual(['DPA1*01:03', 'DPB1*04:02', 'DPA1*01:03', 'DPB1*04:02'],
+                              [code for code_l in hla_code_1 for code in list(code_l.__dict__.values())])
+        self.assertCountEqual(['DQA1*01:03', 'DQB1*06:03', 'DQA1*01:03', 'DQB1*06:03'],
+                              [code for code_l in hla_code_2 for code in list(code_l.__dict__.values())])
+        self.assertCountEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')}, set(
+            create_hla_type(code).code for code in set(code for code_l in hla_code_3 for code in list(code_l.__dict__.values()))))
 
     def test_group_assignment(self):
         self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BWA1'))
@@ -321,11 +323,11 @@ class TestCodeParser(DbTests):
             if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
                 antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
                 expected = HighResAntibodiesAnalysis(False,
-                                                    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
+                                                     ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
                 self.assertEqual(expected,
-                                analyze_if_high_res_antibodies_are_type_a(
-                                    antibodies_per_group.hla_antibody_list[
-                                    :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
+                                 analyze_if_high_res_antibodies_are_type_a(
+                                     antibodies_per_group.hla_antibody_list[
+                                         :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list
