@@ -44,10 +44,8 @@ definitions:
                 - B
                 - DRB1
                 - CW
-                - DPA
-                - DPB
-                - DQA
-                - DQB
+                - DP
+                - DQ
                 - OTHER_DR
                 example: A
                 type: string
@@ -559,10 +557,8 @@ definitions:
                 - B
                 - DRB1
                 - CW
-                - DPA
-                - DPB
-                - DQA
-                - DQB
+                - DP
+                - DQ
                 - OTHER_DR
                 example: A
                 type: string
@@ -954,10 +950,8 @@ definitions:
                 - B
                 - DRB1
                 - CW
-                - DPA
-                - DPB
-                - DQA
-                - DQB
+                - DP
+                - DQ
                 - OTHER_DR
                 example: A
                 type: string
@@ -976,10 +970,8 @@ definitions:
                 - B
                 - DRB1
                 - CW
-                - DPA
-                - DPB
-                - DQA
-                - DQB
+                - DP
+                - DQ
                 - OTHER_DR
                 example: A
                 type: string

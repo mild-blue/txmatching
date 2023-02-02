@@ -45,9 +45,26 @@ class CIConfiguration:
     def hla_typing_bonus_per_groups(self) -> Dict[HLAGroup, int]:
         raise NotImplementedError('Has to be overridden')
 
-    def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup):
+    def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup) -> float:
         return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
 
+    def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, hla_type: HLAType) -> float:
+        dp_dq_regexes = {('DPA', r'^DPA\d+', r'DPA1\*'), ('DPB', r'^DP\d+', r'DPB1\*'),
+                         ('DQA', r'^DQA\d+', r'DQA1\*'), ('DQB', r'^DQ\d+', r'DQB1\*')}
+
+        dp_dq_bonuses = {
+            'DPA': 0,
+            'DPB': 0,
+            'DQA': 0,
+            'DQB': 0
+        }
+
+        exact_group = None
+        for regex_tuple in dp_dq_regexes:
+            if re.match(regex_tuple[1], hla_type.raw_code) or re.match(regex_tuple[2], hla_type.raw_code):
+                exact_group = regex_tuple[0]
+                break
+        return self.match_type_bonus[match_type] * dp_dq_bonuses[exact_group]
 
 class DefaultCIConfiguration(CIConfiguration):
     @property
@@ -66,10 +83,8 @@ class DefaultCIConfiguration(CIConfiguration):
             HLAGroup.B: 0,
             HLAGroup.DRB1: 0,
             HLAGroup.CW: 0,
-            HLAGroup.DPA: 0,
-            HLAGroup.DPB: 0,
-            HLAGroup.DQA: 0,
-            HLAGroup.DQB: 0,
+            HLAGroup.DP: 0,
+            HLAGroup.DQ: 0,
             HLAGroup.OTHER_DR: 0
         }
 
@@ -153,10 +168,15 @@ def _match_through_lambda(current_compatibility_index: float,
                 remaining_recipient_hla_types.remove(matching_hla_types[0])
                 recipient_matches.append(recipient_match)
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
-
-            current_compatibility_index += ci_configuration.compute_match_compatibility_index(
-                result_match_type, hla_group
-            )
+            if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
+                # TODO: change this in he future, create issue
+                current_compatibility_index += ci_configuration.compute_match_compatibility_index_dp_dq(
+                    result_match_type, donor_hla_type
+                )
+            else:
+                current_compatibility_index += ci_configuration.compute_match_compatibility_index(
+                    result_match_type, hla_group
+                )
     return current_compatibility_index
 
 

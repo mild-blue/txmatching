@@ -82,7 +82,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ6', 'DQ1')},
                                                           'match_type': 'UNDECIDABLE'}],
-                                    'hla_group': 'DQB'}]
+                                    'hla_group': 'DQ'}]
 
         expected_score = [
             {

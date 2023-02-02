@@ -138,11 +138,9 @@ class TestCodeParser(DbTests):
         codes_per_group = [
             HLAPerGroup(HLAGroup.A, []),
             HLAPerGroup(HLAGroup.B, []),
-            HLAPerGroup(HLAGroup.DPA, [
+            HLAPerGroup(HLAGroup.DP, [
                 create_hla_type('DPA1*01:03'),
-                create_hla_type('DPA1*01:07')
-            ]),
-            HLAPerGroup(HLAGroup.DPB, [
+                create_hla_type('DPA1*01:07'),
                 create_hla_type('DPB1*04:01'),
                 create_hla_type('DPB1*09:01')
 
@@ -220,7 +218,7 @@ class TestCodeParser(DbTests):
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2500),
                                     create_antibody('DQA1*01:01', cutoff=2000, mfi=10)
                                 ]
-                            ).hla_antibodies_per_groups_over_cutoff[6].hla_antibody_list})
+                            ).hla_antibodies_per_groups_over_cutoff[5].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
         # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
         # The antibody is not removed.
@@ -231,7 +229,7 @@ class TestCodeParser(DbTests):
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
                                     create_antibody('DQA1*01:02', cutoff=2000, mfi=1800)
                                 ]
-                            ).hla_antibodies_per_groups[6].hla_antibody_list})
+                            ).hla_antibodies_per_groups[5].hla_antibody_list})
 
         self.assertSetEqual({
             create_antibody(raw_code='DQA1*01:01', mfi=3000, cutoff=2000),
@@ -243,7 +241,7 @@ class TestCodeParser(DbTests):
                     create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
                     create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
-            ).hla_antibodies_per_groups[6].hla_antibody_list))
+            ).hla_antibodies_per_groups[5].hla_antibody_list))
         # When MFI quite close to each other but one below and one above cutoff
         self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
         # no warning in case the values are all quite low:

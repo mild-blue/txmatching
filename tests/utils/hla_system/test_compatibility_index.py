@@ -18,9 +18,8 @@ logger = logging.getLogger(__name__)
 A_INDEX = 0
 DR_INDEX = 2
 CW_INDEX = 3
-DPB_INDEX = 5
-DQA_INDEX = 6
-DQB_INDEX = 7
+DP_INDEX = 4
+DQ_INDEX = 5
 
 
 class TestCompatibilityIndex(DbTests):
@@ -71,16 +70,15 @@ class TestCompatibilityIndex(DbTests):
         )
 
         expected_c = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchType.NONE)}
-        expected_dpb = {HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
+        expected_dp = {HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
                         HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)}
-        expected_dqa = {HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE)}
-        expected_dqb = {HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
-                        HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD)}
+        expected_dq = {HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
+                        HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
+                        HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE)}
 
         self.assertSetEqual(expected_c, set(ci[CW_INDEX].recipient_matches))
-        self.assertSetEqual(expected_dpb, set(ci[DPB_INDEX].recipient_matches))
-        self.assertSetEqual(expected_dqa, set(ci[DQA_INDEX].recipient_matches))
-        self.assertSetEqual(expected_dqb, set(ci[DQB_INDEX].recipient_matches))
+        self.assertSetEqual(expected_dp, set(ci[DP_INDEX].recipient_matches))
+        self.assertSetEqual(expected_dq, set(ci[DQ_INDEX].recipient_matches))
 
         ci = get_detailed_compatibility_index(
             create_hla_typing(

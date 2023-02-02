@@ -22,10 +22,8 @@ class HLAGroup(str, Enum):
     B = 'B'
     DRB1 = 'DRB1'
     CW = 'CW'
-    DPA = 'DPA'
-    DPB = 'DPB'
-    DQA = 'DQA'
-    DQB = 'DQB'
+    DP = 'DP'
+    DQ = 'DQ'
     OTHER_DR = 'OTHER_DR'
     INVALID_CODES = 'INVALID_CODES'
     ALL = 'ALL'
@@ -79,29 +77,19 @@ HLA_GROUPS_PROPERTIES = {
         high_res_code_regex=r'^C\*',
         max_count_per_patient=2
     ),
-    HLAGroup.DPA: HLAGroupProperties(
-        name='DPA',
-        split_code_regex=r'^DPA\d+',
-        high_res_code_regex=r'DPA1\*',
-        max_count_per_patient=4
+    HLAGroup.DP: HLAGroupProperties(
+        name='DP',
+        split_code_regex=r'(^DPA\d+)|(^DP\d+)',
+        high_res_code_regex=r'(DPA1\*)|(DPB1\*)',
+        # TODO 8?
+        max_count_per_patient=8
     ),
-    HLAGroup.DPB: HLAGroupProperties(
-        name='DPB',
-        split_code_regex=r'^DP\d+',
-        high_res_code_regex=r'DPB1\*',
-        max_count_per_patient=4
-    ),
-    HLAGroup.DQA: HLAGroupProperties(
-        name='DQA',
-        split_code_regex=r'^DQA\d+',
-        high_res_code_regex=r'DQA1\*',
-        max_count_per_patient=4
-    ),
-    HLAGroup.DQB: HLAGroupProperties(
-        name='DQB',
-        split_code_regex=r'^DQ\d+',
-        high_res_code_regex=r'DQB1\*',
-        max_count_per_patient=4
+    HLAGroup.DQ: HLAGroupProperties(
+        name='DQ',
+        split_code_regex=r'(^DQA\d+)|(^DQ\d+)',
+        high_res_code_regex=r'(DQA1\*)|(DQB1\*)',
+        # TODO 8?
+        max_count_per_patient=8
     ),
     # Based on email communication with Matej Roder from 12.5.2020:
     # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for
@@ -116,7 +104,7 @@ HLA_GROUPS_PROPERTIES = {
     )
 }
 
-HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
 SPECIAL_HLA_GROUPS = [HLAGroup.OTHER_DR, HLAGroup.INVALID_CODES]
 HLA_GROUPS = GENE_HLA_GROUPS + HLA_GROUPS_OTHER

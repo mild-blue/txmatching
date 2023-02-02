@@ -15,10 +15,8 @@ EQUAL_BONUS_PER_GROUPS = {
     HLAGroup.B: 1,
     HLAGroup.DRB1: 1,
     HLAGroup.CW: 0,
-    HLAGroup.DPA: 0,
-    HLAGroup.DPB: 0,
-    HLAGroup.DQA: 0,
-    HLAGroup.DQB: 0,
+    HLAGroup.DP: 0,
+    HLAGroup.DQ: 0,
     HLAGroup.OTHER_DR: 0
 }
 

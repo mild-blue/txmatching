@@ -2216,10 +2216,8 @@
                         "B",
                         "DRB1",
                         "CW",
-                        "DPA",
-                        "DPB",
-                        "DQA",
-                        "DQB",
+                        "DP",
+                        "DQ",
                         "OTHER_DR"
                     ]
                 },
@@ -2827,10 +2825,8 @@
                         "B",
                         "DRB1",
                         "CW",
-                        "DPA",
-                        "DPB",
-                        "DQA",
-                        "DQB",
+                        "DP",
+                        "DQ",
                         "OTHER_DR"
                     ]
                 },
@@ -3404,10 +3400,8 @@
                         "B",
                         "DRB1",
                         "CW",
-                        "DPA",
-                        "DPB",
-                        "DQA",
-                        "DQB",
+                        "DP",
+                        "DQ",
                         "OTHER_DR"
                     ]
                 }
@@ -3428,10 +3422,8 @@
                         "B",
                         "DRB1",
                         "CW",
-                        "DPA",
-                        "DPB",
-                        "DQA",
-                        "DQB",
+                        "DP",
+                        "DQ",
                         "OTHER_DR"
                     ]
                 },
