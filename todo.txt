@@ -1,4 +1,0 @@
-qs:
-- max perpatient
-- if empty then duplicate as normal hej
-- cize nova issue a zatial bude temporary fcia henta?
