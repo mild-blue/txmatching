@@ -13,10 +13,9 @@ B_SEROLOGICAL_CODE_WITH_W_REGEX = re.compile(r'BW(\d+)')
 DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX = re.compile(r'(D[QP])([AB])(\d+)')
 
 
-def try_convert_ultra_high_res(high_res_or_ultra_high_res: str) -> Optional[str]:
-    match = HIGH_RES_REGEX.search(high_res_or_ultra_high_res)
-    if match:
-        high_res = match.group(1)
+def try_get_hla_high_res(hla_raw_code: str, regex=HIGH_RES_REGEX) -> Optional[str]:
+    high_res_match = regex.search(hla_raw_code)
+    if high_res_match:
+        high_res = high_res_match.group(1)
         return high_res
-    else:
-        return None
+    return None

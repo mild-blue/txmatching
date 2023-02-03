@@ -1,11 +1,11 @@
 import logging
 import re
-from typing import List, Optional
+from typing import List
 
 from txmatching.patients.hla_model import HLATypeRawBothChains
 from txmatching.utils.hla_system.hla_regexes import (
-    HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER,
-    HIGH_RES_WITH_SUBUNITS_REGEX, LOW_RES_REGEX, SPLIT_RES_REGEX)
+    HIGH_RES_REGEX_ENDING_WITH_LETTER, HIGH_RES_WITH_SUBUNITS_REGEX,
+    LOW_RES_REGEX, SPLIT_RES_REGEX, try_get_hla_high_res)
 from txmatching.utils.hla_system.hla_table import (
     ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE, ALL_ULTRA_HIGH_RES_CODES,
     HIGH_RES_TO_SPLIT_OR_BROAD, high_res_low_res_to_split_or_broad)
@@ -37,17 +37,18 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
     if re.match(SPLIT_RES_REGEX, hla_raw_code):
         return process_parsing_result(None, hla_raw_code)
 
-    standartized_high_res = _get_standartized_high_res(hla_raw_code)
-    if standartized_high_res:
-        if standartized_high_res != hla_raw_code:
-            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {standartized_high_res}')
-        return _process_standartized_high_res(standartized_high_res, hla_raw_code)
+    maybe_high_res = try_get_hla_high_res(hla_raw_code)
+    if maybe_high_res:
+        if maybe_high_res != hla_raw_code:
+            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {maybe_high_res}')
+        return _process_hla_in_high_res(maybe_high_res, hla_raw_code)
 
-    standartized_high_res_letter_match = _get_standartized_high_res(hla_raw_code, HIGH_RES_REGEX_ENDING_WITH_LETTER)
-    if standartized_high_res_letter_match:
-        if (standartized_high_res_letter_match in ALL_ULTRA_HIGH_RES_CODES
+    maybe_high_res_letter_match = try_get_hla_high_res(hla_raw_code,
+                                                       regex=HIGH_RES_REGEX_ENDING_WITH_LETTER)
+    if maybe_high_res_letter_match:
+        if (maybe_high_res_letter_match in ALL_ULTRA_HIGH_RES_CODES
                 or hla_raw_code in ALL_ULTRA_HIGH_RES_CODES
-                or standartized_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
+                or maybe_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
             return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.HIGH_RES_WITH_LETTER)
     return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
 
@@ -67,17 +68,9 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[HLATypeRawBothChains]:
         return [HLATypeRawBothChains(hla_code_in)]
 
 
-def _get_standartized_high_res(hla_raw_code: str, regex=HIGH_RES_REGEX) -> Optional[str]:
-    high_res_match = regex.search(hla_raw_code)
-    if high_res_match:
-        standartized_high_res = high_res_match.group(1)
-        return standartized_high_res
-    return None
-
-
-def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str) -> HlaCodeProcessingResult:
+def _process_hla_in_high_res(hla_high_res: str, hla_raw_code: str) -> HlaCodeProcessingResult:
     exception_split_broad_code = HIGH_RES_TO_SPLIT_OR_BROAD.get(
-        standartized_high_res,
+        hla_high_res,
         None
     )
     if exception_split_broad_code is None:
@@ -87,8 +80,8 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
             return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return process_parsing_result(hla_raw_code, hla_raw_code, exception_split_broad_code)
-    if standartized_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
-        return process_parsing_result(standartized_high_res, exception_split_broad_code,
+    if hla_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
+        return process_parsing_result(hla_high_res, exception_split_broad_code,
                                       ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE)
 
-    return process_parsing_result(standartized_high_res, exception_split_broad_code)
+    return process_parsing_result(hla_high_res, exception_split_broad_code)
