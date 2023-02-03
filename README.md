@@ -36,6 +36,9 @@ try to remove `node_modules` folder from `txmatching/web/frontend/`, run `npm ca
 Backend is written in Python. We are using [conda](https://docs.conda.io/en/latest/miniconda.html) for
 dependency management. To be able to run the project you must have it installed.
 
+If you are using macOS on an ARM-based computer, make sure that you install anaconda for x86_64 architecture using rosetta.
+(Some packages still are not built for ARM).
+
 After you have conda ready and setup. Execute `make conda-create` which creates Conda env for you.
 
 Finally, activate the environment with `conda activate txmatching`
@@ -44,10 +47,28 @@ Finally, activate the environment with `conda activate txmatching`
 
 For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
 
+##### macOS
+In macOS it can be installed via brew:
+```
+brew install wkhtmltopdf
+```
+
+##### Linux and WSL
+With linux it is a bit more complicated:
 ```
 sudo apt update
 sudo apt install wget xfonts-75dpi
 cd /tmp
+```
+
+Also, you may need to install `libssl1.1.1` because newer versions
+of Ubuntu (e.g. 22.04 LTS) use a newer version of libssl, which is not compatible with wkhtmltopdf.
+
+``` 
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+sudo dpkg -i libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
+sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 ```
 
 `wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)

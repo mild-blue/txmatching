@@ -33,6 +33,8 @@ and then:
 npm -v
 ```
 
+Make sure Node.js is of the latest versions (preferably 18.0+).
+
 ### Angular
 
 In Terminal or Command line run:
@@ -40,6 +42,8 @@ In Terminal or Command line run:
 ```
 npm install -g @angular/cli
 ```
+
+(In Ubuntu based system you may need to run it with superuser rights)
 
 It will globally install Angular on your machine.
 
@@ -50,6 +54,10 @@ We use _openapi-generator_ to automatically generate TS files from swagger. Plea
 ```
 npm install -g @openapitools/openapi-generator-cli
 ```
+
+(In Ubuntu based system you may need to run it with superuser rights)
+
+Also make sure that you have Java installed on your machine, as it is required by _openapi-generator_.
 
 ---
 
