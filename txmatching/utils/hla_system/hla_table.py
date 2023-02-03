@@ -1,6 +1,6 @@
 from typing import Set, Union
 
-from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
+from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_parsing import (
@@ -65,7 +65,7 @@ SPLIT_TO_BROAD = {'A23': 'A9',
 
 
 def _get_high_res_or_ultra_high_res(ultra_high_res: str):
-    return try_convert_ultra_high_res(ultra_high_res) or ultra_high_res
+    return try_get_hla_high_res(ultra_high_res) or ultra_high_res
 
 
 PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
@@ -82,15 +82,17 @@ ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE = set(map(_get_high_res_or_ultr
 
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
-    return {split for high_res, split in _ULTRA_HIGH_RES_TO_SPLIT_DICT.items() if
-            high_res.startswith(f'{high_res_code}:')}
+    return {split for ultra_high_res, split in _ULTRA_HIGH_RES_TO_SPLIT_DICT.items() if
+            ultra_high_res.startswith(f'{high_res_code}:')}
 
 
 def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, ParsingIssueDetail]:
     maybe_split_code = _ULTRA_HIGH_RES_TO_SPLIT_DICT.get(high_res_code)
     if maybe_split_code:
+        # HLA code in ultra high res
         return maybe_split_code
     else:
+        # HLA code in high res
         possible_split_or_broad_codes = _get_possible_splits_for_high_res_code(high_res_code)
         if len(possible_split_or_broad_codes) == 0:
             return ParsingIssueDetail.UNPARSABLE_HLA_CODE
@@ -104,7 +106,7 @@ def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, Parsing
             return maybe_split_or_broad_code
 
 
-ALL_NON_ULTRA_HIGH_RES_CODES = {try_convert_ultra_high_res(high_res) for high_res in
+ALL_NON_ULTRA_HIGH_RES_CODES = {try_get_hla_high_res(high_res) for high_res in
                                 ALL_ULTRA_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE}
 
 HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: high_res_low_res_to_split_or_broad(high_res) for high_res in

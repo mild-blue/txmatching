@@ -17,7 +17,7 @@ from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
+from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
@@ -255,7 +255,7 @@ class TestCodeParser(DbTests):
         for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:
                 continue
-            maybe_high_res = try_convert_ultra_high_res(high_res_or_ultra_high_res)
+            maybe_high_res = try_get_hla_high_res(high_res_or_ultra_high_res)
             if maybe_high_res is not None:
                 if maybe_high_res not in high_res_to_splits:
                     high_res_to_splits[maybe_high_res] = set()
