@@ -48,23 +48,15 @@ class CIConfiguration:
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup) -> float:
         return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
 
-    def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, hla_type: HLAType) -> float:
-        dp_dq_regexes = {('DPA', r'^DPA\d+', r'DPA1\*'), ('DPB', r'^DP\d+', r'DPB1\*'),
-                         ('DQA', r'^DQA\d+', r'DQA1\*'), ('DQB', r'^DQ\d+', r'DQB1\*')}
-
+    def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, exact_group: str) -> float:
         dp_dq_bonuses = {
             'DPA': 0,
             'DPB': 0,
             'DQA': 0,
             'DQB': 0
         }
-
-        exact_group = None
-        for regex_tuple in dp_dq_regexes:
-            if re.match(regex_tuple[1], hla_type.raw_code) or re.match(regex_tuple[2], hla_type.raw_code):
-                exact_group = regex_tuple[0]
-                break
         return self.match_type_bonus[match_type] * dp_dq_bonuses[exact_group]
+
 
 class DefaultCIConfiguration(CIConfiguration):
     @property
@@ -170,8 +162,9 @@ def _match_through_lambda(current_compatibility_index: float,
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
             if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
                 # TODO: change this in he future, create issue
+                specific_group = _find_specific_group_dp_dq(donor_hla_type)
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index_dp_dq(
-                    result_match_type, donor_hla_type
+                    result_match_type, specific_group
                 )
             else:
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index(
@@ -301,7 +294,8 @@ def _get_ci_for_recipient_donor_types_in_group(
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,
         donor_matches=sorted(donor_matches, key=lambda donor_match: donor_match.hla_type.code.display_code),
-        recipient_matches=sorted(recipient_matches, key=lambda recipient_match: recipient_match.hla_type.code.display_code),
+        recipient_matches=sorted(
+            recipient_matches, key=lambda recipient_match: recipient_match.hla_type.code.display_code),
         group_compatibility_index=group_compatibility_index
     )
 
@@ -309,6 +303,24 @@ def _get_ci_for_recipient_donor_types_in_group(
 # if a group is a gene group, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
 def _hla_types_for_gene_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
+
+    if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
+        a_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'A']
+        b_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'B']
+        if len(hla_types) > 4:
+            logger.error(
+                f'Invalid list of alleles for gene {hla_group.name} - there have to be maximum 2 per gene type A and B.'
+                f'\nList of patient_alleles: {hla_typing.hla_per_groups}')
+            return hla_types
+        if len(a_genes) == 0 or len(b_genes) == 0:
+            logger.error(
+                f'Invalid list of alleles for group {hla_group.name} - there have to be at least one of each chains, '
+                f'A and B.\nList of patient_alleles: {hla_typing.hla_per_groups}')
+        if len(a_genes) == 1:
+            a_genes = a_genes + a_genes
+        if len(b_genes) == 1:
+            b_genes = b_genes + b_genes
+        return a_genes + b_genes
 
     if len(hla_types) > 2:
         logger.error(
@@ -329,3 +341,15 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
     if hla_type.code.high_res is not None:
         return not re.match(r'.*[A-Z]$', hla_type.code.high_res)
     return True
+
+
+def _find_specific_group_dp_dq(hla_type: HLAType) -> str:
+    dp_dq_regexes = {('DPA', r'^DPA\d+', r'DPA1\*'), ('DPB', r'^DP\d+', r'DPB1\*'),
+                     ('DQA', r'^DQA\d+', r'DQA1\*'), ('DQB', r'^DQ\d+', r'DQB1\*')}
+
+    specific_group = None
+    for regex_tuple in dp_dq_regexes:
+        if re.match(regex_tuple[1], hla_type.raw_code) or re.match(regex_tuple[2], hla_type.raw_code):
+            specific_group = regex_tuple[0]
+            break
+    return specific_group
