@@ -59,13 +59,15 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         raw_code: str
         mfi: int
         cutoff: int
+        secondary_raw_code: Optional[str] = None
 
     parsing_issues = []
 
     hla_antibodies_preprocessed = [
-        HLAAntibodyPreprocessedDTO(preprocessed_raw_code, hla_antibody_raw.mfi, hla_antibody_raw.cutoff)
+        HLAAntibodyPreprocessedDTO(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
+                                   hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
         for hla_antibody_raw in hla_antibodies_raw
-        for preprocessed_raw_code in preprocess_hla_code_in(hla_antibody_raw.raw_code)
+        for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
     # 2. parse preprocessed codes and keep only valid ones
@@ -124,9 +126,9 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
-        raw_code_preprocessed
+        preprocessed_antigen.raw_code
         for hla_type_raw in hla_typing_raw.hla_types_list
-        for raw_code_preprocessed in preprocess_hla_code_in(hla_type_raw.raw_code)
+        for preprocessed_antigen in preprocess_hla_code_in(hla_type_raw.raw_code)
     ]
 
     # 2. parse preprocessed codes and keep only valid ones

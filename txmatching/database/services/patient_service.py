@@ -161,7 +161,7 @@ def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, Reci
 def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingRawDTO:
     return HLATypingRawDTO(
         hla_types_list=[HLATypeRaw(
-            raw_code=type["raw_code"],
+            raw_code=type["raw_code"]
         ) for type in patient_model.hla_typing_raw["hla_types_list"]])
 
 

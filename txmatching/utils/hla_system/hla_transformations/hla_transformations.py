@@ -2,6 +2,7 @@ import logging
 import re
 from typing import List
 
+from txmatching.patients.hla_model import HLATypeRawBothChains
 from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX_ENDING_WITH_LETTER, HIGH_RES_WITH_SUBUNITS_REGEX,
     LOW_RES_REGEX, SPLIT_RES_REGEX, try_get_hla_high_res)
@@ -52,18 +53,19 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
     return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
 
 
-def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
+def preprocess_hla_code_in(hla_code_in: str) -> List[HLATypeRawBothChains]:
     hla_code_in = hla_code_in.replace(' ', '')
     hla_code_in = hla_code_in.upper()
     matched_multi_hla_codes = re.match(HIGH_RES_WITH_SUBUNITS_REGEX, hla_code_in)
     if matched_multi_hla_codes:
-        return [f'{matched_multi_hla_codes.group(1)}A1*{matched_multi_hla_codes.group(2)}',
-                f'{matched_multi_hla_codes.group(1)}B1*{matched_multi_hla_codes.group(3)}']
+        alpha_chain = f'{matched_multi_hla_codes.group(1)}A1*{matched_multi_hla_codes.group(2)}'
+        beta_chain = f'{matched_multi_hla_codes.group(1)}B1*{matched_multi_hla_codes.group(3)}'
+        return [HLATypeRawBothChains(alpha_chain, beta_chain), HLATypeRawBothChains(beta_chain, alpha_chain)]
     # TODO Handle this case better and elsewhere: https://github.com/mild-blue/txmatching/issues/1036
     elif PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in):
-        return PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)
+        return [HLATypeRawBothChains(hla_code) for hla_code in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)]
     else:
-        return [hla_code_in]
+        return [HLATypeRawBothChains(hla_code_in)]
 
 
 def _process_hla_in_high_res(hla_high_res: str, hla_raw_code: str) -> HlaCodeProcessingResult:
