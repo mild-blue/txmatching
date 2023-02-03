@@ -309,8 +309,8 @@ def _hla_types_for_gene_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) ->
         b_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'B']
         if len(a_genes) not in [1, 2] or len(b_genes) not in [1, 2]:
             logger.error(
-                f'Invalid list of alleles for group {hla_group.name} - there have to be at least one of each chains, '
-                f'A and B.\nList of patient_alleles: {hla_typing.hla_per_groups}')
+                f'Invalid list of alleles for group {hla_group.name} - there have to be at least one and at most two'
+                f' of each chains, A and B.\nList of patient_alleles: {hla_typing.hla_per_groups}')
         if len(a_genes) == 1:
             a_genes = a_genes + a_genes
         if len(b_genes) == 1:
