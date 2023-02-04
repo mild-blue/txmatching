@@ -46,7 +46,7 @@ def _cleanup_split_or_broad_code(serological_hla_code: str) -> str:
         serological_hla_code = f'{dpqb_match.group(1)}{subtype_str}{int(dpqb_match.group(3))}'
     return serological_hla_code
 
-
+# TODO
 def process_parsing_result(high_res: Optional[str],
                            split_or_broad_raw: Optional[str],
                            detail: Optional[ParsingIssueDetail] = None) -> HlaCodeProcessingResult:

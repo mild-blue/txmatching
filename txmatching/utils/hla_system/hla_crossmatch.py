@@ -9,6 +9,7 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
+from txmatching.utils.hla_system.compatibility_index import find_specific_group_dp_dq
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -28,7 +29,6 @@ class AntibodyMatchForHLAGroup:
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_resolution: bool):
-    # HERE BOTH
     if is_recipient_type_a(recipient_antibodies):
         antibody_matches_for_groups = do_crossmatch_in_type_a(donor_hla_typing,
                                                               recipient_antibodies,
@@ -85,7 +85,6 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
 
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
-        print("i am in group ", hla_per_group.hla_group, "with antigens", hla_per_group.hla_types)
         for antibody in antibodies_per_group.hla_antibody_list:
             # TODO improve the code around multiple sero codes https://github.com/mild-blue/txmatching/issues/1036
             if antibody.code.high_res is None and antibody.code.split not in MULTIPLE_SERO_CODES_LIST:
@@ -94,8 +93,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                                                f'{antibody} does not have high res')
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
-        print("\n\n\nantibodies are ", antibodies)
-        print("\n\n\nantibodies over cutoff are", _get_antibodies_over_cutoff(antibodies))
+
         _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
@@ -243,11 +241,14 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
         hla_antibodies_from_all_groups).is_type_a_compliant
 
 
-def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody], hla_group: Optional[HLAGroup]) -> List[HLAAntibody]:
+def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody], hla_group: Optional[HLAGroup] = None) -> List[HLAAntibody]:
+    antibodies_over_cutoff = [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
     if hla_group and hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-        # TODO: ?
-        return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff and antibody.secondary_raw_code]
-    return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
+        if len({find_specific_group_dp_dq(code.raw_code) for code in antibodies_over_cutoff}) == 2:
+            return antibodies_over_cutoff
+        else:
+            return []
+    return antibodies_over_cutoff
 
 
 def _recipient_was_tested_for_donor_antigen(antibodies: List[HLAAntibody], antigen: HLACode) -> bool:

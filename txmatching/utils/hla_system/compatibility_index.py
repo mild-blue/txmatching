@@ -162,7 +162,7 @@ def _match_through_lambda(current_compatibility_index: float,
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
             if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
                 # TODO: change this in he future, create issue
-                specific_group = _find_specific_group_dp_dq(donor_hla_type)
+                specific_group = find_specific_group_dp_dq(donor_hla_type.raw_code)
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index_dp_dq(
                     result_match_type, specific_group
                 )
@@ -304,8 +304,8 @@ def _check_if_correct_amount_of_hla_types(hla_typing: HLATyping, hla_group: HLAG
     hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
 
     if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-        a_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'A']
-        b_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'B']
+        a_genes = [code for code in hla_types if find_specific_group_dp_dq(code.raw_code)[-1] == 'A']
+        b_genes = [code for code in hla_types if find_specific_group_dp_dq(code.raw_code)[-1] == 'B']
         if len(a_genes) not in [1, 2] or len(b_genes) not in [1, 2]:
             logger.error(
                 f'Invalid list of alleles for group {hla_group.name} - there have to be at least one and at most two'
@@ -337,13 +337,13 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
     return True
 
 
-def _find_specific_group_dp_dq(hla_type: HLAType) -> str:
+def find_specific_group_dp_dq(hla_type_raw_code: str) -> str:
     dp_dq_regexes = {('DPA', r'^DPA\d+', r'DPA1\*'), ('DPB', r'^DP\d+', r'DPB1\*'),
                      ('DQA', r'^DQA\d+', r'DQA1\*'), ('DQB', r'^DQ\d+', r'DQB1\*')}
 
     specific_group = None
     for regex_tuple in dp_dq_regexes:
-        if re.match(regex_tuple[1], hla_type.raw_code) or re.match(regex_tuple[2], hla_type.raw_code):
+        if re.match(regex_tuple[1], hla_type_raw_code) or re.match(regex_tuple[2], hla_type_raw_code):
             specific_group = regex_tuple[0]
             break
     return specific_group

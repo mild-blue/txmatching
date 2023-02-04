@@ -118,6 +118,7 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
                                 raw_code=antibody['raw_code'],
                                 mfi=antibody["mfi"],
                                 cutoff=antibody["cutoff"],
+                                # TODO
                                 code=HLACode(high_res=antibody["code"]["high_res"],
                                              split=antibody["code"]["split"],
                                              broad=antibody["code"]["broad"])
