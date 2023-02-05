@@ -106,8 +106,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS + [HLAGroup.INVALID_CODES]:
-        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
+        donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+        recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_types_in_group(
             donor_hla_types=donor_hla_types,
@@ -124,7 +124,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS:
-        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+        donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
         donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
@@ -300,8 +300,7 @@ def _get_ci_for_recipient_donor_types_in_group(
     )
 
 
-# if a group is a gene group, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
-def _hla_types_for_gene_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+def _hla_types_for_hla_group(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
 
     if hla_group in {HLAGroup.DP, HLAGroup.DQ}:

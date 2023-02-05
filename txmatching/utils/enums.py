@@ -81,15 +81,13 @@ HLA_GROUPS_PROPERTIES = {
         name='DP',
         split_code_regex=r'(^DPA\d+)|(^DP\d+)',
         high_res_code_regex=r'(DPA1\*)|(DPB1\*)',
-        # TODO 8?
-        max_count_per_patient=8
+        max_count_per_patient=4
     ),
     HLAGroup.DQ: HLAGroupProperties(
         name='DQ',
         split_code_regex=r'(^DQA\d+)|(^DQ\d+)',
         high_res_code_regex=r'(DQA1\*)|(DQB1\*)',
-        # TODO 8?
-        max_count_per_patient=8
+        max_count_per_patient=4
     ),
     # Based on email communication with Matej Roder from 12.5.2020:
     # Each DRB3,4,5 (DR51,52,53 in split) can have 0 to 2 genes for DRB3, 0 to 2 genes for DRB, and 0 to 2 genes for
