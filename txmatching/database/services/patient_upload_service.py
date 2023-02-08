@@ -56,22 +56,6 @@ def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipien
                                          txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
-        related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
-    else:
-        related_recipient_medical_id = None
-
-    # get recipients for given txm_event from db
-    recipients = RecipientModel.query.filter_by(txm_event_id=txm_event_db_id).all()
-    if related_recipient_medical_id in [recipient.medical_id for recipient in recipients]:
-        recipient_model = \
-            [recipient for recipient in recipients if recipient.medical_id == related_recipient_medical_id][0]
-        current_recipient_models_dict = {related_recipient_medical_id: recipient_model}
-
-        donor_model = _donor_upload_dto_to_donor_model(donor_recipient_pair_dto.donor,
-                                                       current_recipient_models_dict,
-                                                       donor_recipient_pair_dto.country_code,
-                                                       txm_event_db_id)
-        return [donor_model], []
 
     donors, recipients = _add_patients_from_one_country(
         donors=[donor_recipient_pair_dto.donor],
@@ -266,6 +250,23 @@ def _add_patients_from_one_country(
 ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event = get_txm_event_complete(txm_event_db_id)
 
+    donor_models_related_to_recipients_in_db = []
+
+    for donor in donors:
+        if donor.related_recipient_medical_id is not None \
+                and donor.related_recipient_medical_id in [recipient.medical_id for recipient in
+                                                           txm_event.all_recipients]:
+            related_recipient_model = RecipientModel.query.filter_by(txm_event_id=txm_event_db_id,
+                                                                     medical_id=donor.related_recipient_medical_id).first()
+            donor_model_related_to_recipient_in_db = _donor_upload_dto_to_donor_model(donor, {
+                                                           related_recipient_model.medical_id: related_recipient_model},
+                                                           country_code, txm_event_db_id)
+            # Donor is auto-added to session due to relation to recipient that is already in DB
+            donor_models_related_to_recipients_in_db.append(donor_model_related_to_recipient_in_db)
+            donors.remove(donor)
+            recipients = [recipient for recipient in recipients if
+                          recipient.medical_id != donor.related_recipient_medical_id]
+
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 
     txm_event_db_id = txm_event.db_id
@@ -287,5 +288,8 @@ def _add_patients_from_one_country(
         for donor in donors
     ]
     db.session.add_all(donor_models)
+
+    if donor_models_related_to_recipients_in_db:
+        donor_models = donor_models + donor_models_related_to_recipients_in_db
 
     return donor_models, recipient_models
