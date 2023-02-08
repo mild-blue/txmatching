@@ -113,6 +113,9 @@ class RequestPerformance:
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
         request.request_id = uuid.uuid4()
+        if request.is_json:
+            # if request is json, combine this json info with the parsed URL parameters.
+            request.args = request.args | request.json
         logger.info(f'User {request.remote_addr}: Request {request.request_id} started.')
 
     def finish(self) -> None:
@@ -120,7 +123,7 @@ class RequestPerformance:
             else ''
         total_time = time.perf_counter() - self._request_start_time
         log_msg = f'User {user_email}{request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. ' \
-                  f'Method: {request.method} {request.path}, arguments: {dict(request.args)}.'
+                  f'Method: {request.method} {request.path}, arguments: {dict(request.values)}.'
         if is_env_variable_value_true(os.getenv('LOG_SQL_DURATION')):
             log_msg += f' SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.'
         logger.info(log_msg)
