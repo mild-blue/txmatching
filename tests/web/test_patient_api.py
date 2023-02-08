@@ -1,5 +1,6 @@
 import dataclasses
 import os
+import copy
 
 from sqlalchemy import and_
 
@@ -32,6 +33,47 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
                             MATCHING_NAMESPACE, PATIENT_NAMESPACE,
                             TXM_EVENT_NAMESPACE)
+
+JSON_DATA = {
+    'donor': {
+        'medical_id': '',
+        'blood_group': 'A',
+        'hla_typing': [],
+        'donor_type': DonorType.DONOR.value,
+    },
+    'recipient': {
+        'medical_id': '',
+        'acceptable_blood_groups': [],
+        'blood_group': 'A',
+        'hla_typing': [],
+        'recipient_cutoff': 2000,
+        'hla_antibodies': [],
+    },
+    'country_code': 'CZE'
+}
+
+RECIPIENT_JSON = {
+    'db_id': 0,
+    'etag': '',
+    'blood_group': 'A',
+    'hla_typing': {
+        'hla_types_list': []
+    },
+    'sex': 'M',
+    'height': 200,
+    'weight': 100,
+    'year_of_birth': 1990,
+    'acceptable_blood_groups': ['A', 'B', 'AB'],
+    'hla_antibodies': {
+        'hla_antibodies_list': []
+    },
+    'recipient_requirements': {
+        'require_better_match_in_compatibility_index': True,
+        'require_better_match_in_compatibility_index_or_blood_group': True,
+        'require_compatible_blood_group': True
+    },
+    'cutoff': 42
+}
 
 
 class TestPatientService(DbTests):
@@ -115,7 +157,11 @@ class TestPatientService(DbTests):
         donor_medical_id = 'donor_test'
         recipient_medical_id = 'recipient_test'
         with self.app.test_client() as client:
-            json_data = {
+            json_data = copy.deepcopy(JSON_DATA)
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['recipient']['medical_id'] = recipient_medical_id
+
+            json_data_puv = {
                 'donor': {
                     'medical_id': donor_medical_id,
                     'blood_group': 'A',
@@ -132,6 +178,7 @@ class TestPatientService(DbTests):
                 },
                 'country_code': 'CZE'
             }
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -149,15 +196,11 @@ class TestPatientService(DbTests):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
         donor_medical_id = 'donor_test'
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': donor_medical_id,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.BRIDGING_DONOR.value,
-                },
-                'country_code': 'CZE'
-            }
+            json_data = copy.deepcopy(JSON_DATA)
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['donor']['donor_type'] = DonorType.BRIDGING_DONOR.value
+            json_data['recipient'] = None
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -175,32 +218,19 @@ class TestPatientService(DbTests):
         donor_medical_id = 'donor_test'
         recipient_medical_id = 'recipient_test'
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': donor_medical_id,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value,
-                },
-                'recipient': {
-                    'medical_id': recipient_medical_id,
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 2000,
-                    'hla_antibodies': [{
-                        'mfi': 2350,
-                        'name': 'test',
-                        'cutoff': 1000
-                    },
-                        {
-                            'mfi': 2000,
-                            'name': 'test',
-                            'cutoff': 2000
-                    }],
-                },
-                'country_code': 'CZE'
-            }
+            json_data = copy.deepcopy(JSON_DATA)
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['recipient']['medical_id'] = recipient_medical_id
+            json_data['recipient']['hla_antibodies'] = [{'mfi': 2350,
+                                                         'name': 'test',
+                                                         'cutoff': 1000
+                                                         },
+                                                        {'mfi': 2000,
+                                                         'name': 'test',
+                                                         'cutoff': 2000
+                                                         }]
+            json_data['recipient']['hla_typing'] = []
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -347,28 +377,11 @@ class TestPatientService(DbTests):
         etag = RecipientModel.query.get(recipient_db_id).etag
         # 1. update patient
         with self.app.test_client() as client:
-            json_data = {
-                'db_id': recipient_db_id,
-                'etag': etag,
-                'blood_group': 'A',
-                'hla_typing': {
-                    'hla_types_list': []
-                },
-                'sex': 'M',
-                'height': 200,
-                'weight': 100,
-                'year_of_birth': 1990,
-                'acceptable_blood_groups': ['A', 'B', 'AB'],
-                'hla_antibodies': {
-                    'hla_antibodies_list': []
-                },
-                'recipient_requirements': {
-                    'require_better_match_in_compatibility_index': True,
-                    'require_better_match_in_compatibility_index_or_blood_group': True,
-                    'require_compatible_blood_group': True
-                },
-                'cutoff': 42
-            }
+            json_data = RECIPIENT_JSON.copy()
+            json_data['db_id'] = recipient_db_id
+            json_data['etag'] = etag
+            json_data['hla_typing']['hla_types_list'] = []
+
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers, json=json_data)
@@ -542,24 +555,12 @@ class TestPatientService(DbTests):
                       ('DQA1*05:07', 2350, 1000)]
 
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': 'donor_test',
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value
-                },
-                'recipient': {
-                    'medical_id': 'recipient_test',
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 2000,
-                    'hla_antibodies':
-                        [{'mfi': i[1], 'name': i[0], 'cutoff': i[2]} for i in reversed(antibodies)]
-                },
-                'country_code': 'CZE'
-            }
+            json_data = copy.deepcopy(JSON_DATA)
+            json_data['donor']['medical_id'] = 'donor_test'
+            json_data['recipient']['medical_id'] = 'recipient_test'
+            json_data['recipient']['hla_antibodies'] = [{'mfi': i[1], 'name': i[0], 'cutoff': i[2]} for i in
+                                                        reversed(antibodies)]
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -594,39 +595,23 @@ class TestPatientService(DbTests):
         etag = RecipientModel.query.get(recipient_db_id).etag
 
         with self.app.test_client() as client:
-            json_data = {
-                'db_id': recipient_db_id,
-                'etag': etag,
-                'blood_group': 'A',
-                'hla_typing': {
-                    'hla_types_list': [{'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'BW4'},
-                                       {'raw_code': 'B7'},
-                                       {'raw_code': 'DR11'}]
-                },
-                'sex': 'M',
-                'height': 200,
-                'weight': 100,
-                'year_of_birth': 1990,
-                'acceptable_blood_groups': ['A', 'B', 'AB'],
-                'hla_antibodies': {
-                    'hla_antibodies_list': []
-                },
-                'recipient_requirements': {
-                    'require_better_match_in_compatibility_index': True,
-                    'require_better_match_in_compatibility_index_or_blood_group': True,
-                    'require_compatible_blood_group': True
-                },
-                'cutoff': 42
-            }
+            json_data = RECIPIENT_JSON.copy()
+
+            json_data['db_id'] = recipient_db_id
+            json_data['etag'] = etag
+            json_data['hla_typing']['hla_types_list'] = [{'raw_code': 'A*01:02'},
+                                                         {'raw_code': 'A*01:02'},
+                                                         {'raw_code': 'BW4'},
+                                                         {'raw_code': 'B7'},
+                                                         {'raw_code': 'DR11'}]
+
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
 
             self.assertEqual(None, warning_issue.confirmed_by)
 
@@ -655,40 +640,24 @@ class TestPatientService(DbTests):
         etag = RecipientModel.query.get(recipient_db_id).etag
 
         with self.app.test_client() as client:
-            json_data = {
-                'db_id': recipient_db_id,
-                'etag': etag,
-                'blood_group': 'A',
-                'hla_typing': {
-                    'hla_types_list': [{'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'BW4'},
-                                       {'raw_code': 'B7'},
-                                       {'raw_code': 'DR11'}]
-                },
-                'sex': 'M',
-                'height': 200,
-                'weight': 100,
-                'year_of_birth': 1990,
-                'acceptable_blood_groups': ['A', 'B', 'AB'],
-                'hla_antibodies': {
-                    'hla_antibodies_list': []
-                },
-                'recipient_requirements': {
-                    'require_better_match_in_compatibility_index': True,
-                    'require_better_match_in_compatibility_index_or_blood_group': True,
-                    'require_compatible_blood_group': True
-                },
-                'cutoff': 42
-            }
+            json_data = RECIPIENT_JSON.copy()
+
+            json_data['db_id'] = recipient_db_id
+            json_data['etag'] = etag
+            json_data['hla_typing']['hla_types_list'] = [{'raw_code': 'A*01:02'},
+                                                         {'raw_code': 'A*01:02'},
+                                                         {'raw_code': 'A*01:02'},
+                                                         {'raw_code': 'BW4'},
+                                                         {'raw_code': 'B7'},
+                                                         {'raw_code': 'DR11'}]
+
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
 
             error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
 
             self.assertEqual(None, error_issue.confirmed_by)
 
@@ -709,40 +678,18 @@ class TestPatientService(DbTests):
         etag = RecipientModel.query.get(recipient_db_id).etag
 
         with self.app.test_client() as client:
-            json_data = {
-                'db_id': recipient_db_id,
-                'etag': etag,
-                'blood_group': 'A',
-                'hla_typing': {
-                    'hla_types_list': [{'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'BW4'},
-                                       {'raw_code': 'B7'},
-                                       {'raw_code': 'DR11'}]
-                },
-                'sex': 'M',
-                'height': 200,
-                'weight': 100,
-                'year_of_birth': 1990,
-                'acceptable_blood_groups': ['A', 'B', 'AB'],
-                'hla_antibodies': {
-                    'hla_antibodies_list': []
-                },
-                'recipient_requirements': {
-                    'require_better_match_in_compatibility_index': True,
-                    'require_better_match_in_compatibility_index_or_blood_group': True,
-                    'require_compatible_blood_group': True
-                },
-                'cutoff': 42
-            }
+            json_data = RECIPIENT_JSON.copy()
+            json_data['db_id'] = recipient_db_id
+            json_data['etag'] = etag
+            json_data['hla_typing']['hla_types_list'].append({'raw_code': 'A*01:02'})
+
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
             self.assertEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -823,11 +770,13 @@ class TestPatientService(DbTests):
             {"hla_typing": {"hla_per_groups": [{"hla_group": "B",
                                                 "hla_types": [{
                                                     "raw_code": "B7",
-                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7", "group": "B"}}]},
+                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7",
+                                                             "group": "B"}}]},
                                                {"hla_group": "DRB1",
                                                 "hla_types": [{
                                                     "raw_code": "DR11",
-                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5", "group": "DRB1"}}]},
+                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5",
+                                                             "group": "DRB1"}}]},
                                                {"hla_group": "Other", "hla_types": []}]}}
         )
         db.session.commit()
@@ -903,6 +852,7 @@ class TestPatientService(DbTests):
 
     def test_patient_upload_correctly_handles_multiple_donors(self):
         ''' tests the case when to upload a donor that relates to a recipient that is already in db'''
+        json_data = copy.deepcopy(JSON_DATA)
 
         # 1. create txm_event
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
@@ -911,23 +861,9 @@ class TestPatientService(DbTests):
         donor_medical_id = 'donor_test'
         recipient_medical_id = 'recipient_test'
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': donor_medical_id,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value,
-                },
-                'recipient': {
-                    'medical_id': recipient_medical_id,
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 2000,
-                    'hla_antibodies': [],
-                },
-                'country_code': 'CZE'
-            }
+            json_data['donor']['medical_id'] = donor_medical_id
+            json_data['recipient']['medical_id'] = recipient_medical_id
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -939,23 +875,9 @@ class TestPatientService(DbTests):
         # 3, upload donor related to recipient in db
         donor_medical_id_1 = 'donor_test1'
         with self.app.test_client() as client:
-            json_data = {
-                'donor': {
-                    'medical_id': donor_medical_id_1,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value,
-                },
-                'recipient': {
-                    'medical_id': recipient_medical_id,
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 2000,
-                    'hla_antibodies': [],
-                },
-                'country_code': 'CZE'
-            }
+            json_data['donor']['medical_id'] = donor_medical_id_1
+            json_data['recipient']['medical_id'] = recipient_medical_id
+
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
