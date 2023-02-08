@@ -56,9 +56,6 @@ def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipien
                                          txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
-        related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
-    else:
-        related_recipient_medical_id = None
 
     donors, recipients = _add_patients_from_one_country(
         donors=[donor_recipient_pair_dto.donor],
