@@ -36,6 +36,9 @@ class TransplantWarningDetail(str, Enum):
     UNDECIDABLE = lambda antibodies: (
         f'Found antibodies for groups that donor does not have typization for: {antibodies}.'
         ' The tranplant should be confirmed with immunologist first.')
+    THEORETICAL = lambda antibodies: (
+        f'There is a theoretical crossmatch for antibodies: {antibodies}.'
+        ' The tranplant should be confirmed with immunologist first.')
 
 @dataclass
 class TransplantWarnings:

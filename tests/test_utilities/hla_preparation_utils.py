@@ -6,6 +6,7 @@ from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAAntibodyRaw, HLAType, HLATypeRaw,
                                            HLATyping)
+from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_raw_code_and_return_parsing_issue_list,
@@ -50,11 +51,12 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
     )
 
 
-def create_antibody(raw_code, mfi, cutoff) -> HLAAntibody:
+def create_antibody(raw_code, mfi, cutoff, type:HLAAntibodyType = HLAAntibodyType.NORMAL) -> HLAAntibody:
     code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
     return HLAAntibody(
         raw_code=raw_code,
         code=code,
         mfi=mfi,
         cutoff=cutoff,
+        type=type
     )

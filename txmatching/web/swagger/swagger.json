@@ -2249,7 +2249,8 @@
                         "NONE",
                         "UNDECIDABLE",
                         "HIGH_RES_WITH_SPLIT",
-                        "HIGH_RES_WITH_BROAD"
+                        "HIGH_RES_WITH_BROAD",
+                        "THEORETICAL"
                     ]
                 }
             },
