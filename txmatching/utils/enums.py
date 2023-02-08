@@ -124,6 +124,10 @@ HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(HLA_GROUPS)
 # BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html
 # It is based on our discussions with immunologists, therefore it is not even in this list
 
+class HLAAntibodyType:
+    NORMAL = 'NORMAL'
+    THEORETICAL = 'THEORETICAL'
+
 
 class HLACrossmatchLevel(str, Enum):
     NONE = 'NONE'  # nothing is allowed
@@ -140,6 +144,7 @@ class AntibodyMatchTypes(str, Enum):
     UNDECIDABLE = 'UNDECIDABLE'
     HIGH_RES_WITH_SPLIT = 'HIGH_RES_WITH_SPLIT'
     HIGH_RES_WITH_BROAD = 'HIGH_RES_WITH_BROAD'
+    THEORETICAL = 'THEORETICAL'
 
     def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
         return (

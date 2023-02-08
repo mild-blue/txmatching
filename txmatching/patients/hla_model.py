@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from txmatching.patients.hla_code import HLACode
-from txmatching.utils.enums import HLAGroup
+from txmatching.utils.enums import HLAGroup, HLAAntibodyType
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -71,21 +71,24 @@ class HLATyping(PersistentlyHashable):
 class HLAAntibody(HLABase, PersistentlyHashable):
     mfi: int
     cutoff: int
+    type: HLAAntibodyType = HLAAntibodyType.NORMAL
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
                 self.raw_code == other.raw_code and
                 self.mfi == other.mfi and
-                self.cutoff == other.cutoff)
+                self.cutoff == other.cutoff and
+                self.type == other.type)
 
     def __hash__(self):
-        return hash((self.raw_code, self.mfi, self.cutoff))
+        return hash((self.raw_code, self.mfi, self.cutoff, self.type))
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibody)
         update_persistent_hash(hash_, self.raw_code)
         update_persistent_hash(hash_, self.mfi)
         update_persistent_hash(hash_, self.cutoff)
+        update_persistent_hash(hash_, self.type)
 
 
 @dataclass

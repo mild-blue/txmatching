@@ -10,8 +10,8 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibody
-from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
+from txmatching.patients.hla_model import HLAAntibody, HLAAntibodies, HLAAntibodyRaw, AntibodiesPerGroup
+from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel, HLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
@@ -257,6 +257,49 @@ class TestCrossmatch(unittest.TestCase):
                                       use_high_resolution=True)
 
         self.assertEqual([], res[5].antibody_matches)
+
+    def test_theoretical(self):
+        # Antibody theoretical in type A
+        hla_antibodies = HLAAntibodies(
+            hla_antibodies_raw_list=[HLAAntibodyRaw(raw_code='DPA1*01:01', mfi=2070, cutoff=2000)],
+            hla_antibodies_per_groups=[
+                AntibodiesPerGroup(hla_group=HLAGroup.A, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.B, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.DRB1, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.CW, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.DPA, hla_antibody_list=[
+                    HLAAntibody(raw_code='DPA1*01:01',
+                                code=HLACode('DPA1*01:01', 'DPA1', 'DPA1'),
+                                mfi=2070,
+                                cutoff=2000,
+                                type='THEORETICAL')]),
+                AntibodiesPerGroup(hla_group=HLAGroup.DPB, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.DQA, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.DQB, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.OTHER_DR, hla_antibody_list=[]),
+                AntibodiesPerGroup(hla_group=HLAGroup.INVALID_CODES, hla_antibody_list=[])]
+        )
+
+        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=['DPA1*02:01', 'DPB1*04:03']),
+                                      hla_antibodies,
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.THEORETICAL, res[4].antibody_matches[0].match_type)
+
+        # Antibody theoretical in type B
+        hla_antibodies.hla_antibodies_raw_list = [HLAAntibodyRaw(raw_code='DPB1*03:03', mfi=2070, cutoff=2000)]
+        hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list = []
+        hla_antibodies.hla_antibodies_per_groups[5].hla_antibody_list = [
+            HLAAntibody(raw_code='DPB1*03:03',
+                        code=HLACode('DPB1*03:03', 'DPB1', 'DPB1'),
+                        mfi=2070,
+                        cutoff=2000,
+                        type='THEORETICAL')]
+        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=['DPA1*02:01', 'DPB1*04:03']),
+                                      hla_antibodies,
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.THEORETICAL, res[5].antibody_matches[0].match_type)
 
     def _assert_matches_equal(self,
                               hla_type: str, hla_antibodies: List[HLAAntibody],

@@ -66,6 +66,7 @@ definitions:
                 - UNDECIDABLE
                 - HIGH_RES_WITH_SPLIT
                 - HIGH_RES_WITH_BROAD
+                - THEORETICAL
                 example: SPLIT
                 type: string
         required:
