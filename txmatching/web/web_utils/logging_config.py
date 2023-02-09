@@ -19,10 +19,10 @@ old_factory = logging.getLogRecordFactory()
 
 def record_factory(*args, **kwargs):
     record = old_factory(*args, **kwargs)
-    record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else '-'
-    record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else '-'
-    record.method = request.method if has_request_context() and hasattr(request, 'method') else '-'
-    record.path = request.path if has_request_context() and hasattr(request, 'path') else '-'
+    record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else ''
+    record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else ''
+    record.method = request.method if has_request_context() and hasattr(request, 'method') else ''
+    record.path = request.path if has_request_context() and hasattr(request, 'path') else ''
     record.user_email = request.user_email if has_request_context() and hasattr(request, "user_email") else ''
     record.user_id = request.user_id if has_request_context() and hasattr(request, "user_id") else ''
     record.sql_queries_amount = request.sql_queries_amount if \
@@ -138,16 +138,16 @@ class JsonFormatter(logging.Formatter):
         data = {
             'datetime': datetime.fromtimestamp(record.created, timezone.utc).strftime(
                 '%Y-%m-%dT%H:%M:%S.%fZ'),
-            'levelname': record.levelname,
-            'name': record.name,
-            'process': record.process,
-            'user_id': str(record.user_id) or None,
+            'levelname': record.levelname or None,
+            'name': record.name or None,
+            'process': record.process or None,
+            'user_id': record.user_id or None,
             'user_email': record.user_email or None,
-            'user_ip': record.remote_addr,
-            'request_id': str(record.request_id),
-            'method': record.method,
-            'path': record.path,
-            'message': record.msg,
+            'user_ip': record.remote_addr or None,
+            'request_id': str(record.request_id) or None,
+            'method': record.method or None,
+            'path': record.path or None,
+            'message': record.msg or None,
             'sql_queries_amount': record.sql_queries_amount or None,
             'sql_duration_ms': record.sql_duration or None
         }
