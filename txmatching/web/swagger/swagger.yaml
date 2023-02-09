@@ -839,6 +839,11 @@ definitions:
         - mfi
         - name
         type: object
+    HLAAntibodyType:
+        enum:
+        - NORMAL
+        - THEORETICAL
+        type: string
     HlaAntibodies:
         properties:
             hla_antibodies_per_groups:
@@ -852,6 +857,7 @@ definitions:
                         cutoff: 0
                         mfi: 0
                         raw_code: A1
+                        type: NORMAL
                     hla_group: A
                 -   hla_antibody_list:
                     -   code:
@@ -861,6 +867,7 @@ definitions:
                         cutoff: 0
                         mfi: 10
                         raw_code: B38
+                        type: NORMAL
                     hla_group: B
                 -   hla_antibody_list:
                     -   code:
@@ -870,6 +877,7 @@ definitions:
                         cutoff: 300
                         mfi: 0
                         raw_code: DR7
+                        type: NORMAL
                     hla_group: DRB1
                 -   hla_antibody_list:
                     -   code:
@@ -879,6 +887,7 @@ definitions:
                         cutoff: 500
                         mfi: 500
                         raw_code: CW4
+                        type: NORMAL
                     hla_group: CW
                 items:
                     $ref: '#/definitions/AntibodiesPerGroup'
@@ -910,6 +919,8 @@ definitions:
                 type: integer
             raw_code:
                 type: string
+            type:
+                $ref: '#/definitions/HLAAntibodyType'
         required:
         - code
         - cutoff

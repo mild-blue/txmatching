@@ -254,7 +254,7 @@ def _add_all_tested_positive_antibodies(tested_antibodies_that_match: List[HLAAn
                                         positive_tested_antibodies: List[HLAAntibody],
                                         match_type: AntibodyMatchTypes,
                                         positive_matches: Set[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
+    """Return True if crossmatch has happened."""
 
     if len(positive_tested_antibodies) > 0:
         if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
@@ -267,7 +267,7 @@ def _add_all_tested_positive_antibodies(tested_antibodies_that_match: List[HLAAn
 def _add_positive_tested_antibodies(tested_antibodies_that_match: List[HLAAntibody],
                                     match_type: AntibodyMatchTypes,
                                     positive_matches: Set[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
+    """Return True if crossmatch has happened."""
 
     if len(tested_antibodies_that_match) > 0:
         for antibody in _get_antibodies_over_cutoff(tested_antibodies_that_match):
