@@ -3222,6 +3222,13 @@
             },
             "type": "object"
         },
+        "HLAAntibodyType": {
+            "enum": [
+                "NORMAL",
+                "THEORETICAL"
+            ],
+            "type": "string"
+        },
         "HlaAntibodies": {
             "required": [
                 "hla_antibodies_per_groups",
@@ -3249,7 +3256,8 @@
                                     },
                                     "raw_code": "A1",
                                     "mfi": 0,
-                                    "cutoff": 0
+                                    "cutoff": 0,
+                                    "type": "NORMAL"
                                 }
                             ]
                         },
@@ -3264,7 +3272,8 @@
                                     },
                                     "raw_code": "B38",
                                     "mfi": 10,
-                                    "cutoff": 0
+                                    "cutoff": 0,
+                                    "type": "NORMAL"
                                 }
                             ]
                         },
@@ -3279,7 +3288,8 @@
                                     },
                                     "raw_code": "DR7",
                                     "mfi": 0,
-                                    "cutoff": 300
+                                    "cutoff": 300,
+                                    "type": "NORMAL"
                                 }
                             ]
                         },
@@ -3294,7 +3304,8 @@
                                     },
                                     "raw_code": "CW4",
                                     "mfi": 500,
-                                    "cutoff": 500
+                                    "cutoff": 500,
+                                    "type": "NORMAL"
                                 }
                             ]
                         }
@@ -3339,6 +3350,9 @@
                 },
                 "code": {
                     "$ref": "#/definitions/HlaCode"
+                },
+                "type": {
+                    "$ref": "#/definitions/HLAAntibodyType"
                 }
             },
             "type": "object"
