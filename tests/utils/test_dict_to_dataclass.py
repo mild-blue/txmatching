@@ -24,7 +24,7 @@ class TestDictToDataclass(DbTests):
         # Case with HLA antibodies
         start_time = time.time()
 
-        antibodies_dto_dacite: HLAAntibodiesDTO = dacite.from_dict(
+        antibodies_dto_dacite: HLAAntibodiesDTO = dacite.from_dict( # error !!!!
             data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies,
             config=dacite.Config(cast=[Enum])
         )

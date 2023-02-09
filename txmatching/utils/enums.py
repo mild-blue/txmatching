@@ -124,7 +124,7 @@ HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(HLA_GROUPS)
 # BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html
 # It is based on our discussions with immunologists, therefore it is not even in this list
 
-class HLAAntibodyType:
+class HLAAntibodyType(str, Enum):
     NORMAL = 'NORMAL'
     THEORETICAL = 'THEORETICAL'
 
