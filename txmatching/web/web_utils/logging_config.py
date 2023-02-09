@@ -82,6 +82,14 @@ class BaseFormatter(logging.Formatter):
                                        color=color)
         return string
 
+    @staticmethod
+    def __insert_exception(record):
+        if not record.exc_info:
+            return ''
+        return '\n' + ''.join(traceback.format_exception(record.exc_info[0],
+                                                         record.exc_info[1],
+                                                         record.exc_info[2]))
+
     def __generate_basic_log_info_from_record(self, record) -> str:
         """
         Creates basic info for subsequent log formatting.
@@ -119,7 +127,8 @@ class BaseFormatter(logging.Formatter):
                                                          color=self.levelno_color[record.levelno])
         return self.__generate_basic_log_info_from_record(record) + \
                self.__generate_user_log_info_from_record(record) + tmp_msg + \
-               self.__generate_sql_log_info_from_record(record)
+               self.__generate_sql_log_info_from_record(record) + \
+               self.__insert_exception(record)
 
 
 class JsonFormatter(logging.Formatter):
