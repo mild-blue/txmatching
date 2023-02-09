@@ -23,6 +23,12 @@ def record_factory(*args, **kwargs):
     record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else '-'
     record.method = request.method if has_request_context() and hasattr(request, 'method') else '-'
     record.path = request.path if has_request_context() and hasattr(request, 'path') else '-'
+    record.user_email = request.user_email if has_request_context() and hasattr(request, "user_email") else ''
+    record.user_id = request.user_id if has_request_context() and hasattr(request, "user_id") else ''
+    record.sql_queries_amount = request.sql_queries_amount if \
+        has_request_context() and hasattr(request, "sql_queries_amount") else ''
+    record.sql_duration = request.sql_duration if \
+        has_request_context() and hasattr(request, "sql_duration") else ''
     return record
 
 
@@ -63,18 +69,57 @@ class BaseFormatter(logging.Formatter):
     def __color_string(string: str, color: str) -> str:
         return color + string + ANSIEscapeColorCodes.END
 
-    def format(self, record: logging.LogRecord) -> str:
+    def __color_string_if_colorful_output(self, string: str, color: str) -> str:
+        """
+        Colors string if self.is_colorful_output is True.
+        :param string: string to color.
+        :param color: string color.
+        :return: colorful string if self.is_colorful_output is True.
+                 Otherwise, returns this string without changes.
+        """
+        if self.is_colorful_output:
+            return self.__color_string(string=string,
+                                       color=color)
+        return string
+
+    def __generate_basic_log_info_from_record(self, record) -> str:
+        """
+        Creates basic info for subsequent log formatting.
+        "time-levelname-logger_name-process:: module|lineno::".
+        :param record: log record.
+        :return: string in expected format.
+        """
         time = datetime.fromtimestamp(record.created,
                                       timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-        tmp_levelname = copy(record.levelname)
-        tmp_msg = copy(record.msg)
-        if self.is_colorful_output:
-            tmp_levelname = self.__color_string(string=tmp_levelname,
-                                                color=self.levelno_color[record.levelno])
-            tmp_msg = self.__color_string(string=tmp_msg,
-                                          color=self.levelno_color[record.levelno])
-        return f'{time}-{tmp_levelname}-{record.name}-{record.process}:: ' \
-               f'{record.module}|{record.lineno}:: {tmp_msg}'
+        tmp_levelname = self.__color_string_if_colorful_output(string=copy(record.levelname),
+                                                               color=self.levelno_color[record.levelno])
+        return f'{time}-{tmp_levelname}-{record.name}-{record.process}::{record.module}|{record.lineno}:: '
+
+    @staticmethod
+    def __generate_user_log_info_from_record(record) -> str:
+        """
+        Create user info for subsequent log formatting.
+        :param record: log record.
+        :return: string with all available information from record.
+        """
+        user_info = f'User ID: {record.user_id or "-"}. User e-mail: {record.user_email or "-"}. ' \
+                        if record.user_id or record.user_email else ''
+        user_info += f'User IP: {record.remote_addr}' if record.remote_addr else ''
+        return user_info + ':: '
+
+    @staticmethod
+    def __generate_sql_log_info_from_record(record) -> str:
+        sql_info = f' SQL Queries amount: {record.sql_queries_amount}.' if \
+            record.sql_queries_amount else ''
+        sql_info += f' SQL total time: {record.sql_duration} ms.' if record.sql_duration else ''
+        return sql_info
+
+    def format(self, record: logging.LogRecord) -> str:
+        tmp_msg = self.__color_string_if_colorful_output(string=copy(record.msg),
+                                                         color=self.levelno_color[record.levelno])
+        return self.__generate_basic_log_info_from_record(record) + \
+               self.__generate_user_log_info_from_record(record) + tmp_msg + \
+               self.__generate_sql_log_info_from_record(record)
 
 
 class JsonFormatter(logging.Formatter):
@@ -87,11 +132,15 @@ class JsonFormatter(logging.Formatter):
             'levelname': record.levelname,
             'name': record.name,
             'process': record.process,
-            'user': record.remote_addr,
+            'user_id': str(record.user_id) or None,
+            'user_email': record.user_email or None,
+            'user_ip': record.remote_addr,
             'request_id': str(record.request_id),
             'method': record.method,
             'path': record.path,
             'message': record.msg,
+            'sql_queries_amount': record.sql_queries_amount or None,
+            'sql_duration_ms': record.sql_duration or None
         }
         return data
 

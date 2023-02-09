@@ -116,17 +116,21 @@ class RequestPerformance:
         if request.is_json:
             # if request is json, combine this json info with the parsed URL parameters.
             request.args = request.args | request.json
-        logger.info(f'User {request.remote_addr}: Request {request.request_id} started.')
+        logger.info(f'Request {request.request_id} started.')
 
     def finish(self) -> None:
-        user_email = _get_current_user_if_logged().email + " " if _get_current_user_if_logged() \
+        # save user info
+        request.user_email = _get_current_user_if_logged().email if _get_current_user_if_logged() \
             else ''
-        total_time = time.perf_counter() - self._request_start_time
-        log_msg = f'User {user_email}{request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. ' \
-                  f'Method: {request.method} {request.path}, arguments: {dict(request.values)}.'
+        request.user_id = _get_current_user_if_logged().id if _get_current_user_if_logged() \
+            else ''
+        # save SQL queries info if needed
         if is_env_variable_value_true(os.getenv('LOG_SQL_DURATION')):
-            log_msg += f' SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.'
-        logger.info(log_msg)
+            request.sql_queries_amount = len(self._sql_queries)
+            request.sql_duration = int(self._sql_total_time * 1000)  # ms
+        # send logs
+        total_time = time.perf_counter() - self._request_start_time
+        logger.info(f'Request {request.request_id} took {int(total_time * 1000)} ms.')
 
 
 # pylint: disable=too-many-statements
