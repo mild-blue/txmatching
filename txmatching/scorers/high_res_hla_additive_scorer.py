@@ -3,37 +3,39 @@ from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
-PROPOSED_MATCH_TYPE_BONUS = {
-    MatchType.BROAD: 1,
-    MatchType.SPLIT: 2,
-    MatchType.HIGH_RES: 3,
-    MatchType.NONE: 0,
-}
-
-EQUAL_BONUS_PER_GROUPS = {
-    HLAGroup.A: 1,
-    HLAGroup.B: 1,
-    HLAGroup.DRB1: 1,
-    HLAGroup.CW: 0,
-    HLAGroup.DPA: 0,
-    HLAGroup.DPB: 0,
-    HLAGroup.DQA: 0,
-    HLAGroup.DQB: 0,
-    HLAGroup.OTHER_DR: 0
-}
-
 
 # this class serves as configuration of the scorer the few methods are meaningful here
 # pylint: disable=too-few-public-methods
+# pylint: disable=duplicate-code
 class HighResScorerCIConfiguration(CIConfiguration):
-    @property
-    def match_type_bonus(self):
-        return PROPOSED_MATCH_TYPE_BONUS
 
     @property
-    def hla_typing_bonus_per_groups(self):
-        bonus = EQUAL_BONUS_PER_GROUPS.copy()
-        return bonus
+    def match_type_bonus(self):
+        return {
+            MatchType.BROAD: 1,
+            MatchType.SPLIT: 2,
+            MatchType.HIGH_RES: 3,
+            MatchType.NONE: 0,
+        }
+
+    @property
+    def hla_typing_bonus_per_groups_without_dp_dq(self):
+        return {
+            HLAGroup.A: 1,
+            HLAGroup.B: 1,
+            HLAGroup.DRB1: 1,
+            HLAGroup.CW: 0,
+            HLAGroup.OTHER_DR: 0
+        }
+
+    @property
+    def hla_typing_bonus_per_dp_dq(self):
+        return {
+            'DPA': 0,
+            'DPB': 0,
+            'DQA': 0,
+            'DQB': 0
+        }
 
 
 class HighResScorer(HLAAdditiveScorer):

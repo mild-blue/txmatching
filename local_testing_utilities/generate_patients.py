@@ -161,10 +161,8 @@ TypizationFor = {
     HLAGroup.B: get_codes(HLAGroup.B),
     HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
     # HLAGroup.CW: get_codes(HLAGroup.CW),
-    HLAGroup.DPA: get_codes(HLAGroup.DPA),
-    HLAGroup.DPB: get_codes(HLAGroup.DPB),
-    HLAGroup.DQA: get_codes(HLAGroup.DQA),
-    HLAGroup.DQB: get_codes(HLAGroup.DQB),
+    HLAGroup.DP: get_codes(HLAGroup.DP),
+    HLAGroup.DQ: get_codes(HLAGroup.DQ),
 }
 
 

@@ -21,10 +21,8 @@ export enum HlaCodesInGroupsGeneratedHlaGroupEnum {
     B = 'B',
     Drb1 = 'DRB1',
     Cw = 'CW',
-    Dpa = 'DPA',
-    Dpb = 'DPB',
-    Dqa = 'DQA',
-    Dqb = 'DQB',
+    Dp = 'DP',
+    Dq = 'DQ',
     OtherDr = 'OTHER_DR'
 };
 
