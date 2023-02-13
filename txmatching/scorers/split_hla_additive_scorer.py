@@ -5,6 +5,7 @@ from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
 
 # pylint: disable=too-few-public-methods
+# pylint: disable=duplicate-code
 class SplitScorerCIConfiguration(CIConfiguration):
 
     @property
@@ -17,15 +18,22 @@ class SplitScorerCIConfiguration(CIConfiguration):
         }
 
     @property
-    def hla_typing_bonus_per_groups(self):
+    def hla_typing_bonus_per_groups_without_dp_dq(self):
         return {
             HLAGroup.A: 1,
             HLAGroup.B: 3,
             HLAGroup.DRB1: 9,
             HLAGroup.CW: 0,
-            HLAGroup.DP: 0,
-            HLAGroup.DQ: 0,
             HLAGroup.OTHER_DR: 0
+        }
+
+    @property
+    def hla_typing_bonus_per_dp_dq(self):
+        return {
+            'DPA': 0,
+            'DPB': 0,
+            'DQA': 0,
+            'DQB': 0
         }
 
 

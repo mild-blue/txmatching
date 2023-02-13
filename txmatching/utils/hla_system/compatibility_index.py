@@ -42,20 +42,18 @@ class CIConfiguration:
         raise NotImplementedError('Has to be overridden')
 
     @property
-    def hla_typing_bonus_per_groups(self) -> Dict[HLAGroup, int]:
+    def hla_typing_bonus_per_groups_without_dp_dq(self) -> Dict[HLAGroup, int]:
+        raise NotImplementedError('Has to be overridden')
+
+    @property
+    def hla_typing_bonus_per_dp_dq(self) -> Dict[str, int]:
         raise NotImplementedError('Has to be overridden')
 
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup) -> float:
-        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups_without_dp_dq[hla_group]
 
     def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, exact_group: str) -> float:
-        dp_dq_bonuses = {
-            'DPA': 0,
-            'DPB': 0,
-            'DQA': 0,
-            'DQB': 0
-        }
-        return self.match_type_bonus[match_type] * dp_dq_bonuses[exact_group]
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_dp_dq[exact_group]
 
 
 class DefaultCIConfiguration(CIConfiguration):
@@ -69,15 +67,22 @@ class DefaultCIConfiguration(CIConfiguration):
         }
 
     @property
-    def hla_typing_bonus_per_groups(self):
+    def hla_typing_bonus_per_groups_without_dp_dq(self):
         return {
             HLAGroup.A: 0,
             HLAGroup.B: 0,
             HLAGroup.DRB1: 0,
             HLAGroup.CW: 0,
-            HLAGroup.DP: 0,
-            HLAGroup.DQ: 0,
             HLAGroup.OTHER_DR: 0
+        }
+
+    @property
+    def hla_typing_bonus_per_dp_dq(self):
+        return {
+            'DPA': 0,
+            'DPB': 0,
+            'DQA': 0,
+            'DQB': 0
         }
 
 
