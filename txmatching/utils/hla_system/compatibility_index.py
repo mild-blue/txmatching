@@ -165,8 +165,9 @@ def _match_through_lambda(current_compatibility_index: float,
                 remaining_recipient_hla_types.remove(matching_hla_types[0])
                 recipient_matches.append(recipient_match)
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
+            # TODO: change this in the future, this is not the prettiest. this was the easiest way how to add
+            # compatibility index for particular DP and DQ subgroups.
             if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-                # TODO: change this in he future, create issue
                 specific_group = _find_specific_group_dp_dq(donor_hla_type)
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index_dp_dq(
                     result_match_type, specific_group
