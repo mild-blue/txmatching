@@ -40,9 +40,11 @@ def _get_traceback_frames(traceback: TracebackType, max_frames_amount=100) -> Li
     """
     Gets all frames from traceback.
     :param traceback: traceback with type TracebackType.
-    :return: list of frames with type FrameType.
+    :param max_frames_amount: max amount of frames in the traceback.
+    :return: list of frames with type FrameType or
+             raises TimeoutError if frames amount limit is reached to the max_frames_amount value.
     """
-    frames = []
+    frames: List[FrameType] = []
     while traceback is not None:
         frames.append(traceback.tb_frame)
         traceback = traceback.tb_next
