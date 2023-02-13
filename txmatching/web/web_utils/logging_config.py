@@ -153,7 +153,7 @@ class JsonFormatter(logging.Formatter):
             'sql_queries_amount': record.sql_queries_amount or None,
             'sql_duration_ms': record.sql_duration or None
         }
-        return data
+        return {key: value for key, value in data.items() if value is not None}
 
     @staticmethod
     def __insert_exception(record, data):
