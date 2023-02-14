@@ -21,6 +21,7 @@ old_factory = logging.getLogRecordFactory()
 
 def record_factory(*args, **kwargs):
     record = old_factory(*args, **kwargs)
+
     record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else ''
     record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else ''
     record.method = request.method if has_request_context() and hasattr(request, 'method') else ''
@@ -31,6 +32,9 @@ def record_factory(*args, **kwargs):
         has_request_context() and hasattr(request, "sql_queries_amount") else ''
     record.sql_duration = request.sql_duration if \
         has_request_context() and hasattr(request, "sql_duration") else ''
+    record.values = request.args | request.form if has_request_context() and \
+                                hasattr(request, 'args') and hasattr(request, 'form') else {}
+
     return record
 
 
@@ -124,11 +128,18 @@ class BaseFormatter(logging.Formatter):
         sql_info += f' SQL total time: {record.sql_duration} ms.' if record.sql_duration else ''
         return sql_info
 
+    @staticmethod
+    def __generate_playload_info(record) -> str:
+        if not record.values:
+            return ''
+        return f' Arguments: {record.values}.'
+
     def format(self, record: logging.LogRecord) -> str:
         tmp_msg = self.__color_string_if_colorful_output(string=copy(record.msg),
                                                          color=self.levelno_color[record.levelno])
         return self.__generate_basic_log_info_from_record(record) + \
                self.__generate_user_log_info_from_record(record) + tmp_msg + \
+               self.__generate_playload_info(record) + \
                self.__generate_sql_log_info_from_record(record) + \
                self.__insert_exception(record)
 
@@ -151,7 +162,8 @@ class JsonFormatter(logging.Formatter):
             'path': record.path or None,
             'message': record.msg or None,
             'sql_queries_amount': record.sql_queries_amount or None,
-            'sql_duration_ms': record.sql_duration or None
+            'sql_duration_ms': record.sql_duration or None,
+            'arguments': record.values or None
         }
         return {key: value for key, value in data.items() if value is not None}
 
