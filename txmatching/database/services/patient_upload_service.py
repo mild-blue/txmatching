@@ -266,6 +266,9 @@ def _add_patients_from_one_country(
             donors.remove(donor)
             recipients = [recipient for recipient in recipients if
                           recipient.medical_id != donor.related_recipient_medical_id]
+            logger.warning(f'Provided recipient properties were ignored for donor {donor.medical_id} '
+                           f'as it is related to recipient {donor.related_recipient_medical_id} '
+                           f'that is already present in DB.')
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 

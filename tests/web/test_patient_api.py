@@ -161,24 +161,6 @@ class TestPatientService(DbTests):
             json_data['donor']['medical_id'] = donor_medical_id
             json_data['recipient']['medical_id'] = recipient_medical_id
 
-            json_data_puv = {
-                'donor': {
-                    'medical_id': donor_medical_id,
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'donor_type': DonorType.DONOR.value,
-                },
-                'recipient': {
-                    'medical_id': recipient_medical_id,
-                    'acceptable_blood_groups': [],
-                    'blood_group': 'A',
-                    'hla_typing': [],
-                    'recipient_cutoff': 2000,
-                    'hla_antibodies': [],
-                },
-                'country_code': 'CZE'
-            }
-
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
@@ -884,6 +866,10 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(1, res.json['donors_uploaded'])
             self.assertEqual(0, res.json['recipients_uploaded'])
+
+            self.assertLogs(f'Provided recipient properties were ignored for donor {donor_medical_id_1} as it is '
+                            f'related to recipient {recipient_medical_id} that is already present in DB.',
+                            level='WARNING')
 
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertEqual(1, len(txm_event.all_recipients))
