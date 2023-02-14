@@ -26,6 +26,8 @@ def record_factory(*args, **kwargs):
     record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else ''
     record.method = request.method if has_request_context() and hasattr(request, 'method') else ''
     record.path = request.path if has_request_context() and hasattr(request, 'path') else ''
+    record.status_code = request.response_status_code if has_request_context() and \
+                                                    hasattr(request, 'response_status_code') else ''
     record.user_email = request.user_email if has_request_context() and hasattr(request, "user_email") else ''
     record.user_id = request.user_id if has_request_context() and hasattr(request, "user_id") else ''
     record.sql_queries_amount = request.sql_queries_amount if \
@@ -107,7 +109,12 @@ class BaseFormatter(logging.Formatter):
                                       timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
         tmp_levelname = self.__color_string_if_colorful_output(string=copy(record.levelname),
                                                                color=self.levelno_color[record.levelno])
-        return f'{time}-{tmp_levelname}-{record.name}-{record.process}::{record.module}|{record.lineno}:: '
+
+        msg = f'{time}-{tmp_levelname}-{record.name}-{record.process}::{record.module}|{record.lineno}:: '
+        if record.status_code:
+            msg += f'Status code: {record.status_code}:: '
+
+        return msg
 
     @staticmethod
     def __generate_user_log_info_from_record(record) -> str:
@@ -132,7 +139,7 @@ class BaseFormatter(logging.Formatter):
     def __generate_playload_info(record) -> str:
         if not record.values:
             return ''
-        return f' Arguments: {record.values}.'
+        return f' Arguments: {_hide_sensitive_values_in_request_arguments(record.values)}.'
 
     def format(self, record: logging.LogRecord) -> str:
         tmp_msg = self.__color_string_if_colorful_output(string=copy(record.msg),
@@ -161,9 +168,10 @@ class JsonFormatter(logging.Formatter):
             'method': record.method or None,
             'path': record.path or None,
             'message': record.msg or None,
+            'status_code': record.status_code or None,
             'sql_queries_amount': record.sql_queries_amount or None,
             'sql_duration_ms': record.sql_duration or None,
-            'arguments': record.values or None
+            'arguments': _hide_sensitive_values_in_request_arguments(record.values) or None
         }
         return {key: value for key, value in data.items() if value is not None}
 
@@ -195,6 +203,22 @@ class LoggerMaxInfoFilter(logging.Filter):
     """
     def filter(self, record: logging.LogRecord) -> bool:
         return record.levelno <= logging.INFO
+
+
+def _hide_sensitive_values_in_request_arguments(arguments: dict) -> dict:
+    """
+    This is a small check on arguments that may contain sensitive data (such as passwords).
+    This is not a perfect protection and may be improved in the future.
+    """
+    for key in arguments:
+        if isinstance(key, str) and 'password' in key:
+            # pattern "password" in the key: str indicates sensitive password related information
+            arguments[key] = '*********'
+        elif isinstance(arguments[key], dict):
+            # hide sensitive information in the dict inside dict
+            _hide_sensitive_values_in_request_arguments(arguments[key])
+
+    return arguments
 
 
 def is_env_variable_value_true(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:

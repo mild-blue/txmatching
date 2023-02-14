@@ -7,7 +7,7 @@ from importlib import util as importing
 from typing import List, Tuple, Optional
 
 import sentry_sdk
-from flask import Flask, make_response, request, send_from_directory
+from flask import Flask, Response, make_response, request, send_from_directory
 from flask_restx import Api
 from flask_restx.apidoc import ui_for
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -115,10 +115,12 @@ class RequestPerformance:
         request.request_id = uuid.uuid4()
         if request.is_json:
             # if request is json, combine this json info with the parsed URL parameters.
-            request.args = request.args | request.json
+            request.args = request.args | request.get_json()
         logger.info(f'Request {request.request_id} started.')
 
-    def finish(self) -> None:
+    def finish(self, response: Response) -> None:
+        # save response status code on request
+        request.response_status_code = response.status_code
         # save user info
         request.user_email = _get_current_user_if_logged().email if _get_current_user_if_logged() \
             else ''
@@ -273,7 +275,7 @@ def create_app() -> Flask:
         @app.after_request
         def after_request_callback(response):
             if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
-                request_performance.finish()
+                request_performance.finish(response)
             return response
 
     with app.app_context():
