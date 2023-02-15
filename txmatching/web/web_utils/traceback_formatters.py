@@ -1,8 +1,11 @@
 import inspect
+import logging
 
 from dataclasses import dataclass
 from types import TracebackType, FrameType
 from typing import Dict, List, Optional, Type
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -46,7 +49,10 @@ def _get_traceback_frames(traceback: TracebackType, max_frames_amount=100) -> Li
         frames.append(traceback.tb_frame)
         traceback = traceback.tb_next
         if len(frames) > max_frames_amount:
-            raise TimeoutError(f"Too many frames in the traceback object. More than {max_frames_amount}.")
+            logger.info(f"There are too many frames in the traceback object. "
+                        f"(more than {max_frames_amount}). "
+                        f"The rest of the frames will not be displayed in the logs.")
+            break
     return frames
 
 

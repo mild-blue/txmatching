@@ -61,22 +61,6 @@ class TestGetTracebackFrames(unittest.TestCase):
             self.assertEqual(frames[0].f_lineno, 61)
             self.assertEqual(frames[1].f_lineno, 53)
 
-    def test_get_traceback_frames_with_max_frames_amount(self):
-        try:
-            def inner_raise(n):
-                if n == 0:
-                    raise ValueError("error message")
-                inner_raise(n - 1)
-
-            inner_raise(200)
-        except ValueError:
-            exc_info = sys.exc_info()
-            tb = exc_info[2]
-            with self.assertRaises(TimeoutError) as ex_ctx:
-                _get_traceback_frames(tb, max_frames_amount=101)
-            self.assertEqual(str(ex_ctx.exception),
-                             'Too many frames in the traceback object. More than 101.')
-
 
 class TestFrameToDict(unittest.TestCase):
 
@@ -85,6 +69,6 @@ class TestFrameToDict(unittest.TestCase):
         frame_dict = _frame_to_dict(frame)
 
         self.assertEqual(frame_dict.get('filename'), __file__)
-        self.assertEqual(frame_dict.get('lineno'), 85)
+        self.assertEqual(frame_dict.get('lineno'), 69)
         self.assertEqual(frame_dict.get('function'), 'test_frame_to_dict')
         self.assertEqual(frame_dict.get('code_context')[0], 'frame_dict = _frame_to_dict(frame)')
