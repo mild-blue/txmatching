@@ -24,11 +24,8 @@ def exc_info_to_dict(exc_info: ExcInfo):
             traceback: list of frames in dict format
         }
     """
-    if exc_info.traceback is not None:
-        traceback = list(map(_frame_to_dict, _get_traceback_frames(exc_info.traceback)))
-    else:
-        traceback = []
-
+    traceback = list(map(_frame_to_dict, _get_traceback_frames(exc_info.traceback))) if \
+                    exc_info.traceback else []
     return {
         'error': exc_info.type_exception.__name__,
         'error_message': str(exc_info.exception),
