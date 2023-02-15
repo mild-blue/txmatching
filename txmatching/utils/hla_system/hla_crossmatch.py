@@ -207,26 +207,6 @@ def _filter_dp_dq_crossmatches(antibody_matches: List[AntibodyMatch]) -> List[An
     return new_antibody_matches
 
 
-def _filter_dp_dq_crossmatches(antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
-    antibody_codes = {antibody.hla_antibody.code.high_res: antibody.match_type for antibody in antibody_matches if
-                      antibody.match_type is not AntibodyMatchTypes.NONE}
-
-    new_antibody_matches = []
-    for antibody_match in antibody_matches:
-        print("\n i am doing antibody ", antibody_match.hla_antibody.code.high_res)
-        if antibody_match.hla_antibody.second_raw_code is not None:
-            if antibody_match.hla_antibody.second_raw_code in antibody_codes:
-                # TODO vyber "nizsie" rozlisenie
-                new_antibody_matches.append(antibody_match)
-            else:
-                print("\n\n\n\n i get here")
-                new_antibody_matches.append(AntibodyMatch(antibody_match.hla_antibody, AntibodyMatchTypes.NONE))
-        else:
-            new_antibody_matches.append(antibody_match)
-
-    return new_antibody_matches
-
-
 def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                             recipient_antibodies: HLAAntibodies,
                             use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
