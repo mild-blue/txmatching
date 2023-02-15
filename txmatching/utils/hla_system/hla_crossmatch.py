@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Optional, List, Set
+from typing import Callable, List, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
@@ -9,7 +9,6 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
-from txmatching.utils.hla_system.compatibility_index import find_specific_group_dp_dq
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -182,9 +181,50 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
 
         _add_none_typization(_get_antibodies_over_cutoff(antibodies), positive_matches)
 
+        if hla_per_group.hla_group in {HLAGroup.DP, HLAGroup.DQ}:
+            positive_matches = _filter_dp_dq_crossmatches(list(positive_matches))
+
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
 
     return antibody_matches_for_groups
+
+
+def _filter_dp_dq_crossmatches(antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
+    antibody_codes = {antibody.hla_antibody.code.high_res: antibody.match_type for antibody in antibody_matches if
+                      antibody.match_type is not AntibodyMatchTypes.NONE}
+
+    new_antibody_matches = []
+    for antibody_match in antibody_matches:
+        if antibody_match.hla_antibody.second_raw_code is not None:
+            if antibody_match.hla_antibody.second_raw_code in antibody_codes:
+                # TODO vyber "nizsie" rozlisenie
+                new_antibody_matches.append(antibody_match)
+            else:
+                new_antibody_matches.append(AntibodyMatch(antibody_match.hla_antibody, AntibodyMatchTypes.NONE))
+        else:
+            new_antibody_matches.append(antibody_match)
+
+    return new_antibody_matches
+
+
+def _filter_dp_dq_crossmatches(antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
+    antibody_codes = {antibody.hla_antibody.code.high_res: antibody.match_type for antibody in antibody_matches if
+                      antibody.match_type is not AntibodyMatchTypes.NONE}
+
+    new_antibody_matches = []
+    for antibody_match in antibody_matches:
+        print("\n i am doing antibody ", antibody_match.hla_antibody.code.high_res)
+        if antibody_match.hla_antibody.second_raw_code is not None:
+            if antibody_match.hla_antibody.second_raw_code in antibody_codes:
+                # TODO vyber "nizsie" rozlisenie
+                new_antibody_matches.append(antibody_match)
+            else:
+                print("\n\n\n\n i get here")
+                new_antibody_matches.append(AntibodyMatch(antibody_match.hla_antibody, AntibodyMatchTypes.NONE))
+        else:
+            new_antibody_matches.append(antibody_match)
+
+    return new_antibody_matches
 
 
 def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
@@ -241,14 +281,8 @@ def is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
         hla_antibodies_from_all_groups).is_type_a_compliant
 
 
-def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody], hla_group: Optional[HLAGroup] = None) -> List[HLAAntibody]:
-    antibodies_over_cutoff = [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
-    if hla_group and hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-        if len({find_specific_group_dp_dq(code.raw_code) for code in antibodies_over_cutoff}) == 2:
-            return antibodies_over_cutoff
-        else:
-            return []
-    return antibodies_over_cutoff
+def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
+    return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
 
 
 def _recipient_was_tested_for_donor_antigen(antibodies: List[HLAAntibody], antigen: HLACode) -> bool:

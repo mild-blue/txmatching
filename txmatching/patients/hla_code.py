@@ -10,11 +10,14 @@ class HLACode:
     high_res: Optional[str]
     split: Optional[str]
     broad: Optional[str]
+    display_code_second_chain: Optional[str]
 
     @property
     def display_code(self) -> str:
         if self.high_res is not None:
-            return self.high_res
+            if self.display_code_second_chain is not None:
+                return '[' + self.high_res + ',' + self.display_code_second_chain + ']'
+            return self.high_res + "yolo"
         elif self.split is not None:
             return self.split
         elif self.broad is not None:
@@ -22,11 +25,12 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str], display_code_second_chain: Optional[str] = None):
         assert high_res is not None or broad is not None
         self.high_res = high_res
         self.split = split
         self.broad = broad
+        self.display_code_second_chain = display_code_second_chain
 
     def __repr__(self):
         return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'

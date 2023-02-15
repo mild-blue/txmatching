@@ -59,13 +59,13 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         raw_code: str
         mfi: int
         cutoff: int
-        secondary_raw_code: Optional[str] = None
+        second_raw_code: Optional[str] = None
 
     parsing_issues = []
 
     hla_antibodies_preprocessed = [
         HLAAntibodyPreprocessedDTO(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
-                                   hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
+                                   hla_antibody_raw.cutoff, preprocessed_antibody.second_raw_code)
         for hla_antibody_raw in hla_antibodies_raw
         for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
@@ -99,7 +99,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
                     code=code,
                     mfi=hla_antibody.mfi,
                     cutoff=hla_antibody.cutoff,
-                    secondary_raw_code=hla_antibody.secondary_raw_code
+                    second_raw_code=hla_antibody.second_raw_code
                 )
             )
             parsing_issues = parsing_issues + antibody_parsing_issues

@@ -118,10 +118,11 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
                                 raw_code=antibody['raw_code'],
                                 mfi=antibody["mfi"],
                                 cutoff=antibody["cutoff"],
-                                # TODO
+                                second_raw_code=antibody["second_raw_code"],
                                 code=HLACode(high_res=antibody["code"]["high_res"],
                                              split=antibody["code"]["split"],
-                                             broad=antibody["code"]["broad"])
+                                             broad=antibody["code"]["broad"],
+                                             display_code_second_chain=["second_raw_code"])
                             ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
