@@ -158,7 +158,7 @@ with WARNING, ERROR and CRITICAL levels to stderr.
 We log every user action with API endpoints, but you can disable this
 in the .env file by setting `SHOW_USERS_ACTIONS` to `false` (by default is `true`).</br>
 There is an ability to activate logging for SQL queries
-(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).
+(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).</br>
 Please pay special attention to the confidential information of our users when 
 creating or modifying endpoints. Currently, we have some automation that 
 hides sensitive user data if an incoming argument key has the pattern 'password' 
