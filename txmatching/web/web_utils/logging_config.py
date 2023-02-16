@@ -10,7 +10,7 @@ from pathlib import Path
 
 from flask import has_request_context, request
 
-from txmatching.web.web_utils.traceback_formatters import exc_info_to_dict, ExcInfo
+from txmatching.web.web_utils.traceback_formatters import exc_info_to_dict, ExceptionInfo
 
 logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs from werkzeug
 
@@ -179,9 +179,9 @@ class JsonFormatter(logging.Formatter):
     def __insert_exception(record, data):
         if not record.exc_info:
             return
-        exception = exc_info_to_dict(ExcInfo(record.exc_info[0],
-                                             record.exc_info[1],
-                                             record.exc_info[2]))
+        exception = exc_info_to_dict(ExceptionInfo(record.exc_info[0],
+                                                   record.exc_info[1],
+                                                   record.exc_info[2]))
         try:
             json.dumps(exception)
             data['exception'] = exception
