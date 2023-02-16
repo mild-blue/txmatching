@@ -192,7 +192,7 @@ in [project-configuration](https://github.com/mild-blue/project-configuration).
    ```
    docker logs be -f --tail 10 2>&1 | jq '. | select ( .user_id != null)'
    ```
-Also you can combine this methods and configure it similarly to fit your own situation.
+Also, you can combine these methods and configure it similarly to fit your own situation.
 #### 5. Logger while testing
 While testing we disable logs to a certain level, which is configurable in .env.
 Because of this design choice, you aren't able to use `assertLogs` in unittests.
