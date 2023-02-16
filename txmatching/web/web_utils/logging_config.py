@@ -142,7 +142,7 @@ class BaseFormatter(logging.Formatter):
         return f' Arguments: {_hide_sensitive_values_in_request_arguments(record.values)}.'
 
     def format(self, record: logging.LogRecord) -> str:
-        tmp_msg = self.__color_string_if_colorful_output(string=copy(record.msg),
+        tmp_msg = self.__color_string_if_colorful_output(string=copy(record.getMessage()),
                                                          color=self.levelno_color[record.levelno])
         return self.__generate_basic_log_info_from_record(record) + \
                self.__generate_user_log_info_from_record(record) + tmp_msg + \
@@ -167,7 +167,7 @@ class JsonFormatter(logging.Formatter):
             'request_id': str(record.request_id) or None,
             'method': record.method or None,
             'path': record.path or None,
-            'message': record.msg or None,
+            'message': record.getMessage() or None,
             'status_code': record.status_code or None,
             'sql_queries_amount': record.sql_queries_amount or None,
             'sql_duration_ms': record.sql_duration or None,
