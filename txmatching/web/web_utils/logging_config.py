@@ -3,6 +3,7 @@ import logging
 import os
 import traceback
 from copy import copy
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from logging.config import dictConfig
@@ -54,23 +55,23 @@ class ANSIEscapeColorCodes(str, Enum):
     END = '\033[0m'
 
 
+@dataclass
 class BaseFormatter(logging.Formatter):
-    # pylint: disable=too-many-arguments
-    def __init__(self,
-                 is_colorful_output=False,
-                 debug_color=ANSIEscapeColorCodes.END,
-                 info_color=ANSIEscapeColorCodes.END,
-                 warning_color=ANSIEscapeColorCodes.END,
-                 error_color=ANSIEscapeColorCodes.END,
-                 critical_color=ANSIEscapeColorCodes.END):
-        super().__init__()
-        self.is_colorful_output = is_colorful_output
-        self.levelno_color = {
-            logging.DEBUG: debug_color,
-            logging.INFO: info_color,
-            logging.WARNING: warning_color,
-            logging.ERROR: error_color,
-            logging.CRITICAL: critical_color
+    is_colorful_output: bool = False
+    debug_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    info_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    warning_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    error_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    critical_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+
+    @property
+    def levelno_color(self):
+        return {
+            logging.DEBUG: self.debug_color,
+            logging.INFO: self.info_color,
+            logging.WARNING: self.warning_color,
+            logging.ERROR: self.error_color,
+            logging.CRITICAL: self.critical_color
         }
 
     @staticmethod
