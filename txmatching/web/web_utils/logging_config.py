@@ -102,7 +102,7 @@ class BaseFormatter(logging.Formatter):
     def __generate_basic_log_info_from_record(self, record) -> str:
         """
         Creates basic info for subsequent log formatting.
-        "time-levelname-logger_name-process:: module|lineno::".
+        "time-levelname-logger_name:: module|lineno:: Method path-method:: Status code: ___:: ".
         :param record: log record.
         :return: string in expected format.
         """
@@ -111,7 +111,9 @@ class BaseFormatter(logging.Formatter):
         tmp_levelname = self.__color_string_if_colorful_output(string=copy(record.levelname),
                                                                color=self.levelno_color[record.levelno])
 
-        msg = f'{time}-{tmp_levelname}-{record.name}-{record.process}::{record.module}|{record.lineno}:: '
+        msg = f'{time}-{tmp_levelname}-{record.name}::{record.module}|{record.lineno}:: '
+        if record.method or record.path:
+            msg += f'Method {record.method} {record.path}:: '
         if record.status_code:
             msg += f'Status code: {record.status_code}:: '
 
@@ -127,7 +129,7 @@ class BaseFormatter(logging.Formatter):
         user_info = f'User ID: {record.user_id or "-"}. User e-mail: {record.user_email or "-"}. ' \
                         if record.user_id or record.user_email else ''
         user_info += f'User IP: {record.remote_addr}' if record.remote_addr else ''
-        return user_info + ':: '
+        return user_info + ':: ' if user_info else ''
 
     @staticmethod
     def __generate_sql_log_info_from_record(record) -> str:
