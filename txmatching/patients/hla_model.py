@@ -71,8 +71,8 @@ class HLATyping(PersistentlyHashable):
 class HLAAntibody(HLABase, PersistentlyHashable):
     mfi: int
     cutoff: int
-    second_raw_code: str
-    second_code: HLACode
+    second_raw_code: Optional[str] = None
+    second_code: Optional[HLACode] = None
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
