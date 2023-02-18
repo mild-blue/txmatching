@@ -43,7 +43,7 @@ class HLATypeRawBothChains:
     Antigen in a format as uploaded without being parsed, with the possibility of both chains being defined
     """
     raw_code: str
-    secondary_raw_code: Optional[str] = None
+    second_raw_code: Optional[str] = None
 
 
 @dataclass
@@ -71,21 +71,25 @@ class HLATyping(PersistentlyHashable):
 class HLAAntibody(HLABase, PersistentlyHashable):
     mfi: int
     cutoff: int
+    second_raw_code: str
+    second_code: HLACode
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
                 self.raw_code == other.raw_code and
                 self.mfi == other.mfi and
-                self.cutoff == other.cutoff)
+                self.cutoff == other.cutoff and
+                self.second_raw_code == other.second_raw_code)
 
     def __hash__(self):
-        return hash((self.raw_code, self.mfi, self.cutoff))
+        return hash((self.raw_code, self.mfi, self.cutoff, self.second_raw_code))
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibody)
         update_persistent_hash(hash_, self.raw_code)
         update_persistent_hash(hash_, self.mfi)
         update_persistent_hash(hash_, self.cutoff)
+        update_persistent_hash(hash_, self.second_raw_code)
 
 
 @dataclass
