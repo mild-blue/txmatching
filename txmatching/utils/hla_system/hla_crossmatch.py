@@ -207,7 +207,7 @@ def _find_lowest_match_type(match_types: List[AntibodyMatchTypes]):
     return [match_type for correct_type in MATCHING_TYPE_ORDER for match_type in match_types if match_type == correct_type]
 
 
-def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAGroup, antibodies_to_check: List[HLAAntibodies], 
+def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAGroup, antibodies_to_check: List[HLAAntibodies],
                                                          antibodies: List[HLAAntibodies], positive_matches: Set[AntibodyMatch],
                                                          use_high_resolution: bool):
     # leave hla codes that recipient was not tested for to the end
