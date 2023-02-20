@@ -531,3 +531,27 @@ class TestCrossmatch(unittest.TestCase):
                                                    create_antibodies(hla_antibodies_list=hla_antibodies),
                                                    use_high_resolution=True,
                                                    crossmatch_logic=do_crossmatch_in_type_a))
+
+        hla_antibodies = [create_antibody('DP[02:01,02:01]', 2100, 2000)]
+
+        self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02', 'DPB1*02:02']),
+                                                   create_antibodies(hla_antibodies_list=hla_antibodies),
+                                                   use_high_resolution=True,
+                                                   crossmatch_logic=do_crossmatch_in_type_a))
+
+        self.assertFalse(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPB2']),
+                                                   create_antibodies(hla_antibodies_list=hla_antibodies),
+                                                   use_high_resolution=True,
+                                                   crossmatch_logic=do_crossmatch_in_type_a))
+
+        self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02', 'DPB2']),
+                                                   create_antibodies(hla_antibodies_list=hla_antibodies),
+                                                   use_high_resolution=True,
+                                                   crossmatch_logic=do_crossmatch_in_type_a))
+
+        created_antibodies = create_antibodies(hla_antibodies_list=hla_antibodies)
+        created_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*02:01', 2100, 2000))
+        self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02']),
+                                                   created_antibodies,
+                                                   use_high_resolution=True,
+                                                   crossmatch_logic=do_crossmatch_in_type_a))
