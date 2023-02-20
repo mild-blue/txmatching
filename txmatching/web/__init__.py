@@ -4,10 +4,10 @@ import re
 import time
 import uuid
 from importlib import util as importing
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import sentry_sdk
-from flask import Flask, make_response, request, send_from_directory
+from flask import Flask, Response, make_response, request, send_from_directory
 from flask_restx import Api
 from flask_restx.apidoc import ui_for
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -20,7 +20,9 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationConfiguration, ApplicationEnvironment,
     build_db_connection_string, get_application_configuration)
 from txmatching.database.db import db
+from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.utils.logged_user import get_current_user
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.optimizer_api import optimizer_api
@@ -111,15 +113,26 @@ class RequestPerformance:
         self._sql_total_time = 0.0
         self._request_start_time = time.perf_counter()
         request.request_id = uuid.uuid4()
-        logger.info(f'User {request.remote_addr}: Request {request.request_id} started.')
+        if request.is_json:
+            # if request is json, combine this json info with the parsed URL parameters.
+            request.args = request.args | request.get_json()
+        logger.info(f'Request {request.request_id} started.')
 
-    def finish(self) -> None:
-        total_time = time.perf_counter() - self._request_start_time
-        log_msg = f'User {request.remote_addr}: Request {request.request_id} took {int(total_time * 1000)} ms. ' \
-                  f'Method: {request.method} {request.path}, arguments: {dict(request.args)}.'
+    def finish(self, response: Response) -> None:
+        # save response status code on request
+        request.response_status_code = response.status_code
+        # save user info
+        request.user_email = _get_current_user_if_logged().email if _get_current_user_if_logged() \
+            else ''
+        request.user_id = _get_current_user_if_logged().id if _get_current_user_if_logged() \
+            else ''
+        # save SQL queries info if needed
         if is_env_variable_value_true(os.getenv('LOG_SQL_DURATION')):
-            log_msg += f' SQL Queries: {len(self._sql_queries)}, SQL total time: {int(self._sql_total_time * 1000)} ms.'
-        logger.info(log_msg)
+            request.sql_queries_amount = len(self._sql_queries)
+            request.sql_duration = int(self._sql_total_time * 1000)  # ms
+        # send logs
+        total_time = time.perf_counter() - self._request_start_time
+        logger.info(f'Request {request.request_id} took {int(total_time * 1000)} ms.')
 
 
 # pylint: disable=too-many-statements
@@ -262,7 +275,7 @@ def create_app() -> Flask:
         @app.after_request
         def after_request_callback(response):
             if is_env_variable_value_true(os.getenv('SHOW_USERS_ACTIONS')):
-                request_performance.finish()
+                request_performance.finish(response)
             return response
 
     with app.app_context():
@@ -302,3 +315,10 @@ def add_all_namespaces(api: Api):
     api.add_namespace(report_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
+
+
+def _get_current_user_if_logged() -> Optional[AppUserModel]:
+    try:
+        return get_current_user()
+    except AttributeError:
+        return None
