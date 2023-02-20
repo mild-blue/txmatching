@@ -292,7 +292,6 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(donor_models)
 
-    if donor_models_related_to_recipients_in_db:
-        donor_models = donor_models + donor_models_related_to_recipients_in_db
+    donor_models = donor_models + donor_models_related_to_recipients_in_db
 
     return donor_models, recipient_models

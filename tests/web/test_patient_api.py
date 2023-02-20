@@ -854,7 +854,7 @@ class TestPatientService(DbTests):
         self.assertEqual(1, res.json['recipients_uploaded'])
         self.assertEqual(1, res.json['donors_uploaded'])
 
-        # 3, upload donor related to recipient in db
+        # 3. upload donor related to recipient in db
         donor_medical_id_1 = 'donor_test1'
         with self.app.test_client() as client:
             json_data['donor']['medical_id'] = donor_medical_id_1
@@ -874,4 +874,5 @@ class TestPatientService(DbTests):
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertEqual(1, len(txm_event.all_recipients))
             self.assertEqual(2, len(txm_event.all_donors))
-            self.assertIsNotNone(txm_event.all_donors[0].related_recipient_db_id)
+            self.assertEqual(txm_event.all_donors[0].related_recipient_db_id,
+                             txm_event.all_donors[1].related_recipient_db_id)
