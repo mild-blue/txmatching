@@ -117,7 +117,7 @@ class DonorRecipientPairs(Resource):
 
         return response_ok(PatientUploadPublicDTOOut(
             donors_uploaded=1,
-            recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0,
+            recipients_uploaded=1 if recipients else 0,
             parsing_issues=parsing_issues
         ))
 
