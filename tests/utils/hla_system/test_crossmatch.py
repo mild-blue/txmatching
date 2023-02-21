@@ -518,3 +518,14 @@ class TestCrossmatch(unittest.TestCase):
                                           create_antibody('A*23:04', 2100, 2000)], True,
                                          crossmatch_logic=do_crossmatch_in_type_a,
                                          crossmatch_level=HLACrossmatchLevel.SPLIT_AND_BROAD)
+
+    def test_crossmatch_for_antibodies_with_two_codes(self):
+        antibodies = create_antibodies(hla_antibodies_list=[])
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:02', 2100, 2000))
+        crossmatch_result = do_crossmatch_in_type_a(
+            create_hla_typing(hla_types_list=['DPA1']),
+            antibodies,
+            use_high_resolution=True,
+        )
+
+        self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
