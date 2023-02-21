@@ -549,9 +549,14 @@ class TestCrossmatch(unittest.TestCase):
                                                    use_high_resolution=True,
                                                    crossmatch_logic=do_crossmatch_in_type_a))
 
-        created_antibodies = create_antibodies(hla_antibodies_list=hla_antibodies)
-        created_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*02:01', 2100, 2000))
-        self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02']),
-                                                   created_antibodies,
-                                                   use_high_resolution=True,
-                                                   crossmatch_logic=do_crossmatch_in_type_a))
+        antibodies = create_antibodies(hla_antibodies_list=[])
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*18:02', 1900, 2000))
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:02', 1900, 2000))
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
+        crossmatch_result = do_crossmatch_in_type_a(
+            create_hla_typing(hla_types_list=['DPA1', 'DP18']),
+            antibodies,
+            use_high_resolution=True,
+        )
+
+        self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
