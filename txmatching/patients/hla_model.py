@@ -43,7 +43,7 @@ class HLATypeRawBothChains:
     Antigen in a format as uploaded without being parsed, with the possibility of both chains being defined
     """
     raw_code: str
-    second_raw_code: Optional[str] = None
+    secondary_raw_code: Optional[str] = None
 
 
 @dataclass
