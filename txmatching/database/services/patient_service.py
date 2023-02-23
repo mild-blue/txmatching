@@ -122,9 +122,6 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
                                              split=antibody["code"]["split"],
                                              broad=antibody["code"]["broad"]),
                                 second_raw_code=antibody["second_raw_code"],
-                                second_code=None if antibody["second_code"] is None else HLACode(high_res=antibody["second_code"]["high_res"],
-                                                                                                 split=antibody["second_code"]["split"],
-                                                                                                 broad=antibody["second_code"]["broad"]),
                             ) for antibody in hla["hla_antibody_list"]])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 

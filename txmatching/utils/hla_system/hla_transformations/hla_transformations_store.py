@@ -36,8 +36,6 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     :param hla_raw_code: HLA raw code
     :return:
     """
-    if hla_raw_code is None:
-        return [], None
     parsing_issues = []
     processing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not processing_result.maybe_hla_code or processing_result.result_detail not in OK_PROCESSING_RESULTS:
@@ -95,19 +93,16 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
             antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
-            second_antibody_parsing_issues, second_code = parse_hla_raw_code_and_return_parsing_issue_list(
-                hla_antibody.secondary_raw_code)
             hla_antibodies_parsed.append(
                 HLAAntibody(
                     raw_code=hla_antibody.raw_code,
                     code=code,
                     mfi=hla_antibody.mfi,
                     cutoff=hla_antibody.cutoff,
-                    second_raw_code=hla_antibody.secondary_raw_code,
-                    second_code=second_code
+                    second_raw_code=hla_antibody.secondary_raw_code
                 )
             )
-            parsing_issues = parsing_issues + antibody_parsing_issues + second_antibody_parsing_issues
+            parsing_issues = parsing_issues + antibody_parsing_issues
 
     # 3. validate antibodies
     parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed)

@@ -85,7 +85,6 @@ def _join_duplicate_antibodies(
         antibody_group_list = list(antibody_group)
         assert len(antibody_group_list) > 0
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
-        second_raw_codes = {hla_antibody.second_raw_code for hla_antibody in antibody_group_list}
         if len(cutoffs) != 1:
             parsing_issues.append(
                 ParsingIssueBase(
@@ -97,7 +96,6 @@ def _join_duplicate_antibodies(
             continue
 
         cutoff = cutoffs.pop()
-        second_raw_code = second_raw_codes.pop()
         mfi_parsing_issues, mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
                                                                   cutoff,
                                                                   hla_code_raw)
@@ -107,8 +105,6 @@ def _join_duplicate_antibodies(
             raw_code=hla_code_raw,
             cutoff=cutoff,
             mfi=mfi,
-            second_raw_code=second_raw_code,
-            second_code=antibody_group_list[0].second_code
         )
         hla_antibodies_joined.append(new_antibody)
 

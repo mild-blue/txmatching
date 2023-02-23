@@ -52,12 +52,10 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
 
 def create_antibody(raw_code, mfi, cutoff, second_raw_code = None) -> HLAAntibody:
     code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
-    second_code = parse_hla_raw_code_and_return_parsing_issue_list(second_raw_code)[1]
     return HLAAntibody(
         raw_code=raw_code,
         code=code,
         mfi=mfi,
         cutoff=cutoff,
         second_raw_code=second_raw_code,
-        second_code=second_code
     )

@@ -522,6 +522,7 @@ class TestCrossmatch(unittest.TestCase):
     def test_crossmatch_for_antibodies_with_two_codes(self):
         hla_antibodies = create_antibodies(hla_antibodies_list=[])
         hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
+        hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*18:01', 2100, 2000, 'DPA1*01:03'))
         
         self.assertFalse(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*01:03']),
                                                     hla_antibodies,
@@ -535,6 +536,7 @@ class TestCrossmatch(unittest.TestCase):
 
         hla_antibodies = create_antibodies(hla_antibodies_list=[])
         hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*02:01', 2100, 2000, 'DPB1*02:01'))
+        hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*02:01', 2100, 2000, 'DPA1*02:01'))
         
         self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02', 'DPB1*02:02']),
                                                    hla_antibodies,
@@ -555,6 +557,7 @@ class TestCrossmatch(unittest.TestCase):
         antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*18:02', 1900, 2000))
         antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:02', 1900, 2000))
         antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*18:01', 2100, 2000, 'DPA1*01:03'))
         crossmatch_result = do_crossmatch_in_type_a(
             create_hla_typing(hla_types_list=['DPA1', 'DP18']),
             antibodies,
