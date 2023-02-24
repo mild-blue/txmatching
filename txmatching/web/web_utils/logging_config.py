@@ -3,12 +3,15 @@ import logging
 import os
 import traceback
 from copy import copy
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from logging.config import dictConfig
 from pathlib import Path
 
 from flask import has_request_context, request
+
+from txmatching.web.web_utils.traceback_formatters import exc_info_to_dict, ExceptionInfo
 
 logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs from werkzeug
 
@@ -19,10 +22,22 @@ old_factory = logging.getLogRecordFactory()
 
 def record_factory(*args, **kwargs):
     record = old_factory(*args, **kwargs)
-    record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else '-'
-    record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else '-'
-    record.method = request.method if has_request_context() and hasattr(request, 'method') else '-'
-    record.path = request.path if has_request_context() and hasattr(request, 'path') else '-'
+
+    record.request_id = request.request_id if has_request_context() and hasattr(request, 'request_id') else ''
+    record.remote_addr = request.remote_addr if has_request_context() and hasattr(request, 'remote_addr') else ''
+    record.method = request.method if has_request_context() and hasattr(request, 'method') else ''
+    record.path = request.path if has_request_context() and hasattr(request, 'path') else ''
+    record.status_code = request.response_status_code if has_request_context() and \
+                                                    hasattr(request, 'response_status_code') else ''
+    record.user_email = request.user_email if has_request_context() and hasattr(request, "user_email") else ''
+    record.user_id = request.user_id if has_request_context() and hasattr(request, "user_id") else ''
+    record.sql_queries_amount = request.sql_queries_amount if \
+        has_request_context() and hasattr(request, "sql_queries_amount") else ''
+    record.sql_duration = request.sql_duration if \
+        has_request_context() and hasattr(request, "sql_duration") else ''
+    record.values = request.args | request.form if has_request_context() and \
+                                hasattr(request, 'args') and hasattr(request, 'form') else {}
+
     return record
 
 
@@ -40,41 +55,103 @@ class ANSIEscapeColorCodes(str, Enum):
     END = '\033[0m'
 
 
+@dataclass
 class BaseFormatter(logging.Formatter):
-    # pylint: disable=too-many-arguments
-    def __init__(self,
-                 is_colorful_output=False,
-                 debug_color=ANSIEscapeColorCodes.END,
-                 info_color=ANSIEscapeColorCodes.END,
-                 warning_color=ANSIEscapeColorCodes.END,
-                 error_color=ANSIEscapeColorCodes.END,
-                 critical_color=ANSIEscapeColorCodes.END):
-        super().__init__()
-        self.is_colorful_output = is_colorful_output
-        self.levelno_color = {
-            logging.DEBUG: debug_color,
-            logging.INFO: info_color,
-            logging.WARNING: warning_color,
-            logging.ERROR: error_color,
-            logging.CRITICAL: critical_color
+    is_colorful_output: bool = False
+    debug_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    info_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    warning_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    error_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+    critical_color: ANSIEscapeColorCodes = ANSIEscapeColorCodes.END
+
+    @property
+    def levelno_color(self):
+        return {
+            logging.DEBUG: self.debug_color,
+            logging.INFO: self.info_color,
+            logging.WARNING: self.warning_color,
+            logging.ERROR: self.error_color,
+            logging.CRITICAL: self.critical_color
         }
 
     @staticmethod
     def __color_string(string: str, color: str) -> str:
         return color + string + ANSIEscapeColorCodes.END
 
-    def format(self, record: logging.LogRecord) -> str:
+    def __color_string_if_colorful_output(self, string: str, color: str) -> str:
+        """
+        Colors string if self.is_colorful_output is True.
+        :param string: string to color.
+        :param color: string color.
+        :return: colorful string if self.is_colorful_output is True.
+                 Otherwise, returns this string without changes.
+        """
+        if self.is_colorful_output:
+            return self.__color_string(string=string,
+                                       color=color)
+        return string
+
+    @staticmethod
+    def __insert_exception(record):
+        if not record.exc_info:
+            return ''
+        return '\n' + ''.join(traceback.format_exception(record.exc_info[0],
+                                                         record.exc_info[1],
+                                                         record.exc_info[2]))
+
+    def __generate_basic_log_info_from_record(self, record) -> str:
+        """
+        Creates basic info for subsequent log formatting.
+        "time-levelname-logger_name:: module|lineno:: Method path-method:: Status code: ___:: ".
+        :param record: log record.
+        :return: string in expected format.
+        """
         time = datetime.fromtimestamp(record.created,
                                       timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-        tmp_levelname = copy(record.levelname)
-        tmp_msg = copy(record.msg)
-        if self.is_colorful_output:
-            tmp_levelname = self.__color_string(string=tmp_levelname,
-                                                color=self.levelno_color[record.levelno])
-            tmp_msg = self.__color_string(string=tmp_msg,
-                                          color=self.levelno_color[record.levelno])
-        return f'{time}-{tmp_levelname}-{record.name}-{record.process}:: ' \
-               f'{record.module}|{record.lineno}:: {tmp_msg}'
+        tmp_levelname = self.__color_string_if_colorful_output(string=copy(record.levelname),
+                                                               color=self.levelno_color[record.levelno])
+
+        msg = f'{time}-{tmp_levelname}-{record.name}::{record.module}|{record.lineno}:: '
+        if record.method or record.path:
+            msg += f'Method {record.method} {record.path}:: '
+        if record.status_code:
+            msg += f'Status code: {record.status_code}:: '
+
+        return msg
+
+    @staticmethod
+    def __generate_user_log_info_from_record(record) -> str:
+        """
+        Create user info for subsequent log formatting.
+        :param record: log record.
+        :return: string with all available information from record.
+        """
+        user_info = f'User ID: {record.user_id or "-"}. User e-mail: {record.user_email or "-"}. ' \
+                        if record.user_id or record.user_email else ''
+        user_info += f'User IP: {record.remote_addr}' if record.remote_addr else ''
+        return user_info + ':: ' if user_info else ''
+
+    @staticmethod
+    def __generate_sql_log_info_from_record(record) -> str:
+        sql_info = f' SQL Queries amount: {record.sql_queries_amount}.' if \
+            record.sql_queries_amount else ''
+        sql_info += f' SQL total time: {record.sql_duration} ms.' if record.sql_duration else ''
+        return sql_info
+
+    @staticmethod
+    def __generate_playload_info(record) -> str:
+        if not record.values:
+            return ''
+        return f' Arguments: {_hide_sensitive_values_in_request_arguments(record.values)}.'
+
+    def format(self, record: logging.LogRecord) -> str:
+        tmp_msg = self.__color_string_if_colorful_output(string=copy(record.getMessage()),
+                                                         color=self.levelno_color[record.levelno])
+        return self.__generate_basic_log_info_from_record(record) + \
+               self.__generate_user_log_info_from_record(record) + tmp_msg + \
+               self.__generate_playload_info(record) + \
+               self.__generate_sql_log_info_from_record(record) + \
+               self.__insert_exception(record)
 
 
 class JsonFormatter(logging.Formatter):
@@ -84,26 +161,30 @@ class JsonFormatter(logging.Formatter):
         data = {
             'datetime': datetime.fromtimestamp(record.created, timezone.utc).strftime(
                 '%Y-%m-%dT%H:%M:%S.%fZ'),
-            'levelname': record.levelname,
-            'name': record.name,
-            'process': record.process,
-            'user': record.remote_addr,
-            'request_id': str(record.request_id),
-            'method': record.method,
-            'path': record.path,
-            'message': record.msg,
+            'levelname': record.levelname or None,
+            'name': record.name or None,
+            'process': record.process or None,
+            'user_id': record.user_id or None,
+            'user_email': record.user_email or None,
+            'user_ip': record.remote_addr or None,
+            'request_id': str(record.request_id) or None,
+            'method': record.method or None,
+            'path': record.path or None,
+            'message': record.getMessage() or None,
+            'status_code': record.status_code or None,
+            'sql_queries_amount': record.sql_queries_amount or None,
+            'sql_duration_ms': record.sql_duration or None,
+            'arguments': _hide_sensitive_values_in_request_arguments(record.values) or None
         }
-        return data
+        return {key: value for key, value in data.items() if value is not None}
 
     @staticmethod
     def __insert_exception(record, data):
         if not record.exc_info:
             return
-        exception = {
-            'stacktrace': str(traceback.format_exception(record.exc_info[0],
-                                                         record.exc_info[1],
-                                                         record.exc_info[2]))
-        }
+        exception = exc_info_to_dict(ExceptionInfo(record.exc_info[0],
+                                                   record.exc_info[1],
+                                                   record.exc_info[2]))
         try:
             json.dumps(exception)
             data['exception'] = exception
@@ -125,6 +206,22 @@ class LoggerMaxInfoFilter(logging.Filter):
     """
     def filter(self, record: logging.LogRecord) -> bool:
         return record.levelno <= logging.INFO
+
+
+def _hide_sensitive_values_in_request_arguments(arguments: dict) -> dict:
+    """
+    This is a small check on arguments that may contain sensitive data (such as passwords).
+    This is not a perfect protection and may be improved in the future.
+    """
+    for key in arguments:
+        if isinstance(key, str) and 'password' in key:
+            # pattern "password" in the key: str indicates sensitive password related information
+            arguments[key] = '*********'
+        elif isinstance(arguments[key], dict):
+            # hide sensitive information in the dict inside dict
+            _hide_sensitive_values_in_request_arguments(arguments[key])
+
+    return arguments
 
 
 def is_env_variable_value_true(env_variable_value: str, default_env_variable_value: str = 'true') -> bool:

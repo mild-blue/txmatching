@@ -158,7 +158,13 @@ with WARNING, ERROR and CRITICAL levels to stderr.
 We log every user action with API endpoints, but you can disable this
 in the .env file by setting `SHOW_USERS_ACTIONS` to `false` (by default is `true`).</br>
 There is an ability to activate logging for SQL queries
-(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).
+(set the `LOG_QUERIES` environment variable to `true`, by default is `false`).</br>
+Please pay special attention to the confidential information of our users when 
+creating or modifying endpoints. Currently, we have some automation that 
+hides sensitive user data if an incoming argument key has the pattern 'password' 
+in its name and the corresponding value is changed to '********'. 
+This is not a perfect protection, so you may 
+[improve it](txmatching/web/web_utils/logging_config.py) if it is needed.
 #### 3. Logger configuration
 Logger configuration is located in the `logging_config.py`.
 All filters, handlers and formatters are configured there.
@@ -168,7 +174,26 @@ One of the most important options is `PRODUCTION_LOGGER` which activates the jso
 It's really useful to log this way during production,
 because we can easily filter all logs in real time.</br>
 P.S. Timezone in the logs is UTC+00:00.
-#### 4. Logger while testing
+#### 4. Working with logs in production and staging.
+Thanks to storing logs in JSON format on production and staging, 
+you can easily work with them using [jq](https://stedolan.github.io/jq/tutorial/).
+1. Connect to the staging or production machine according to the instructions
+in [project-configuration](https://github.com/mild-blue/project-configuration).
+2. Get logs from backend docker container with jq. There are some cases, which can be useful:
+   1. Get all information 
+   ```
+   docker logs be -f --tail 10 2>&1 | jq '.'
+   ```
+   2. Get only user level, email, message, arguments
+   ```
+   docker logs be -f --tail 10 2>&1 | jq '. | {level: .levelname, user_email: .user_email, message: .message, args: .arguments}'
+   ```
+   3. Get only logs that have authorized user.
+   ```
+   docker logs be -f --tail 10 2>&1 | jq '. | select ( .user_id != null)'
+   ```
+Also, you can combine these methods and configure it similarly to fit your own situation.
+#### 5. Logger while testing
 While testing we disable logs to a certain level, which is configurable in .env.
 Because of this design choice, you aren't able to use `assertLogs` in unittests.
 Nevertheless, if you want to use this assertion, just set `LOGGING_DISABLE_LEVEL_FOR_TESTING`
