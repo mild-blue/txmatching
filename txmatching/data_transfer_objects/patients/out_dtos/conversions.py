@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Tuple, Optional
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
@@ -22,7 +22,8 @@ from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
-from txmatching.utils.recipient_donor_compatibility_details import RecipientDonorCompatibilityDetails
+from txmatching.utils.recipient_donor_compatibility_details import \
+    RecipientDonorCompatibilityDetails
 
 
 def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
@@ -32,7 +33,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     recipient_dtos = []
     for recipient in txm_event.all_recipients:
         cpra, compatibilities_details = \
-            get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event, recipient, configuration_parameters, scorer)
+            get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event, recipient, configuration_parameters)
 
         recipient_dto = recipient_to_recipient_dto_out(
             recipient=recipient,
@@ -85,7 +86,7 @@ def recipient_to_recipient_dto_out(
 def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmEvent,
                                                                  recipient: Recipient,
                                                                  config_parameters: ConfigParameters,
-                                                                 scorer: AdditiveScorer) \
+                                                                 crossmatch_logic: Callable = get_crossmatched_antibodies) \
         -> Tuple[int, List[RecipientDonorCompatibilityDetails]]:
     """
     Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for txm_event and returns list of
@@ -93,20 +94,22 @@ def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmE
     :return: cPRA as decimal in [0,1].
     """
 
+    scorer = scorer_from_configuration(config_parameters)
+
     active_donors = txm_event.active_and_valid_donors_dict.values()
 
     if len(active_donors) == 0:  # no donors = compatible to all donors
         return 1, []
 
+    n_compatible_donors = 0
     compatibilities_details = []
     for donor in active_donors:
-
         # Do not send compatibility info with the original donor
         if donor.related_recipient_db_id == recipient.db_id:
+            n_compatible_donors += 1
             continue
 
-        # TODO - use different crossmatch_logic?
-        antibodies = get_crossmatched_antibodies(
+        antibodies = crossmatch_logic(
             donor.parameters.hla_typing,
             recipient.hla_antibodies,
             config_parameters.use_high_resolution)
@@ -116,6 +119,7 @@ def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmE
                         if antibody_match.match_type.is_positive_for_level(config_parameters.hla_crossmatch_level)}
 
         if len(common_codes) == 0: # donor is compatible with the recipient
+            n_compatible_donors += 1
             compatibility_index_detailed = get_detailed_compatibility_index(
                 donor_hla_typing=donor.parameters.hla_typing,
                 recipient_hla_typing=recipient.parameters.hla_typing,
@@ -132,12 +136,10 @@ def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmE
                     donor.parameters.blood_group, recipient.parameters.blood_group),
                 detailed_score=detailed_score
             )
-            
+
             compatibilities_details.append(recipient_donor_compatibility_details)
 
-        assert donor.related_recipient_db_id != recipient.db_id
-
-    return 1 - len(compatibilities_details) / len(active_donors), compatibilities_details
+    return 1 - n_compatible_donors / len(active_donors), compatibilities_details
 
 
 def donor_to_donor_dto_out(donor: Donor,
