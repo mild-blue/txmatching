@@ -653,7 +653,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id018
+                example: &id013
                 -   antibody_matches:
                     -   hla_antibody:
                             code: &id002
@@ -756,13 +756,13 @@ definitions:
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id013
+            hla_typing: &id014
                 description: HLA typing of the patient. Use high resolution if available.
                 example: *id003
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id014
+            internal_medical_id: &id015
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
@@ -1499,6 +1499,13 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
+            compatible_donors_details:
+                items:
+                    $ref: '#/definitions/RecipientDonorCompatibilityDetails'
+                type: array
+            cpra:
+                description: Recipient's cPRA [%].
+                type: number
             db_id: *id011
             etag: *id005
             hla_antibodies:
@@ -1557,9 +1564,46 @@ definitions:
         - cPRA
         - compatible_donors
         type: object
+    RecipientDonorCompatibilityDetails:
+        properties:
+            compatible_blood:
+                description: Indicator whether donor and recipient have compatible
+                    blood groups
+                type: boolean
+            detailed_score:
+                description: 'Contains details for compatibility index for each HLA
+                    Group compatibility
+
+                    index is calculated for.'
+                example: *id013
+                items:
+                    $ref: '#/definitions/DetailedScoreForGroup'
+                type: array
+            donor_db_id:
+                description: Database id of the donor
+                example: 1
+                type: integer
+            max_score:
+                description: Maximum transplant score
+                type: number
+            recipient_db_id:
+                description: Database id of the recipient
+                example: 1
+                type: integer
+            score:
+                description: Compatibility score if donor and recipient
+                type: number
+        required:
+        - compatible_blood
+        - detailed_score
+        - donor_db_id
+        - max_score
+        - recipient_db_id
+        - score
+        type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id015
+            acceptable_blood_groups: &id016
                 description: Acceptable blood groups for the patient. Leave empty
                     to use compatible blood groups.
                 example:
@@ -1578,16 +1622,16 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id013
-            internal_medical_id: *id014
+            hla_typing: *id014
+            internal_medical_id: *id015
             medical_id: *id012
             note: *id007
-            previous_transplants: &id016
+            previous_transplants: &id017
                 description: Number of previous kidney transplants.
                 example: 0
                 type: integer
             sex: *id008
-            waiting_since: &id017
+            waiting_since: &id018
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
@@ -1605,7 +1649,7 @@ definitions:
         allOf:
         -   $ref: '#/definitions/PatientModelToUpdate'
         -   properties:
-                acceptable_blood_groups: *id015
+                acceptable_blood_groups: *id016
                 cutoff:
                     type: integer
                 hla_antibodies:
@@ -1617,7 +1661,7 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
-                previous_transplants: *id016
+                previous_transplants: *id017
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -1625,7 +1669,7 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
-                waiting_since: *id017
+                waiting_since: *id018
             type: object
     RecipientRequirements:
         properties:
@@ -1742,7 +1786,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id018
+                example: *id013
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
