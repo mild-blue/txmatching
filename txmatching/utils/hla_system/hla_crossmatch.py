@@ -193,9 +193,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                     second_antibody = None
                     for maybe_second_antibody in antibodies:
                         if (maybe_second_antibody.raw_code == antibody.second_raw_code
-                            and maybe_second_antibody.second_raw_code == antibody.raw_code
-                            and maybe_second_antibody.mfi == antibody.mfi
-                            and maybe_second_antibody.cutoff == antibody.cutoff):
+                            and maybe_second_antibody.second_raw_code == antibody.raw_code):
                             second_antibody = maybe_second_antibody
                     positive_matches_two_antibodies = do_crossmatch_for_selected_antibodies(
                         hla_per_group, [antibody, second_antibody], antibodies, use_high_resolution)
