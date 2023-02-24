@@ -262,7 +262,7 @@ class TestCrossmatch(unittest.TestCase):
         # Antibody theoretical in type A
         hla_antibodies = create_antibodies(hla_antibodies_list=[create_antibody('A*23:01', 2100, 2000)])
         hla_antibodies.hla_antibodies_per_groups[0].hla_antibody_list[0].type = HLAAntibodyType.THEORETICAL
-        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=['A*02:01', 'B*04:03']),
+        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=['A*23:01', 'B*04:03']),
                                       hla_antibodies,
                                       use_high_resolution=True)
 
@@ -272,7 +272,7 @@ class TestCrossmatch(unittest.TestCase):
         hla_antibodies = create_antibodies(hla_antibodies_list=[create_antibody('B*07:70', 2100, 2000)])
         hla_antibodies.hla_antibodies_per_groups[1].hla_antibody_list[0].type = HLAAntibodyType.THEORETICAL
 
-        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=['A*02:01', 'B*08:02']),
+        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=['A*02:01', 'B*07:70']),
                                       hla_antibodies,
                                       use_high_resolution=True)
 

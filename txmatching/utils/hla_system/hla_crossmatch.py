@@ -336,6 +336,10 @@ def _add_theoretical_crossmatch_type(antibodies: List[HLAAntibody],
     for antibody in antibodies:
         if antibody not in antibodies_positive_matches and antibody.type == HLAAntibodyType.THEORETICAL:
             positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.THEORETICAL))
+        if antibody in antibodies_positive_matches and antibody.type == HLAAntibodyType.THEORETICAL:
+            match = [positive_match for positive_match in positive_matches if positive_match.hla_antibody == antibody][0]
+            positive_matches.remove(match)
+            positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.THEORETICAL))
 
 
 def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
