@@ -58,6 +58,7 @@ export * from './patientUploadSuccessResponseGenerated';
 export * from './patientsGenerated';
 export * from './patientsRecomputeParsingSuccessGenerated';
 export * from './recipientCompatibilityInfoJsonGenerated';
+export * from './recipientDonorCompatibilityDetailsGenerated';
 export * from './recipientGenerated';
 export * from './recipientInputGenerated';
 export * from './recipientModelToUpdateAllOfGenerated';
