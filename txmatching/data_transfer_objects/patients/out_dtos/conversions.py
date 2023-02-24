@@ -101,6 +101,7 @@ def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmE
     compatibilities_details = []
     for donor in active_donors:
 
+        # Do not send compatibility info with the original donor
         if donor.related_recipient_db_id == recipient.db_id:
             continue
 

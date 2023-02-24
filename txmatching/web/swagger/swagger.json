@@ -4344,6 +4344,16 @@
                         "$ref": "#/definitions/ParsingIssue"
                     }
                 },
+                "cpra": {
+                    "type": "number",
+                    "description": "Recipient's cPRA [%]."
+                },
+                "compatible_donors_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecipientDonorCompatibilityDetails"
+                    }
+                },
                 "all_messages": {
                     "$ref": "#/definitions/AllMessages"
                 }
@@ -4374,6 +4384,146 @@
                     ],
                     "items": {
                         "type": "integer"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "RecipientDonorCompatibilityDetails": {
+            "required": [
+                "compatible_blood",
+                "detailed_score",
+                "donor_db_id",
+                "max_score",
+                "recipient_db_id",
+                "score"
+            ],
+            "properties": {
+                "recipient_db_id": {
+                    "type": "integer",
+                    "description": "Database id of the recipient",
+                    "example": 1
+                },
+                "donor_db_id": {
+                    "type": "integer",
+                    "description": "Database id of the donor",
+                    "example": 1
+                },
+                "score": {
+                    "type": "number",
+                    "description": "Compatibility score if donor and recipient"
+                },
+                "max_score": {
+                    "type": "number",
+                    "description": "Maximum transplant score"
+                },
+                "compatible_blood": {
+                    "type": "boolean",
+                    "description": "Indicator whether donor and recipient have compatible blood groups"
+                },
+                "detailed_score": {
+                    "type": "array",
+                    "description": "Contains details for compatibility index for each HLA Group compatibility\nindex is calculated for.",
+                    "example": [
+                        {
+                            "hla_group": "A",
+                            "donor_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A23"
+                                        },
+                                        "raw_code": "A23"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "recipient_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        },
+                                        "raw_code": "A9"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A9",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        },
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "NONE"
+                                },
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A1",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "BROAD"
+                                }
+                            ],
+                            "group_compatibility_index": 2.0
+                        },
+                        {
+                            "hla_group": "B",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        },
+                        {
+                            "hla_group": "DRB1",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/DetailedScoreForGroup"
                     }
                 }
             },

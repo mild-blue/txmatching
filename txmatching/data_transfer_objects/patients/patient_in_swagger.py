@@ -14,7 +14,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_swagger import (
     ParsingIssueJson, ParsingIssuePublicJson)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
-    DetailedScoreForGroupJson)
+    DetailedScoreForGroupJson, RecipientDonorCompatibilityDetailsJson)
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
@@ -62,7 +62,9 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
         required=False,
         cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
-    'all_messages': fields.Nested(required=False, model=AllMessagesJson)
+    'cpra': fields.Float(required=False, description="Recipient's cPRA [%]."),
+    'compatible_donors_details': fields.List(required=False, cls_or_instance=fields.Nested(RecipientDonorCompatibilityDetailsJson)),
+    'all_messages': fields.Nested(required=False, model=AllMessagesJson),
 }})
 
 PatientsJson = patient_api.model('Patients', {
