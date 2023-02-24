@@ -23,7 +23,8 @@ export enum AntibodyMatchGeneratedMatchTypeEnum {
     None = 'NONE',
     Undecidable = 'UNDECIDABLE',
     HighResWithSplit = 'HIGH_RES_WITH_SPLIT',
-    HighResWithBroad = 'HIGH_RES_WITH_BROAD'
+    HighResWithBroad = 'HIGH_RES_WITH_BROAD',
+    Theoretical = 'THEORETICAL'
 };
 
 

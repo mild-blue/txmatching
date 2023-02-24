@@ -8,7 +8,7 @@ from txmatching.patients.hla_functions import (
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
-                                    HLAGroup)
+                                    HLAGroup, HLAAntibodyType)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -93,7 +93,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        _add_undecidable_crossmatch_type(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -179,7 +179,8 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                                                        positive_matches):
                         continue
 
-        _add_none_typization(_get_antibodies_over_cutoff(antibodies), positive_matches)
+        _add_theoretical_crossmatch_type(positive_matches)
+        _add_none_crossmatch_type(_get_antibodies_over_cutoff(antibodies), positive_matches)
 
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
 
@@ -196,7 +197,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
         positive_matches = set()
         antibodies = antibodies_per_group.hla_antibody_list
 
-        _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
+        _add_undecidable_crossmatch_type(_get_antibodies_over_cutoff(antibodies), hla_per_group, positive_matches)
 
         for hla_type in hla_per_group.hla_types:
             if use_high_resolution and hla_type.code.high_res is not None:
@@ -212,16 +213,17 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.split == antibody.code.split
                                                 if hla_type.code.split is not None]
-                if _add_split_typization(hla_type, tested_antibodies_that_match, positive_matches):
+                if _add_split_crossmatch_type(hla_type, tested_antibodies_that_match, positive_matches):
                     continue
 
             if hla_type.code.broad is not None:
                 tested_antibodies_that_match = [antibody for antibody in antibodies
                                                 if hla_type.code.broad == antibody.code.broad]
-                if _add_broad_typization(hla_type, tested_antibodies_that_match, positive_matches):
+                if _add_broad_crossmatch_type(hla_type, tested_antibodies_that_match, positive_matches):
                     continue
 
-        _add_none_typization(antibodies, positive_matches)
+        _add_theoretical_crossmatch_type(positive_matches)
+        _add_none_crossmatch_type(antibodies, positive_matches)
 
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
 
@@ -252,7 +254,7 @@ def _add_all_tested_positive_antibodies(tested_antibodies_that_match: List[HLAAn
                                         positive_tested_antibodies: List[HLAAntibody],
                                         match_type: AntibodyMatchTypes,
                                         positive_matches: Set[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
+    """Return True if crossmatch has happened."""
 
     if len(positive_tested_antibodies) > 0:
         if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
@@ -265,7 +267,7 @@ def _add_all_tested_positive_antibodies(tested_antibodies_that_match: List[HLAAn
 def _add_positive_tested_antibodies(tested_antibodies_that_match: List[HLAAntibody],
                                     match_type: AntibodyMatchTypes,
                                     positive_matches: Set[AntibodyMatch]) -> bool:
-    """Return True if crossmatching has happened."""
+    """Return True if crossmatch has happened."""
 
     if len(tested_antibodies_that_match) > 0:
         for antibody in _get_antibodies_over_cutoff(tested_antibodies_that_match):
@@ -274,10 +276,10 @@ def _add_positive_tested_antibodies(tested_antibodies_that_match: List[HLAAntibo
     return False
 
 
-def _add_split_typization(hla_type: HLAType,
-                          tested_antibodies_that_match: List[HLAAntibody],
-                          positive_matches: Set[AntibodyMatch]) -> bool:
-    """Return True if split crossmatching has happened."""
+def _add_split_crossmatch_type(hla_type: HLAType,
+                               tested_antibodies_that_match: List[HLAAntibody],
+                               positive_matches: Set[AntibodyMatch]) -> bool:
+    """Return True if split crossmatch has happened."""
 
     # SPLIT_1
     if hla_type.code.high_res is None:
@@ -297,9 +299,9 @@ def _add_split_typization(hla_type: HLAType,
     return False
 
 
-def _add_broad_typization(hla_type: HLAType,
-                          tested_antibodies_that_match: List[HLAAntibody],
-                          positive_matches: Set[AntibodyMatch]) -> bool:
+def _add_broad_crossmatch_type(hla_type: HLAType,
+                               tested_antibodies_that_match: List[HLAAntibody],
+                               positive_matches: Set[AntibodyMatch]) -> bool:
     """Return True if broad crossmatching has happened."""
 
     # BROAD_1
@@ -320,16 +322,23 @@ def _add_broad_typization(hla_type: HLAType,
     return False
 
 
-def _add_undecidable_typization(antibodies: List[HLAAntibody],
-                                hla_per_group: HLAPerGroup,
-                                positive_matches: Set[AntibodyMatch]):
+def _add_undecidable_crossmatch_type(antibodies: List[HLAAntibody],
+                                     hla_per_group: HLAPerGroup,
+                                     positive_matches: Set[AntibodyMatch]):
     if len(hla_per_group.hla_types) == 0:
         for antibody in antibodies:
             positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 
 
-def _add_none_typization(antibodies: List[HLAAntibody],
-                         positive_matches: Set[AntibodyMatch]):
+def _add_theoretical_crossmatch_type(positive_matches: Set[AntibodyMatch]):
+    for match in positive_matches:
+        if match.hla_antibody.type == HLAAntibodyType.THEORETICAL and match.match_type != AntibodyMatchTypes.UNDECIDABLE:
+            positive_matches.remove(match)
+            positive_matches.add(AntibodyMatch(match.hla_antibody, AntibodyMatchTypes.THEORETICAL))
+
+
+def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
+                              positive_matches: Set[AntibodyMatch]):
     antibodies_positive_matches = {match.hla_antibody for match in positive_matches}
     for antibody in _get_antibodies_over_cutoff(antibodies):
         if antibody not in antibodies_positive_matches:
