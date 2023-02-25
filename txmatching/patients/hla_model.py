@@ -80,7 +80,7 @@ class HLAAntibody(HLABase, PersistentlyHashable):
                 self.raw_code == other.raw_code and
                 self.mfi == other.mfi and
                 self.cutoff == other.cutoff and
-                self.second_raw_code == other.second_raw_code)
+                self.second_raw_code == other.second_raw_code,
                 self.type == other.type)
 
     def __hash__(self):

@@ -90,7 +90,7 @@ def do_crossmatch_for_selected_antibodies(hla_per_group: HLAPerGroup, antibodies
                                            f'patient antibodies is not in high res. Antibody: '
                                            f'{antibody} does not have high res')
     positive_matches = set()
-    _add_undecidable_typization(_get_antibodies_over_cutoff(antibodies_to_check), hla_per_group, positive_matches)
+    _add_undecidable_crossmatch_type(_get_antibodies_over_cutoff(antibodies_to_check), hla_per_group, positive_matches)
 
     for hla_type in hla_per_group.hla_types:
         if use_high_resolution and hla_type.code.high_res is not None:
@@ -193,7 +193,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                     second_antibody = None
                     for maybe_second_antibody in antibodies:
                         if (maybe_second_antibody.raw_code == antibody.second_raw_code
-                            and maybe_second_antibody.second_raw_code == antibody.raw_code):
+                                and maybe_second_antibody.second_raw_code == antibody.raw_code):
                             second_antibody = maybe_second_antibody
                     positive_matches_two_antibodies = do_crossmatch_for_selected_antibodies(
                         hla_per_group, [antibody, second_antibody], antibodies, use_high_resolution)
@@ -209,7 +209,6 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                     _do_crossmatch_for_hlas_recipient_was_not_tested_for(
                         hla_per_group, [antibody], antibodies, positive_matches, use_high_resolution)
 
-        # TODO
         _add_theoretical_crossmatch_type(positive_matches)
         _add_none_crossmatch_type(_get_antibodies_over_cutoff(antibodies), positive_matches)
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
@@ -220,8 +219,8 @@ def _find_lowest_match_type(match_types: List[AntibodyMatchTypes]):
     return [match_type for correct_type in MATCHING_TYPE_ORDER for match_type in match_types if match_type == correct_type]
 
 
-def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAGroup, antibodies_to_check: List[HLAAntibodies],
-                                                         all_antibodies: List[HLAAntibodies], positive_matches: Set[AntibodyMatch],
+def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAGroup, antibodies_to_check: List[HLAAntibody],
+                                                         all_antibodies: List[HLAAntibody], positive_matches: Set[AntibodyMatch],
                                                          use_high_resolution: bool):
     # iterate over hla types and look for codes that recipient was not tested for
     for hla_type in hla_per_group.hla_types:
@@ -230,7 +229,8 @@ def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAGroup
             tested_antibodies_that_match = [antibody for antibody in antibodies_to_check
                                             if hla_type.code.split == antibody.code.split
                                             if hla_type.code.split is not None and
-                                            antibody not in [antibody_match.hla_antibody for antibody_match in positive_matches]]
+                                            antibody.raw_code not in
+                                            [antibody_match.hla_antibody.raw_code for antibody_match in positive_matches]]
             positive_tested_antibodies = _get_antibodies_over_cutoff(tested_antibodies_that_match)
 
             # find out whether all antibodies that match are over cutoff
@@ -329,6 +329,7 @@ def _add_all_tested_positive_antibodies(all_tested_antibodies_that_match: List[H
             for antibody in tested_antibodies_to_add:
                 positive_matches.add(AntibodyMatch(antibody, match_type))
             return True
+        return False
     return False
 
 
