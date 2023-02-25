@@ -11,7 +11,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibody
-from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
+from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel, HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
@@ -257,6 +257,26 @@ class TestCrossmatch(unittest.TestCase):
                                       use_high_resolution=True)
 
         self.assertEqual([], res[5].antibody_matches)
+
+    def test_theoretical(self):
+        # Antibody theoretical in type A
+        hla_antibodies = create_antibodies(hla_antibodies_list=[create_antibody('A*23:01', 2100, 2000)])
+        hla_antibodies.hla_antibodies_per_groups[0].hla_antibody_list[0].type = HLAAntibodyType.THEORETICAL
+        res = do_crossmatch_in_type_a(create_hla_typing(hla_types_list=['A*23:01', 'B*04:03']),
+                                      hla_antibodies,
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.THEORETICAL, res[0].antibody_matches[0].match_type)
+
+        # Antibody theoretical in type B
+        hla_antibodies = create_antibodies(hla_antibodies_list=[create_antibody('B*07:70', 2100, 2000)])
+        hla_antibodies.hla_antibodies_per_groups[1].hla_antibody_list[0].type = HLAAntibodyType.THEORETICAL
+
+        res = do_crossmatch_in_type_b(create_hla_typing(hla_types_list=['A*02:01', 'B*07:70']),
+                                      hla_antibodies,
+                                      use_high_resolution=True)
+
+        self.assertEqual(AntibodyMatchTypes.THEORETICAL, res[1].antibody_matches[0].match_type)
 
     def _assert_matches_equal(self,
                               hla_type: str, hla_antibodies: List[HLAAntibody],

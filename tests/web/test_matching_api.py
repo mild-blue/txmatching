@@ -12,7 +12,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLACrossmatchLevel, HLAGroup, MatchType,
-                                    Solver)
+                                    Solver, HLAAntibodyType)
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, CONFIGURATION_NAMESPACE, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -78,13 +78,13 @@ class TestSaveAndGetConfiguration(DbTests):
                                                                            'cutoff': 2000,
                                                                            'second_raw_code': None,
                                                                            'code': self._get_split('DQ5', 'DQ1'),
-                                                                           },
+                                                                           'type': HLAAntibodyType.NORMAL},
                                                           'match_type': 'UNDECIDABLE'},
                                                          {'hla_antibody': {'raw_code': 'DQ6', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'second_raw_code': None,
                                                                            'code': self._get_split('DQ6', 'DQ1'),
-                                                                           },
+                                                                           'type': HLAAntibodyType.NORMAL},
                                                           'match_type': 'UNDECIDABLE'}],
                                     'hla_group': 'DQ'}]
 

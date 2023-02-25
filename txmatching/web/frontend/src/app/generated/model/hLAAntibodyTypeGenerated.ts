@@ -9,15 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HLAAntibodyTypeGenerated } from './hLAAntibodyTypeGenerated';
-import { HlaCodeGenerated } from './hlaCodeGenerated';
 
 
-export interface HlaAntibodyGenerated { 
-    code: HlaCodeGenerated;
-    cutoff: number;
-    mfi: number;
-    raw_code: string;
-    type?: HLAAntibodyTypeGenerated;
-}
+export enum HLAAntibodyTypeGenerated {
+    Normal = 'NORMAL',
+    Theoretical = 'THEORETICAL'
+};
 

@@ -24,6 +24,7 @@ export * from './donorTypeGenerated';
 export * from './failResponseGenerated';
 export * from './forbiddenCountryCombinationGenerated';
 export * from './hLAAntibodyInGenerated';
+export * from './hLAAntibodyTypeGenerated';
 export * from './hlaAntibodiesGenerated';
 export * from './hlaAntibodiesToUpdateGenerated';
 export * from './hlaAntibodyGenerated';

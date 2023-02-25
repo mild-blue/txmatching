@@ -183,7 +183,7 @@ def create_calculated_matchings_dto(
         config_id=configuration_db_id
     )
 
-
+# pylint: disable=too-many-branches
 def get_transplant_messages(
         donor_parameters: PatientParameters,
         recipient_requirements: RecipientRequirements,
@@ -221,6 +221,11 @@ def get_transplant_messages(
                           if possible_crossmatch.match_type in [AntibodyMatchTypes.SPLIT,
                                                                 AntibodyMatchTypes.HIGH_RES_WITH_SPLIT]}
 
+    theoretical_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch
+                                in possible_crossmatches if
+                                possible_crossmatch.match_type == AntibodyMatchTypes.THEORETICAL and
+                                possible_crossmatch.hla_antibody.code}
+
     undecidable_crossmatches = {possible_crossmatch.hla_antibody.code.display_code for possible_crossmatch
                                 in possible_crossmatches if
                                 possible_crossmatch.match_type == AntibodyMatchTypes.UNDECIDABLE and
@@ -231,6 +236,9 @@ def get_transplant_messages(
 
     if split_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH(split_crossmatches))
+
+    if theoretical_crossmatches != set():
+        detailed_messages.append(TransplantWarningDetail.THEORETICAL_CROSSMATCH(theoretical_crossmatches))
 
     if undecidable_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.UNDECIDABLE(undecidable_crossmatches))

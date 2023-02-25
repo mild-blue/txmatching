@@ -249,15 +249,26 @@ def _add_patients_from_one_country(
         txm_event_db_id: int,
 ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event = get_txm_event_complete(txm_event_db_id)
-    initial_recipients = recipients.copy()
 
-    new_recipient_ids = {recipient.medical_id for recipient in recipients}
-    current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
-    recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
+    donor_models_related_to_recipients_in_db = []
 
-    if recipient_duplicate_ids:
-        for medical_id in recipient_duplicate_ids:
-            recipients.remove(next(recipient for recipient in recipients if recipient.medical_id == medical_id))
+    for donor in donors:
+        if donor.related_recipient_medical_id is not None \
+                and donor.related_recipient_medical_id in [recipient.medical_id for recipient in
+                                                           txm_event.all_recipients]:
+            related_recipient_model = RecipientModel.query.filter_by(txm_event_id=txm_event_db_id,
+                                                                     medical_id=donor.related_recipient_medical_id).first()
+            donor_model_related_to_recipient_in_db = _donor_upload_dto_to_donor_model(donor, {
+                                                           related_recipient_model.medical_id: related_recipient_model},
+                                                           country_code, txm_event_db_id)
+            # Donor is auto-added to session due to relation to recipient that is already in DB
+            donor_models_related_to_recipients_in_db.append(donor_model_related_to_recipient_in_db)
+            donors.remove(donor)
+            recipients = [recipient for recipient in recipients if
+                          recipient.medical_id != donor.related_recipient_medical_id]
+            logger.warning(f'Provided recipient properties were ignored for donor {donor.medical_id} '
+                           f'as it is related to recipient {donor.related_recipient_medical_id} '
+                           f'that is already present in DB.')
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 
@@ -268,14 +279,8 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(recipient_models)
 
-    dublicate_recipients = [
-        recipient for recipient in initial_recipients if recipient.medical_id in recipient_duplicate_ids]
-    dublicate_recipient_models = [
-        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
-        for recipient in dublicate_recipients
-    ]
     recipient_models_dict = {recipient_model.medical_id: recipient_model
-                             for recipient_model in (recipient_models + dublicate_recipient_models)}
+                             for recipient_model in recipient_models}
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
@@ -286,5 +291,7 @@ def _add_patients_from_one_country(
         for donor in donors
     ]
     db.session.add_all(donor_models)
+
+    donor_models = donor_models + donor_models_related_to_recipients_in_db
 
     return donor_models, recipient_models
