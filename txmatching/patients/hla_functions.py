@@ -104,7 +104,7 @@ def _join_duplicate_antibodies(
             code=antibody_group_list[0].code,
             raw_code=hla_code_raw,
             cutoff=cutoff,
-            mfi=mfi,
+            mfi=mfi
         )
         hla_antibodies_joined.append(new_antibody)
 
