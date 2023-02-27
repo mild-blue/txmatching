@@ -59,8 +59,8 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, RecipientDTOOut]) -> str:
 
 
 def recipient_to_recipient_dto_out(
-        recipient: Recipient, 
-        txm_event_id: int, 
+        recipient: Recipient,
+        txm_event_id: int,
         cpra: Optional[float] = None,
         compatible_donors_details: Optional[List[RecipientDonorCompatibilityDetails]] = None) -> RecipientDTOOut:
     return RecipientDTOOut(
@@ -98,7 +98,7 @@ def get_cpra_and_detailed_compatibility_of_recipient_with_donors(txm_event: TxmE
 
     active_donors = txm_event.active_and_valid_donors_dict.values()
 
-    if len(active_donors) == 0:  # no donors = compatible to all donors
+    if len(active_donors) == 0:  # no donors = not compatible to the whole donor population
         return 1, []
 
     n_compatible_donors = 0

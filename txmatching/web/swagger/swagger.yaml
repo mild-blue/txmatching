@@ -1504,7 +1504,7 @@ definitions:
                 example: 1
                 type: integer
             score:
-                description: Compatibility score if donor and recipient
+                description: Compatibility score of donor and recipient
                 type: number
         required:
         - compatible_blood

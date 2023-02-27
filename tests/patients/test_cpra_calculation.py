@@ -3,10 +3,10 @@ from typing import List, Tuple
 from unittest import TestCase
 from unittest.mock import patch
 
+from tests.patients.test_patient_parameters import recipient_parameters_Jack
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
-from tests.patients.test_patient_parameters import recipient_parameters_Jack
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     get_cpra_and_detailed_compatibility_of_recipient_with_donors

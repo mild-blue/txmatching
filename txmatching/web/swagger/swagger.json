@@ -4221,7 +4221,7 @@
                 },
                 "score": {
                     "type": "number",
-                    "description": "Compatibility score if donor and recipient"
+                    "description": "Compatibility score of donor and recipient"
                 },
                 "max_score": {
                     "type": "number",
