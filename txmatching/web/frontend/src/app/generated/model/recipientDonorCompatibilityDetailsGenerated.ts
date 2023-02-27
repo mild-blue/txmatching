@@ -34,7 +34,7 @@ export interface RecipientDonorCompatibilityDetailsGenerated {
      */
     recipient_db_id: number;
     /**
-     * Compatibility score if donor and recipient
+     * Compatibility score of donor and recipient
      */
     score: number;
 }
