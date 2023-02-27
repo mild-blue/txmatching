@@ -122,7 +122,7 @@ CalculatedMatchingsJson = matching_api.model('CalculatedMatchings', {
 RecipientDonorCompatibilityDetailsJson = matching_api.model('RecipientDonorCompatibilityDetails', {
     'recipient_db_id': fields.Integer(required=True, description='Database id of the recipient', example=1),
     'donor_db_id': fields.Integer(required=True, description='Database id of the donor', example=1),
-    'score': fields.Float(required=True, description='Compatibility score if donor and recipient'),
+    'score': fields.Float(required=True, description='Compatibility score of donor and recipient'),
     'max_score': fields.Float(required=True, description='Maximum transplant score'),
     'compatible_blood': fields.Boolean(
         required=True,
