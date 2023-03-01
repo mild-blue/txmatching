@@ -3,13 +3,16 @@ import logging
 from flask import request
 from flask_restx import Resource
 
+from tests.test_utilities.hla_preparation_utils import create_hla_typing, create_antibodies, create_antibody
 from txmatching.auth.operation_guards.country_guard import \
     guard_user_has_access_to_country
 from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
+from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDtoIn, CrossmatchDtoOut
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
-    PatientUploadSuccessJson, UploadPatientsJson)
+    PatientUploadSuccessJson, UploadPatientsJson, CrossmatchJsonIn, CrossmatchJsonOut)
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadPublicDTOOut
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
@@ -19,6 +22,10 @@ from txmatching.database.services.patient_upload_service import (
     replace_or_add_patients_from_one_country)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_db_id_by_name, save_original_data)
+from txmatching.patients.hla_model import HLATypeRaw
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
+    parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import public_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
@@ -61,4 +68,33 @@ class TxmEventUploadPatients(Resource):
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors),
             parsing_issues=parsing_issues
+        ))
+
+
+@public_api.route('/do-crossmatch', methods=['GET'])
+class TxmEventDoCrossmatch(Resource):
+    @public_api.doc(security='bearer')
+    @public_api.request_body(CrossmatchJsonIn)
+    @public_api.response_ok(CrossmatchJsonOut)
+    @public_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    def get(self):
+        crossmatch_dto = request_body(CrossmatchDtoIn)
+
+        antibodies_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
+                           crossmatch_dto.recipient_antibodies]
+
+        crossmatched_antibodies_per_group = get_crossmatched_antibodies(
+            donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
+            recipient_antibodies=create_antibodies(antibodies_list),
+            use_high_resolution=True)
+
+        antibodies_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
+            antibodies_list)
+        typing_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
+            hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
+        ))
+
+        return response_ok(CrossmatchDtoOut(
+            crossmatched_antibodies_per_group=crossmatched_antibodies_per_group,
+            parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))
