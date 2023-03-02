@@ -4,7 +4,7 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
 from txmatching.utils.enums import (HLA_GROUPS,
                                     AntibodyMatchTypes, HLAAntibodyType, HLAGroup, MatchType)
-from txmatching.web.web_utils.namespaces import matching_api, public_api
+from txmatching.web.web_utils.namespaces import matching_api
 
 _CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}
 _CODE_A23 = {'high_res': None, 'split': None, 'broad': 'A23'}
@@ -117,9 +117,4 @@ CalculatedMatchingsJson = matching_api.model('CalculatedMatchings', {
     'number_of_possible_transplants': fields.Integer(required=False),
     'number_of_possible_recipients': fields.Integer(required=False),
     'config_id': fields.Integer(required=True)
-})
-
-AntibodyMatchForGroup = public_api.model('AntibodyMatchForGroup', {
-    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS]),
-    'antibody_match': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson)),
 })

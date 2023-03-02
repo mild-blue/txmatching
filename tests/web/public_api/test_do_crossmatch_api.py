@@ -6,8 +6,6 @@ from txmatching.web import API_VERSION, PUBLIC_NAMESPACE
 class TestDoCrossmatchApi(DbTests):
 
     def test_do_crossmatch_api(self):
-        self.login_with_role(UserRole.SERVICE)
-
         json = {
             "donor_hla_typing": ['A*02:02', 'A*01:01'],
             "recipient_antibodies": [{'mfi': 2350,
@@ -21,7 +19,8 @@ class TestDoCrossmatchApi(DbTests):
         }
 
         with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{PUBLIC_NAMESPACE}/do-crossmatch', json=json)
+            res = client.post(f'{API_VERSION}/{PUBLIC_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual({'hla_antibody': {'code': {'broad': 'A1', 'high_res': 'A*01:01', 'split': 'A1'},
                                                'cutoff': 1000, 'mfi': 5000, 'raw_code': 'A*01:01'},

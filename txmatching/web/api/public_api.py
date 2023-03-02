@@ -9,7 +9,7 @@ from txmatching.auth.operation_guards.country_guard import \
 from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
-from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDtoIn, CrossmatchDtoOut
+from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDTOIn, CrossmatchDTOOut
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson, CrossmatchJsonIn, CrossmatchJsonOut)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
@@ -71,14 +71,15 @@ class TxmEventUploadPatients(Resource):
         ))
 
 
-@public_api.route('/do-crossmatch', methods=['GET'])
+@public_api.route('/do-crossmatch', methods=['POST'])
 class TxmEventDoCrossmatch(Resource):
     @public_api.doc(security='bearer')
     @public_api.request_body(CrossmatchJsonIn)
     @public_api.response_ok(CrossmatchJsonOut)
     @public_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
-    def get(self):
-        crossmatch_dto = request_body(CrossmatchDtoIn)
+    @public_api.require_user_login()
+    def post(self):
+        crossmatch_dto = request_body(CrossmatchDTOIn)
 
         antibodies_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
                            crossmatch_dto.recipient_antibodies]
@@ -88,13 +89,13 @@ class TxmEventDoCrossmatch(Resource):
             recipient_antibodies=create_antibodies(antibodies_list),
             use_high_resolution=True)
 
-        antibodies_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
+        antibodies_parsing_issues, _ = parse_hla_antibodies_raw_and_return_parsing_issue_list(
             antibodies_list)
-        typing_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
+        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
         ))
 
-        return response_ok(CrossmatchDtoOut(
+        return response_ok(CrossmatchDTOOut(
             crossmatched_antibodies_per_group=crossmatched_antibodies_per_group,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))
