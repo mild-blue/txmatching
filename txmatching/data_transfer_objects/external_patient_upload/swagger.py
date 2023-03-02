@@ -2,10 +2,12 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    NewDonor, NewPatient, NewRecipient)
+    NewDonor, NewPatient, NewRecipient, ANTIGENS_EXAMPLE, HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
+from txmatching.data_transfer_objects.hla.hla_swagger import HLA_ANTIBODIES_PER_GROUPS_EXAMPLE
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
-    ParsingIssuePublicJson
+    ParsingIssuePublicJson, ParsingIssueBaseJson
+from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchForGroup
 from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
@@ -48,5 +50,30 @@ CopyPatientsJsonOut = public_api.model(
     'CopyPatients',
     {
         'new_donor_ids': fields.List(required=True, cls_or_instance=fields.Integer)
+    }
+)
+
+CrossmatchJsonIn = public_api.model(
+    'CrossmatchInput',
+    {
+        'donor_hla_typing': fields.List(required=True, cls_or_instance=fields.String,
+                                        example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
+        'recipient_antibodies': fields.List(required=True,
+                                            description='Detected HLA antibodies of the patient. Use high resolution '
+                                                        'if available. If high resolution is provided it is assumed that all'
+                                                        ' tested antibodies were provided. If not it is assumed that either '
+                                                        'all or just positive ones were.',
+                                            cls_or_instance=fields.Nested(
+                                                HLAAntibodyJsonIn
+                                            ))
+    }
+)
+
+CrossmatchJsonOut = public_api.model(
+    'CrossmatchOutput',
+    {
+        'crossmatched_antibodies_per_group': fields.List(required=True,
+                                                         cls_or_instance=fields.Nested(AntibodyMatchForGroup)),
+        'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueBaseJson))
     }
 )
