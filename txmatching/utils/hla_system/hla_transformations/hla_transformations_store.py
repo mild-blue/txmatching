@@ -96,16 +96,19 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
             antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
+            antibody_parsing_issues_second_code, second_code = parse_hla_raw_code_and_return_parsing_issue_list(
+                hla_antibody.raw_code)
             hla_antibodies_parsed.append(
                 HLAAntibody(
                     raw_code=hla_antibody.raw_code,
                     code=code,
                     mfi=hla_antibody.mfi,
                     cutoff=hla_antibody.cutoff,
-                    second_raw_code=hla_antibody.secondary_raw_code
+                    second_raw_code=hla_antibody.secondary_raw_code,
+                    second_code=second_code
                 )
             )
-            parsing_issues = parsing_issues + antibody_parsing_issues
+            parsing_issues = parsing_issues + antibody_parsing_issues + antibody_parsing_issues_second_code
 
     # 3. validate antibodies
     parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed)

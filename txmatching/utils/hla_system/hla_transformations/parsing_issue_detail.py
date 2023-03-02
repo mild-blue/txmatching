@@ -12,6 +12,8 @@ class ParsingIssueDetail(str, Enum):
     HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'The information about the serological equivalent of the allele is only assumed' \
                                        ' in our datasource so the conversion is not 100% reliable. ' \
                                        'Please check that the conversion is correct.'
+    CREATED_THEORETICAL_ANTIBODY = 'Theoretical antibody was created, because double antibody had mixed MFI values' \
+                                   'for both chains.'
 
     # returning no value (hla code)
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
@@ -57,7 +59,8 @@ WARNING_PROCESSING_RESULTS = {
     ParsingIssueDetail.MFI_PROBLEM,
     ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
     ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
-    ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE
+    ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE,
+    ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY
 }
 
 ERROR_PROCESSING_RESULTS = {
