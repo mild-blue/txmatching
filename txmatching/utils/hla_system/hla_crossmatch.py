@@ -195,12 +195,13 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                         if (maybe_second_antibody.raw_code == antibody.second_raw_code
                                 and maybe_second_antibody.second_raw_code == antibody.raw_code):
                             second_antibody = maybe_second_antibody
+                            break
                     positive_matches_two_antibodies = do_crossmatch_for_selected_antibodies(
                         hla_per_group, [antibody, second_antibody], antibodies, use_high_resolution)
                     _do_crossmatch_for_hlas_recipient_was_not_tested_for(
                         hla_per_group, [antibody, second_antibody], antibodies, positive_matches_two_antibodies, use_high_resolution)
                     if len(positive_matches_two_antibodies) == 2:
-                        lowest_match_type = _find_lowest_match_type(
+                        lowest_match_type = _sort_match_types(
                             [positive_match.match_type for positive_match in list(positive_matches_two_antibodies)])[-1]
                         positive_matches.add(AntibodyMatch(antibody, lowest_match_type))
                 else:
@@ -215,7 +216,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
     return antibody_matches_for_groups
 
 
-def _find_lowest_match_type(match_types: List[AntibodyMatchTypes]):
+def _sort_match_types(match_types: List[AntibodyMatchTypes]):
     return [match_type for correct_type in MATCHING_TYPE_ORDER for match_type in match_types if match_type == correct_type]
 
 
@@ -329,7 +330,6 @@ def _add_all_tested_positive_antibodies(all_tested_antibodies_that_match: List[H
             for antibody in tested_antibodies_to_add:
                 positive_matches.add(AntibodyMatch(antibody, match_type))
             return True
-        return False
     return False
 
 
