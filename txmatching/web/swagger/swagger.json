@@ -114,6 +114,61 @@
                 ]
             }
         },
+        "/v1/public/do-crossmatch": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/CrossmatchOutput"
+                        }
+                    }
+                },
+                "operationId": "post_txm_event_do_crossmatch",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CrossmatchInput"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "public"
+                ]
+            }
+        },
         "/v1/public/patient-upload": {
             "put": {
                 "responses": {
@@ -2256,6 +2311,34 @@
             },
             "type": "object"
         },
+        "AntibodyMatchForHLAGroup": {
+            "required": [
+                "antibody_matches",
+                "hla_group"
+            ],
+            "properties": {
+                "hla_group": {
+                    "type": "string",
+                    "example": "A",
+                    "enum": [
+                        "A",
+                        "B",
+                        "DRB1",
+                        "CW",
+                        "DP",
+                        "DQ",
+                        "OTHER_DR"
+                    ]
+                },
+                "antibody_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatch"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "AntigenMatch": {
             "required": [
                 "hla_type",
@@ -2777,6 +2860,63 @@
                 "ZWE"
             ],
             "type": "string"
+        },
+        "CrossmatchInput": {
+            "required": [
+                "donor_hla_typing",
+                "recipient_antibodies"
+            ],
+            "properties": {
+                "donor_hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "recipient_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "CrossmatchOutput": {
+            "required": [
+                "crossmatched_antibodies_per_group",
+                "parsing_issues"
+            ],
+            "properties": {
+                "crossmatched_antibodies_per_group": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatchForHLAGroup"
+                    }
+                },
+                "parsing_issues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueBase"
+                    }
+                }
+            },
+            "type": "object"
         },
         "CycleOrChain": {
             "required": [
@@ -3842,6 +3982,44 @@
                 },
                 "recipient_id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "ParsingIssueBase": {
+            "required": [
+                "hla_code_or_group",
+                "message",
+                "parsing_issue_detail"
+            ],
+            "properties": {
+                "hla_code_or_group": {
+                    "type": "string"
+                },
+                "parsing_issue_detail": {
+                    "type": "string",
+                    "example": "SUCCESSFULLY_PARSED",
+                    "enum": [
+                        "SUCCESSFULLY_PARSED",
+                        "HIGH_RES_WITHOUT_SPLIT",
+                        "HIGH_RES_WITH_LETTER",
+                        "HIGH_RES_WITH_ASSUMED_SPLIT_CODE",
+                        "MULTIPLE_SPLITS_OR_BROADS_FOUND",
+                        "IRRELEVANT_CODE",
+                        "UNEXPECTED_SPLIT_RES_CODE",
+                        "UNKNOWN_TRANSFORMATION_FROM_HIGH_RES",
+                        "UNPARSABLE_HLA_CODE",
+                        "MORE_THAN_TWO_HLA_CODES_PER_GROUP",
+                        "BASIC_HLA_GROUP_IS_EMPTY",
+                        "ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES",
+                        "INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES",
+                        "MULTIPLE_CUTOFFS_PER_ANTIBODY",
+                        "MFI_PROBLEM",
+                        "OTHER_PROBLEM"
+                    ]
+                },
+                "message": {
+                    "type": "string"
                 }
             },
             "type": "object"

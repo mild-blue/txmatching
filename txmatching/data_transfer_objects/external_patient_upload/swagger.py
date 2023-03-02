@@ -1,13 +1,11 @@
-
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient, ANTIGENS_EXAMPLE, HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
-from txmatching.data_transfer_objects.hla.hla_swagger import HLA_ANTIBODIES_PER_GROUPS_EXAMPLE
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssuePublicJson, ParsingIssueBaseJson
-from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchForGroup
+from txmatching.utils.enums import HLA_GROUPS, AntibodyMatchTypes
 from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
@@ -53,6 +51,30 @@ CopyPatientsJsonOut = public_api.model(
     }
 )
 
+HLACode = public_api.model('HlaCode', {
+    'high_res': fields.String(required=False),
+    'split': fields.String(required=False),
+    'broad': fields.String(required=True),
+    'group': fields.String(required=False, enum=[group.name for group in HLA_GROUPS]),
+})
+
+HLAAntibody = public_api.model('HlaAntibody', {
+    'raw_code': fields.String(required=True),
+    'mfi': fields.Integer(required=True),
+    'cutoff': fields.Integer(required=True),
+    'code': fields.Nested(HLACode, required=True)
+})
+
+AntibodyMatchJson = public_api.model('AntibodyMatch', {
+    'hla_antibody': fields.Nested(required=True, model=HLAAntibody),
+    'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
+})
+
+AntibodyMatchForHLAGroupJson = public_api.model('AntibodyMatchForHLAGroup', {
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS]),
+    'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson)),
+})
+
 CrossmatchJsonIn = public_api.model(
     'CrossmatchInput',
     {
@@ -73,7 +95,7 @@ CrossmatchJsonOut = public_api.model(
     'CrossmatchOutput',
     {
         'crossmatched_antibodies_per_group': fields.List(required=True,
-                                                         cls_or_instance=fields.Nested(AntibodyMatchForGroup)),
+                                                         cls_or_instance=fields.Nested(AntibodyMatchForHLAGroupJson)),
         'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueBaseJson))
     }
 )
