@@ -1274,6 +1274,7 @@ definitions:
                 - ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
                 - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
                 - MULTIPLE_CUTOFFS_PER_ANTIBODY
+                - DUPLICATE_ANTIBODY_SINGLE_CHAIN
                 - MFI_PROBLEM
                 - OTHER_PROBLEM
                 example: SUCCESSFULLY_PARSED

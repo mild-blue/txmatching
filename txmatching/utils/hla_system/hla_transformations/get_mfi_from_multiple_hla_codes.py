@@ -17,7 +17,7 @@ DIFFERENCE_THRESHOLD_RATIO = 1 / 4
 MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF = 7 / 8
 
 
-def get_mfi_from_multiple_hla_codes(mfis: List[int],
+def get_mfi_from_multiple_hla_codes_single_chain(mfis: List[int],
                                     cutoff: int,
                                     raw_code: str) -> Tuple[List[ParsingIssueBase], int]:
     """

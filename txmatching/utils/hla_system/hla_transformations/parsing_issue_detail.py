@@ -38,6 +38,8 @@ class ParsingIssueDetail(str, Enum):
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
                                     'This means inconsistency that is not allowed.'
+    DUPLICATE_ANTIBODY_SINGLE_CHAIN = 'There were multiple instances of the same antibody with a single chain. ' \
+                                      'This is not allowed, please ensure that this antibody occurs only once in this format.'
 
     MFI_PROBLEM = 'There is a problem with MFI.'  # This string value is not used but we have it here as a fallback
     OTHER_PROBLEM = 'Some problem occurred when processing this code.'
@@ -66,4 +68,5 @@ ERROR_PROCESSING_RESULTS = {
     ParsingIssueDetail.UNPARSABLE_HLA_CODE,
     ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
     ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+    ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
 }

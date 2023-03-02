@@ -173,13 +173,14 @@ class HLAAntibodyRawModel(db.Model):
     raw_code = Column(TEXT, unique=False, nullable=False)
     mfi = Column(INTEGER, unique=False, nullable=False)
     cutoff = Column(INTEGER, unique=False, nullable=False)
+    second_raw_code = Column(TEXT, unique=False, nullable=True)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DATETIME(timezone=True), nullable=True)
 
     def __repr__(self):
         return f'<HLAAntibodyRawModel {self.id} ' \
-               f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
+               f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff}, second_raw_code={self.second_raw_code})>'
 
 
 class AppUserModel(db.Model):

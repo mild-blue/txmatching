@@ -21,7 +21,7 @@ from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
-    get_mfi_from_multiple_hla_codes
+    get_mfi_from_multiple_hla_codes_single_chain
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
@@ -194,7 +194,7 @@ class TestCodeParser(DbTests):
         # When one value extremely low, calculate average only from such value.
         self._compare_mfi_result(expected_mfi=1, mfis=[1, 3000, 4000])
         self._compare_mfi_result(expected_mfi=1000, mfis=[1000, 20000, 18000])
-        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test')[1])
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes_single_chain([30001, 10000], 2000, 'test')[1])
 
         # When multiple values low, calculate the average only from those values.
         self._compare_mfi_result(expected_mfi=900, mfis=[1000, 900, 800, 19000, 20000, 18000], has_issue=False)
@@ -220,7 +220,7 @@ class TestCodeParser(DbTests):
                                 ]
                             ).hla_antibodies_per_groups_over_cutoff[5].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
-        # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
+        # get_mfi_from_multiple_hla_codes_single_chain, where the average is calculated (1900), which is below cutoff.
         # The antibody is not removed.
         self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
                             {hla_antibody.code for hla_antibody in create_antibodies(
@@ -338,6 +338,6 @@ class TestCodeParser(DbTests):
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
 
     def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
-        res = get_mfi_from_multiple_hla_codes(mfis, cutoff, 'test')
+        res = get_mfi_from_multiple_hla_codes_single_chain(mfis, cutoff, 'test')
         self.assertEqual(expected_mfi, res[1])
         self.assertEqual(has_issue, len(res[0]) > 0)
