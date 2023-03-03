@@ -56,8 +56,9 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (
     TxmEvent, get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
-from txmatching.patients.patient import (
-    Recipient, calculate_cpra_and_get_compatible_donors_for_recipient)
+from txmatching.patients.patient import Recipient
+from txmatching.patients.recipient_compatibility import \
+    calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
@@ -365,9 +366,9 @@ class CalculateRecipientCPRA(Resource):
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
-        cpra, compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(txm_event,
-                                                                                         recipient,
-                                                                                         config_parameters)
+        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(txm_event,
+                                                                                            recipient,
+                                                                                            config_parameters)
         result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
         return response_ok(result)
 
