@@ -21,9 +21,9 @@ from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
-from txmatching.patients.patient import (
-    DonorType, RecipientRequirements,
-    calculate_cpra_and_get_compatible_donors_for_recipient)
+from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.patients.recipient_compatibility import \
+    calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -87,6 +87,7 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
         self.assertEqual(38, len(res.json['donors']))
         self.assertEqual(34, len(res.json['recipients']))
+        n_active_donors = 0
         for donor in res.json['donors']:
             self.assertIn('detailed_score_with_related_recipient', donor)
             detailed_score_for_groups = donor['detailed_score_with_related_recipient']
@@ -97,6 +98,16 @@ class TestPatientService(DbTests):
                     self.assertEqual(detailed_score_for_group['antibody_matches'], [])
                     self.assertEqual(detailed_score_for_group['recipient_matches'], [])
                     self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
+            if donor['active']:
+                n_active_donors += 1
+        for recipient in res.json['recipients']:
+            self.assertIn('cpra', recipient)
+            self.assertIn('compatible_donors_details', recipient)
+
+            if recipient['cpra'] == (1-1/n_active_donors): # Compatible only with original donor
+                self.assertEqual(recipient['compatible_donors_details'], [])
+            else:
+                self.assertGreater(len(recipient['compatible_donors_details']), 0)
 
     def test_upload_patients_via_file(self):
         res = self._upload_data()
@@ -809,7 +820,7 @@ class TestPatientService(DbTests):
         )
 
         for recipient in txm_event.all_recipients:
-            expected_cPRA, expected_compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(
+            expected_cPRA, expected_compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
                 txm_event=txm_event,
                 recipient=recipient,
                 config_parameters=configuration_parameters)
