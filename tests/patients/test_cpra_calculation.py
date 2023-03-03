@@ -8,11 +8,9 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
-    get_cpra_and_detailed_compatibility_of_recipient_with_donors
 from txmatching.patients.patient import (
-    Donor, Recipient, TxmEvent,
-    calculate_cpra_and_get_compatible_donors_for_recipient)
+    Donor, Recipient, TxmEvent)
+from txmatching.patients.recipient_compatibility import calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.utils.enums import HLACrossmatchLevel
 
 
@@ -73,88 +71,71 @@ class TestCPRACalculation(TestCase):
 
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
+        
+        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+            txm_event=self.txm_event_general, recipient=self.recipient_general, 
+            config_parameters=self.config_parameters_general, compatibility_details=True)
+        
+        compatible_donors_from_details = set()
+        for details in compatible_donors_details:
+            compatible_donors_from_details.add(details.donor_db_id)
+
+        self.assertEqual(compatible_donors, compatible_donors_from_details)
+
         self.assertEqual(
-            (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}),
-            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
-                                                                   recipient=self.recipient_general,
-                                                                   config_parameters=self.config_parameters_general))
-
-        cpra, compatibilities_details = get_cpra_and_detailed_compatibility_of_recipient_with_donors(
-            txm_event=self.txm_event_general,
-            recipient=self.recipient_general,
-            config_parameters=self.config_parameters_general
-        )
-
-        compatible_donors = set()
-        for compatibility_details in compatibilities_details:
-            compatible_donors.add(compatibility_details.donor_db_id)
-
-        self.assertEqual((0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}), (cpra, compatible_donors))
-
+            (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_without_antibodies_case(self):
         """Case: recipient without antibodies"""
+        
+        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+            txm_event=self.txm_event_general, recipient=self.recipient_without_antibodies, 
+            config_parameters=self.config_parameters_general, compatibility_details=True)
+        
+        compatible_donors_from_details = set()
+        for details in compatible_donors_details:
+            compatible_donors_from_details.add(details.donor_db_id)
+
+        self.assertEqual(compatible_donors, compatible_donors_from_details)
+
         self.assertEqual(
-            (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),
-            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
-                                                                   recipient=self.recipient_without_antibodies,
-                                                                   config_parameters=self.config_parameters_general))
-
-        cpra, compatibilities_details = get_cpra_and_detailed_compatibility_of_recipient_with_donors(
-            txm_event=self.txm_event_general,
-            recipient=self.recipient_without_antibodies,
-            config_parameters=self.config_parameters_general
-        )
-
-        compatible_donors = set()
-        for compatibility_details in compatibilities_details:
-            compatible_donors.add(compatibility_details.donor_db_id)
-
-        self.assertEqual((0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), (cpra, compatible_donors))
+            (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_against_all_donors_case(self):
         """Case: recipient is incompatible to all donors in txm_event"""
+        
+        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+            txm_event=self.txm_event_general, recipient=self.recipient_against_all_donors, 
+            config_parameters=self.config_parameters_general, compatibility_details=True)
+        
+        compatible_donors_from_details = set()
+        for details in compatible_donors_details:
+            compatible_donors_from_details.add(details.donor_db_id)
+
+        self.assertEqual(compatible_donors, compatible_donors_from_details)
+
         self.assertEqual(
-            (1, set()),
-            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=self.txm_event_general,
-                                                                   recipient=self.recipient_against_all_donors,
-                                                                   config_parameters=self.config_parameters_general))
-
-        cpra, compatibilities_details = get_cpra_and_detailed_compatibility_of_recipient_with_donors(
-            txm_event=self.txm_event_general,
-            recipient=self.recipient_against_all_donors,
-            config_parameters=self.config_parameters_general
-        )
-
-        compatible_donors = set()
-        for compatibility_details in compatibilities_details:
-            compatible_donors.add(compatibility_details.donor_db_id)
-
-        self.assertEqual((1, set()), (cpra, compatible_donors))
+            (1, set()), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_no_donors_case(self):
         """Case: txm_event without donors for usual recipient"""
         txm_event = self.__create_mock_txm_event_object_with_patients(
             self.PatientsTuple(donors=[],
                                recipients=[self.recipient_general]))
+        
+        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+            txm_event=txm_event, recipient=self.recipient_against_all_donors, 
+            config_parameters=self.config_parameters_general, compatibility_details=True)
+        
+        compatible_donors_from_details = set()
+        for details in compatible_donors_details:
+            compatible_donors_from_details.add(details.donor_db_id)
+
+        self.assertEqual(compatible_donors, compatible_donors_from_details)
+
         self.assertEqual(
-            (1, set()),
-            calculate_cpra_and_get_compatible_donors_for_recipient(txm_event=txm_event,
-                                                                   recipient=self.recipient_general,
-                                                                   config_parameters=self.config_parameters_general))
-
-        cpra, compatibilities_details = get_cpra_and_detailed_compatibility_of_recipient_with_donors(
-            txm_event=txm_event,
-            recipient=self.recipient_general,
-            config_parameters=self.config_parameters_general
-        )
-
-        compatible_donors = set()
-        for compatibility_details in compatibilities_details:
-            compatible_donors.add(compatibility_details.donor_db_id)
-
-        self.assertEqual((1, set()), (cpra, compatible_donors))
-
+            (1, set()), (cpra, compatible_donors))
+        
     @staticmethod
     @patch(f'{__name__}.Recipient')
     def __create_mock_recipient_object_with_hla_antibodies(hla_antibodies, mocked_Recipient):
