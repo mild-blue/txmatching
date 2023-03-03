@@ -50,13 +50,10 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
 
         if len(common_codes) == 0: # donor is compatible with the recipient
 
-            # Do not send compatibility info with the original donor
-            if donor.related_recipient_db_id == recipient.db_id:
-                continue
-
             compatible_donors.add(donor.db_id)
 
-            if compatibility_details:
+            # Do not send compatibility info with the original donor
+            if compatibility_details and (donor.related_recipient_db_id != recipient.db_id):
                 compatibility_index_detailed = get_detailed_compatibility_index(
                     donor_hla_typing=donor.parameters.hla_typing,
                     recipient_hla_typing=recipient.parameters.hla_typing,
