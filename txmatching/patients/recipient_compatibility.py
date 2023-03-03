@@ -38,10 +38,6 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
     compatible_donors_details = []
     compatible_donors = set()
     for donor in active_donors:
-        # Do not send compatibility info with the original donor
-        if donor.related_recipient_db_id == recipient.db_id:
-            compatible_donors.add(donor.db_id)
-            continue
 
         antibodies = crossmatch_logic(
             donor.parameters.hla_typing,
@@ -53,6 +49,11 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                         if antibody_match.match_type.is_positive_for_level(config_parameters.hla_crossmatch_level)}
 
         if len(common_codes) == 0: # donor is compatible with the recipient
+
+            # Do not send compatibility info with the original donor
+            if donor.related_recipient_db_id == recipient.db_id:
+                continue
+
             compatible_donors.add(donor.db_id)
 
             if compatibility_details:
