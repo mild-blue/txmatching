@@ -97,7 +97,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         for hla_antibody in antibody_group:
             antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
             antibody_parsing_issues_second_code, second_code = parse_hla_raw_code_and_return_parsing_issue_list(
-                hla_antibody.raw_code)
+                hla_antibody.secondary_raw_code)
             hla_antibodies_parsed.append(
                 HLAAntibody(
                     raw_code=hla_antibody.raw_code,

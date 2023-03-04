@@ -1,5 +1,6 @@
 import itertools
 import logging
+import numpy as np
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
@@ -14,7 +15,7 @@ from txmatching.utils.enums import (HLA_GROUPS,
                                     HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES,
                                     HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
-    get_mfi_from_multiple_hla_codes
+    get_mfi_from_multiple_hla_codes_single_chain
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
@@ -63,7 +64,7 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
-    List[ParsingIssueBase], List[AntibodiesPerGroup]]:
+        List[ParsingIssueBase], List[AntibodiesPerGroup]]:
     parsing_issues, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return (parsing_issues, [AntibodiesPerGroup(hla_group,
                                                 sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -74,18 +75,36 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
 def _join_duplicate_antibodies(
         hla_antibodies: List[HLAAntibody]
 ) -> Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
+
+    # divide antibodies into single and double coded
+    antibody_list_single_code = [
+        hla_antibody for hla_antibody in hla_antibodies if hla_antibody.second_raw_code is None]
+    antibody_list_double_code = [
+        hla_antibody for hla_antibody in hla_antibodies if hla_antibody.second_raw_code is not None]
+
+    single_antibodies_parsing_issues, single_antibodies_joined = _add_single_hla_antibodies(antibody_list_single_code)
+
+    double_antibodies_parsing_issues, double_antibodies_joined = _add_double_hla_antibodies(antibody_list_double_code,
+                                                                                            single_antibodies_joined)
+
+    parsing_issues = single_antibodies_parsing_issues + double_antibodies_parsing_issues
+    hla_antibodies_joined = double_antibodies_joined
+
+    return parsing_issues, hla_antibodies_joined
+
+
+def _add_single_hla_antibodies(antibody_list_single_code: List[HLAAntibody]) -> Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
     def _group_key(hla_antibody: HLAAntibody) -> str:
         return hla_antibody.raw_code
 
     parsing_issues = []
-    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies, key=_group_key),
-                                               key=_group_key)
     hla_antibodies_joined = []
-    for hla_code_raw, antibody_group in grouped_hla_antibodies:
+
+    grouped_single_hla_antibodies = itertools.groupby(sorted(antibody_list_single_code, key=_group_key), key=_group_key)
+
+    for hla_code_raw, antibody_group in grouped_single_hla_antibodies:
         antibody_group_list = list(antibody_group)
-        assert len(antibody_group_list) > 0
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
-        second_raw_codes = {hla_antibody.second_raw_code for hla_antibody in antibody_group_list}
         if len(cutoffs) != 1:
             parsing_issues.append(
                 ParsingIssueBase(
@@ -97,20 +116,185 @@ def _join_duplicate_antibodies(
             continue
 
         cutoff = cutoffs.pop()
-        second_raw_code = second_raw_codes.pop()
-        mfi_parsing_issues, mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
-                                                                  cutoff,
-                                                                  hla_code_raw)
+        # if a single antibody is present multiple times, parse it but throw an error message
+        if len(antibody_group_list) > 1:
+            parsing_issues.append(
+                ParsingIssueBase(
+                    hla_code_or_group=hla_code_raw,
+                    parsing_issue_detail=ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN,
+                    message=ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN.value
+                )
+            )
+        # add the single antibody using the old logic
+        mfi_parsing_issues, mfi = get_mfi_from_multiple_hla_codes_single_chain(
+            [hla_code.mfi for hla_code in antibody_group_list], cutoff, hla_code_raw)
         parsing_issues = parsing_issues + mfi_parsing_issues
         new_antibody = HLAAntibody(
             code=antibody_group_list[0].code,
             raw_code=hla_code_raw,
             cutoff=cutoff,
-            mfi=mfi,
-            second_raw_code=second_raw_code,
-            second_code=antibody_group_list[0].second_code
+            mfi=mfi
         )
         hla_antibodies_joined.append(new_antibody)
+
+    return parsing_issues, hla_antibodies_joined
+
+
+def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
+                               single_antibodies_joined: List[HLAAntibody]) -> \
+        Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
+
+    mfi_dictionary = _create_mfi_dictionary(antibody_list_double_code)
+
+    # TODO check multiple cutoffs
+    # TODO refactor
+    # TODO add tests
+
+    parsing_issues = []
+    hla_antibodies_joined = single_antibodies_joined.copy()
+
+    # iterate over all double antibodies
+    for double_antibody in antibody_list_double_code:
+        parsed_hla_codes = set([antibody.raw_code for antibody in hla_antibodies_joined] + [
+            antibody.second_raw_code for antibody in hla_antibodies_joined if antibody.second_raw_code is not None])
+
+        # if both codes are already parsed, skip this double antibody
+        if not {double_antibody.raw_code, double_antibody.second_raw_code}.issubset(parsed_hla_codes):
+            # if MFI is under cutoff, for both chains check wheter there is a positive MFI elsewhere,
+            # if not, return the mean MFI
+            if double_antibody.mfi < double_antibody.cutoff:
+                # check alpha chain
+                if not _is_positive_mfi_present(double_antibody.raw_code, mfi_dictionary,
+                                                double_antibody.cutoff) and double_antibody.raw_code not in parsed_hla_codes:
+                    mfi = _get_average_mfi(double_antibody.raw_code, mfi_dictionary)
+                    new_antibody = HLAAntibody(
+                        code=double_antibody.code,
+                        raw_code=double_antibody.raw_code,
+                        cutoff=double_antibody.cutoff,
+                        mfi=mfi
+                    )
+                    hla_antibodies_joined.append(new_antibody)
+                # check beta chain
+                if not _is_positive_mfi_present(double_antibody.second_raw_code, mfi_dictionary,
+                                                double_antibody.cutoff) and double_antibody.second_raw_code not in parsed_hla_codes:
+                    mfi = _get_average_mfi(double_antibody.second_raw_code, mfi_dictionary)
+                    new_antibody = HLAAntibody(
+                        raw_code=double_antibody.second_raw_code,
+                        cutoff=double_antibody.cutoff,
+                        mfi=mfi,
+                        code=double_antibody.second_code
+                    )
+                    hla_antibodies_joined.append(new_antibody)
+            else:
+                alpha_chain_only_positive = not _is_negative_mfi_present(
+                    double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff)
+                beta_chain_only_positive = not _is_negative_mfi_present(
+                    double_antibody.second_raw_code, mfi_dictionary, double_antibody.cutoff)
+                # if both chains have only positive MFIs, compute average MFI for each separately
+                if alpha_chain_only_positive and beta_chain_only_positive:
+                    # alpha chain
+                    if double_antibody.raw_code not in parsed_hla_codes:
+                        mfi = _get_average_mfi(double_antibody.raw_code, mfi_dictionary)
+                        new_antibody = HLAAntibody(
+                            code=double_antibody.code,
+                            raw_code=double_antibody.raw_code,
+                            cutoff=double_antibody.cutoff,
+                            mfi=mfi
+                        )
+                        hla_antibodies_joined.append(new_antibody)
+                    # beta chain
+                    if double_antibody.second_raw_code not in parsed_hla_codes:
+                        mfi = _get_average_mfi(double_antibody.second_raw_code, mfi_dictionary)
+                        new_antibody = HLAAntibody(
+                            code=double_antibody.second_code,
+                            raw_code=double_antibody.second_raw_code,
+                            cutoff=double_antibody.cutoff,
+                            mfi=mfi
+                        )
+                        hla_antibodies_joined.append(new_antibody)
+                # if one is positive and one is mixed
+                elif alpha_chain_only_positive != beta_chain_only_positive:
+                    if alpha_chain_only_positive:
+                        if double_antibody.raw_code not in parsed_hla_codes:
+                            mfi = _get_average_mfi(double_antibody.raw_code, mfi_dictionary)
+                            new_antibody = HLAAntibody(
+                                code=double_antibody.code,
+                                raw_code=double_antibody.raw_code,
+                                cutoff=double_antibody.cutoff,
+                                mfi=mfi
+                            )
+                            hla_antibodies_joined.append(new_antibody)
+                        if _is_only_one_positive_mfi_present(double_antibody.second_raw_code, mfi_dictionary, double_antibody.cutoff):
+                            if double_antibody.second_raw_code not in parsed_hla_codes:
+                                mfi = _get_negative_average_mfi(
+                                    double_antibody.second_raw_code, mfi_dictionary, double_antibody.cutoff)
+                                new_antibody = HLAAntibody(
+                                    code=double_antibody.second_code,
+                                    raw_code=double_antibody.second_raw_code,
+                                    cutoff=double_antibody.cutoff,
+                                    mfi=mfi
+                                )
+                                hla_antibodies_joined.append(new_antibody)
+
+                    if beta_chain_only_positive:
+                        if double_antibody.second_raw_code not in parsed_hla_codes:
+                            mfi = _get_average_mfi(double_antibody.second_raw_code, mfi_dictionary)
+                            new_antibody = HLAAntibody(
+                                code=double_antibody.second_code,
+                                raw_code=double_antibody.second_raw_code,
+                                cutoff=double_antibody.cutoff,
+                                mfi=mfi
+                            )
+                            hla_antibodies_joined.append(new_antibody)
+                        if _is_only_one_positive_mfi_present(double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff):
+                            if double_antibody.raw_code not in parsed_hla_codes:
+                                mfi = _get_negative_average_mfi(
+                                    double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff)
+                                new_antibody = HLAAntibody(
+                                    code=double_antibody.code,
+                                    raw_code=double_antibody.raw_code,
+                                    cutoff=double_antibody.cutoff,
+                                    mfi=mfi
+                                )
+                                hla_antibodies_joined.append(new_antibody)
+                # if both are mixed add double antibody
+                else:
+                    # add double antibody and parsing issue
+                    new_antibody = HLAAntibody(
+                        code=double_antibody.code,
+                        raw_code=double_antibody.raw_code,
+                        cutoff=double_antibody.cutoff,
+                        mfi=mfi,
+                        second_code=double_antibody.second_code,
+                        second_raw_code=double_antibody.second_raw_code
+                    )
+                    hla_antibodies_joined.append(new_antibody)
+                    parsing_issues.append(
+                        ParsingIssueBase(
+                            hla_code_or_group=double_antibody.raw_code + ", " + double_antibody.second_raw_code,
+                            parsing_issue_detail=ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN,
+                            message=ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN.value
+                        )
+                    )
+                    # TODO: maju sa pridat aj ked uz su sparsovane v pripade theoretical hej?
+                    # add theoretical alpha chain with averaged MFI
+                    mfi = _get_average_mfi(double_antibody.raw_code, mfi_dictionary)
+                    new_antibody = HLAAntibody(
+                        code=double_antibody.code,
+                        raw_code=double_antibody.raw_code,
+                        cutoff=double_antibody.cutoff,
+                        mfi=mfi
+                    )
+                    hla_antibodies_joined.append(new_antibody)
+                    # add theoretical betas chain with averaged MFI
+                    mfi = _get_average_mfi(double_antibody.second_raw_code, mfi_dictionary)
+                    new_antibody = HLAAntibody(
+                        code=double_antibody.second_code,
+                        raw_code=double_antibody.second_raw_code,
+                        cutoff=double_antibody.cutoff,
+                        mfi=mfi
+                    )
+                    hla_antibodies_joined.append(new_antibody)
 
     return parsing_issues, hla_antibodies_joined
 
@@ -172,3 +356,47 @@ def analyze_if_high_res_antibodies_are_type_a(
         return HighResAntibodiesAnalysis(False,
                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
     return HighResAntibodiesAnalysis(True, None)
+
+
+def _is_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[HLAAntibody]], cutoff: int) -> bool:
+    for mfi in mfi_dictionary[raw_code]:
+        if mfi >= cutoff:
+            return True
+    return False
+
+
+def _is_only_one_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
+    positive_mfis = [mfi for mfi in mfi_dictionary[raw_code] if mfi >= cutoff]
+    return len(positive_mfis) == 1
+
+
+def _is_negative_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
+    for mfi in mfi_dictionary[raw_code]:
+        if mfi < cutoff:
+            return True
+    return False
+
+
+def _get_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]]) -> int:
+    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code]])
+    return np.mean(mfis)
+
+
+def _get_negative_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> int:
+    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code] if mfi < cutoff])
+    return np.mean(mfis)
+
+
+def _create_mfi_dictionary(antibody_list_double_code: List[HLAAntibody]) -> Dict[str, List[int]]:
+    mfi_dictionary = {}
+    for antibody in antibody_list_double_code:
+        if antibody.raw_code not in mfi_dictionary:
+            mfi_dictionary[antibody.raw_code] = [antibody.mfi]
+        else:
+            mfi_dictionary[antibody.raw_code].append(antibody.mfi)
+        if antibody.second_raw_code not in mfi_dictionary:
+            mfi_dictionary[antibody.second_raw_code] = [antibody.mfi]
+        else:
+            mfi_dictionary[antibody.second_raw_code].append(antibody.mfi)
+
+    return mfi_dictionary
