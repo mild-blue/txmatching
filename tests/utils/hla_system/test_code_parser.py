@@ -20,7 +20,7 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
-from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
+from txmatching.utils.hla_system.hla_transformations.mfi_functions import \
     get_mfi_from_multiple_hla_codes_single_chain
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)

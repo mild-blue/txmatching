@@ -1,9 +1,10 @@
-from typing import List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
+from txmatching.patients.hla_model import HLAAntibody
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 
@@ -18,8 +19,8 @@ MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF = 7 / 8
 
 
 def get_mfi_from_multiple_hla_codes_single_chain(mfis: List[int],
-                                    cutoff: int,
-                                    raw_code: str) -> Tuple[List[ParsingIssueBase], int]:
+                                                 cutoff: int,
+                                                 raw_code: str) -> Tuple[List[ParsingIssueBase], int]:
     """
     Takes list of MFIs of the same hla code and estimates the MFI for the code.
     It is based on discussions with immunologists. If variance is low, take average, if variance is high, take average
@@ -112,3 +113,47 @@ def get_mfi_from_multiple_hla_codes_single_chain(mfis: List[int],
         )
 
     return parsing_issues_temp, relevant_mean
+
+
+def is_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[HLAAntibody]], cutoff: int) -> bool:
+    for mfi in mfi_dictionary[raw_code]:
+        if mfi >= cutoff:
+            return True
+    return False
+
+
+def is_only_one_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
+    positive_mfis = [mfi for mfi in mfi_dictionary[raw_code] if mfi >= cutoff]
+    return len(positive_mfis) == 1
+
+
+def is_negative_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
+    for mfi in mfi_dictionary[raw_code]:
+        if mfi < cutoff:
+            return True
+    return False
+
+
+def get_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], _: Optional[int]) -> int:
+    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code]])
+    return np.mean(mfis)
+
+
+def get_negative_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> int:
+    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code] if mfi < cutoff])
+    return np.mean(mfis)
+
+
+def create_mfi_dictionary(antibody_list_double_code: List[HLAAntibody]) -> Dict[str, List[int]]:
+    mfi_dictionary = {}
+    for antibody in antibody_list_double_code:
+        if antibody.raw_code not in mfi_dictionary:
+            mfi_dictionary[antibody.raw_code] = [antibody.mfi]
+        else:
+            mfi_dictionary[antibody.raw_code].append(antibody.mfi)
+        if antibody.second_raw_code not in mfi_dictionary:
+            mfi_dictionary[antibody.second_raw_code] = [antibody.mfi]
+        else:
+            mfi_dictionary[antibody.second_raw_code].append(antibody.mfi)
+
+    return mfi_dictionary
