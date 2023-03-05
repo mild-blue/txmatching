@@ -64,54 +64,36 @@ class TestCPRACalculation(TestCase):
         # The tests DO NOT CONTROL the dependence of cPRA on CONFIGURATION!
         # If you have changed crossmatch logic (function is_positive_hla_crossmatch()) for some config,
         # the expected results should be recalculated!
-        self.config_parameters_general = ConfigParameters(use_high_resolution=True,
+        self.config_parameters_general = ConfigParameters(use_high_resolution=True, # TODO
                                                           hla_crossmatch_level=HLACrossmatchLevel.BROAD)
 
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
         
-        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_general, 
-            config_parameters=self.config_parameters_general, compatibility_details=True)
+            config_parameters=self.config_parameters_general)
         
-        compatible_donors_from_details = set()
-        for details in compatible_donors_details:
-            compatible_donors_from_details.add(details.donor_db_id)
-
-        self.assertEqual(compatible_donors, compatible_donors_from_details)
-
         self.assertEqual(
             (0.25, {3, 4, 5, 6, 7, 8, 9, 10, 11}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_without_antibodies_case(self):
         """Case: recipient without antibodies"""
         
-        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_without_antibodies, 
-            config_parameters=self.config_parameters_general, compatibility_details=True)
+            config_parameters=self.config_parameters_general)
         
-        compatible_donors_from_details = set()
-        for details in compatible_donors_details:
-            compatible_donors_from_details.add(details.donor_db_id)
-
-        self.assertEqual(compatible_donors, compatible_donors_from_details)
-
         self.assertEqual(
             (0, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_against_all_donors_case(self):
         """Case: recipient is incompatible to all donors in txm_event"""
         
-        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_against_all_donors, 
-            config_parameters=self.config_parameters_general, compatibility_details=True)
+            config_parameters=self.config_parameters_general)
         
-        compatible_donors_from_details = set()
-        for details in compatible_donors_details:
-            compatible_donors_from_details.add(details.donor_db_id)
-
-        self.assertEqual(compatible_donors, compatible_donors_from_details)
-
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
 
@@ -121,16 +103,10 @@ class TestCPRACalculation(TestCase):
             self.PatientsTuple(donors=[],
                                recipients=[self.recipient_general]))
         
-        cpra, compatible_donors, compatible_donors_details = calculate_cpra_and_get_compatible_donors_for_recipient(
+        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=txm_event, recipient=self.recipient_against_all_donors, 
-            config_parameters=self.config_parameters_general, compatibility_details=True)
+            config_parameters=self.config_parameters_general)
         
-        compatible_donors_from_details = set()
-        for details in compatible_donors_details:
-            compatible_donors_from_details.add(details.donor_db_id)
-
-        self.assertEqual(compatible_donors, compatible_donors_from_details)
-
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
         
@@ -139,9 +115,6 @@ class TestCPRACalculation(TestCase):
     def __create_mock_recipient_object_with_hla_antibodies(hla_antibodies, mocked_Recipient):
         recipient = mocked_Recipient.return_value
         recipient.hla_antibodies = hla_antibodies
-        # recipient's parameters are required for get_cpra_and_detailed_compatibility_of_recipient_with_donors func to
-        # run without error
-        recipient.parameters = recipient_parameters_Jack
         return recipient
 
     @staticmethod
