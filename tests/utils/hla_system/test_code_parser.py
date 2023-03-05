@@ -15,7 +15,7 @@ from txmatching.patients.hla_functions import (
 from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAAntibodyType, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_table import \
@@ -170,9 +170,9 @@ class TestCodeParser(DbTests):
         hla_code_1 = preprocess_hla_code_in('DP4[01:03, 04:02]')
         hla_code_2 = preprocess_hla_code_in('DQ[01:03, 06:03]')
         hla_code_3 = preprocess_hla_code_in('DP[01:03, 02:01]')
-        self.assertCountEqual(['DPA1*01:03', 'DPB1*04:02', 'DPA1*01:03', 'DPB1*04:02'],
+        self.assertCountEqual(['DPA1*01:03', 'DPB1*04:02'],
                               [code for code_l in hla_code_1 for code in list(code_l.__dict__.values())])
-        self.assertCountEqual(['DQA1*01:03', 'DQB1*06:03', 'DQA1*01:03', 'DQB1*06:03'],
+        self.assertCountEqual(['DQA1*01:03', 'DQB1*06:03'],
                               [code for code_l in hla_code_2 for code in list(code_l.__dict__.values())])
         self.assertCountEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')}, set(
             create_hla_type(code).code for code in set(code for code_l in hla_code_3 for code in list(code_l.__dict__.values()))))
@@ -336,6 +336,84 @@ class TestCodeParser(DbTests):
                                              ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES)
         self.assertEqual(expected,
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
+
+    def test_double_antibodies(self):
+        # both codes already parsed
+        antibodies_not_processed = [
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPB1*01:01', 1900, 2000),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+        ]
+        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+
+        self.assertSetEqual({
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPB1*01:01', 1900, 2000)
+        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+
+        # at least one code already parsed
+        # 1
+        antibodies_not_processed = [
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+        ]
+        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+
+        self.assertSetEqual({
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPB1*01:01', 2100, 2000)
+        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+
+        # 2
+        antibodies_not_processed = [
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:02'),
+            create_antibody('DPA1*02:02', 2100, 2000, 'DPB1*02:01'),
+            create_antibody('DPA1*01:02', 1800, 2000, 'DPB1*01:03'),
+            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:02'),
+        ]
+        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+
+        self.assertSetEqual({
+            create_antibody('DPA1*02:02', 2100, 2000),
+            create_antibody('DPB1*02:01', 2100, 2000),
+            create_antibody('DPB1*01:02', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody('DPA1*01:02', 1950, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:02'),
+            create_antibody('DPA1*01:03', 1900, 2000),
+            create_antibody('DPB1*01:03', 1800, 2000)
+        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+
+        # 3
+        antibodies_not_processed = [
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:01'),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01')
+        ]
+        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+
+        self.assertSetEqual({
+            create_antibody('DPA1*01:03', 1900, 2000),
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPB1*01:01', 1900, 2000)
+        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+
+        # 4
+        antibodies_not_processed = [
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+            create_antibody('DPA1*01:02', 1900, 2000, 'DPB1*01:03'),
+            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:01'),
+        ]
+        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+
+        self.assertSetEqual({
+            create_antibody('DPA1*01:02', 1900, 2000),
+            create_antibody('DPB1*01:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody('DPA1*01:02', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+            create_antibody('DPA1*01:03', 1900, 2000),
+            create_antibody('DPB1*01:03', 1900, 2000)
+        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
 
     def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
         res = get_mfi_from_multiple_hla_codes_single_chain(mfis, cutoff, 'test')

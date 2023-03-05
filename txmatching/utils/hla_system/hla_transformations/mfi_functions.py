@@ -135,8 +135,7 @@ def is_negative_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]],
 
 
 def get_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], _: Optional[int]) -> int:
-    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code]])
-    return np.mean(mfis)
+    return np.mean(np.array(mfi_dictionary[raw_code]))
 
 
 def get_negative_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> int:

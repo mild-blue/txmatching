@@ -225,7 +225,7 @@ SPECIAL_DONORS_SPECIAL_HLA_CODES = [
         'sex': 'M',
         'donor_type': 'DONOR',
         'hla_typing': [
-            'DQ[01:03,      06:03]', 'B7'
+            'DQA1*01:03','DQB1*06:03', 'B7'
         ],
         'medical_id': 'R1',
         'blood_group': 'A',
@@ -236,7 +236,7 @@ SPECIAL_DONORS_SPECIAL_HLA_CODES = [
 SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES = [
     {
         'hla_typing': [
-            'DQ[01:03,      06:03]', 'B7', 'A1'
+            'DQA1*01:03','DQB1*06:03', 'B7', 'A1'
         ],
         'medical_id': 'R1',
         'blood_group': 0,
@@ -258,7 +258,7 @@ SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES = [
 SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES = [
     {
         'hla_typing': [
-            'DQ[01:03,      06:03]', 'B7', 'A1'
+            'DQA1*01:03','DQB1*06:03', 'B7', 'A1'
         ],
         'medical_id': 'R1',
         'blood_group': 0,

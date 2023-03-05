@@ -153,7 +153,6 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
     mfi_dictionary = create_mfi_dictionary(antibody_list_double_code)
 
     # TODO check multiple cutoffs
-    # TODO add tests
 
     parsing_issues = []
     hla_antibodies_joined = single_antibodies_joined.copy()
@@ -312,7 +311,7 @@ def _create_beta_chain_antibody(double_antibody: HLAAntibody,
                                 mfi_function: Callable,
                                 mfi_dictionary: Dict[str, List[int]],
                                 antibody_type: Optional[HLAAntibodyType] = HLAAntibodyType.NORMAL) -> HLAAntibody:
-    mfi = mfi_function(double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff)
+    mfi = mfi_function(double_antibody.second_raw_code, mfi_dictionary, double_antibody.cutoff)
     return HLAAntibody(
         code=double_antibody.second_code,
         raw_code=double_antibody.second_raw_code,
