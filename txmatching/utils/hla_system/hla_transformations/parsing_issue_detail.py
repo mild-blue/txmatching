@@ -38,7 +38,7 @@ class ParsingIssueDetail(str, Enum):
         'sent. It is better to send all to improve crossmatch estimation.'
 
     # not in a result of parse_hla_raw_code_with_details method
-    MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
+    MULTIPLE_CUTOFFS_PER_GROUP = 'There were multiple cutoff values for antibodies in this group. ' \
                                     'This means inconsistency that is not allowed.'
     DUPLICATE_ANTIBODY_SINGLE_CHAIN = 'There were multiple instances of the same antibody with a single chain. ' \
                                       'This is not allowed, please ensure that this antibody occurs only once in this format.'
@@ -64,7 +64,7 @@ WARNING_PROCESSING_RESULTS = {
 }
 
 ERROR_PROCESSING_RESULTS = {
-    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_GROUP,
     ParsingIssueDetail.OTHER_PROBLEM,
     ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE,
     ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,

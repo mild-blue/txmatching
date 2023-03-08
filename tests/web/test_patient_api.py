@@ -226,15 +226,15 @@ class TestPatientService(DbTests):
 
         self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
         self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
-        self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
-        self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
+        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['warnings']))
+        self.assertEqual(7, len(res_.json['recipients'][0]['all_messages']['errors']))
 
         parsing_issues = ParsingIssueModel.query.all()
-        self.assertEqual(7, len(parsing_issues))
-        self.assertEqual('TEST', parsing_issues[3].hla_code_or_group)
+        self.assertEqual(11, len(parsing_issues))
+        self.assertEqual('INVALID_CODES', parsing_issues[7].hla_code_or_group)
         self.assertEqual(
-            ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-            parsing_issues[3].parsing_issue_detail
+            ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_GROUP,
+            parsing_issues[7].parsing_issue_detail
         )
 
     def test_donor_recipient_pair_deletion(self):

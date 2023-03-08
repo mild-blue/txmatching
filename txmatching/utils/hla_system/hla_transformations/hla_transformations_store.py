@@ -79,20 +79,8 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         key=lambda x: x.raw_code
     )
     hla_antibodies_parsed = []
-    for raw_code, antibody_group_generator in grouped_hla_antibodies:
+    for _, antibody_group_generator in grouped_hla_antibodies:
         antibody_group = list(antibody_group_generator)
-        # Antibodies with the same raw code does need to have the same cutoff
-        cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
-        if len(cutoffs) > 1:
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=raw_code,
-                    parsing_issue_detail=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-                    message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
-                )
-            )
-            continue
-
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
             antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)

@@ -33,7 +33,7 @@ export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
     BasicHlaGroupIsEmpty = 'BASIC_HLA_GROUP_IS_EMPTY',
     AllAntibodiesArePositiveInHighRes = 'ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES',
     InsufficientNumberOfAntibodiesInHighRes = 'INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES',
-    MultipleCutoffsPerAntibody = 'MULTIPLE_CUTOFFS_PER_ANTIBODY',
+    MultipleCutoffsPerGroup = 'MULTIPLE_CUTOFFS_PER_GROUP',
     DuplicateAntibodySingleChain = 'DUPLICATE_ANTIBODY_SINGLE_CHAIN',
     MfiProblem = 'MFI_PROBLEM',
     OtherProblem = 'OTHER_PROBLEM'
