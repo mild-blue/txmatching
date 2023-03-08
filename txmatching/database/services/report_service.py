@@ -4,6 +4,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass, replace
+from distutils.dir_util import copy_tree
 from io import BytesIO
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -11,7 +12,6 @@ import jinja2
 import pandas as pd
 import pdfkit
 # pylint: disable=deprecated-module
-from distutils.dir_util import copy_tree
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.exceptions import NotFoundException
