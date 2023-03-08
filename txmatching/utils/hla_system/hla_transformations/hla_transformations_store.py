@@ -98,7 +98,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
                     raw_code=hla_antibody.raw_code,
                     code=code,
                     mfi=hla_antibody.mfi,
-                    cutoff=hla_antibody.cutoff,
+                    cutoff=hla_antibody.cutoff
                 )
             )
             parsing_issues = parsing_issues + antibody_parsing_issues

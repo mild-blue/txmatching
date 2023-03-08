@@ -71,6 +71,8 @@ class HLATyping(PersistentlyHashable):
 class HLAAntibody(HLABase, PersistentlyHashable):
     mfi: int
     cutoff: int
+    second_raw_code: Optional[str] = None
+    second_code: Optional[HLACode] = None
     type: HLAAntibodyType = HLAAntibodyType.NORMAL
 
     def __eq__(self, other):
@@ -78,16 +80,18 @@ class HLAAntibody(HLABase, PersistentlyHashable):
                 self.raw_code == other.raw_code and
                 self.mfi == other.mfi and
                 self.cutoff == other.cutoff and
+                self.second_raw_code == other.second_raw_code,
                 self.type == other.type)
 
     def __hash__(self):
-        return hash((self.raw_code, self.mfi, self.cutoff, self.type))
+        return hash((self.raw_code, self.mfi, self.cutoff, self.type, self.second_raw_code))
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibody)
         update_persistent_hash(hash_, self.raw_code)
         update_persistent_hash(hash_, self.mfi)
         update_persistent_hash(hash_, self.cutoff)
+        update_persistent_hash(hash_, self.second_raw_code)
         update_persistent_hash(hash_, self.type)
 
 
