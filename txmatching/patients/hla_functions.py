@@ -233,11 +233,13 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                         )
                     )
                     # add theoretical alpha chain with averaged MFI
-                    hla_antibodies_joined.append(_create_alpha_chain_antibody(
-                        double_antibody, get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL))
+                    if double_antibody.raw_code not in parsed_hla_codes:
+                        hla_antibodies_joined.append(_create_alpha_chain_antibody(
+                            double_antibody, get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL))
                     # add theoretical betas chain with averaged MFI
-                    hla_antibodies_joined.append(_create_beta_chain_antibody(
-                        double_antibody, get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL))
+                    if double_antibody.second_raw_code not in parsed_hla_codes:
+                        hla_antibodies_joined.append(_create_beta_chain_antibody(
+                            double_antibody, get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL))
 
     return parsing_issues, hla_antibodies_joined
 

@@ -409,7 +409,6 @@ class TestCodeParser(DbTests):
         self.assertSetEqual({
             create_antibody('DPA1*01:02', 1900, 2000),
             create_antibody('DPB1*01:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody('DPA1*01:02', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
             create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
             create_antibody('DPA1*01:03', 1900, 2000),
             create_antibody('DPB1*01:03', 1900, 2000)
