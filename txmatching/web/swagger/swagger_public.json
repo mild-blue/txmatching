@@ -1334,6 +1334,13 @@
             },
             "type": "object"
         },
+        "HLAAntibodyType": {
+            "enum": [
+                "NORMAL",
+                "THEORETICAL"
+            ],
+            "type": "string"
+        },
         "HlaAntibody": {
             "required": [
                 "code",
@@ -1353,6 +1360,9 @@
                 },
                 "code": {
                     "$ref": "#/definitions/HlaCode"
+                },
+                "type": {
+                    "$ref": "#/definitions/HLAAntibodyType"
                 }
             },
             "type": "object"

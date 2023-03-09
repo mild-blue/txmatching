@@ -3,9 +3,11 @@ from flask_restx import fields
 from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient, ANTIGENS_EXAMPLE, HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
+from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibody, HLACode
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssuePublicJson, ParsingIssueBaseJson
-from txmatching.utils.enums import HLA_GROUPS, AntibodyMatchTypes
+from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchJson
+from txmatching.utils.enums import HLA_GROUPS
 from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
@@ -51,24 +53,11 @@ CopyPatientsJsonOut = public_api.model(
     }
 )
 
-HLACode = public_api.model('HlaCode', {
-    'high_res': fields.String(required=False),
-    'split': fields.String(required=False),
-    'broad': fields.String(required=True),
-    'group': fields.String(required=False, enum=[group.name for group in HLA_GROUPS]),
-})
+HLACodes = public_api.clone("HlaCode", HLACode)
 
-HLAAntibody = public_api.model('HlaAntibody', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
-    'code': fields.Nested(HLACode, required=True)
-})
+HLAAntibody = public_api.clone("HlaAntibody", HLAAntibody)
 
-AntibodyMatchJson = public_api.model('AntibodyMatch', {
-    'hla_antibody': fields.Nested(required=True, model=HLAAntibody),
-    'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
-})
+AntibodyMatchJson = public_api.clone("AntibodyMatch", AntibodyMatchJson)
 
 AntibodyMatchForHLAGroupJson = public_api.model('AntibodyMatchForHLAGroup', {
     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS]),
