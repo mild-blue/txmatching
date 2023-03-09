@@ -11,9 +11,11 @@
  */
 import { AntibodyMatchForHLAGroupGenerated } from './antibodyMatchForHLAGroupGenerated';
 import { ParsingIssueBaseGenerated } from './parsingIssueBaseGenerated';
+import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
 
 
 export interface CrossmatchOutputGenerated { 
+    crossmatched_antibodies: Array<AntibodyMatchGenerated>;
     crossmatched_antibodies_per_group: Array<AntibodyMatchForHLAGroupGenerated>;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
 }

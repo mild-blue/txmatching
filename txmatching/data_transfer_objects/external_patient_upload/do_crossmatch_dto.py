@@ -15,6 +15,7 @@ class CrossmatchDTOIn:
 
 @dataclass
 class CrossmatchDTOOut:
+    crossmatched_antibodies: List[AntibodyMatch]
     crossmatched_antibodies_per_group: List[AntibodyMatchForHLAGroup]
     parsing_issues: List[ParsingIssueBase]
 

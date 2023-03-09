@@ -94,6 +94,7 @@ CrossmatchJsonIn = public_api.model(
 CrossmatchJsonOut = public_api.model(
     'CrossmatchOutput',
     {
+        'crossmatched_antibodies': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson)),
         'crossmatched_antibodies_per_group': fields.List(required=True,
                                                          cls_or_instance=fields.Nested(AntibodyMatchForHLAGroupJson)),
         'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueBaseJson))

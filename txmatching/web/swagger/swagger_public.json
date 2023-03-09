@@ -1143,10 +1143,17 @@
         },
         "CrossmatchOutput": {
             "required": [
+                "crossmatched_antibodies",
                 "crossmatched_antibodies_per_group",
                 "parsing_issues"
             ],
             "properties": {
+                "crossmatched_antibodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatch"
+                    }
+                },
                 "crossmatched_antibodies_per_group": {
                     "type": "array",
                     "items": {

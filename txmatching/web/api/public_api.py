@@ -23,7 +23,8 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (
     get_txm_event_db_id_by_name, save_original_data)
 from txmatching.patients.hla_model import HLATypeRaw
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
+    get_crossmatched_antibodies
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.utils.logged_user import get_current_user_id
@@ -84,7 +85,12 @@ class TxmEventDoCrossmatch(Resource):
         antibodies_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
                            crossmatch_dto.recipient_antibodies]
 
-        crossmatched_antibodies_per_group = get_crossmatched_antibodies(
+        crossmatched_antibodies = get_crossmatched_antibodies(
+            donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
+            recipient_antibodies=create_antibodies(antibodies_list),
+            use_high_resolution=True)
+
+        crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
             donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
             recipient_antibodies=create_antibodies(antibodies_list),
             use_high_resolution=True)
@@ -96,6 +102,7 @@ class TxmEventDoCrossmatch(Resource):
         ))
 
         return response_ok(CrossmatchDTOOut(
+            crossmatched_antibodies=crossmatched_antibodies,
             crossmatched_antibodies_per_group=crossmatched_antibodies_per_group,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))

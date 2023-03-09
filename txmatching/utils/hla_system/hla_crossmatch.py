@@ -29,9 +29,9 @@ class AntibodyMatchForHLAGroup:
     antibody_matches: List[AntibodyMatch]
 
 
-def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
-                                recipient_antibodies: HLAAntibodies,
-                                use_high_resolution: bool):
+def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
+                                          recipient_antibodies: HLAAntibodies,
+                                          use_high_resolution: bool):
     if is_recipient_type_a(recipient_antibodies):
         antibody_matches_for_groups = do_crossmatch_in_type_a(donor_hla_typing,
                                                               recipient_antibodies,
@@ -53,11 +53,24 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
     return antibody_matches_for_groups
 
 
+def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
+                                recipient_antibodies: HLAAntibodies,
+                                use_high_resolution: bool):
+    crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(donor_hla_typing, recipient_antibodies,
+                                                                              use_high_resolution)
+
+    antibody_matches = []
+    for antibody_match_group in crossmatched_antibodies_per_group:
+        antibody_matches.extend(antibody_match_group.antibody_matches)
+
+    return antibody_matches
+
+
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
                                use_high_resolution: bool,
                                crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.NONE,
-                               crossmatch_logic: Callable = get_crossmatched_antibodies) -> bool:
+                               crossmatch_logic: Callable = get_crossmatched_antibodies_per_group) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
     e.g. A23 -> A23 True

@@ -19,7 +19,7 @@ from txmatching.utils.hla_system.compatibility_index import (
     get_detailed_compatibility_index_without_recipient)
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+    AntibodyMatchForHLAGroup, get_crossmatched_antibodies_per_group)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
 
@@ -92,7 +92,7 @@ def donor_to_donor_dto_out(donor: Donor,
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
         )
-        antibodies = get_crossmatched_antibodies(
+        antibodies = get_crossmatched_antibodies_per_group(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
             config_parameters.use_high_resolution
