@@ -573,6 +573,10 @@ definitions:
         type: object
     CrossmatchOutput:
         properties:
+            crossmatched_antibodies:
+                items:
+                    $ref: '#/definitions/AntibodyMatch'
+                type: array
             crossmatched_antibodies_per_group:
                 items:
                     $ref: '#/definitions/AntibodyMatchForHLAGroup'
@@ -582,6 +586,7 @@ definitions:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
         required:
+        - crossmatched_antibodies
         - crossmatched_antibodies_per_group
         - parsing_issues
         type: object
