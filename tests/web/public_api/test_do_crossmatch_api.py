@@ -23,20 +23,24 @@ class TestDoCrossmatchApi(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual({'hla_antibody': {'code': {'broad': 'A1', 'high_res': 'A*01:01', 'split': 'A1'},
-                                               'cutoff': 1000, 'mfi': 5000, 'raw_code': 'A*01:01',
+                                               'cutoff': 1000, 'mfi': 5000, 'raw_code': 'A*01:01', 'second_code': None,
+                                               'second_raw_code': None,
                                                'type': 'NORMAL'},
                               'match_type': 'HIGH_RES'},
                              res.json['crossmatched_antibodies'][0])
             self.assertEqual({'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
-                                               'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02',
+                                               'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02', 'second_code': None,
+                                               'second_raw_code': None,
                                                'type': 'NORMAL'},
                               'match_type': 'HIGH_RES'}, res.json['crossmatched_antibodies'][1])
             self.assertEqual({'hla_antibody': {'code': {'broad': 'A1', 'high_res': 'A*01:01', 'split': 'A1'},
-                                               'cutoff': 1000, 'mfi': 5000, 'raw_code': 'A*01:01', 'type': 'NORMAL'},
+                                               'cutoff': 1000, 'mfi': 5000, 'raw_code': 'A*01:01', 'second_code': None,
+                                               'second_raw_code': None, 'type': 'NORMAL'},
                               'match_type': 'HIGH_RES'},
                              res.json['crossmatched_antibodies_per_group'][0]['antibody_matches'][0])
             self.assertEqual({'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
-                                               'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02', 'type': 'NORMAL'},
+                                               'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02', 'second_code': None,
+                                               'second_raw_code': None,'type': 'NORMAL'},
                               'match_type': 'HIGH_RES'},
                              res.json['crossmatched_antibodies_per_group'][0]['antibody_matches'][1])
             self.assertEqual(
