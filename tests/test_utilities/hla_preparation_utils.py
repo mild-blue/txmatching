@@ -54,6 +54,7 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
 
 
 def _create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
+    # Example of HLA antibody raw format: DP[02:01,03:02]
     return hla_antibody.raw_code[:2] + "[" + hla_antibody.raw_code.split("*")[1] + "," + hla_antibody.second_raw_code.split("*")[1] + "]"
 
 
