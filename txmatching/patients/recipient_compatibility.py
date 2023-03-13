@@ -20,7 +20,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                                                            crossmatch_logic: Callable = get_crossmatched_antibodies_per_group) \
                 -> Tuple[int, Set[int], List[RecipientDonorCompatibilityDetails]]:
     """
-    Calculates cPRA for recipient (which part of donors [as decimal] is compatible) for txm_event and returns list of
+    Calculates cPRA for recipient (which part of donors [as decimal] is incompatible) for txm_event and returns list of
     compatible donors optionally with details about compatibility.
 
     :param compatibility_details: Compute details of recipient-donor compatibility if True, return only set of
