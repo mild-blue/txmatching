@@ -92,7 +92,7 @@ class TxmEventDoCrossmatch(Resource):
 
         antibodies_parsing_issues, _ = parse_hla_antibodies_raw_and_return_parsing_issue_list(
             antibodies_list)
-        typing_parsing_issues, hla_per_group = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
+        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
         ))
 
