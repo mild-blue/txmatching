@@ -12,19 +12,8 @@
 import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
 
 
-export interface AntibodyMatchForHLAGroupGenerated { 
+export interface HlaToAntibodyMatchGenerated { 
     antibody_matches: Array<AntibodyMatchGenerated>;
-    hla_group: AntibodyMatchForHLAGroupGeneratedHlaGroupEnum;
+    hla_code: string;
 }
-export enum AntibodyMatchForHLAGroupGeneratedHlaGroupEnum {
-    A = 'A',
-    B = 'B',
-    Drb1 = 'DRB1',
-    Cw = 'CW',
-    Dp = 'DP',
-    Dq = 'DQ',
-    OtherDr = 'OTHER_DR'
-};
-
-
 

@@ -2311,34 +2311,6 @@
             },
             "type": "object"
         },
-        "AntibodyMatchForHLAGroup": {
-            "required": [
-                "antibody_matches",
-                "hla_group"
-            ],
-            "properties": {
-                "hla_group": {
-                    "type": "string",
-                    "example": "A",
-                    "enum": [
-                        "A",
-                        "B",
-                        "DRB1",
-                        "CW",
-                        "DP",
-                        "DQ",
-                        "OTHER_DR"
-                    ]
-                },
-                "antibody_matches": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/AntibodyMatch"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "AntigenMatch": {
             "required": [
                 "hla_type",
@@ -2899,21 +2871,14 @@
         },
         "CrossmatchOutput": {
             "required": [
-                "crossmatched_antibodies",
-                "crossmatched_antibodies_per_group",
+                "hla_to_antibody",
                 "parsing_issues"
             ],
             "properties": {
-                "crossmatched_antibodies": {
+                "hla_to_antibody": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/AntibodyMatch"
-                    }
-                },
-                "crossmatched_antibodies_per_group": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/AntibodyMatchForHLAGroup"
+                        "$ref": "#/definitions/HlaToAntibodyMatch"
                     }
                 },
                 "parsing_issues": {
@@ -3509,6 +3474,12 @@
                 },
                 "type": {
                     "$ref": "#/definitions/HLAAntibodyType"
+                },
+                "second_raw_code": {
+                    "type": "string"
+                },
+                "second_code": {
+                    "$ref": "#/definitions/HlaCode"
                 }
             },
             "type": "object"
@@ -3614,6 +3585,24 @@
                 "SPLIT_AND_BROAD"
             ],
             "type": "string"
+        },
+        "HlaToAntibodyMatch": {
+            "required": [
+                "antibody_matches",
+                "hla_code"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "antibody_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatch"
+                    }
+                }
+            },
+            "type": "object"
         },
         "HlaType": {
             "required": [

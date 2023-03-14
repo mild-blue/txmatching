@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import HLAAntibodiesUploadDTO
@@ -14,13 +14,12 @@ class CrossmatchDTOIn:
 
 
 @dataclass
-class CrossmatchDTOOut:
-    crossmatched_antibodies: List[AntibodyMatch]
-    crossmatched_antibodies_per_group: List[AntibodyMatchForHLAGroup]
-    parsing_issues: List[ParsingIssueBase]
+class HLAToAntibodyMatch:
+    hla_code: str
+    antibody_matches: List[AntibodyMatch] = None
 
 
 @dataclass
-class AntibodyMatchForHLAGroupDTO:
-    hla_group: HLAGroup
-    antibody_matches: List[AntibodyMatch]
+class CrossmatchDTOOut:
+    hla_to_antibody: HLAToAntibodyMatch
+    parsing_issues: List[ParsingIssueBase]

@@ -53,19 +53,6 @@ def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
     return antibody_matches_for_groups
 
 
-def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
-                                recipient_antibodies: HLAAntibodies,
-                                use_high_resolution: bool):
-    crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(donor_hla_typing, recipient_antibodies,
-                                                                              use_high_resolution)
-
-    antibody_matches = []
-    for antibody_match_group in crossmatched_antibodies_per_group:
-        antibody_matches.extend(antibody_match_group.antibody_matches)
-
-    return antibody_matches
-
-
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
                                use_high_resolution: bool,
