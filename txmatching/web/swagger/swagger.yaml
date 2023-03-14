@@ -73,27 +73,6 @@ definitions:
         - hla_antibody
         - match_type
         type: object
-    AntibodyMatchForHLAGroup:
-        properties:
-            antibody_matches:
-                items:
-                    $ref: '#/definitions/AntibodyMatch'
-                type: array
-            hla_group:
-                enum:
-                - A
-                - B
-                - DRB1
-                - CW
-                - DP
-                - DQ
-                - OTHER_DR
-                example: A
-                type: string
-        required:
-        - antibody_matches
-        - hla_group
-        type: object
     AntigenMatch:
         properties:
             hla_type:
@@ -573,21 +552,16 @@ definitions:
         type: object
     CrossmatchOutput:
         properties:
-            crossmatched_antibodies:
+            hla_to_antibody:
                 items:
-                    $ref: '#/definitions/AntibodyMatch'
-                type: array
-            crossmatched_antibodies_per_group:
-                items:
-                    $ref: '#/definitions/AntibodyMatchForHLAGroup'
+                    $ref: '#/definitions/HlaToAntibodyMatch'
                 type: array
             parsing_issues:
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
         required:
-        - crossmatched_antibodies
-        - crossmatched_antibodies_per_group
+        - hla_to_antibody
         - parsing_issues
         type: object
     CycleOrChain:
@@ -979,6 +953,10 @@ definitions:
                 type: integer
             raw_code:
                 type: string
+            second_code:
+                $ref: '#/definitions/HlaCode'
+            second_raw_code:
+                type: string
             type:
                 $ref: '#/definitions/HLAAntibodyType'
         required:
@@ -1061,6 +1039,18 @@ definitions:
         - BROAD
         - SPLIT_AND_BROAD
         type: string
+    HlaToAntibodyMatch:
+        properties:
+            antibody_matches:
+                items:
+                    $ref: '#/definitions/AntibodyMatch'
+                type: array
+            hla_code:
+                type: string
+        required:
+        - antibody_matches
+        - hla_code
+        type: object
     HlaType:
         properties:
             code:

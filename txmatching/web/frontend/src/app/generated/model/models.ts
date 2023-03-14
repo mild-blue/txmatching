@@ -1,7 +1,6 @@
 export * from './allMessagesGenerated';
 export * from './allTransplantMessagesGenerated';
 export * from './antibodiesPerGroupGenerated';
-export * from './antibodyMatchForHLAGroupGenerated';
 export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
 export * from './bloodGroupEnumGenerated';
@@ -36,6 +35,7 @@ export * from './hlaAntibodyToUpdateGenerated';
 export * from './hlaCodeGenerated';
 export * from './hlaCodesInGroupsGenerated';
 export * from './hlaCrossmatchLevelGenerated';
+export * from './hlaToAntibodyMatchGenerated';
 export * from './hlaTypeGenerated';
 export * from './hlaTypeRawGenerated';
 export * from './hlaTypeToUpdateGenerated';

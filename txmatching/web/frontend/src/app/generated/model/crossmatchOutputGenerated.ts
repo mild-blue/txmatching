@@ -9,14 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AntibodyMatchForHLAGroupGenerated } from './antibodyMatchForHLAGroupGenerated';
 import { ParsingIssueBaseGenerated } from './parsingIssueBaseGenerated';
-import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
+import { HlaToAntibodyMatchGenerated } from './hlaToAntibodyMatchGenerated';
 
 
 export interface CrossmatchOutputGenerated { 
-    crossmatched_antibodies: Array<AntibodyMatchGenerated>;
-    crossmatched_antibodies_per_group: Array<AntibodyMatchForHLAGroupGenerated>;
+    hla_to_antibody: Array<HlaToAntibodyMatchGenerated>;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
 }
 

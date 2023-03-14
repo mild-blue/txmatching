@@ -9,7 +9,8 @@ from txmatching.auth.operation_guards.country_guard import \
 from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
-from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDTOIn, CrossmatchDTOOut
+from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDTOIn, \
+    CrossmatchDTOOut, HLAToAntibodyMatch
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson, CrossmatchJsonIn, CrossmatchJsonOut)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
@@ -23,8 +24,7 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (
     get_txm_event_db_id_by_name, save_original_data)
 from txmatching.patients.hla_model import HLATypeRaw
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
-    get_crossmatched_antibodies
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.utils.logged_user import get_current_user_id
@@ -85,11 +85,6 @@ class TxmEventDoCrossmatch(Resource):
         antibodies_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
                            crossmatch_dto.recipient_antibodies]
 
-        crossmatched_antibodies = get_crossmatched_antibodies(
-            donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
-            recipient_antibodies=create_antibodies(antibodies_list),
-            use_high_resolution=True)
-
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
             donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
             recipient_antibodies=create_antibodies(antibodies_list),
@@ -97,12 +92,20 @@ class TxmEventDoCrossmatch(Resource):
 
         antibodies_parsing_issues, _ = parse_hla_antibodies_raw_and_return_parsing_issue_list(
             antibodies_list)
-        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
+        typing_parsing_issues, hla_per_group = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
         ))
 
+        antigen_to_antibody = [HLAToAntibodyMatch(hla_code=hla, antibody_matches=[]) for hla in
+                               crossmatch_dto.donor_hla_typing]
+        for match_per_group in crossmatched_antibodies_per_group:
+            for match in match_per_group.antibody_matches:
+                # get HLAToAntibodyMatch object with the same hla_code as the match
+                [hla for hla in antigen_to_antibody if hla.hla_code == match.hla_antibody.raw_code][
+                    0].antibody_matches.append(
+                    match)
+
         return response_ok(CrossmatchDTOOut(
-            crossmatched_antibodies=crossmatched_antibodies,
-            crossmatched_antibodies_per_group=crossmatched_antibodies_per_group,
+            hla_to_antibody=antigen_to_antibody,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))
