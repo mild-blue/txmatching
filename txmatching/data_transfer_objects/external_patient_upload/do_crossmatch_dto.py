@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import HLAAntibodiesUploadDTO
-from txmatching.utils.enums import HLAGroup
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAGroup, AntibodyMatch
+from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
 
 
 @dataclass
