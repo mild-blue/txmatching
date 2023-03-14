@@ -262,6 +262,7 @@ def _parse_double_antibody_mfi_under_cutoff(double_antibody: HLAAntibody,
     return hla_antibodies
 
 
+# pylint: disable=too-many-arguments
 def _join_alpha_chain_if_unparsed(double_antibody: HLAAntibody,
                                   joined_antibodies: List[HLAAntibody],
                                   parsed_hla_codes: Set[str],
@@ -276,6 +277,7 @@ def _join_alpha_chain_if_unparsed(double_antibody: HLAAntibody,
                                                           antibody_type))
 
 
+# pylint: disable=too-many-arguments
 def _join_beta_chain_if_unparsed(double_antibody: HLAAntibody,
                                   joined_antibodies: List[HLAAntibody],
                                   parsed_hla_codes: Set[str],
@@ -290,6 +292,7 @@ def _join_beta_chain_if_unparsed(double_antibody: HLAAntibody,
                                                          antibody_type))
 
 
+# pylint: disable=too-many-arguments
 def _join_both_chains_if_unparsed(double_antibody: HLAAntibody,
                                   joined_antibodies: List[HLAAntibody],
                                   parsed_hla_codes: Set[str],
