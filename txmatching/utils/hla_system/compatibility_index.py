@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List
 
 from txmatching.patients.hla_model import HLAType, HLATyping
-from txmatching.utils.enums import (HLA_GROUPS, HLAGroup,
-                                    MatchType)
+from txmatching.utils.enums import HLA_GROUPS, HLAGroup, MatchType
 
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
@@ -312,10 +311,11 @@ def _check_if_correct_amount_of_hla_types(hla_typing: HLATyping, hla_group: HLAG
     if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
         a_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'A']
         b_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'B']
-        if len(a_genes) not in [1, 2] or len(b_genes) not in [1, 2]:
+        if len(a_genes) > 2 or len(b_genes) > 2:
             logger.error(
-                f'Invalid list of alleles for group {hla_group.name} - there have to be at least one and at most two'
-                f' of each chains, A and B.\nList of patient_alleles: {hla_typing.hla_per_groups}')
+                f'Invalid list of alleles for group {hla_group.name} - there have to be maximum 2 per gene'
+                f'. List of patient alleles in group: {[hla_type.code.display_code for hla_type in hla_types]} '
+                f'For the moment this is ignored, in future version it will be an error.')
         if len(a_genes) == 1:
             a_genes = a_genes + a_genes
         if len(b_genes) == 1:
@@ -325,8 +325,8 @@ def _check_if_correct_amount_of_hla_types(hla_typing: HLATyping, hla_group: HLAG
     if len(hla_types) > 2:
         logger.error(
             f'Invalid list of alleles for gene {hla_group.name} - there have to be maximum 2 per gene.'
-            f'\nList of patient_alleles: {hla_typing.hla_per_groups}')
-        return hla_types
+            f' List of patient alleles for gene: {[hla_type.code.display_code for hla_type in hla_types]}. '
+            f'For the moment this is ignored, in future version it will be an error.')
     if len(hla_types) == 1 and hla_group is not HLAGroup.OTHER_DR:
         return hla_types + hla_types
     return hla_types
