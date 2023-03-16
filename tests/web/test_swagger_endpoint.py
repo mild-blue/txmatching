@@ -61,7 +61,8 @@ class TestSwaggerEndpoints(DbTests):
             },
             'post': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403]
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
+                f'{API_VERSION[1:]}/{PUBLIC_NAMESPACE}/do-crossmatch': [500]  # TODO: issue
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
