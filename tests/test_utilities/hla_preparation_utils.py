@@ -61,7 +61,8 @@ def _create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
 def create_antibody(raw_code: str, mfi: int, cutoff: int, second_raw_code: str = None,
                     antibody_type: HLAAntibodyType = HLAAntibodyType.NORMAL) -> HLAAntibody:
     code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
-    second_code = parse_hla_raw_code_and_return_parsing_issue_list(second_raw_code)[1]
+    second_code = parse_hla_raw_code_and_return_parsing_issue_list(
+        second_raw_code)[1] if second_raw_code is not None else None
     return HLAAntibody(
         raw_code=raw_code,
         code=code,
