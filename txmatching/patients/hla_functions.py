@@ -93,9 +93,8 @@ def _join_duplicate_antibodies(
                                                                                             single_antibodies_joined)
 
     parsing_issues = single_antibodies_parsing_issues + double_antibodies_parsing_issues + cutoff_parsing_issues
-    hla_antibodies_joined = double_antibodies_joined
 
-    return parsing_issues, hla_antibodies_joined
+    return parsing_issues, double_antibodies_joined
 
 
 def _check_groups_for_multiple_cutoffs(hla_antibodies: List[HLAAntibody]) -> List[ParsingIssueBase]:
@@ -194,6 +193,8 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                 if alpha_chain_only_positive:
                     _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                   parsed_hla_codes, get_average_mfi, mfi_dictionary)
+                    # if only one is positive it is expected that the positivity is caused by the other chain,
+                    # thus it does not contribute to the average mfi
                     if is_only_one_positive_mfi_present(double_antibody.second_raw_code, mfi_dictionary,
                                                         double_antibody.cutoff):
                         _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
@@ -202,6 +203,8 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                 if beta_chain_only_positive:
                     _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                  parsed_hla_codes, get_average_mfi, mfi_dictionary)
+                    # if only one is positive it is expected that the positivity is caused by the other chain,
+                    # thus it does not contribute to the average mfi
                     if is_only_one_positive_mfi_present(double_antibody.raw_code, mfi_dictionary,
                                                         double_antibody.cutoff):
                         _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
