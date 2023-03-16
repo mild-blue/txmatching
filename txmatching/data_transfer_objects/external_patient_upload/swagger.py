@@ -80,7 +80,7 @@ CrossmatchJsonIn = public_api.model(
     }
 )
 
-HlaToAntibodyMatchJson = public_api.model('HlaToAntibodyMatch', {
+AntibodyMatchForHLACode = public_api.model('AntibodyMatchForHLACode', {
     'hla_code': fields.String(required=True),
     'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson)),
 })
@@ -88,7 +88,7 @@ HlaToAntibodyMatchJson = public_api.model('HlaToAntibodyMatch', {
 CrossmatchJsonOut = public_api.model(
     'CrossmatchOutput',
     {
-        'hla_to_antibody': fields.List(required=True, cls_or_instance=fields.Nested(HlaToAntibodyMatchJson)),
+        'hla_to_antibody': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchForHLACode)),
         'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueBaseJson))
     }
 )

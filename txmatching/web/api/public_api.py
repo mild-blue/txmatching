@@ -10,7 +10,7 @@ from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.external_patient_upload.do_crossmatch_dto import CrossmatchDTOIn, \
-    CrossmatchDTOOut, HLAToAntibodyMatch
+    CrossmatchDTOOut, AntibodyMatchForHLACode
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson, CrossmatchJsonIn, CrossmatchJsonOut)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
@@ -96,7 +96,7 @@ class TxmEventDoCrossmatch(Resource):
             hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
         ))
 
-        antigen_to_antibody = [HLAToAntibodyMatch(hla_code=hla, antibody_matches=[]) for hla in
+        antigen_to_antibody = [AntibodyMatchForHLACode(hla_code=hla, antibody_matches=[]) for hla in
                                crossmatch_dto.donor_hla_typing]
         for match_per_group in crossmatched_antibodies_per_group:
             for match in match_per_group.antibody_matches:

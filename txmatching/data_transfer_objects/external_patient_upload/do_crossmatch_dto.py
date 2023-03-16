@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import List
 
@@ -13,12 +14,12 @@ class CrossmatchDTOIn:
 
 
 @dataclass
-class HLAToAntibodyMatch:
+class AntibodyMatchForHLACode:
     hla_code: str
-    antibody_matches: List[AntibodyMatch] = None
+    antibody_matches: List[AntibodyMatch] = dataclasses.field(default_factory=list)
 
 
 @dataclass
 class CrossmatchDTOOut:
-    hla_to_antibody: HLAToAntibodyMatch
+    hla_to_antibody: AntibodyMatchForHLACode
     parsing_issues: List[ParsingIssueBase]
