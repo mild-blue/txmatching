@@ -73,7 +73,7 @@ class TxmEventUploadPatients(Resource):
 
 
 @public_api.route('/do-crossmatch', methods=['POST'])
-class TxmEventDoCrossmatch(Resource):
+class DoCrossmatch(Resource):
     @public_api.doc(security='bearer')
     @public_api.request_body(CrossmatchJsonIn)
     @public_api.response_ok(CrossmatchJsonOut)
@@ -100,10 +100,10 @@ class TxmEventDoCrossmatch(Resource):
                                crossmatch_dto.donor_hla_typing]
         for match_per_group in crossmatched_antibodies_per_group:
             for match in match_per_group.antibody_matches:
-                # get HLAToAntibodyMatch object with the same hla_code as the match
-                [hla for hla in antigen_to_antibody if hla.hla_code == match.hla_antibody.raw_code][
-                    0].antibody_matches.append(
-                    match)
+                # get AntibodyMatchForHLACode object with the same hla_code as the match and append the match
+                matched_hla = [hla for hla in antigen_to_antibody if hla.hla_code == match.hla_antibody.raw_code]
+                if matched_hla:
+                    matched_hla[0].antibody_matches.append(match)
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antigen_to_antibody,
