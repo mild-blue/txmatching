@@ -5,7 +5,6 @@ from txmatching.data_transfer_objects.base_patient_swagger import (
 from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibody, HLACode
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchJson
-from txmatching.utils.enums import HLA_GROUPS
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
 HLACode = crossmatch_api.clone("HlaCode", HLACode)

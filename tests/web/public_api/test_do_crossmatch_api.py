@@ -1,5 +1,4 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.auth.data_types import UserRole
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
 
 

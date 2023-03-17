@@ -73,6 +73,17 @@ definitions:
         - hla_antibody
         - match_type
         type: object
+    AntibodyMatchForHLACode:
+        properties:
+            antibody_matches:
+                items:
+                    $ref: '#/definitions/AntibodyMatch'
+                type: array
+            hla_code:
+                type: string
+        required:
+        - hla_code
+        type: object
     AntigenMatch:
         properties:
             hla_type:
@@ -519,6 +530,51 @@ definitions:
         - ZMB
         - ZWE
         type: string
+    CrossmatchInput:
+        properties:
+            donor_hla_typing:
+                description: HLA typing of the patient. Use high resolution if available.
+                example: &id003
+                - A1
+                - A32
+                - B7
+                - B51
+                - DR11
+                - DR15
+                - A*02:03
+                - A*11:01:35
+                - DPA1*01:07
+                - DRB4*01:01
+                - DQB1*02:01:01:01
+                items:
+                    type: string
+                type: array
+            recipient_antibodies:
+                description: Detected HLA antibodies of the patient. Use high resolution
+                    if available. If high resolution is provided it is assumed that
+                    all tested antibodies were provided. If not it is assumed that
+                    either all or just positive ones were.
+                items:
+                    $ref: '#/definitions/HLAAntibodyIn'
+                type: array
+        required:
+        - donor_hla_typing
+        - recipient_antibodies
+        type: object
+    CrossmatchOutput:
+        properties:
+            hla_to_antibody:
+                items:
+                    $ref: '#/definitions/AntibodyMatchForHLACode'
+                type: array
+            parsing_issues:
+                items:
+                    $ref: '#/definitions/ParsingIssueBase'
+                type: array
+        required:
+        - hla_to_antibody
+        - parsing_issues
+        type: object
     CycleOrChain:
         properties:
             patients:
@@ -597,7 +653,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id017
+                example: &id018
                 -   antibody_matches:
                     -   hla_antibody:
                             code: &id002
@@ -657,7 +713,7 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
-            etag: &id004
+            etag: &id005
                 description: Number of updates of a patient
                 example: 1
                 type: integer
@@ -692,44 +748,33 @@ definitions:
         type: object
     DonorInput:
         properties:
-            blood_group: &id003
+            blood_group: &id004
                 $ref: '#/definitions/BloodGroupEnum'
             donor_type:
                 $ref: '#/definitions/DonorType'
-            height: &id005
+            height: &id006
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id012
+            hla_typing: &id013
                 description: HLA typing of the patient. Use high resolution if available.
-                example:
-                - A1
-                - A32
-                - B7
-                - B51
-                - DR11
-                - DR15
-                - A*02:03
-                - A*11:01:35
-                - DPA1*01:07
-                - DRB4*01:01
-                - DQB1*02:01:01:01
+                example: *id003
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id013
+            internal_medical_id: &id014
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id011
+            medical_id: &id012
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: D1037
                 type: string
-            note: &id006
+            note: &id007
                 default: ''
                 example: donor note
                 type: string
@@ -738,13 +783,13 @@ definitions:
                     and non-directed donors.
                 example: R1037
                 type: string
-            sex: &id007
+            sex: &id008
                 $ref: '#/definitions/SexEnum'
-            weight: &id008
+            weight: &id009
                 description: Weight of the patient in kilograms.
                 example: 78.4
                 type: number
-            year_of_birth: &id009
+            year_of_birth: &id010
                 description: Year of birth of the patient.
                 example: 1945
                 type: integer
@@ -1257,6 +1302,39 @@ definitions:
         - parsing_issue_detail
         - txm_event_id
         type: object
+    ParsingIssueBase:
+        properties:
+            hla_code_or_group:
+                type: string
+            message:
+                type: string
+            parsing_issue_detail:
+                enum:
+                - SUCCESSFULLY_PARSED
+                - HIGH_RES_WITHOUT_SPLIT
+                - HIGH_RES_WITH_LETTER
+                - HIGH_RES_WITH_ASSUMED_SPLIT_CODE
+                - CREATED_THEORETICAL_ANTIBODY
+                - MULTIPLE_SPLITS_OR_BROADS_FOUND
+                - IRRELEVANT_CODE
+                - UNEXPECTED_SPLIT_RES_CODE
+                - UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
+                - UNPARSABLE_HLA_CODE
+                - MORE_THAN_TWO_HLA_CODES_PER_GROUP
+                - BASIC_HLA_GROUP_IS_EMPTY
+                - ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+                - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
+                - MULTIPLE_CUTOFFS_PER_GROUP
+                - DUPLICATE_ANTIBODY_SINGLE_CHAIN
+                - MFI_PROBLEM
+                - OTHER_PROBLEM
+                example: SUCCESSFULLY_PARSED
+                type: string
+        required:
+        - hla_code_or_group
+        - message
+        - parsing_issue_detail
+        type: object
     ParsingIssuePublic:
         properties:
             hla_code_or_group:
@@ -1310,13 +1388,13 @@ definitions:
         type: object
     PatientModelToUpdate:
         properties:
-            blood_group: *id003
-            db_id: &id010
+            blood_group: *id004
+            db_id: &id011
                 description: Database id of the patient
                 example: 1
                 type: integer
-            etag: *id004
-            height: *id005
+            etag: *id005
+            height: *id006
             hla_typing:
                 allOf:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
@@ -1327,10 +1405,10 @@ definitions:
                     -   raw_code: A*01:02
                     -   raw_code: B7
                     -   raw_code: DR11
-            note: *id006
-            sex: *id007
-            weight: *id008
-            year_of_birth: *id009
+            note: *id007
+            sex: *id008
+            weight: *id009
+            year_of_birth: *id010
         required:
         - blood_group
         - db_id
@@ -1421,14 +1499,14 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            db_id: *id010
-            etag: *id004
+            db_id: *id011
+            etag: *id005
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id011
+            medical_id: *id012
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_issues:
@@ -1481,7 +1559,7 @@ definitions:
         type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id014
+            acceptable_blood_groups: &id015
                 description: Acceptable blood groups for the patient. Leave empty
                     to use compatible blood groups.
                 example:
@@ -1490,8 +1568,8 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
-            blood_group: *id003
-            height: *id005
+            blood_group: *id004
+            height: *id006
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution
                     if available. If high resolution is provided it is assumed that
@@ -1500,23 +1578,23 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id012
-            internal_medical_id: *id013
-            medical_id: *id011
-            note: *id006
-            previous_transplants: &id015
+            hla_typing: *id013
+            internal_medical_id: *id014
+            medical_id: *id012
+            note: *id007
+            previous_transplants: &id016
                 description: Number of previous kidney transplants.
                 example: 0
                 type: integer
-            sex: *id007
-            waiting_since: &id016
+            sex: *id008
+            waiting_since: &id017
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
                 format: date
                 type: string
-            weight: *id008
-            year_of_birth: *id009
+            weight: *id009
+            year_of_birth: *id010
         required:
         - blood_group
         - hla_antibodies
@@ -1527,7 +1605,7 @@ definitions:
         allOf:
         -   $ref: '#/definitions/PatientModelToUpdate'
         -   properties:
-                acceptable_blood_groups: *id014
+                acceptable_blood_groups: *id015
                 cutoff:
                     type: integer
                 hla_antibodies:
@@ -1539,7 +1617,7 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
-                previous_transplants: *id015
+                previous_transplants: *id016
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -1547,7 +1625,7 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
-                waiting_since: *id016
+                waiting_since: *id017
             type: object
     RecipientRequirements:
         properties:
@@ -1664,7 +1742,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id017
+                example: *id018
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -1950,6 +2028,43 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/crossmatch/do-crossmatch:
+        post:
+            description: Perform crossmatch test between donor HLA typing and recipient
+                antibodies.
+            operationId: post_do_crossmatch
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/CrossmatchInput'
+            responses:
+                '200':
+                    description: Success
+                    schema:
+                        $ref: '#/definitions/CrossmatchOutput'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - crossmatch
     /v1/optimizer:
         post:
             operationId: post_optimize
@@ -3366,3 +3481,4 @@ tags:
 -   name: configuration
 -   name: reports
 -   name: txm-event
+-   name: crossmatch
