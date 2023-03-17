@@ -21,5 +21,5 @@ class AntibodyMatchForHLACode:
 
 @dataclass
 class CrossmatchDTOOut:
-    hla_to_antibody: AntibodyMatchForHLACode
+    hla_to_antibody: List[AntibodyMatchForHLACode]
     parsing_issues: List[ParsingIssueBase]

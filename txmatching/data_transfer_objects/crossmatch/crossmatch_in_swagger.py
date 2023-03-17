@@ -8,16 +8,11 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import Antibody
 from txmatching.utils.enums import HLA_GROUPS
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
-HLACodes = crossmatch_api.clone("HlaCode", HLACode)
+HLACode = crossmatch_api.clone("HlaCode", HLACode)
 
 HLAAntibody = crossmatch_api.clone("HlaAntibody", HLAAntibody)
 
 AntibodyMatchJson = crossmatch_api.clone("AntibodyMatch", AntibodyMatchJson)
-
-# AntibodyMatchForHLAGroupJson = crossmatch_api.model('AntibodyMatchForHLAGroup', {
-#     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS]),
-#     'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson)),
-# })
 
 CrossmatchJsonIn = crossmatch_api.model(
     'CrossmatchInput',
@@ -26,9 +21,9 @@ CrossmatchJsonIn = crossmatch_api.model(
                                         example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
         'recipient_antibodies': fields.List(required=True,
                                             description='Detected HLA antibodies of the patient. Use high resolution '
-                                                        'if available. If high resolution is provided it is assumed that all'
-                                                        ' tested antibodies were provided. If not it is assumed that either '
-                                                        'all or just positive ones were.',
+                                                        'if available. If high resolution is provided it is assumed '
+                                                        'that all tested antibodies were provided. If not it is assumed'
+                                                        ' that either all or just positive ones were.',
                                             cls_or_instance=fields.Nested(
                                                 HLAAntibodyJsonIn
                                             ))
@@ -47,4 +42,3 @@ CrossmatchJsonOut = crossmatch_api.model(
         'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueBaseJson))
     }
 )
-
