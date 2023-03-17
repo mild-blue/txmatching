@@ -20,7 +20,7 @@ dependencies:
   - pyjwt==2.6.0
   - pylint=2.15.5
   - pyotp=2.6.0
-  - python=3.10.5
+  - python=3.11.0
   - requests=2.28.1
   - responses=0.21.0
   - scipy=1.9.3
@@ -40,4 +40,4 @@ dependencies:
       - pylint-plugin-utils==0.7
       - swagger-unittest==0.3.6
       - yoyo-migrations==7.3.2
-      - flask-restx==1.0.3
+      - flask-restx==1.0.5

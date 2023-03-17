@@ -190,7 +190,7 @@ def _donor_upload_dto_to_donor_model(
 
     if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
         raise InvalidArgumentException(
-            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}" '
+            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR.name}" or "{DonorType.NON_DIRECTED.name}" '
             f'but was "{donor.donor_type}".'
         )
     if (donor.donor_type == DonorType.DONOR and
@@ -202,7 +202,7 @@ def _donor_upload_dto_to_donor_model(
         )
 
     if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
-        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}" but was '
+        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR.name}" but was '
                                        f'{donor.donor_type}.')
 
     maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None

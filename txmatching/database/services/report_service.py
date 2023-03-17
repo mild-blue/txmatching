@@ -4,6 +4,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass, replace
+# TODO: https://github.com/mild-blue/txmatching/issues/1161
 # pylint: disable=deprecated-module
 from distutils.dir_util import copy_tree
 from io import BytesIO
@@ -12,6 +13,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import jinja2
 import pandas as pd
 import pdfkit
+
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.exceptions import NotFoundException
@@ -309,7 +311,7 @@ def _get_theme() -> Tuple[str, str]:
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
-    return f'{country_combination.donor_country} - {country_combination.recipient_country}'
+    return f'{country_combination.donor_country.name} - {country_combination.recipient_country.name}'
 
 
 def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
