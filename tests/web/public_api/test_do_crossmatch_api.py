@@ -1,6 +1,6 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
-from txmatching.web import API_VERSION, PUBLIC_NAMESPACE
+from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
 
 
 class TestDoCrossmatchApi(DbTests):
@@ -19,7 +19,7 @@ class TestDoCrossmatchApi(DbTests):
         }
 
         with self.app.test_client() as client:
-            res = client.post(f'{API_VERSION}/{PUBLIC_NAMESPACE}/do-crossmatch', json=json,
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 

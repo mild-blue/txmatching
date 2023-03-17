@@ -43,7 +43,7 @@ from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  REPORTS_NAMESPACE,
                                                  SERVICE_NAMESPACE,
                                                  TXM_EVENT_NAMESPACE,
-                                                 USER_NAMESPACE, enums_api)
+                                                 USER_NAMESPACE, enums_api, crossmatch_api, CROSSMATCH_NAMESPACE)
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -315,6 +315,7 @@ def add_all_namespaces(api: Api):
     api.add_namespace(report_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
+    api.add_namespace(crossmatch_api, path=f'{API_VERSION}/{CROSSMATCH_NAMESPACE}')
 
 
 def _get_current_user_if_logged() -> Optional[AppUserModel]:

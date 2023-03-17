@@ -30,4 +30,7 @@ report_api = Namespace(REPORTS_NAMESPACE)
 ENUMS_NAMESPACE = 'enums'
 enums_api = Namespace(ENUMS_NAMESPACE)
 
+CROSSMATCH_NAMESPACE = 'crossmatch'
+crossmatch_api = Namespace(CROSSMATCH_NAMESPACE)
+
 # Note: namespace prefix urls are defined in txmatching.web.add_all_namespaces
