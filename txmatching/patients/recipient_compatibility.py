@@ -46,17 +46,20 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
 
     for donor in active_donors:
 
+        # TODO - duplicity with `is_hla_crossmatch()`, should be resolved in https://github.com/mild-blue/txmatching/issues/1163,
+        # or https://github.com/mild-blue/txmatching/issues/1160
         antibodies = crossmatch_logic(
             donor.parameters.hla_typing,
             recipient.hla_antibodies,
             config_parameters.use_high_resolution)
-
         common_codes = {antibody_match.hla_antibody for antibody_match_group in antibodies
                         for antibody_match in antibody_match_group.antibody_matches
                         if antibody_match.match_type.is_positive_for_level(config_parameters.hla_crossmatch_level)}
 
         if len(common_codes) == 0: # donor is compatible with the recipient (considering only hla crossmatch)
             n_hla_crossmatch_compatible += 1
+            # TODO - load score from compatibilty graph (saved in database in pairing results)
+            # (https://github.com/mild-blue/txmatching/issues/1163)
             score = scorer.score_transplant(donor, recipient, None)
 
             if score > TRANSPLANT_IMPOSSIBLE_SCORE: # donor is compatible with the recipient
