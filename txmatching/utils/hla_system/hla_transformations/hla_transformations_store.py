@@ -36,6 +36,9 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     :param hla_raw_code: HLA raw code
     :return:
     """
+    if not isinstance(hla_raw_code, str):
+        raise TypeError(f"Expected hla_raw_code as a string, got {type(hla_raw_code)}")
+
     parsing_issues = []
     processing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not processing_result.maybe_hla_code or processing_result.result_detail not in OK_PROCESSING_RESULTS:
