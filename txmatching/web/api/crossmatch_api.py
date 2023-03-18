@@ -6,6 +6,7 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import Crossmatc
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
 from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodyRaw
+from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
@@ -44,6 +45,10 @@ class DoCrossmatch(Resource):
                                crossmatch_dto.donor_hla_typing]
         for match_per_group in crossmatched_antibodies_per_group:
             for match in match_per_group.antibody_matches:
+                if match.hla_antibody.type == HLAAntibodyType.THEORETICAL:
+                    raise NotImplementedError('Theoretical antibodies are not supported yet.')
+                elif match.hla_antibody.second_raw_code:
+                    raise NotImplementedError('Double antibodies are not supported yet.')
                 # get AntibodyMatchForHLACode object with the same hla_code as the match and append the match
                 matched_hla = [hla for hla in antigen_to_antibody if hla.hla_code == match.hla_antibody.raw_code]
                 if matched_hla:
