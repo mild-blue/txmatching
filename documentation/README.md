@@ -19,7 +19,7 @@ to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. T
 ## Gene groups
 
 We are currently considering 6 groups of HLA antigens: A, B, C, DR, DP, and DQ. All of the other groups are not relevant to
-the immune system. The most important groups are A, B, and DR. 
+the immune system. The most important groups are A, B, and DR.
 
 For every antigen from groups A, B, and C, the patient has exactly 2 HLA codes (one from the mother and one from the father),
 and if only one is present, it is duplicated. This is the same for serological notation as for high resolution.
@@ -41,7 +41,7 @@ In the case of DP genes, during conversion, we only take "DP" and the first numb
 isn't a standardized one, and we should consider primarily DP genes in high resolution.
 
 ### DR
-This is the most complex group of antigens. 
+This is the most complex group of antigens.
 
 It is composed of 5 types of genes:
 
@@ -50,7 +50,7 @@ It is composed of 5 types of genes:
 **DRB3, DRB4, DRB5** - each of these genes is either present or not, but at most 2 out of these 3 can be present (meaning
 also 0 or 1 can be present). In the serological notation, they are listed as DR52, DR53, and DR51 if present.
 
-**DRA1** - this gene is not changing, and it is not considered at all. 
+**DRA1** - this gene is not changing, and it is not considered at all.
 
 In conclusion, from this group, we can have 2 HLA codes from DR1-DR18 (or one code duplicated) and 0-2 codes from
 DR51-DR53.
@@ -166,14 +166,14 @@ any HLAs the donor has been typed for programmatically.
 
 In the case of a lab crossmatch there either is a crossmatch or there is not. But in the case of virtual crossmatch, it is always only an approximation of reality and estimation of a likelihood of a crossmatch. Therefore, in cooperation with immunologists, we have concluded that it makes sense to have several levels of virtual crossmatch.
 
-Some crossmatch levels or ways to find a crossmatch are meaningful only in the case of processing logic of type A, because with type B we have less information. 
+Some crossmatch levels or ways to find a crossmatch are meaningful only in the case of processing logic of type A, because with type B we have less information.
 
 Below we describe all the different crossmatch levels. For each level, we describe a crossmatch for one specific antigen of the donor.
 
 #### HIGH RES
 1. donor antigen is in high resolution and the recipient has an antibody against the exact antigen.
 2. donor antigen is in high resolution and the recipient is type A parsed and was not tested for donor's antigen. But all tested antibodies that match the donor's antigen in split resolution are positive (and there is at least one such antibody).
-4. donor antigen is in split/broad resolution and the recipient is type A parsed and all tested antibodies that match donor's antigen in split/broad resolution are positive (and there is at least one such antibody).
+3. donor antigen is in split/broad resolution and the recipient is type A parsed and all tested antibodies that match donor's antigen in split/broad resolution are positive (and there is at least one such antibody).
 
 
 Example for case 1: donor has antigen DRB1\*08:18, and the recipient has antibody DRB1\*08:18.
@@ -244,7 +244,7 @@ the person being tested will react via pre-existing antibodies against human cel
 When we receive antibodies in format DP*[01:01;02:02] we are using a special algorithm to deduce whether there are
 antibodies against both alpha and beta alleles or just from one of them.
 
-TODO Add algorithm description
+The algorithm description will be added soon in issue: https://github.com/mild-blue/txmatching/issues/1169
 
 ## Configuring cutoff
 The original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth it for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via an increase in the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.

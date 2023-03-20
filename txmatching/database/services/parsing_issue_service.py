@@ -55,9 +55,9 @@ def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> Parsi
 
 
 def parsing_issues_bases_to_models(
-        parsing_issues_temp: List[ParsingIssueBase], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
+        parsing_issues_temp: List[ParsingIssueBase], donor_id: int = None, recipient_id: int = None,
+        txm_event_id: int = None
 ) -> List[ParsingIssueModel]:
-
     parsing_issue_models = [ParsingIssueModel(
         hla_code_or_group=issue_tmp.hla_code_or_group,
         parsing_issue_detail=issue_tmp.parsing_issue_detail,
@@ -121,3 +121,10 @@ def delete_parsing_issues_for_txm_event_id(txm_event_id: int):
     ParsingIssueModel.query.filter(
         ParsingIssueModel.txm_event_id == txm_event_id
     ).delete()
+
+
+def confirm_all_parsing_issues(user_id: int):
+    for row in ParsingIssueModel.query.all():  # all() is extra
+        row.confirmed_at = datetime.now()
+        row.confirmed_by = user_id
+    db.session.commit()

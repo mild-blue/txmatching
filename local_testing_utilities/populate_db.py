@@ -2,8 +2,9 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER, SMALL_DATA_FOLDER_MULTIPLE_DONORS,
-    SMALL_DATA_FOLDER_WITH_CROSSMATCH, store_generated_patients_from_folder)
+    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_WITH_CROSSMATCH,
+    store_generated_patients_from_folder)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
@@ -14,6 +15,8 @@ from txmatching.database.services.config_service import \
     save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
+from txmatching.database.services.parsing_issue_service import \
+    confirm_all_parsing_issues
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.scorer_service import \
@@ -136,7 +139,7 @@ def _add_users(users: List[AppUserModel]):
     assert len(AppUserModel.query.all()) == len(users)
 
 
-def populate_db_with_split_data(user_models):
+def populate_db_with_data(user_models):
     txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
     add_allowed_events_to_users(user_models)
     patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
@@ -182,5 +185,6 @@ def populate_db_multiple_recipients():
 def populate_large_db():
     create_or_overwrite_txm_event(name='test')
     user_models = add_users()
-    populate_db_with_split_data(user_models)
+    populate_db_with_data(user_models)
     store_generated_patients_from_folder()
+    confirm_all_parsing_issues(1)

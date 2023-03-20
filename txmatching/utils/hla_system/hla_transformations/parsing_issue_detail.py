@@ -12,7 +12,7 @@ class ParsingIssueDetail(str, Enum):
     HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'The information about the serological equivalent of the allele is only assumed' \
                                        ' in our datasource so the conversion is not 100% reliable. ' \
                                        'Please check that the conversion is correct.'
-    CREATED_THEORETICAL_ANTIBODY = 'Theoretical antibody was created, because double antibody had mixed MFI values' \
+    CREATED_THEORETICAL_ANTIBODY = 'Theoretical antibody was created, because double antibody had mixed MFI values ' \
                                    'for both chains.'
 
     # returning no value (hla code)
