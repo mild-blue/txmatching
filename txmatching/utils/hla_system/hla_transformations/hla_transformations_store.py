@@ -1,4 +1,3 @@
-import itertools
 import logging
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
@@ -10,13 +9,14 @@ from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodyRaw
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a,
     create_hla_antibodies_per_groups_from_hla_antibodies,
     is_all_antibodies_in_high_res, split_hla_types_to_groups)
-from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
-from txmatching.utils.enums import GENE_HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.patients.hla_model import (HLAAntibody, HLAAntibodyRaw,
+                                           HLAPerGroup, HLAType)
+from txmatching.utils.enums import (GENE_HLA_GROUPS, HLA_GROUPS_PROPERTIES,
+                                    HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
@@ -37,7 +37,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     :return:
     """
     if not isinstance(hla_raw_code, str):
-        raise TypeError(f"Expected hla_raw_code as a string, got {type(hla_raw_code)}")
+        raise TypeError(f'Expected hla_raw_code as a string, got {type(hla_raw_code)}')
 
     parsing_issues = []
     processing_result = parse_hla_raw_code_with_details(hla_raw_code)
@@ -58,59 +58,52 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
 ) -> Tuple[List[ParsingIssueBase], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
-    class HLAAntibodyPreprocessedDTO:
+    class HLAAntibodyPreprocessed:
         raw_code: str
         mfi: int
         cutoff: int
         secondary_raw_code: Optional[str] = None
 
     parsing_issues = []
-
+    # 2. Extract antibodies from raw code (sometimes there can be multiple in one raw code)
     hla_antibodies_preprocessed = [
-        HLAAntibodyPreprocessedDTO(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
-                                   hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
+        HLAAntibodyPreprocessed(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
+                                hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
         for hla_antibody_raw in hla_antibodies_raw
         for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
-    # 2. parse preprocessed codes and keep only valid ones
-    grouped_hla_antibodies = itertools.groupby(
-        sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
-        key=lambda x: x.raw_code
-    )
+    # 3. Parse antibodies
     hla_antibodies_parsed = []
-    for _, antibody_group_generator in grouped_hla_antibodies:
-        antibody_group = list(antibody_group_generator)
-        # Parse antibodies and keep only valid ones
-        for hla_antibody in antibody_group:
-            antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
-            antibody_parsing_issues_second_code, second_code = parse_hla_raw_code_and_return_parsing_issue_list(
-                hla_antibody.secondary_raw_code) if hla_antibody.secondary_raw_code is not None else ([], None)
-            hla_antibodies_parsed.append(
-                HLAAntibody(
-                    raw_code=hla_antibody.raw_code,
-                    code=code,
-                    mfi=hla_antibody.mfi,
-                    cutoff=hla_antibody.cutoff,
-                    second_raw_code=hla_antibody.secondary_raw_code,
-                    second_code=second_code
-                )
+    for hla_antibody in hla_antibodies_preprocessed:
+        antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
+        antibody_parsing_issues_second_code, second_code = parse_hla_raw_code_and_return_parsing_issue_list(
+            hla_antibody.secondary_raw_code) if hla_antibody.secondary_raw_code is not None else ([], None)
+        hla_antibodies_parsed.append(
+            HLAAntibody(
+                raw_code=hla_antibody.raw_code,
+                code=code,
+                mfi=hla_antibody.mfi,
+                cutoff=hla_antibody.cutoff,
+                second_raw_code=hla_antibody.secondary_raw_code,
+                second_code=second_code
             )
-            parsing_issues = parsing_issues + antibody_parsing_issues + antibody_parsing_issues_second_code
+        )
+        parsing_issues = parsing_issues + antibody_parsing_issues + antibody_parsing_issues_second_code
 
-    # 3. validate antibodies
-    parsing_issue = _get_parsing_issue_for_almost_valid_antibodies(hla_antibodies_parsed)
+    # 4. validate if antibodies are type a and raise parsing issue if something suspicious is found.
+    parsing_issue = _get_parsing_issue_if_antibodies_are_almost_type_a(hla_antibodies_parsed)
     if parsing_issue is not None:
         parsing_issues.append(parsing_issue)
 
-    # 4. split antibodies to groups (and join duplicates)
+    # 5. split antibodies to hla groups and join duplicates and estimate MFI.
     antibodies_per_groups_parsing_issues, hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies_parsed
     )
 
     parsing_issues = parsing_issues + antibodies_per_groups_parsing_issues
 
-    return (parsing_issues, HLAAntibodiesDTO(
+    return (list(set(parsing_issues)), HLAAntibodiesDTO(
         hla_antibodies_per_groups=hla_antibodies_per_groups
     ))
 
@@ -183,7 +176,8 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
 
 
 def group_exceedes_max_number_of_hla_types(hla_types: List[HLAType], hla_group: HLAGroup):
-    if hla_group is not HLAGroup.INVALID_CODES and len(hla_types) > HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient:
+    if hla_group is not HLAGroup.INVALID_CODES and len(hla_types) > HLA_GROUPS_PROPERTIES[
+        hla_group].max_count_per_patient:
         return True
     return False
 
@@ -194,7 +188,7 @@ def basic_group_is_empty(hla_types: List[HLAType]):
     return False
 
 
-def _get_parsing_issue_for_almost_valid_antibodies(recipient_antibodies: List[HLAAntibody]) \
+def _get_parsing_issue_if_antibodies_are_almost_type_a(recipient_antibodies: List[HLAAntibody]) \
         -> Optional[ParsingIssueBase]:
     if len(recipient_antibodies) == 0:
         return None

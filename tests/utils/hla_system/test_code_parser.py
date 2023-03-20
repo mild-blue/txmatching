@@ -5,6 +5,7 @@ import pandas as pd
 
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
+                                                        create_antibody_parsed,
                                                         create_hla_type)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
@@ -12,20 +13,22 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     HighResAntibodiesAnalysis, analyze_if_high_res_antibodies_are_type_a,
     is_all_antibodies_in_high_res)
-from txmatching.patients.hla_model import HLAPerGroup
+from txmatching.patients.hla_model import HLAAntibodyRaw, HLAPerGroup
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAAntibodyType, HLAGroup
+from txmatching.utils.enums import (HLA_GROUPS_PROPERTIES, HLAAntibodyType,
+                                    HLAGroup)
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_get_hla_high_res
 from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_ULTRA_HIGH_RES_TRANSFORMATIONS
-from txmatching.utils.hla_system.hla_transformations.mfi_functions import \
-    get_mfi_from_multiple_hla_codes_single_chain
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
-    basic_group_is_empty, group_exceedes_max_number_of_hla_types)
+    basic_group_is_empty, group_exceedes_max_number_of_hla_types,
+    parse_hla_antibodies_raw_and_return_parsing_issue_list)
+from txmatching.utils.hla_system.hla_transformations.mfi_functions import \
+    get_mfi_from_multiple_hla_codes_single_chain
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS,
     WARNING_PROCESSING_RESULTS, ParsingIssueDetail)
@@ -52,7 +55,8 @@ codes = {
     'DQB1*03:19:01:02Q': (HLACode('DQB1*03:19:01:02Q', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
     'NONEXISTENTN': (HLACode('NONEXISTENTN', 'NONEXISTENTN', 'NONEXISTENTN'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT': (HLACode('NONEXISTENT', 'NONEXISTENT', 'NONEXISTENT'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
-    'NONEXISTENT*11': (HLACode('NONEXISTENT*11', 'NONEXISTENT*11', 'NONEXISTENT*11'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'NONEXISTENT*11': (
+        HLACode('NONEXISTENT*11', 'NONEXISTENT*11', 'NONEXISTENT*11'), ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     'B*15:36': (HLACode('B*15:36', 'B*15:36', 'B*15:36'), ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
     'A*68:06': (HLACode('A*68:06', 'A68', 'A28'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
     'B*46:10': (HLACode('B*46:10', 'B46', 'B46'), ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE),
@@ -130,7 +134,8 @@ class TestCodeParser(DbTests):
 
         expected = {'A', 'DRB1'}
         raw_codes_with_wrong_number_per_group = {group.hla_group.name for group in codes_per_group if
-                                                 group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group)}
+                                                 group_exceedes_max_number_of_hla_types(group.hla_types,
+                                                                                        group.hla_group)}
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
@@ -175,7 +180,8 @@ class TestCodeParser(DbTests):
         self.assertCountEqual(['DQA1*01:03', 'DQB1*06:03'],
                               [code for code_l in hla_code_2 for code in list(code_l.__dict__.values())])
         self.assertCountEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')}, set(
-            create_hla_type(code).code for code in set(code for code_l in hla_code_3 for code in list(code_l.__dict__.values()))))
+            create_hla_type(code).code for code in
+            set(code for code_l in hla_code_3 for code in list(code_l.__dict__.values()))))
 
     def test_group_assignment(self):
         self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BWA1'))
@@ -189,64 +195,6 @@ class TestCodeParser(DbTests):
         self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'A1'))
         self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'A111'))
         self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'B'))
-
-    def test_mfi_extraction(self):
-        # When one value extremely low, calculate average only from such value.
-        self._compare_mfi_result(expected_mfi=1, mfis=[1, 3000, 4000])
-        self._compare_mfi_result(expected_mfi=1000, mfis=[1000, 20000, 18000])
-        self.assertEqual(10000, get_mfi_from_multiple_hla_codes_single_chain([30001, 10000], 2000, 'test')[1])
-
-        # When multiple values low, calculate the average only from those values.
-        self._compare_mfi_result(expected_mfi=900, mfis=[1000, 900, 800, 19000, 20000, 18000], has_issue=False)
-
-        # When similarly high MFIs calculate the average
-        self._compare_mfi_result(expected_mfi=19000, mfis=[20000, 18000], has_issue=False)
-        self._compare_mfi_result(expected_mfi=5125, mfis=[4000, 5000, 5500, 6000], has_issue=False)
-        self._compare_mfi_result(expected_mfi=10000, mfis=[20000, 10000], has_issue=False)
-
-        # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
-        # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
-        # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
-        # This case is reported in logger and will be investigated on per instance basis.
-        self._compare_mfi_result(expected_mfi=2500, mfis=[4000, 5000, 5500, 6000, 1000])
-
-        # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
-        # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
-        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
-                            {hla_antibody.code for hla_antibody in create_antibodies(
-                                [
-                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2500),
-                                    create_antibody('DQA1*01:01', cutoff=2000, mfi=10)
-                                ]
-                            ).hla_antibodies_per_groups_over_cutoff[5].hla_antibody_list})
-        # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
-        # get_mfi_from_multiple_hla_codes_single_chain, where the average is calculated (1900), which is below cutoff.
-        # The antibody is not removed.
-        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
-                            {hla_antibody.code for hla_antibody in create_antibodies(
-                                [
-                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=6000),
-                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
-                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=1800)
-                                ]
-                            ).hla_antibodies_per_groups[5].hla_antibody_list})
-
-        self.assertSetEqual({
-            create_antibody(raw_code='DQA1*01:01', mfi=3000, cutoff=2000),
-            create_antibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
-        }, set(
-            create_antibodies(
-                [
-                    create_antibody('DQA1*01:01', cutoff=2000, mfi=6000),
-                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
-                    create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
-                ]
-            ).hla_antibodies_per_groups[5].hla_antibody_list))
-        # When MFI quite close to each other but one below and one above cutoff
-        self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
-        # no warning in case the values are all quite low:
-        self._compare_mfi_result(expected_mfi=1201, mfis=[1339, 1058, 2058, 1206], has_issue=False)
-        self._compare_mfi_result(expected_mfi=1508, mfis=[3970, 1922, 1422, 1180], has_issue=True)
 
     def test_no_ultra_high_res_with_multiple_splits(self):
         """
@@ -303,7 +251,7 @@ class TestCodeParser(DbTests):
 
             # not all in high res
             if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
-                antibodies_per_group.hla_antibody_list[0] = create_antibody('A9', 2100, 2000)
+                antibodies_per_group.hla_antibody_list[0] = create_antibody_parsed('A9', 2100, 2000)
                 self.assertFalse(is_all_antibodies_in_high_res(antibodies_per_group.hla_antibody_list))
 
     def test_analyze_if_high_res_antibodies_are_type_a(self):
@@ -319,13 +267,13 @@ class TestCodeParser(DbTests):
         for antibodies_per_group in antibodies.hla_antibodies_per_groups:
             # insufficient amount of antibodies
             if antibodies_per_group.hla_group is not HLAGroup.INVALID_CODES:
-                antibodies_per_group.hla_antibody_list[0] = create_antibody('A*23:01', 2000, 2100)
+                antibodies_per_group.hla_antibody_list[0] = create_antibody_parsed('A*23:01', 2000, 2100)
                 expected = HighResAntibodiesAnalysis(False,
                                                      ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
                 self.assertEqual(expected,
                                  analyze_if_high_res_antibodies_are_type_a(
                                      antibodies_per_group.hla_antibody_list[
-                                         :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
+                                     :SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1]))
 
         # all antibodies are above cutoff:
         some_antibodies_list = antibodies.hla_antibodies_per_groups[0].hla_antibody_list
@@ -338,81 +286,171 @@ class TestCodeParser(DbTests):
                          analyze_if_high_res_antibodies_are_type_a(some_antibodies_list))
 
     def test_double_antibodies(self):
-        # both codes already parsed
-        antibodies_not_processed = [
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPB1*01:01', 1900, 2000),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+        # general case correctly process one double antibody
+        antibodies_raw = [HLAAntibodyRaw('DP[01:03,01:01]', 1900, 2000)]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+
+        expected_antibodies_in_group = [create_antibody_parsed('DPA1*01:03', 1900, 2000),
+                                        create_antibody_parsed('DPB1*01:01', 1900, 2000)]
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+
+        # general case correctly process two double antibodies
+        antibodies_raw = [
+            create_antibody('DP[01:03,01:01]', 1900, 2000),
+            create_antibody('DP[01:03,02:01],', 2100, 2000),
+
         ]
-        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
 
-        self.assertSetEqual({
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPB1*01:01', 1900, 2000)
-        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
-
-        # at least one code already parsed
-        # 1
-        antibodies_not_processed = [
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*01:03', 1900, 2000),
+            create_antibody_parsed('DPB1*01:01', 1900, 2000),
+            create_antibody_parsed('DPB1*02:01', 2100, 2000)
         ]
-        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
 
-        self.assertSetEqual({
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPB1*01:01', 2100, 2000)
-        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
-
-        # 2
-        antibodies_not_processed = [
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:02'),
-            create_antibody('DPA1*02:02', 2100, 2000, 'DPB1*02:01'),
-            create_antibody('DPA1*01:02', 1800, 2000, 'DPB1*01:03'),
-            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:02'),
-        ]
-        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
-
-        self.assertSetEqual({
-            create_antibody('DPA1*02:02', 2100, 2000),
-            create_antibody('DPB1*02:01', 2100, 2000),
-            create_antibody('DPB1*01:02', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody('DPA1*01:02', 1950, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:02'),
+        # process via the old way
+        antibodies_raw = [
             create_antibody('DPA1*01:03', 1900, 2000),
-            create_antibody('DPB1*01:03', 1800, 2000)
-        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+            create_antibody('DPA1*01:03', 3000, 2000),
+            create_antibody('DP[01:03,01:01]', 10000, 2000),
 
-        # 3
-        antibodies_not_processed = [
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:01'),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01')
         ]
-        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
 
-        self.assertSetEqual({
-            create_antibody('DPA1*01:03', 1900, 2000),
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPB1*01:01', 1900, 2000)
-        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
-
-        # 4
-        antibodies_not_processed = [
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
-            create_antibody('DPA1*01:02', 1900, 2000, 'DPB1*01:03'),
-            create_antibody('DPA1*01:03', 1900, 2000, 'DPB1*01:01'),
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*01:03', 2450, 2000),
+            create_antibody_parsed('DPB1*01:01', 10000, 2000)
         ]
-        antibodies = create_antibodies(hla_antibodies_list=antibodies_not_processed)
 
-        self.assertSetEqual({
-            create_antibody('DPA1*01:02', 1900, 2000),
-            create_antibody('DPB1*01:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody('DPA1*01:02', 2100, 2000, 'DPB1*01:01'),
-            create_antibody('DPA1*01:03', 1900, 2000),
-            create_antibody('DPB1*01:03', 1900, 2000)
-        }, set(antibodies.hla_antibodies_per_groups[4].hla_antibody_list))
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+        self.assertCountEqual([ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN,
+                               ParsingIssueDetail.MFI_PROBLEM,
+                               ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES],
+                              [i.parsing_issue_detail for i in issues])
+
+        # process including creation of double antibodies
+        antibodies_raw = [
+            create_antibody('DP[01:04,03:01]', 2100, 2000),
+            create_antibody('DP[02:02,02:01]', 2100, 2000),
+            create_antibody('DP[01:04,04:01]', 1800, 2000),
+            create_antibody('DP[01:03,03:01]', 1900, 2000),
+        ]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*02:02', 2100, 2000),
+            create_antibody_parsed('DPB1*02:01', 2100, 2000),
+            create_antibody_parsed('DPB1*03:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 1950, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 2100, 2000, 'DPB1*03:01'),
+            create_antibody_parsed('DPA1*01:03', 1900, 2000),
+            create_antibody_parsed('DPB1*04:01', 1800, 2000)
+        ]
+
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+        self.assertCountEqual([ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+                               ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES],
+                              [i.parsing_issue_detail for i in issues])
+
+        # Estimate MFI in classical case
+        antibodies_raw = [
+            create_antibody('DP[01:04,01:01]', 1900, 2000),
+            create_antibody('DP[01:03,01:01]', 2100, 2000)
+        ]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*01:04', 1900, 2000),
+            create_antibody_parsed('DPA1*01:03', 2100, 2000),
+            create_antibody_parsed('DPB1*01:01', 1900, 2000)
+        ]
+
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+        self.assertCountEqual([ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES],
+                              [i.parsing_issue_detail for i in issues])
+
+        # Estimate MFI in another case
+        antibodies_raw = [
+            create_antibody('DP[01:04,01:01]', 2100, 2000),
+            create_antibody('DP[01:04,03:01]', 1900, 2000),
+            create_antibody('DP[01:03,01:01]', 1900, 2000),
+        ]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPB1*01:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 2100, 2000, 'DPB1*01:01'),
+            create_antibody_parsed('DPA1*01:03', 1900, 2000),
+            create_antibody_parsed('DPB1*03:01', 1900, 2000)
+        ]
+
+        self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+        self.assertCountEqual([ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                               ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY],
+                              [i.parsing_issue_detail for i in issues])
+
+    def test_get_mfi_from_multiple_hla_codes_single_chain(self):
+        # This is testing a function we are using only to comply with historical data.
+
+        # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
+        # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
+        self.assertCountEqual([HLACode('DQA1*01:02', 'DQA1', 'DQA1')], [
+            hla_antibody.code for hla_antibody in create_antibodies(
+                [
+                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2500),
+                    create_antibody('DQA1*01:01', cutoff=2000, mfi=10)
+                ]
+            ).hla_antibodies_per_groups_over_cutoff[5].hla_antibody_list])
+        # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
+        # get_mfi_from_multiple_hla_codes_single_chain, where the average is calculated (1900), which is below cutoff.
+        # The antibody is not removed.
+        self.assertCountEqual([HLACode('DQA1*01:02', 'DQA1', 'DQA1')],
+                              [hla_antibody.code for hla_antibody in create_antibodies(
+                                  [
+                                      create_antibody('DQA1*01:02', cutoff=2000, mfi=6000),
+                                      create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                                      create_antibody('DQA1*01:02', cutoff=2000, mfi=1800)
+                                  ]
+                              ).hla_antibodies_per_groups[5].hla_antibody_list])
+
+        self.assertCountEqual([
+            create_antibody_parsed(raw_code='DQA1*01:01', mfi=3000, cutoff=2000),
+            create_antibody_parsed(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
+        ],
+            create_antibodies(
+                [
+                    create_antibody('DQA1*01:01', cutoff=2000, mfi=6000),
+                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
+                ]
+            ).hla_antibodies_per_groups[5].hla_antibody_list)
+
+        # When one value extremely low, calculate average only from such value.
+        self._compare_mfi_result(expected_mfi=1, mfis=[1, 3000, 4000])
+        self._compare_mfi_result(expected_mfi=1000, mfis=[1000, 20000, 18000])
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes_single_chain([30001, 10000], 2000, 'test')[1])
+
+        # When multiple values low, calculate the average only from those values.
+        self._compare_mfi_result(expected_mfi=900, mfis=[1000, 900, 800, 19000, 20000, 18000], has_issue=False)
+
+        # When similarly high MFIs calculate the average
+        self._compare_mfi_result(expected_mfi=19000, mfis=[20000, 18000], has_issue=False)
+        self._compare_mfi_result(expected_mfi=5125, mfis=[4000, 5000, 5500, 6000], has_issue=False)
+        self._compare_mfi_result(expected_mfi=10000, mfis=[20000, 10000], has_issue=False)
+
+        # When MFI quite close to each other but one below and one above cutoff
+        self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
+        # no warning in case the values are all quite low:
+        self._compare_mfi_result(expected_mfi=1201, mfis=[1339, 1058, 2058, 1206], has_issue=False)
+        self._compare_mfi_result(expected_mfi=1508, mfis=[3970, 1922, 1422, 1180], has_issue=True)
+
+        # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
+        # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
+        # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
+        # This case is reported in logger and will be investigated on per instance basis.
+        self._compare_mfi_result(expected_mfi=2500, mfis=[4000, 5000, 5500, 6000, 1000])
 
     def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
         res = get_mfi_from_multiple_hla_codes_single_chain(mfis, cutoff, 'test')

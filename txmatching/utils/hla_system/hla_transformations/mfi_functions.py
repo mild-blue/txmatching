@@ -18,6 +18,7 @@ DIFFERENCE_THRESHOLD_RATIO = 1 / 4
 MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF = 7 / 8
 
 
+# The function below shoud not be used. It is kept only to make txmatching be able to process old data.
 def get_mfi_from_multiple_hla_codes_single_chain(mfis: List[int],
                                                  cutoff: int,
                                                  raw_code: str) -> Tuple[List[ParsingIssueBase], int]:
@@ -115,7 +116,7 @@ def get_mfi_from_multiple_hla_codes_single_chain(mfis: List[int],
     return parsing_issues_temp, relevant_mean
 
 
-def is_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[HLAAntibody]], cutoff: int) -> bool:
+def is_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
     for mfi in mfi_dictionary[raw_code]:
         if mfi >= cutoff:
             return True
@@ -135,12 +136,12 @@ def is_negative_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]],
 
 
 def get_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], _: Optional[int]) -> int:
-    return np.mean(np.array(mfi_dictionary[raw_code]))
+    return int(np.mean(np.array(mfi_dictionary[raw_code])))
 
 
 def get_negative_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> int:
     mfis = np.array([mfi for mfi in mfi_dictionary[raw_code] if mfi < cutoff])
-    return np.mean(mfis)
+    return int(np.mean(mfis))
 
 
 def create_mfi_dictionary(antibody_list_double_code: List[HLAAntibody]) -> Dict[str, List[int]]:

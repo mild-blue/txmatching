@@ -2,7 +2,6 @@ from typing import List
 
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
-from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAAntibodyRaw, HLAType, HLATypeRaw,
                                            HLATyping)
@@ -34,31 +33,30 @@ def create_hla_type(raw_code: str) -> HLAType:
 
 
 # here we redundantly require too specific object, but its easiest, so we can reuse the parse function.
-def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
-    raw_antibodies_model = [HLAAntibodyRawModel(
-        raw_code=hla_antibody.raw_code if hla_antibody.second_raw_code is None else _create_raw_code_for_double_antibody(
-            hla_antibody),
-        mfi=hla_antibody.mfi,
-        cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies_list]
-    raw_antibodies = [HLAAntibodyRaw(
-        raw_code=hla_antibody.raw_code if hla_antibody.second_raw_code is None else _create_raw_code_for_double_antibody(
-            hla_antibody),
-        mfi=hla_antibody.mfi,
-        cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies_list]
-    dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(raw_antibodies_model)[1]
+def create_antibodies(hla_antibodies_list: List[HLAAntibodyRaw]) -> HLAAntibodies:
+    dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(hla_antibodies_list)[1]
 
     return HLAAntibodies(
-        hla_antibodies_raw_list=raw_antibodies,
+        hla_antibodies_raw_list=hla_antibodies_list,
         hla_antibodies_per_groups=dto.hla_antibodies_per_groups
     )
 
 
 def _create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
     # Example of HLA antibody raw format: DP[02:01,03:02]
-    return hla_antibody.raw_code[:2] + "[" + hla_antibody.raw_code.split("*")[1] + "," + hla_antibody.second_raw_code.split("*")[1] + "]"
+    return hla_antibody.raw_code[:2] + '[' + hla_antibody.raw_code.split('*')[1] + ',' + \
+        hla_antibody.second_raw_code.split('*')[1] + ']'
 
 
-def create_antibody(raw_code: str, mfi: int, cutoff: int, second_raw_code: str = None,
+def create_antibody(raw_code: str, mfi: int, cutoff: int) -> HLAAntibodyRaw:
+    return HLAAntibodyRaw(
+        raw_code=raw_code,
+        mfi=mfi,
+        cutoff=cutoff
+    )
+
+
+def create_antibody_parsed(raw_code: str, mfi: int, cutoff: int, second_raw_code: str = None,
                     antibody_type: HLAAntibodyType = HLAAntibodyType.NORMAL) -> HLAAntibody:
     code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
     second_code = parse_hla_raw_code_and_return_parsing_issue_list(
