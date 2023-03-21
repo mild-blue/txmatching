@@ -48,6 +48,7 @@ SMALL_DATA_FOLDER_MULTIPLE_DONORS = get_absolute_path('tests/resources/high_res_
 SMALL_DATA_FOLDER_MULTIPLE_DONORS_V2 = \
     get_absolute_path('tests/resources/high_res_example_small_data_multiple_donors_v2/')
 SMALL_DATA_FOLDER_WITH_ROUND = get_absolute_path('tests/resources/high_res_example_small_data_with_round/')
+SMALL_DATA_FOLDER_THEORETICAL = get_absolute_path('tests/resources/theoretical_ab_small_data/')
 SMALL_DATA_FOLDER_WITH_NO_SOLUTION = get_absolute_path('tests/resources/high_res_example_small_data_with_no_solution/')
 SMALL_DATA_FOLDER_WITH_CROSSMATCH = get_absolute_path(f'tests/resources/{CROSSMATCH_TXM_EVENT_NAME}/')
 
