@@ -196,12 +196,10 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                                                   cutoff=antibody.cutoff)
                     positive_matches_two_antibodies = do_crossmatch_for_selected_antibodies(
                         hla_per_group, [antibody, second_antibody], antibodies, use_high_resolution)
-                    print(positive_matches_two_antibodies)
                     _do_crossmatch_for_hlas_recipient_was_not_tested_for(
                         hla_per_group, [antibody, second_antibody], antibodies, positive_matches_two_antibodies,
                         use_high_resolution)
                     if len(positive_matches_two_antibodies) == 2:
-                        print(positive_matches_two_antibodies)
                         lowest_match_type = _sort_match_types(
                             [positive_match.match_type for positive_match in list(positive_matches_two_antibodies)])[-1]
                         positive_matches.add(AntibodyMatch(antibody, lowest_match_type))

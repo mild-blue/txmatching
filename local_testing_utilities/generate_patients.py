@@ -19,8 +19,12 @@ from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in
     PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
+from txmatching.database.services.parsing_issue_service import \
+    confirm_all_parsing_issues
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -347,7 +351,9 @@ def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER, txm_event_nam
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
-    return store_generated_patients(patient_upload_objects, txm_event_name)
+    txm_event = store_generated_patients(patient_upload_objects, txm_event_name)
+    confirm_all_parsing_issues(1)
+    return get_txm_event_complete(txm_event.db_id)
 
 
 def store_generated_patients(generated_patients: List[PatientUploadDTOIn],

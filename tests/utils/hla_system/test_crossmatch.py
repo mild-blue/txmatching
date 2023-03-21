@@ -65,12 +65,8 @@ class TestCrossmatch(unittest.TestCase):
             import json
             data = json.load(f)
 
-            hla_typing = data['donors'][0]['hla_typing']  # len = 10
-            hla_typing.extend(data['donors'][1]['hla_typing'])  # len = 10
-
-            antibodies = [create_antibody(hla, 2100, 2000) for hla in hla_typing]
-            # set first antibody to be negative to fulfill the criteria
-            antibodies[0] = create_antibody(antibodies[0].raw_code, 1900, 2000)
+            antibodies = [create_antibody(antibody_json['name'], antibody_json['mfi'], antibody_json['cutoff'])
+                          for antibody_json in data['recipients'][0]['hla_antibodies']]
 
         # all criteria are fulfilled
         self.assertTrue(is_recipient_type_a(create_antibodies(antibodies)))
@@ -81,10 +77,12 @@ class TestCrossmatch(unittest.TestCase):
 
         # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
         antibodies[0] = create_antibody('A*23:01', 2000, 2100)  # negative antibody to fulfill general criteria
-        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:-1])))
+        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:15])))
 
         # there is no antibody below the cutoff
-        antibodies[0] = create_antibody(antibodies[0].raw_code, 2100, 2000)
+        antibodies = [
+            antibody if antibody.mfi > antibody.cutoff else create_antibody(antibody.raw_code, antibody.cutoff * 2,
+                                                                            antibody.cutoff) for antibody in antibodies]
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
 
         self.assertTrue(is_recipient_type_a(create_antibodies(TYPE_A_EXAMPLE_REC)))
