@@ -15,8 +15,6 @@ from txmatching.database.services.config_service import \
     save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
-from txmatching.database.services.parsing_issue_service import \
-    confirm_all_parsing_issues
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.scorer_service import \
@@ -193,4 +191,3 @@ def populate_large_db():
     user_models = add_users()
     populate_db_with_data(user_models)
     store_generated_patients_from_folder()
-    confirm_all_parsing_issues(1)

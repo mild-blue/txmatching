@@ -158,8 +158,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         # theoretical antibodies are correctly parsed and then correctly ignored in crossmatch. Moreover, we
         # test that double antibodies are correctly applied.
         store_generated_patients_from_folder(SMALL_DATA_FOLDER_THEORETICAL)
-
         txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver)
         solution = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
         self.assertListEqual([('CZE_2', 'CZE_0R'), ('CZE_0', 'CZE_1R')],

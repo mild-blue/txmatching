@@ -11,6 +11,7 @@ import pandas as pd
 from dacite import Config, from_dict
 
 from local_testing_utilities.utils import create_or_overwrite_txm_event
+from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
@@ -23,9 +24,8 @@ from txmatching.database.services.parsing_issue_service import \
     confirm_all_parsing_issues
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
-from txmatching.patients.patient import DonorType, TxmEvent
+from txmatching.database.sql_alchemy_schema import AppUserModel
+from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
@@ -106,7 +106,7 @@ def random_acceptable() -> List[BloodGroup]:
     if rand > 0.3:
         return []
     num_of_acceptable = random.randint(1, 4)
-    blood_groups = [BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB]
+    blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
     acceptable = random.sample(blood_groups, num_of_acceptable)
     return acceptable
 
@@ -149,7 +149,7 @@ def get_codes(hla_group: HLAGroup, used_as_antibody=False):
                               regex_alpha, split_or_broad_or_nan)
                           and high_res.count(':') == 1
                           and high_res not in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE
-                          and len(high_res.split('*')[1]) == 5][:SAMPLE_LENGTH][:SAMPLE_LENGTH]
+                          and len(high_res.split('*')[1]) == 5][:SAMPLE_LENGTH]
         all_high_beta = [high_res.split('*')[1] for high_res, split_or_broad_or_nan in
                          HIGH_RES_TO_SPLIT_OR_BROAD.items() if
                          split_or_broad_or_nan is not None and not pd.isna(split_or_broad_or_nan) and re.match(
@@ -203,7 +203,6 @@ TypizationSample = {
     HLAGroup.A: get_codes(HLAGroup.A),
     HLAGroup.B: get_codes(HLAGroup.B),
     HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
-    # HLAGroup.CW: get_codes(HLAGroup.CW),
     HLAGroup.DP: get_codes(HLAGroup.DP),
     HLAGroup.DQ: get_codes(HLAGroup.DQ),
 }
@@ -212,7 +211,6 @@ AntibodySample = {
     HLAGroup.A: get_codes(HLAGroup.A, used_as_antibody=True),
     HLAGroup.B: get_codes(HLAGroup.B, used_as_antibody=True),
     HLAGroup.DRB1: get_codes(HLAGroup.DRB1, used_as_antibody=True),
-    # HLAGroup.CW: get_codes(HLAGroup.CW, used_as_antibody=True),
     HLAGroup.DP: get_codes(HLAGroup.DP, used_as_antibody=True),
     HLAGroup.DQ: get_codes(HLAGroup.DQ, used_as_antibody=True),
 }
@@ -239,11 +237,13 @@ def generate_hla_typing(has_letter_at_the_end: bool, high_res: bool = True) -> L
     hla_with_letter = random.choice(list(TypizationSample.keys())) if has_letter_at_the_end else None
 
     for hla_group in TypizationSample:
-        typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group),
-                                              high_res=high_res))  # [0]
-        rand = random.uniform(0, 1)
-        if rand > 0.3:
-            typization.append(get_random_hla_type(hla_group, high_res=high_res))  # [0]
+        undecidable = random.choices([True, False], weights=[0.15, 0.85], k=1)[0]
+        if not undecidable:
+            typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group),
+                                                high_res=high_res))  # [0]
+            rand = random.uniform(0, 1)
+            if rand > 0.3:
+                typization.append(get_random_hla_type(hla_group, high_res=high_res))  # [0]
 
     return typization
 
@@ -345,20 +345,20 @@ def generate_patients(txm_event_name: str = GENERATED_TXM_EVENT_NAME,
     return patient_upload_objects
 
 
-def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER, txm_event_name=GENERATED_TXM_EVENT_NAME) -> TxmEvent:
+def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER, txm_event_name=GENERATED_TXM_EVENT_NAME):
     patient_upload_objects = []
     for filename in os.listdir(folder):
         with open(f'{folder}{filename}', encoding='utf-8') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
-    txm_event = store_generated_patients(patient_upload_objects, txm_event_name)
-    confirm_all_parsing_issues(1)
-    return get_txm_event_complete(txm_event.db_id)
+    store_generated_patients(patient_upload_objects, txm_event_name)
+    admin_id = AppUserModel.query.filter(AppUserModel.role == UserRole.ADMIN).first().id
+    confirm_all_parsing_issues(admin_id)
 
 
 def store_generated_patients(generated_patients: List[PatientUploadDTOIn],
-                             txm_event_name=GENERATED_TXM_EVENT_NAME) -> TxmEvent:
+                             txm_event_name=GENERATED_TXM_EVENT_NAME):
     txm_event = create_or_overwrite_txm_event(txm_event_name)
     for patient_upload_dto in generated_patients:
         replace_or_add_patients_from_one_country(patient_upload_dto)

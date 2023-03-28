@@ -12,6 +12,8 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodyRaw
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel)
 from txmatching.utils.hla_system.hla_crossmatch import (
@@ -77,7 +79,8 @@ class TestCrossmatch(unittest.TestCase):
 
         # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
         antibodies[0] = create_antibody('A*23:01', 2000, 2100)  # negative antibody to fulfill general criteria
-        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:15])))
+        self.assertFalse(is_recipient_type_a(create_antibodies(
+            antibodies[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1])))
 
         # there is no antibody below the cutoff
         antibodies = [

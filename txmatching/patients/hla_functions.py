@@ -42,16 +42,16 @@ def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIss
 def create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies: List[HLAAntibody]
                                                          ) -> Tuple[List[ParsingIssueBase], List[AntibodiesPerGroup]]:
     parsing_issues, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
-    antibodies_par_group_joined_sorted = []
+    antibodies_per_group_joined_sorted = []
     for hla_group, hla_codes_in_group in hla_antibodies_in_groups.items():
         group_parsing_issues, hla_codes_in_group_joined = _join_duplicate_antibodies(hla_codes_in_group)
         parsing_issues += group_parsing_issues
-        antibodies_par_group_joined_sorted.append(AntibodiesPerGroup(hla_group,
+        antibodies_per_group_joined_sorted.append(AntibodiesPerGroup(hla_group,
                                                                      sorted(hla_codes_in_group_joined,
                                                                             key=_sort_key_antibodies_in_group)
                                                                      ))
 
-    return parsing_issues, antibodies_par_group_joined_sorted
+    return parsing_issues, antibodies_per_group_joined_sorted
 
 
 def _sort_key_antibodies_in_group(antibody: HLAAntibody) -> Tuple[str, str]:

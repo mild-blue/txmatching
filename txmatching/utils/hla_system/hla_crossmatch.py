@@ -47,6 +47,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
             antibodies_per_hla_group.antibody_matches,
             key=lambda hla_group: (
                 hla_group.hla_antibody.raw_code,
+                hla_group.match_type
             ))
 
     return antibody_matches_for_groups

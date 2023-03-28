@@ -38,7 +38,7 @@ class TestUpdateDonorRecipient(DbTests):
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
             hla_antibodies=HLAAntibodiesUpdateDTO([HLAAntibodyUpdateDTO(mfi=20, raw_code='B42'),
-                                                   HLAAntibodyUpdateDTO(mfi=20, raw_code='DQ[01:03,      06:03]')
+                                                   HLAAntibodyUpdateDTO(mfi=20, raw_code='DQ[01:03,06:03]')
                                                    ]),
             hla_typing=HLATypingUpdateDTO([
                 HLATypeUpdateDTO('A11'),
