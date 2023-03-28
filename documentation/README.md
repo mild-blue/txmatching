@@ -244,7 +244,9 @@ the person being tested will react via pre-existing antibodies against human cel
 When we receive antibodies in format DP*[01:01;02:02] we are using a special algorithm to deduce whether there are
 antibodies against both alpha and beta alleles or just from one of them.
 
-The algorithm description will be added soon in issue: https://github.com/mild-blue/txmatching/issues/1169
+Algorithm scheme is represented in this pdf 
+[file](double_antibodies_parsing/double_antibodies_parsing_algorithm.pdf).
+TODO: text description
 
 ## Configuring cutoff
 The original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth it for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via an increase in the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
