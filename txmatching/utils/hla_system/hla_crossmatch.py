@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, List, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
@@ -27,6 +27,12 @@ class AntibodyMatch:
 class AntibodyMatchForHLAGroup:
     hla_group: HLAGroup
     antibody_matches: List[AntibodyMatch]
+
+
+@dataclass
+class AntibodyMatchForHLAType:
+    hla_type: HLAType
+    antibody_matches: List[AntibodyMatch] = field(default_factory=list)
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,

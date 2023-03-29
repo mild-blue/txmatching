@@ -2315,13 +2315,13 @@
             },
             "type": "object"
         },
-        "AntibodyMatchForHLACode": {
+        "AntibodyMatchForHLAType": {
             "required": [
-                "hla_code"
+                "hla_type"
             ],
             "properties": {
-                "hla_code": {
-                    "type": "string"
+                "hla_type": {
+                    "$ref": "#/definitions/HlaType"
                 },
                 "antibody_matches": {
                     "type": "array",
@@ -2899,7 +2899,7 @@
                 "hla_to_antibody": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/AntibodyMatchForHLACode"
+                        "$ref": "#/definitions/AntibodyMatchForHLAType"
                     }
                 },
                 "parsing_issues": {

@@ -73,16 +73,16 @@ definitions:
         - hla_antibody
         - match_type
         type: object
-    AntibodyMatchForHLACode:
+    AntibodyMatchForHLAType:
         properties:
             antibody_matches:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            hla_code:
-                type: string
+            hla_type:
+                $ref: '#/definitions/HlaType'
         required:
-        - hla_code
+        - hla_type
         type: object
     AntigenMatch:
         properties:
@@ -565,7 +565,7 @@ definitions:
         properties:
             hla_to_antibody:
                 items:
-                    $ref: '#/definitions/AntibodyMatchForHLACode'
+                    $ref: '#/definitions/AntibodyMatchForHLAType'
                 type: array
             parsing_issues:
                 items:

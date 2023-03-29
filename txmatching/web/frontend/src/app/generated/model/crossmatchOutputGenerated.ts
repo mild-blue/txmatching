@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 import { ParsingIssueBaseGenerated } from './parsingIssueBaseGenerated';
-import { AntibodyMatchForHLACodeGenerated } from './antibodyMatchForHLACodeGenerated';
+import { AntibodyMatchForHLATypeGenerated } from './antibodyMatchForHLATypeGenerated';
 
 
 export interface CrossmatchOutputGenerated { 
-    hla_to_antibody: Array<AntibodyMatchForHLACodeGenerated>;
+    hla_to_antibody: Array<AntibodyMatchForHLATypeGenerated>;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
 }
 

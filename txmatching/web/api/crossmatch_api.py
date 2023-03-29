@@ -1,7 +1,8 @@
 from flask_restx import Resource
 
-from tests.test_utilities.hla_preparation_utils import create_antibody, create_hla_typing
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLACode, \
+from tests.test_utilities.hla_preparation_utils import create_antibody, create_hla_type, \
+    create_hla_typing
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
     CrossmatchDTOOut
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
@@ -44,19 +45,24 @@ class DoCrossmatch(Resource):
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
 
-        antigen_to_antibody = [AntibodyMatchForHLACode(hla_code=hla, antibody_matches=[]) for hla in
-                               crossmatch_dto.donor_hla_typing]
-
+        antibody_matches_for_hla_type = [AntibodyMatchForHLAType(hla_type=create_hla_type(raw_code=hla),
+                                                                 antibody_matches=[])
+                                            for hla in crossmatch_dto.donor_hla_typing]
         for match_per_group in crossmatched_antibodies_per_group:
-            for match in match_per_group.antibody_matches:
-                if match.hla_antibody.type == HLAAntibodyType.THEORETICAL or match.hla_antibody.second_raw_code:
+            for antibody_group_match in match_per_group.antibody_matches:
+                if antibody_group_match.hla_antibody.type == HLAAntibodyType.THEORETICAL or \
+                        antibody_group_match.hla_antibody.second_raw_code:
+                    # TODO: another TXM error with code 501
                     raise NotImplementedError('Double and theoretical antibodies are not supported yet.')
-                # get AntibodyMatchForHLACode object with the same hla_code as the match and append the match
-                matched_hla = [hla for hla in antigen_to_antibody if hla.hla_code == match.hla_antibody.raw_code]
-                if matched_hla:
-                    matched_hla[0].antibody_matches.append(match)
+                # get AntibodyMatchForHLAType object with the same hla_type
+                # as the antibody_group_match and append the antibody_group_match
+                common_matches = [antibody_hla_match for antibody_hla_match in
+                                  antibody_matches_for_hla_type
+                                  if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
+                if common_matches:
+                    common_matches[0].antibody_matches.append(antibody_group_match)
 
         return response_ok(CrossmatchDTOOut(
-            hla_to_antibody=antigen_to_antibody,
+            hla_to_antibody=antibody_matches_for_hla_type,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))
