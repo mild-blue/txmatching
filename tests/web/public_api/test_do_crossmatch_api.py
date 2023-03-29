@@ -129,9 +129,10 @@ class TestDoCrossmatchApi(DbTests):
                                       }],
         }
 
-        # TODO: add new TXM error instead NotImplementedError
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
-            self.assertEqual(500, res.status_code)
-            self.assertEqual('Double and theoretical antibodies are not supported yet.', res.json['message'])
+            self.assertEqual(501, res.status_code)
+            self.assertEqual('This functionality is not currently available for dual antibodies. '
+                             'We apologize and will try to change this in future versions.',
+                             res.json['message'])

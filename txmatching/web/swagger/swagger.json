@@ -5,6 +5,12 @@
         "/v1/crossmatch/do-crossmatch": {
             "post": {
                 "responses": {
+                    "501": {
+                        "description": "The feature is not implemented yet.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {

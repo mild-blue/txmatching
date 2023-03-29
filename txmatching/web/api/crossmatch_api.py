@@ -1,5 +1,6 @@
 from flask_restx import Resource
 
+from txmatching.auth.exceptions import TXMNotImplementedFeatureException
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
 from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
@@ -21,7 +22,8 @@ class DoCrossmatch(Resource):
                         description='Perform crossmatch test between donor HLA typing and recipient antibodies.')
     @crossmatch_api.request_body(CrossmatchJsonIn)
     @crossmatch_api.response_ok(CrossmatchJsonOut)
-    @crossmatch_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    @crossmatch_api.response_errors(exceptions={TXMNotImplementedFeatureException},
+                                    add_default_namespace_errors=True)
     @crossmatch_api.require_user_login()
     def post(self):
         crossmatch_dto = request_body(CrossmatchDTOIn)
@@ -52,8 +54,9 @@ class DoCrossmatch(Resource):
             for antibody_group_match in match_per_group.antibody_matches:
                 if antibody_group_match.hla_antibody.type == HLAAntibodyType.THEORETICAL or \
                         antibody_group_match.hla_antibody.second_raw_code:
-                    # TODO: another TXM error with code 501
-                    raise NotImplementedError('Double and theoretical antibodies are not supported yet.')
+                    raise TXMNotImplementedFeatureException(
+                        'This functionality is not currently available for dual antibodies. '
+                        'We apologize and will try to change this in future versions.')
                 # get AntibodyMatchForHLAType object with the same hla_type
                 # as the antibody_group_match and append the antibody_group_match
                 common_matches = [antibody_hla_match for antibody_hla_match in
