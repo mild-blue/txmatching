@@ -75,10 +75,12 @@ HLATyping = patient_api.model('HlaTyping', {
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
+    'second_raw_code': fields.String(required=False),
     'mfi': fields.Integer(required=True),
     'cutoff': fields.Integer(required=True),
     'code': fields.Nested(HLACode, required=True),
-    'type': fields.Nested(HLAAntibodyTypeJson)
+    'second_code': fields.Nested(HLACode, required=False),
+    'type': fields.Nested(HLAAntibodyTypeJson, required=True)
 })
 
 HLAAntibodyRaw = patient_api.model('HlaAntibodyRaw', {

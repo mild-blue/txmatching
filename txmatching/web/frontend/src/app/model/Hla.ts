@@ -1,19 +1,19 @@
 import { AntigenMatchType } from "@app/model/enums/AntigenMatchType";
 import { AntibodyMatchType } from "@app/model/enums/AntibodyMatchType";
+import { HLAAntibodyType } from "./enums/HLAAntibodyType";
 
 export interface HlaRaw {
   rawCode: string;
 }
 
 export interface HlaCode {
-  displayCode: string;
-
   highRes?: string;
   split?: string;
   broad: string;
 }
 
 export interface Hla extends HlaRaw {
+  displayCode: string;
   code: HlaCode;
 }
 
@@ -24,6 +24,9 @@ export interface AntigenRaw extends HlaRaw {}
 export interface Antibody extends Hla {
   mfi: number;
   cutoff: number;
+  secondRawCode?: string;
+  secondCode?: HlaCode;
+  type: HLAAntibodyType;
 }
 
 export interface AntibodyRaw extends HlaRaw {

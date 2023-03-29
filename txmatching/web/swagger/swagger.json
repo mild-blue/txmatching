@@ -3336,10 +3336,14 @@
                 "code",
                 "cutoff",
                 "mfi",
-                "raw_code"
+                "raw_code",
+                "type"
             ],
             "properties": {
                 "raw_code": {
+                    "type": "string"
+                },
+                "second_raw_code": {
                     "type": "string"
                 },
                 "mfi": {
@@ -3349,6 +3353,9 @@
                     "type": "integer"
                 },
                 "code": {
+                    "$ref": "#/definitions/HlaCode"
+                },
+                "second_code": {
                     "$ref": "#/definitions/HlaCode"
                 },
                 "type": {

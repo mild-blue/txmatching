@@ -919,6 +919,10 @@ definitions:
                 type: integer
             raw_code:
                 type: string
+            second_code:
+                $ref: '#/definitions/HlaCode'
+            second_raw_code:
+                type: string
             type:
                 $ref: '#/definitions/HLAAntibodyType'
         required:
@@ -926,6 +930,7 @@ definitions:
         - cutoff
         - mfi
         - raw_code
+        - type
         type: object
     HlaAntibodyRaw:
         properties:

@@ -18,6 +18,8 @@ export interface HlaAntibodyGenerated {
     cutoff: number;
     mfi: number;
     raw_code: string;
-    type?: HLAAntibodyTypeGenerated;
+    second_code?: HlaCodeGenerated;
+    second_raw_code?: string;
+    type: HLAAntibodyTypeGenerated;
 }
 

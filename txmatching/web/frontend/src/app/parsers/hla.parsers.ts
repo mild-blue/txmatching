@@ -8,6 +8,7 @@ import {
   HlaAntibodiesGenerated,
   HlaAntibodyGenerated,
   HlaAntibodyRawGenerated,
+  HLAAntibodyTypeGenerated,
   HlaCodesInGroupsGenerated,
   HlaTypeGenerated,
   HlaTypeRawGenerated,
@@ -31,6 +32,7 @@ import {
   HlaPerGroup,
   HlaRaw,
 } from "../model";
+import { HLAAntibodyType } from "@app/model/enums/HLAAntibodyType";
 
 export const parseHlaRaw = (data: HlaTypeRawGenerated | HlaAntibodyGenerated): HlaRaw => {
   return {
@@ -42,11 +44,11 @@ export const parseHla = (data: HlaTypeGenerated | HlaAntibodyGenerated): Hla => 
   return {
     ...parseHlaRaw(data),
     code: {
-      displayCode: data.code.high_res ?? data.code.split ?? data.code.broad,
       highRes: data.code.high_res,
       split: data.code.split,
       broad: data.code.broad,
     },
+    displayCode: data.code.high_res ?? data.code.split ?? data.code.broad,
   };
 };
 
@@ -65,11 +67,34 @@ export const parseAntigenRaw = (data: HlaTypeRawGenerated): AntigenRaw => {
 export const parseAntibody = (data: HlaAntibodyGenerated): Antibody => {
   const { mfi, cutoff } = data;
 
+  const rawCode = data.second_raw_code ? `${data.raw_code},${data.second_raw_code}` : data.raw_code;
+
+  const secondCode = data.second_code
+    ? {
+        highRes: data.second_code.high_res,
+        split: data.second_code.split,
+        broad: data.second_code.broad,
+      }
+    : undefined;
+
   return {
-    ...parseHla(data),
+    ...parseHlaRaw(data),
+    displayCode: rawCode,
+    code: {
+      highRes: data.code.high_res,
+      split: data.code.split,
+      broad: data.code.broad,
+    },
     mfi,
     cutoff,
+    secondRawCode: data.second_raw_code,
+    secondCode: secondCode,
+    type: parseAntibodyType(data.type),
   };
+};
+
+export const parseAntibodyType = (data: HLAAntibodyTypeGenerated): HLAAntibodyType => {
+  return HLAAntibodyType[data];
 };
 
 export const parseAntibodyRaw = (data: HlaAntibodyRawGenerated): AntibodyRaw => {

@@ -60,7 +60,7 @@ export function hlaFullTextSearch(antibodies: Hla[], searchPhrase: string): Hla[
   const filterValue = searchPhrase.toLowerCase();
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 
-  return antibodies.filter((a) => a.code?.displayCode.toLocaleLowerCase().match(searchPattern));
+  return antibodies.filter((a) => a.displayCode.toLocaleLowerCase().match(searchPattern));
 }
 
 export function countryFullTextSearch(countries: string[], searchPhrase: string): string[] {
