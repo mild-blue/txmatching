@@ -4,11 +4,8 @@ import unittest
 from typing import Callable, List
 
 from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody,
-                                                        create_antibody_parsed,
-                                                        create_hla_type,
-                                                        create_hla_typing)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
+    create_antibodies, create_antibody, create_antibody_parsed
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodyRaw

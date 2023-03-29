@@ -7,9 +7,8 @@ from sqlalchemy import and_
 from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                                  PATIENT_DATA_OBFUSCATED)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody,
-                                                        create_hla_typing)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
+    create_antibody
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ManualDonorRecipientScore

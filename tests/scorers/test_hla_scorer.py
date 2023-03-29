@@ -2,8 +2,7 @@ from typing import List
 
 from tests.patients.test_patient_parameters import (jack_hla_typing,
                                                     joe_hla_typing)
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_hla_typing)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters

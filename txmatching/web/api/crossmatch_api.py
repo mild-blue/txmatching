@@ -1,7 +1,7 @@
 from flask_restx import Resource
 
-from tests.test_utilities.hla_preparation_utils import create_antibody, create_hla_type, \
-    create_hla_typing
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
+    create_antibody
 from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
     CrossmatchDTOOut
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut

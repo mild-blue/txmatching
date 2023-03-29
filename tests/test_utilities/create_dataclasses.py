@@ -1,6 +1,5 @@
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody,
-                                                        create_hla_typing)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
+    create_antibody
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import PatientParameters

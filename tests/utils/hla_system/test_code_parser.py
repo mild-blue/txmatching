@@ -3,10 +3,8 @@ from typing import List
 
 import pandas as pd
 
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody,
-                                                        create_antibody_parsed,
-                                                        create_hla_type)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type, create_antibodies, \
+    create_antibody, create_antibody_parsed
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode

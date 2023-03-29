@@ -1,7 +1,7 @@
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
 from tests.scorers.test_hla_scorer import _create_donor, _create_recipient
-from tests.test_utilities.hla_preparation_utils import create_hla_type
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAType

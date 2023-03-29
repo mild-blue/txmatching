@@ -1,7 +1,6 @@
 import unittest
 
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody)
+from txmatching.utils.hla_system.hla_preparation_utils import create_antibodies, create_antibody
 from txmatching.patients.hla_code import HLACode
 
 
