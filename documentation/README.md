@@ -244,9 +244,45 @@ the person being tested will react via pre-existing antibodies against human cel
 When we receive antibodies in format DP*[01:01;02:02] we are using a special algorithm to deduce whether there are
 antibodies against both alpha and beta alleles or just from one of them.
 
+### Algorithm description
+Antibodies enclosed in square brackets are called double antibodies.
+
+Let us first explain the terminology we used to describe the algorithm:
+
+* The alpha chain refers to the first code of a double antibody.
+* The beta chain refers to the second code of a double antibody.
+* Positive MFI is the MFI value above the cutoff.
+* Negative MFI is the MFI value below the cutoff.
+
+At the beginning of the algorithm, we have three lists:
+1. antibodies - a list of all antibodies to parse.
+2. parsed - a list of parsed antibodies.
+3. parsing_issues - a list of parsing issues that occur during the algorithm running.
+
+We parse each antibody in the list one by one using a for-loop. If an antibody is 
+already in the parsed list, we move on to the next antibody. 
+First, we check if the antibody has a positive MFI.
+
+#### Double antibody has a positive MFI:
+If both antibody chains have only positive MFI representation among all the antibodies 
+in the list for parsing, we add each chain separately to the parsed list, 
+with the arithmetic mean of the MFI from all antibodies in the list.</br>
+If one of the chains has at least one negative MFI representation among other antibodies 
+in the list, we add its chain to the parsed list with the arithmetic mean of the MFI 
+from all antibodies with negative MFI in the list, and add the other chain with the 
+arithmetic mean of all antibodies, as in the first case.</br>
+If both chains have at least one negative MFI among other antibodies, we add them to 
+the parsed list as one theoretical double antibody with the arithmetic mean of the MFI 
+from all antibodies in the list. We also add a parsing issue about this to the parsing issue list.
+
+#### Double antibody has a negative MFI:
+If a chain has only negative MFI representation among other antibodies in the list, 
+we add this chain to the parsed list with the arithmetic mean of the MFI from all 
+antibodies in the list. Otherwise, we skip this antibody and move on to the next one.
+
+### Algorithm scheme
 Algorithm scheme is represented in this pdf 
 [file](double_antibodies_parsing/double_antibodies_parsing_algorithm.pdf).
-TODO: text description
 
 ## Configuring cutoff
 The original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth it for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via an increase in the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
