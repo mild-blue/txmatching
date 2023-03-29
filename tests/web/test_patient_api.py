@@ -1,6 +1,6 @@
+import copy
 import dataclasses
 import os
-import copy
 
 from sqlalchemy import and_
 
@@ -226,16 +226,23 @@ class TestPatientService(DbTests):
 
         self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
         self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
-        self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
-        self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
+        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['warnings']))
+
+        errors = [
+            ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+            ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+            ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+            ParsingIssueDetail.UNPARSABLE_HLA_CODE,
+            ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_GROUP,
+            ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
+        ]
+        self.assertCountEqual(errors,
+                              [i['parsing_issue_detail'] for i in res_.json['recipients'][0]['all_messages']['errors']])
 
         parsing_issues = ParsingIssueModel.query.all()
-        self.assertEqual(7, len(parsing_issues))
-        self.assertEqual('TEST', parsing_issues[3].hla_code_or_group)
-        self.assertEqual(
-            ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-            parsing_issues[3].parsing_issue_detail
-        )
+        expected_hla_codes_or_groups = ['Group A', 'Group B', 'Group DRB1', 'TEST', 'Antibodies', 'INVALID_CODES',
+                                        'TEST', 'Group A', 'Group B', 'Group DRB1']
+        self.assertCountEqual(expected_hla_codes_or_groups, [i.hla_code_or_group for i in parsing_issues])
 
     def test_donor_recipient_pair_deletion(self):
         txm_event_db_id = self.fill_db_with_patients(
@@ -733,7 +740,7 @@ class TestPatientService(DbTests):
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{CONFIGURATION_NAMESPACE}/set-default',
-                             json={"id": 1},
+                             json={'id': 1},
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
@@ -746,20 +753,20 @@ class TestPatientService(DbTests):
 
         # 5. make recipient with db_id 2 invalid
         RecipientModel.query.filter(RecipientModel.id == 2).update(
-            {"hla_typing_raw": {"hla_types_list": [{"raw_code": "B7"}, {"raw_code": "DR11"}]}}
+            {'hla_typing_raw': {'hla_types_list': [{'raw_code': 'B7'}, {'raw_code': 'DR11'}]}}
         )
         RecipientModel.query.filter(RecipientModel.id == 2).update(
-            {"hla_typing": {"hla_per_groups": [{"hla_group": "B",
-                                                "hla_types": [{
-                                                    "raw_code": "B7",
-                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7",
-                                                             "group": "B"}}]},
-                                               {"hla_group": "DRB1",
-                                                "hla_types": [{
-                                                    "raw_code": "DR11",
-                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5",
-                                                             "group": "DRB1"}}]},
-                                               {"hla_group": "Other", "hla_types": []}]}}
+            {'hla_typing': {'hla_per_groups': [{'hla_group': 'B',
+                                                'hla_types': [{
+                                                    'raw_code': 'B7',
+                                                    'code': {'high_res': 'null', 'split': 'B7', 'broad': 'B7',
+                                                             'group': 'B'}}]},
+                                               {'hla_group': 'DRB1',
+                                                'hla_types': [{
+                                                    'raw_code': 'DR11',
+                                                    'code': {'high_res': 'null', 'split': 'DR11', 'broad': 'DR5',
+                                                             'group': 'DRB1'}}]},
+                                               {'hla_group': 'Other', 'hla_types': []}]}}
         )
         db.session.commit()
 

@@ -12,6 +12,8 @@ class ParsingIssueDetail(str, Enum):
     HIGH_RES_WITH_ASSUMED_SPLIT_CODE = 'The information about the serological equivalent of the allele is only assumed' \
                                        ' in our datasource so the conversion is not 100% reliable. ' \
                                        'Please check that the conversion is correct.'
+    CREATED_THEORETICAL_ANTIBODY = 'Theoretical antibody was created, because double antibody had mixed MFI values ' \
+                                   'for both chains.'
 
     # returning no value (hla code)
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
@@ -36,8 +38,10 @@ class ParsingIssueDetail(str, Enum):
         'sent. It is better to send all to improve crossmatch estimation.'
 
     # not in a result of parse_hla_raw_code_with_details method
-    MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
+    MULTIPLE_CUTOFFS_PER_GROUP = 'There were multiple cutoff values for antibodies in this group. ' \
                                     'This means inconsistency that is not allowed.'
+    DUPLICATE_ANTIBODY_SINGLE_CHAIN = 'There were multiple instances of the same antibody with a single chain. ' \
+                                      'This is not allowed, please ensure that this antibody occurs only once in this format.'
 
     MFI_PROBLEM = 'There is a problem with MFI.'  # This string value is not used but we have it here as a fallback
     OTHER_PROBLEM = 'Some problem occurred when processing this code.'
@@ -55,15 +59,17 @@ WARNING_PROCESSING_RESULTS = {
     ParsingIssueDetail.MFI_PROBLEM,
     ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
     ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
-    ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE
+    ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE,
+    ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY
 }
 
 ERROR_PROCESSING_RESULTS = {
-    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_GROUP,
     ParsingIssueDetail.OTHER_PROBLEM,
     ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE,
     ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
     ParsingIssueDetail.UNPARSABLE_HLA_CODE,
     ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
     ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+    ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
 }

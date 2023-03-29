@@ -2,7 +2,8 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER, SMALL_DATA_FOLDER_MULTIPLE_DONORS,
+    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_THEORETICAL,
     SMALL_DATA_FOLDER_WITH_CROSSMATCH, store_generated_patients_from_folder)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
@@ -136,7 +137,7 @@ def _add_users(users: List[AppUserModel]):
     assert len(AppUserModel.query.all()) == len(users)
 
 
-def populate_db_with_split_data(user_models):
+def populate_db_with_data(user_models):
     txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
     add_allowed_events_to_users(user_models)
     patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
@@ -179,8 +180,14 @@ def populate_db_multiple_recipients():
     store_generated_patients_from_folder(SMALL_DATA_FOLDER_MULTIPLE_DONORS, GENERATED_TXM_EVENT_NAME)
 
 
+def populate_db_theoretical_double_crossmach():
+    create_or_overwrite_txm_event(name=CROSSMATCH_TXM_EVENT_NAME)
+    add_users()
+    store_generated_patients_from_folder(SMALL_DATA_FOLDER_THEORETICAL, GENERATED_TXM_EVENT_NAME)
+
+
 def populate_large_db():
     create_or_overwrite_txm_event(name='test')
     user_models = add_users()
-    populate_db_with_split_data(user_models)
+    populate_db_with_data(user_models)
     store_generated_patients_from_folder()

@@ -6,12 +6,16 @@ from typing import Callable, List
 from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
+                                                        create_antibody_parsed,
                                                         create_hla_type,
                                                         create_hla_typing)
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibody
-from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel, HLAAntibodyType
+from txmatching.patients.hla_model import HLAAntibodyRaw
+from txmatching.utils.constants import \
+    SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
+from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
+                                    HLACrossmatchLevel)
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
@@ -23,7 +27,7 @@ class TestCrossmatch(unittest.TestCase):
 
     def _assert_positive_crossmatch(self,
                                     hla_type: str,
-                                    hla_antibodies: List[HLAAntibody],
+                                    hla_antibodies: List[HLAAntibodyRaw],
                                     use_high_resolution: bool,
                                     crossmatch_logic: Callable,
                                     crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.NONE):
@@ -39,7 +43,7 @@ class TestCrossmatch(unittest.TestCase):
 
     def _assert_negative_crossmatch(self,
                                     hla_type: str,
-                                    hla_antibodies: List[HLAAntibody],
+                                    hla_antibodies: List[HLAAntibodyRaw],
                                     use_high_resolution: bool,
                                     crossmatch_logic: Callable,
                                     crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.NONE):
@@ -63,12 +67,8 @@ class TestCrossmatch(unittest.TestCase):
             import json
             data = json.load(f)
 
-            hla_typing = data['donors'][0]['hla_typing']  # len = 10
-            hla_typing.extend(data['donors'][1]['hla_typing'])  # len = 10
-
-            antibodies = [create_antibody(hla, 2100, 2000) for hla in hla_typing]
-            # set first antibody to be negative to fulfill the criteria
-            antibodies[0] = create_antibody(antibodies[0].raw_code, 1900, 2000)
+            antibodies = [create_antibody(antibody_json['name'], antibody_json['mfi'], antibody_json['cutoff'])
+                          for antibody_json in data['recipients'][0]['hla_antibodies']]
 
         # all criteria are fulfilled
         self.assertTrue(is_recipient_type_a(create_antibodies(antibodies)))
@@ -79,10 +79,13 @@ class TestCrossmatch(unittest.TestCase):
 
         # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
         antibodies[0] = create_antibody('A*23:01', 2000, 2100)  # negative antibody to fulfill general criteria
-        self.assertFalse(is_recipient_type_a(create_antibodies(antibodies[:-1])))
+        self.assertFalse(is_recipient_type_a(create_antibodies(
+            antibodies[:SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES - 1])))
 
         # there is no antibody below the cutoff
-        antibodies[0] = create_antibody(antibodies[0].raw_code, 2100, 2000)
+        antibodies = [
+            antibody if antibody.mfi > antibody.cutoff else create_antibody(antibody.raw_code, antibody.cutoff * 2,
+                                                                            antibody.cutoff) for antibody in antibodies]
         self.assertFalse(is_recipient_type_a(create_antibodies(antibodies)))
 
         self.assertTrue(is_recipient_type_a(create_antibodies(TYPE_A_EXAMPLE_REC)))
@@ -279,7 +282,7 @@ class TestCrossmatch(unittest.TestCase):
         self.assertEqual(AntibodyMatchTypes.THEORETICAL, res[1].antibody_matches[0].match_type)
 
     def _assert_matches_equal(self,
-                              hla_type: str, hla_antibodies: List[HLAAntibody],
+                              hla_type: str, hla_antibodies: List[HLAAntibodyRaw],
                               use_high_resolution: bool,
                               expected_antibody_matches: List[AntibodyMatch],
                               is_type_a: bool):
@@ -309,22 +312,22 @@ class TestCrossmatch(unittest.TestCase):
 
         # positive high res crossmatch  # HIGH_RES_1
         self._assert_matches_equal('A*23:01', [create_antibody('A*23:01', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=False)
 
         # positive high res crossmatch for special case of C*04:03 from exceptions
         self._assert_matches_equal('CW6', [create_antibody('C*04:03', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('CW6', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('CW6', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('CW4', 2100, 2000),
+                                    AntibodyMatch(create_antibody_parsed('CW4', 2100, 2000),
                                                   AntibodyMatchTypes.NONE)],
                                    is_type_a=True)
         # positive high res crossmatch for special case of C*04:03 from exceptions
         self._assert_matches_equal('C*04:03', [create_antibody('C*04:03', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('CW6', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('CW6', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('CW4', 2100, 2000),
+                                    AntibodyMatch(create_antibody_parsed('CW4', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
 
@@ -341,7 +344,8 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A*23:01', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2050, 2000), AntibodyMatchTypes.HIGH_RES)],
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2050, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=False)
         # antibodies duplicity should not raise duplicity assert, because the antibodies are joined before creating
         # antibodies per groups. Instead, mean mfi is computed.
@@ -349,16 +353,17 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:01', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2150, 2000), AntibodyMatchTypes.HIGH_RES)],
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2150, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=False)
 
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1  # HIGH_RES_2
         self._assert_matches_equal('A*24:02',
                                    [create_antibody('A*24:37', 2100, 2000),
                                     create_antibody('A*24:85', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*24:37', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*24:37', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('A*24:85', 2200, 2000),
+                                    AntibodyMatch(create_antibody_parsed('A*24:85', 2200, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
 
@@ -366,18 +371,18 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:04', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('A*23:04', 2200, 2000),
+                                    AntibodyMatch(create_antibody_parsed('A*23:04', 2200, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
         # first matching antibody with mfi1 > cutoff, second with cutoff < mfi2 < mfi1  # HIGH_RES_3
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2200, 2000),
                                     create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2200, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2200, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
+                                    AntibodyMatch(create_antibody_parsed('A*23:04', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
 
@@ -387,14 +392,14 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A23',
                                    [create_antibody('A23', 2100, 2000),
                                     create_antibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A23', 2100, 2000),
                                                   AntibodyMatchTypes.SPLIT)],
                                    is_type_a=False)
         # first matching antibody with mfi > cutoff, second with mfi < cutoff  # SPLIT_1
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2100, 2000),
                                                   AntibodyMatchTypes.SPLIT)],
                                    is_type_a=False)
 
@@ -402,7 +407,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A23', 2100, 2000),
                                     create_antibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A23', 2100, 2000),
                                                   AntibodyMatchTypes.SPLIT)],
                                    is_type_a=False)
 
@@ -410,7 +415,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:01', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
                                    is_type_a=True)
 
@@ -418,7 +423,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A*24:02',
                                    [create_antibody('A*24:37', 2100, 2000),
                                     create_antibody('A*24:85', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*24:37', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*24:37', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
                                    is_type_a=True)
 
@@ -428,35 +433,35 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A9',
                                    [create_antibody('A9', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
+                                   [AntibodyMatch(create_antibody_parsed('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
                                    is_type_a=False)
 
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # BROAD_2
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A9', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
+                                   [AntibodyMatch(create_antibody_parsed('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
                                    is_type_a=False)
 
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # BROAD_2
         self._assert_matches_equal('A23',
                                    [create_antibody('A9', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
+                                   [AntibodyMatch(create_antibody_parsed('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
                                    is_type_a=False)
 
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # BROAD_2
         self._assert_matches_equal('A9',
                                    [create_antibody('A9', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
+                                   [AntibodyMatch(create_antibody_parsed('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
                                    is_type_a=False)
 
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # HIGH_RES_WITH_BROAD_1
         self._assert_matches_equal('A9',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('A*23:04', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES_WITH_BROAD)],
                                    is_type_a=True)
 
@@ -479,10 +484,11 @@ class TestCrossmatch(unittest.TestCase):
                                    [create_antibody('DPB1*858:01', 2100, 2000),
                                     create_antibody('DPB1*1016:01', 2100, 2000),
                                     create_antibody('DQB1*03:10', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('DPB1*858:01', 2100, 2000),
+                                   [AntibodyMatch(create_antibody_parsed('DPB1*858:01', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES),
-                                    AntibodyMatch(create_antibody('DPB1*1016:01', 2100, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(create_antibody('DQB1*03:10', 2100, 2000),
+                                    AntibodyMatch(create_antibody_parsed('DPB1*1016:01', 2100, 2000),
+                                                  AntibodyMatchTypes.NONE),
+                                    AntibodyMatch(create_antibody_parsed('DQB1*03:10', 2100, 2000),
                                                   AntibodyMatchTypes.UNDECIDABLE)],
                                    is_type_a=False)
 
@@ -542,9 +548,8 @@ class TestCrossmatch(unittest.TestCase):
     def test_crossmatch_for_antibodies_with_two_codes(self):
         hla_antibodies = create_antibodies(hla_antibodies_list=[])
         hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
-        hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPB1*18:01', 2100, 2000, 'DPA1*01:03'))
+            create_antibody_parsed('DPA1*01:03', 2100, 2000, 'DPB1*18:01')
+        )
 
         self.assertFalse(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*01:03']),
                                                     hla_antibodies,
@@ -558,9 +563,7 @@ class TestCrossmatch(unittest.TestCase):
 
         hla_antibodies = create_antibodies(hla_antibodies_list=[])
         hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPA1*02:01', 2100, 2000, 'DPB1*02:01'))
-        hla_antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPB1*02:01', 2100, 2000, 'DPA1*02:01'))
+            create_antibody_parsed('DPA1*02:01', 2100, 2000, 'DPB1*02:01'))
 
         self.assertTrue(is_positive_hla_crossmatch(create_hla_typing(hla_types_list=['DPA1*02:02', 'DPB1*02:02']),
                                                    hla_antibodies,
@@ -578,12 +581,12 @@ class TestCrossmatch(unittest.TestCase):
                                                    crossmatch_logic=do_crossmatch_in_type_a))
 
         antibodies = create_antibodies(hla_antibodies_list=[])
-        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPB1*18:02', 1900, 2000))
-        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(create_antibody('DPA1*01:02', 1900, 2000))
         antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
+            create_antibody_parsed('DPB1*18:02', 1900, 2000))
         antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
-            create_antibody('DPB1*18:01', 2100, 2000, 'DPA1*01:03'))
+            create_antibody_parsed('DPA1*01:02', 1900, 2000))
+        antibodies.hla_antibodies_per_groups[4].hla_antibody_list.append(
+            create_antibody_parsed('DPA1*01:03', 2100, 2000, 'DPB1*18:01'))
         crossmatch_result = do_crossmatch_in_type_a(
             create_hla_typing(hla_types_list=['DPA1', 'DP18']),
             antibodies,

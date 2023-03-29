@@ -133,7 +133,6 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
 
     if pd.isnull(col_map_dict['donor_typization']) or pd.isnull(col_map_dict['recipient_typization']):
         # This happens for and bridging or if row is empty. Uncomment to check it
-        # print(f"Warning: Row ignored ({filename}): {row}")
         return None
 
     col_map_dict['donor_typization'] = parse_hla(col_map_dict['donor_typization'])

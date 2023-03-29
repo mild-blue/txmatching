@@ -14,6 +14,8 @@ class ParsingIssueBase:
     parsing_issue_detail: ParsingIssueDetail
     message: str
 
+    def __hash__(self):
+        return hash((self.hla_code_or_group, self.parsing_issue_detail.name, self.message))
 
 @dataclass
 class ParsingIssuePublicDTO(ParsingIssueBase):

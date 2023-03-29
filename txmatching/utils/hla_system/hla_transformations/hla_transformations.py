@@ -60,7 +60,7 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[HLATypeRawBothChains]:
     if matched_multi_hla_codes:
         alpha_chain = f'{matched_multi_hla_codes.group(1)}A1*{matched_multi_hla_codes.group(2)}'
         beta_chain = f'{matched_multi_hla_codes.group(1)}B1*{matched_multi_hla_codes.group(3)}'
-        return [HLATypeRawBothChains(alpha_chain, beta_chain), HLATypeRawBothChains(beta_chain, alpha_chain)]
+        return [HLATypeRawBothChains(alpha_chain, beta_chain)]
     # TODO Handle this case better and elsewhere: https://github.com/mild-blue/txmatching/issues/1036
     elif PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in):
         return [HLATypeRawBothChains(hla_code) for hla_code in PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)]

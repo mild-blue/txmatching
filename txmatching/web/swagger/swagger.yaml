@@ -1264,6 +1264,7 @@ definitions:
                 - HIGH_RES_WITHOUT_SPLIT
                 - HIGH_RES_WITH_LETTER
                 - HIGH_RES_WITH_ASSUMED_SPLIT_CODE
+                - CREATED_THEORETICAL_ANTIBODY
                 - MULTIPLE_SPLITS_OR_BROADS_FOUND
                 - IRRELEVANT_CODE
                 - UNEXPECTED_SPLIT_RES_CODE
@@ -1273,7 +1274,8 @@ definitions:
                 - BASIC_HLA_GROUP_IS_EMPTY
                 - ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
                 - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-                - MULTIPLE_CUTOFFS_PER_ANTIBODY
+                - MULTIPLE_CUTOFFS_PER_GROUP
+                - DUPLICATE_ANTIBODY_SINGLE_CHAIN
                 - MFI_PROBLEM
                 - OTHER_PROBLEM
                 example: SUCCESSFULLY_PARSED

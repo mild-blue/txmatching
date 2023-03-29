@@ -23,6 +23,7 @@ export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
     HighResWithoutSplit = 'HIGH_RES_WITHOUT_SPLIT',
     HighResWithLetter = 'HIGH_RES_WITH_LETTER',
     HighResWithAssumedSplitCode = 'HIGH_RES_WITH_ASSUMED_SPLIT_CODE',
+    CreatedTheoreticalAntibody = 'CREATED_THEORETICAL_ANTIBODY',
     MultipleSplitsOrBroadsFound = 'MULTIPLE_SPLITS_OR_BROADS_FOUND',
     IrrelevantCode = 'IRRELEVANT_CODE',
     UnexpectedSplitResCode = 'UNEXPECTED_SPLIT_RES_CODE',
@@ -32,7 +33,8 @@ export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
     BasicHlaGroupIsEmpty = 'BASIC_HLA_GROUP_IS_EMPTY',
     AllAntibodiesArePositiveInHighRes = 'ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES',
     InsufficientNumberOfAntibodiesInHighRes = 'INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES',
-    MultipleCutoffsPerAntibody = 'MULTIPLE_CUTOFFS_PER_ANTIBODY',
+    MultipleCutoffsPerGroup = 'MULTIPLE_CUTOFFS_PER_GROUP',
+    DuplicateAntibodySingleChain = 'DUPLICATE_ANTIBODY_SINGLE_CHAIN',
     MfiProblem = 'MFI_PROBLEM',
     OtherProblem = 'OTHER_PROBLEM'
 };

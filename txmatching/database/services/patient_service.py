@@ -113,20 +113,21 @@ def _recipient_model_to_antibodies_dto(recipient_model: RecipientModel) -> HLAAn
         raise ValueError('Parsed antibodies have invalid format. Try to run recompute-parsing api')
 
     return HLAAntibodiesDTO([
-        AntibodiesPerGroup(hla_group=hla["hla_group"],
+        AntibodiesPerGroup(hla_group=hla['hla_group'],
                             hla_antibody_list=[HLAAntibody(
                                 raw_code=antibody['raw_code'],
-                                mfi=antibody["mfi"],
-                                cutoff=antibody["cutoff"],
-                                code=HLACode(high_res=antibody["code"]["high_res"],
-                                             split=antibody["code"]["split"],
-                                             broad=antibody["code"]["broad"]),
-                                second_raw_code=antibody["second_raw_code"],
-                                second_code=None if antibody["second_code"] is None else
-                                HLACode(high_res=antibody["second_code"]["high_res"],
-                                        split=antibody["second_code"]["split"],
-                                        broad=antibody["second_code"]["broad"])
-                            ) for antibody in hla["hla_antibody_list"]])
+                                mfi=antibody['mfi'],
+                                cutoff=antibody['cutoff'],
+                                code=HLACode(high_res=antibody['code']['high_res'],
+                                             split=antibody['code']['split'],
+                                             broad=antibody['code']['broad']),
+                                second_raw_code=antibody['second_raw_code'],
+                                second_code=None if antibody['second_code'] is None else
+                                HLACode(high_res=antibody['second_code']['high_res'],
+                                        split=antibody['second_code']['split'],
+                                        broad=antibody['second_code']['broad']),
+                                type=antibody['type']
+                            ) for antibody in hla['hla_antibody_list']])
         for hla in recipient_model.hla_antibodies['hla_antibodies_per_groups']])
 
 
@@ -152,22 +153,22 @@ def _get_hla_typing_dto_from_patient_model(patient_model: Union[DonorModel, Reci
 
     return HLATypingDTO(
         hla_per_groups=[HLAPerGroup(
-            hla_group=group["hla_group"],
+            hla_group=group['hla_group'],
             hla_types=[HLAType(
-                raw_code=type["raw_code"],
+                raw_code=type['raw_code'],
                 code=HLACode(
-                    high_res=type["code"]["high_res"],
-                    split=type["code"]["split"],
-                    broad=type["code"]["broad"])
-            ) for type in group["hla_types"]]
-        ) for group in patient_model.hla_typing["hla_per_groups"]])
+                    high_res=type['code']['high_res'],
+                    split=type['code']['split'],
+                    broad=type['code']['broad'])
+            ) for type in group['hla_types']]
+        ) for group in patient_model.hla_typing['hla_per_groups']])
 
 
 def _get_hla_typing_raw_dto_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> HLATypingRawDTO:
     return HLATypingRawDTO(
         hla_types_list=[HLATypeRaw(
-            raw_code=type["raw_code"]
-        ) for type in patient_model.hla_typing_raw["hla_types_list"]])
+            raw_code=type['raw_code']
+        ) for type in patient_model.hla_typing_raw['hla_types_list']])
 
 
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tuple[List[ParsingIssue], dict]:
@@ -442,16 +443,16 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
     for config in ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_id):
-        donors_in_manual_scores = [pair["donor_db_id"] for pair in config.parameters["manual_donor_recipient_scores"]]
-        if (maybe_recipient is not None and maybe_recipient.db_id in config.parameters["required_patient_db_ids"]
+        donors_in_manual_scores = [pair['donor_db_id'] for pair in config.parameters['manual_donor_recipient_scores']]
+        if (maybe_recipient is not None and maybe_recipient.db_id in config.parameters['required_patient_db_ids']
                 and maybe_recipient.db_id not in donors_in_manual_scores):
             config_dict = {
-                "id": config.id,
-                "txm_event_id": config.txm_event_id,
-                "parameters": config.parameters
+                'id': config.id,
+                'txm_event_id': config.txm_event_id,
+                'parameters': config.parameters
             }
 
-            config_dict["parameters"]["required_patient_db_ids"].remove(maybe_recipient.db_id)
+            config_dict['parameters']['required_patient_db_ids'].remove(maybe_recipient.db_id)
 
             ConfigModel.query.filter(ConfigModel.id == config.id).update(config_dict)
 

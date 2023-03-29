@@ -1,6 +1,6 @@
 from local_testing_utilities.generate_patients import (
-    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND,
-    store_generated_patients_from_folder)
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_THEORETICAL,
+    SMALL_DATA_FOLDER_WITH_ROUND, store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.solvers.ilp_solver.test_ilp_solver import _set_donor_blood_group
@@ -150,7 +150,22 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=1, score=7.0)])
         solution = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
-        self.assertEqual(len(solution), 1)
+        self.assertEqual(1, len(solution))
+
+    def test_theoretical_and_double_chain_antibodies(self):
+        # the data is prepared such that both recipients have double antibodies. One has
+        # antibodies compatible with the bridinging donor, one has with normal donor. We are testing that
+        # theoretical antibodies are correctly parsed and then correctly ignored in crossmatch. Moreover, we
+        # test that double antibodies are correctly applied.
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_THEORETICAL)
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+
+        config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver)
+        solution = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
+        self.assertListEqual([('CZE_2', 'CZE_0R'), ('CZE_0', 'CZE_1R')],
+                             [(p.donor.medical_id, p.recipient.medical_id) for p in solution[0].matching_pairs])
+        self.assertListEqual([('CZE_2', 'CZE_0R')],
+                             [(p.donor.medical_id, p.recipient.medical_id) for p in solution[1].matching_pairs])
 
     def test_manual_scores_set_manual_score_of_every_pair_to_negative(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
@@ -180,4 +195,4 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=1.0),
             ])
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertEqual(len(solutions), 1)
+        self.assertEqual(1, len(solutions))
