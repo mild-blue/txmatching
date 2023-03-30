@@ -607,6 +607,7 @@ definitions:
                             cutoff: 0
                             mfi: 0
                             raw_code: A9
+                            type: NORMAL
                         match_type: NONE
                     -   hla_antibody:
                             code: &id001
@@ -616,6 +617,7 @@ definitions:
                             cutoff: 0
                             mfi: 0
                             raw_code: A1
+                            type: NORMAL
                         match_type: BROAD
                     donor_matches:
                     -   hla_type:

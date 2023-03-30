@@ -3,7 +3,7 @@ from flask_restx import fields
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
 from txmatching.utils.enums import (HLA_GROUPS,
-                                    AntibodyMatchTypes, HLAGroup, MatchType)
+                                    AntibodyMatchTypes, HLAAntibodyType, HLAGroup, MatchType)
 from txmatching.web.web_utils.namespaces import matching_api
 
 _CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}
@@ -25,9 +25,9 @@ EXAMPLE_DETAILED_SCORE = [
           'match_type': MatchType.SPLIT.name}
      ],
      'antibody_matches': [
-         {'hla_antibody': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A9},
+         {'hla_antibody': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A9, 'type': HLAAntibodyType.NORMAL.name},
           'match_type': AntibodyMatchTypes.NONE.name},
-         {'hla_antibody': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A1},
+         {'hla_antibody': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A1, 'type': HLAAntibodyType.NORMAL.name},
           'match_type': AntibodyMatchTypes.BROAD.name}
      ],
      'group_compatibility_index': 2.0
