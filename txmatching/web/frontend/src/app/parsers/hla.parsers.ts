@@ -76,11 +76,7 @@ export const parseAntibody = (data: HlaAntibodyGenerated): Antibody => {
   return {
     ...parseHlaRaw(data),
     displayCode: rawCode,
-    code: {
-      highRes: data.code.high_res,
-      split: data.code.split,
-      broad: data.code.broad,
-    },
+    code: parseCode(data.code),
     mfi,
     cutoff,
     secondRawCode: data.second_raw_code,
