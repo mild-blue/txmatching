@@ -62,7 +62,7 @@ export const parseAntigenRaw = (data: HlaTypeRawGenerated): AntigenRaw => {
   };
 };
 
-export const parseCode = (data: HlaCodeGenerated): HlaCode => ({
+const parseCode = (data: HlaCodeGenerated): HlaCode => ({
   highRes: data.high_res,
   split: data.split,
   broad: data.broad,
@@ -85,7 +85,7 @@ export const parseAntibody = (data: HlaAntibodyGenerated): Antibody => {
   };
 };
 
-export const parseAntibodyType = (data: HLAAntibodyTypeGenerated): HlaAntibodyType => {
+const parseAntibodyType = (data: HLAAntibodyTypeGenerated): HlaAntibodyType => {
   return HlaAntibodyType[data];
 };
 
