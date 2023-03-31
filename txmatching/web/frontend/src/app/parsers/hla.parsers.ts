@@ -8,6 +8,8 @@ import {
   HlaAntibodiesGenerated,
   HlaAntibodyGenerated,
   HlaAntibodyRawGenerated,
+  HLAAntibodyTypeGenerated,
+  HlaCodeGenerated,
   HlaCodesInGroupsGenerated,
   HlaTypeGenerated,
   HlaTypeRawGenerated,
@@ -27,10 +29,12 @@ import {
   Antigens,
   DetailedScorePerGroup,
   Hla,
+  HlaCode,
   HlaMatch,
   HlaPerGroup,
   HlaRaw,
 } from "../model";
+import { HlaAntibodyType } from "@app/model/enums/HlaAntibodyType";
 
 export const parseHlaRaw = (data: HlaTypeRawGenerated | HlaAntibodyGenerated): HlaRaw => {
   return {
@@ -41,12 +45,8 @@ export const parseHlaRaw = (data: HlaTypeRawGenerated | HlaAntibodyGenerated): H
 export const parseHla = (data: HlaTypeGenerated | HlaAntibodyGenerated): Hla => {
   return {
     ...parseHlaRaw(data),
-    code: {
-      displayCode: data.code.high_res ?? data.code.split ?? data.code.broad,
-      highRes: data.code.high_res,
-      split: data.code.split,
-      broad: data.code.broad,
-    },
+    code: parseCode(data.code),
+    displayCode: data.code.high_res ?? data.code.split ?? data.code.broad,
   };
 };
 
@@ -62,14 +62,31 @@ export const parseAntigenRaw = (data: HlaTypeRawGenerated): AntigenRaw => {
   };
 };
 
+const parseCode = (data: HlaCodeGenerated): HlaCode => ({
+  highRes: data.high_res,
+  split: data.split,
+  broad: data.broad,
+});
+
 export const parseAntibody = (data: HlaAntibodyGenerated): Antibody => {
   const { mfi, cutoff } = data;
 
+  const rawCode = data.second_raw_code ? `${data.raw_code},${data.second_raw_code}` : data.raw_code;
+
   return {
-    ...parseHla(data),
+    ...parseHlaRaw(data),
+    displayCode: rawCode,
+    code: parseCode(data.code),
     mfi,
     cutoff,
+    secondRawCode: data.second_raw_code,
+    secondCode: data.second_code ? parseCode(data.second_code) : undefined,
+    type: parseAntibodyType(data.type),
   };
+};
+
+const parseAntibodyType = (data: HLAAntibodyTypeGenerated): HlaAntibodyType => {
+  return HlaAntibodyType[data];
 };
 
 export const parseAntibodyRaw = (data: HlaAntibodyRawGenerated): AntibodyRaw => {

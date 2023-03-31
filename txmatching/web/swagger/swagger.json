@@ -2977,7 +2977,8 @@
                                             "high_res": null,
                                             "split": null,
                                             "broad": "A9"
-                                        }
+                                        },
+                                        "type": "NORMAL"
                                     },
                                     "match_type": "NONE"
                                 },
@@ -2990,7 +2991,8 @@
                                             "high_res": null,
                                             "split": null,
                                             "broad": "A1"
-                                        }
+                                        },
+                                        "type": "NORMAL"
                                     },
                                     "match_type": "BROAD"
                                 }
@@ -3336,10 +3338,14 @@
                 "code",
                 "cutoff",
                 "mfi",
-                "raw_code"
+                "raw_code",
+                "type"
             ],
             "properties": {
                 "raw_code": {
+                    "type": "string"
+                },
+                "second_raw_code": {
                     "type": "string"
                 },
                 "mfi": {
@@ -3349,6 +3355,9 @@
                     "type": "integer"
                 },
                 "code": {
+                    "$ref": "#/definitions/HlaCode"
+                },
+                "second_code": {
                     "$ref": "#/definitions/HlaCode"
                 },
                 "type": {
@@ -4594,7 +4603,8 @@
                                             "high_res": null,
                                             "split": null,
                                             "broad": "A9"
-                                        }
+                                        },
+                                        "type": "NORMAL"
                                     },
                                     "match_type": "NONE"
                                 },
@@ -4607,7 +4617,8 @@
                                             "high_res": null,
                                             "split": null,
                                             "broad": "A1"
-                                        }
+                                        },
+                                        "type": "NORMAL"
                                     },
                                     "match_type": "BROAD"
                                 }
