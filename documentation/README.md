@@ -247,7 +247,7 @@ antibodies against both alpha and beta alleles or just one of them.
 ### Algorithm description
 Antibodies enclosed in square brackets are called double antibodies.
 
-Let us first explain the terminology we used to describe the algorithm:
+Let us firstly explain the terminology we used to describe the algorithm:
 
 * The alpha chain refers to the first code of a double antibody.
 * The beta chain refers to the second code of a double antibody.
@@ -266,18 +266,18 @@ First, we check if the antibody has a positive MFI.
 #### Double antibody has a positive MFI:
 If **both antibody chains have only positive MFI representation** among all the antibodies 
 in the list for parsing, we add each chain **separately** to the parsed list, 
-with the arithmetic mean of the MFI from all antibodies in the list.</br>
+with the arithmetic mean of the MFI from all antibodies with this chain in the list.</br>
 If **one of the chains has at least one negative MFI representation** and the **another one has 
 only positive MFI representation** among other antibodies 
 in the list, we add its chain to the parsed list with the arithmetic mean of the MFI 
-from all antibodies with negative MFI in the list, and add the other chain with the 
-arithmetic mean of all antibodies, as in the first case.</br>
+from all antibodies with negative MFI for this chain in the list, and add the other chain with the 
+arithmetic mean of the MFI from all antibodies with this chain, as in the first case.</br>
 If **both chains have at least one negative MFI among other antibodies**, 
 we add them to the parsed list as one theoretical double antibody with the arithmetic 
-mean of the MFI from all antibodies in the list. 
-Then, we add each chain **separately** to the parsed list if they are not already present, 
-with the arithmetic mean of the MFI from all antibodies in the list. 
-We also add a parsing issue about this to the parsing issue list.
+mean of the MFI from all antibodies with these chains in the list. 
+Also we add a parsing issue about this to the parsing issue list.
+Then we add each chain **separately** to the parsed list if they are not already present, 
+with the arithmetic mean of the MFI from all antibodies with this chain in the list.
 
 #### Double antibody has a negative MFI:
 If a chain has **only negative MFI representation** among other antibodies in the list, 
