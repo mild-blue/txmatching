@@ -3501,12 +3501,6 @@
                 },
                 "type": {
                     "$ref": "#/definitions/HLAAntibodyType"
-                },
-                "second_raw_code": {
-                    "type": "string"
-                },
-                "second_code": {
-                    "$ref": "#/definitions/HlaCode"
                 }
             },
             "type": "object"
