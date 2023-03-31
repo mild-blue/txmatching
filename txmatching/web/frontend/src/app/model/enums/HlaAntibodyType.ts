@@ -1,4 +1,4 @@
-export enum HLAAntibodyType {
+export enum HlaAntibodyType {
   NORMAL = "NORMAL",
   THEORETICAL = "THEORETICAL",
 }
