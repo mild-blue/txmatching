@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-03-29T09:32:25.542Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36" etag="2MwqxjFBqwpiMxALWknK" version="21.1.1" type="device">
+<mxfile host="app.diagrams.net" modified="2023-03-31T12:45:14.803Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="iB5rK1AOzd_2T24Mev-D" version="21.1.1" type="device">
   <diagram name="Stránka-1" id="3VBCaAHW6qODwrgH9Cj1">
-    <mxGraphModel dx="954" dy="1712" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="954" dy="1665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -50,7 +50,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="uRJ4dflKP4ZvwXpApvr8-12" value="Has antibody MFI under cutoff?" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="uRJ4dflKP4ZvwXpApvr8-12" value="Does antibody have MFI above cutoff?" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="460" y="310" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="uRJ4dflKP4ZvwXpApvr8-15" value="Yes" style="endArrow=classic;html=1;rounded=0;edgeStyle=elbowEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;align=left;verticalAlign=bottom;" parent="1" edge="1">
@@ -73,7 +73,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="uRJ4dflKP4ZvwXpApvr8-18" value="Both chains have MFI under cutoff&lt;br&gt;for all antibodies in the antibodies list" style="edgeStyle=elbowEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;align=center;verticalAlign=bottom;" parent="1" edge="1">
+        <mxCell id="uRJ4dflKP4ZvwXpApvr8-18" value="Both chains have MFI above cutoff&lt;br&gt;for all antibodies in the antibodies list" style="edgeStyle=elbowEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;align=center;verticalAlign=bottom;" parent="1" edge="1">
           <mxGeometry x="0.3326" width="80" relative="1" as="geometry">
             <mxPoint x="660" y="279.5" as="sourcePoint" />
             <mxPoint x="970" y="140" as="targetPoint" />
@@ -155,9 +155,15 @@
         <mxCell id="uRJ4dflKP4ZvwXpApvr8-26" value="Add chain to the parsed with average MFI across all antibodies with negative MFI representation of this chain" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1260" y="220" width="180" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="uRJ4dflKP4ZvwXpApvr8-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" source="uRJ4dflKP4ZvwXpApvr8-27" edge="1">
+        <mxCell id="uRJ4dflKP4ZvwXpApvr8-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1470" y="280" as="targetPoint" />
+            <mxPoint x="1410" y="455" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="uRJ4dflKP4ZvwXpApvr8-27">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="455" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="uRJ4dflKP4ZvwXpApvr8-27" value="Add this antibody as theoretical double with average MFI across all antibodies with these chains.&lt;br&gt;Also add parsing issue to the list about this situation" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
@@ -205,6 +211,34 @@
         </mxCell>
         <mxCell id="uRJ4dflKP4ZvwXpApvr8-40" value="For-loop throw all antibodies in the list" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="100" y="40" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-4" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;verticalAlign=bottom;" edge="1" parent="1" source="4eDjeHduwQjKuFVqRllb-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1410" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-5" value="no" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;verticalAlign=middle;" edge="1" parent="1" source="4eDjeHduwQjKuFVqRllb-3">
+          <mxGeometry x="-0.4375" y="15" relative="1" as="geometry">
+            <mxPoint x="1290" y="570" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1225" y="520" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-3" value="Is chain in parsed?" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="435" width="49" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-8" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="4eDjeHduwQjKuFVqRllb-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1450" y="455" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1420" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4eDjeHduwQjKuFVqRllb-7" value="Add chain to the parsed with average MFI across all antibodies with this chain" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="540" width="120" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
