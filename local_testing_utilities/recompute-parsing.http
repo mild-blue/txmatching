@@ -1,5 +1,4 @@
 GET {{url}}/v1/service/version
-Content-Type: application/json
 
 
 ###
@@ -26,8 +25,7 @@ Authorization: Bearer {{auth_token}}
 ###
 
 
-POST {{url}}/v1/txm-event/20/patients/recompute-parsing
-Content-Type: application/json
+POST {{url}}/v1/txm-event/2/patients/recompute-parsing
 Authorization: Bearer {{auth_token}}
 
 ###
