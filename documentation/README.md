@@ -247,11 +247,11 @@ When we receive antibodies in the notation DP*[01:01;02:02], we use a special al
 
 Let us first explain the terminology we used to describe the algorithm:
 
-* Double antibody refers to an antibody enclosed in square brackets.
-* The alpha chain refers to the first code of a double antibody.
-* The beta chain refers to the second code of a double antibody.
-* Positive MFI is the MFI value that is equal to or above the cutoff.
-* Negative MFI is the MFI value below the cutoff.
+* "double antibody" refers to an antibody enclosed in square brackets.
+* "alpha chain" refers to the first code of a double antibody.
+* "beta chain" refers to the second code of a double antibody.
+* "positive MFI" is the MFI value that is equal to or above the cutoff.
+* "negative MFI" is the MFI value below the cutoff.
 
 At the beginning of the algorithm execution, we have three lists:
 1. `antibodies` - a list of all antibodies to parse.
@@ -268,7 +268,7 @@ First, we check if the antibody has a positive MFI.
 #### Double antibody has a positive MFI:
 If **both antibody chains have only positive MFI representation** among all the antibodies 
 in the list for parsing, we add each chain **separately** to the `parsed` list with the arithmetic mean of the MFI from all antibodies with this chain in the list.</br></br>
-If **one of the chains has at least one negative MFI representation** and the **other chain has only positive MFI representation** among other antibodies in the list, we add the **chain with only positive MFI representation** to the `parsed` list with the arithmetic mean of the MFI from all antibodies with this chain. For the **chain with mixed MFI representation**, if this is the only positive occurrence of this chain, we add it to the `parsed` list with the arithmetic mean of the MFI from all antibodies with negative MFI for this chain in the list. However, if there is another positive occurrence for this chain, we skip it for now.</br></br>
+If **one of the chains has at least one negative MFI representation** and the **other chain has only positive MFI representation** among other antibodies in the list, we add the **chain with only positive MFI representation** to the `parsed` list with the arithmetic mean of the MFI from all antibodies with this chain. For the **chain with mixed MFI representation**, if this is the only positive occurrence of this chain, we add it to the `parsed` list with the arithmetic mean of the MFI from all antibodies with negative MFI for this chain in the list. However, if there is another positive occurrence for this chain, we skip it.</br></br>
 If **both chains have at least one negative MFI among other antibodies**, 
 we add them to the `parsed` list as one double antibody with the provided MFI. Moreover, we add each chain **separately** to the `parsed` list, and we denote their type as "theoretical", with the arithmetic mean of the MFI from all antibodies with this chain in the list.
 Finally, we add a parsing issue about this to the `parsing_issue` list.
