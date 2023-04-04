@@ -107,7 +107,7 @@ def random_acceptable() -> List[BloodGroup]:
         return []
     num_of_acceptable = random.randint(1, 4)
     blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
-    acceptable = random.sample(blood_groups, num_of_acceptable)
+    acceptable = random.sample(sorted(blood_groups), num_of_acceptable)
     return acceptable
 
 
