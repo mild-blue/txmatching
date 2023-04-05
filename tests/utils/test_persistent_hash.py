@@ -2,7 +2,7 @@ import unittest
 
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
-from tests.test_utilities.hla_preparation_utils import create_hla_type
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from txmatching.utils.persistent_hash import (initialize_persistent_hash,
                                               update_persistent_hash)
 

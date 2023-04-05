@@ -3,8 +3,7 @@ import logging
 from tests.patients.test_patient_parameters import (
     create_recipient_parameters_wrong, donor_parameters_Joe,
     recipient_parameters_Jack)
-from tests.test_utilities.hla_preparation_utils import (create_hla_type,
-                                                        create_hla_typing)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.scorers.high_res_hla_additive_scorer import \
     HighResScorerCIConfiguration

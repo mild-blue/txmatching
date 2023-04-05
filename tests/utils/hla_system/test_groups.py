@@ -1,4 +1,4 @@
-from tests.test_utilities.hla_preparation_utils import create_hla_type
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.hla_functions import split_hla_types_to_groups
 from txmatching.patients.hla_model import HLAType

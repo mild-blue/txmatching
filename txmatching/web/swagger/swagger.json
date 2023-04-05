@@ -2,6 +2,68 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
+        "/v1/crossmatch/do-crossmatch": {
+            "post": {
+                "responses": {
+                    "501": {
+                        "description": "The feature is not implemented yet.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/CrossmatchOutput"
+                        }
+                    }
+                },
+                "description": "Perform crossmatch test between donor HLA typing and recipient antibodies.",
+                "operationId": "post_do_crossmatch",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CrossmatchInput"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "crossmatch"
+                ]
+            }
+        },
         "/v1/optimizer": {
             "post": {
                 "responses": {
@@ -2153,6 +2215,9 @@
         },
         {
             "name": "txm-event"
+        },
+        {
+            "name": "crossmatch"
         }
     ],
     "definitions": {
@@ -2252,6 +2317,23 @@
                         "HIGH_RES_WITH_BROAD",
                         "THEORETICAL"
                     ]
+                }
+            },
+            "type": "object"
+        },
+        "AntibodyMatchForHLAType": {
+            "required": [
+                "hla_type"
+            ],
+            "properties": {
+                "hla_type": {
+                    "$ref": "#/definitions/HlaType"
+                },
+                "antibody_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatch"
+                    }
                 }
             },
             "type": "object"
@@ -2777,6 +2859,63 @@
                 "ZWE"
             ],
             "type": "string"
+        },
+        "CrossmatchInput": {
+            "required": [
+                "donor_hla_typing",
+                "recipient_antibodies"
+            ],
+            "properties": {
+                "donor_hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "recipient_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "CrossmatchOutput": {
+            "required": [
+                "hla_to_antibody",
+                "parsing_issues"
+            ],
+            "properties": {
+                "hla_to_antibody": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatchForHLAType"
+                    }
+                },
+                "parsing_issues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueBase"
+                    }
+                }
+            },
+            "type": "object"
         },
         "CycleOrChain": {
             "required": [
@@ -3851,6 +3990,46 @@
                 },
                 "recipient_id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "ParsingIssueBase": {
+            "required": [
+                "hla_code_or_group",
+                "message",
+                "parsing_issue_detail"
+            ],
+            "properties": {
+                "hla_code_or_group": {
+                    "type": "string"
+                },
+                "parsing_issue_detail": {
+                    "type": "string",
+                    "example": "SUCCESSFULLY_PARSED",
+                    "enum": [
+                        "SUCCESSFULLY_PARSED",
+                        "HIGH_RES_WITHOUT_SPLIT",
+                        "HIGH_RES_WITH_LETTER",
+                        "HIGH_RES_WITH_ASSUMED_SPLIT_CODE",
+                        "CREATED_THEORETICAL_ANTIBODY",
+                        "MULTIPLE_SPLITS_OR_BROADS_FOUND",
+                        "IRRELEVANT_CODE",
+                        "UNEXPECTED_SPLIT_RES_CODE",
+                        "UNKNOWN_TRANSFORMATION_FROM_HIGH_RES",
+                        "UNPARSABLE_HLA_CODE",
+                        "MORE_THAN_TWO_HLA_CODES_PER_GROUP",
+                        "BASIC_HLA_GROUP_IS_EMPTY",
+                        "ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES",
+                        "INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES",
+                        "MULTIPLE_CUTOFFS_PER_GROUP",
+                        "DUPLICATE_ANTIBODY_SINGLE_CHAIN",
+                        "MFI_PROBLEM",
+                        "OTHER_PROBLEM"
+                    ]
+                },
+                "message": {
+                    "type": "string"
                 }
             },
             "type": "object"

@@ -24,6 +24,7 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.logged_user import get_current_user
 from txmatching.web.api.configuration_api import configuration_api
+from txmatching.web.api.crossmatch_api import crossmatch_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.optimizer_api import optimizer_api
 from txmatching.web.api.patient_api import patient_api
@@ -43,7 +44,7 @@ from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  REPORTS_NAMESPACE,
                                                  SERVICE_NAMESPACE,
                                                  TXM_EVENT_NAMESPACE,
-                                                 USER_NAMESPACE, enums_api)
+                                                 USER_NAMESPACE, enums_api, CROSSMATCH_NAMESPACE)
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -315,6 +316,7 @@ def add_all_namespaces(api: Api):
     api.add_namespace(report_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
+    api.add_namespace(crossmatch_api, path=f'{API_VERSION}/{CROSSMATCH_NAMESPACE}')
 
 
 def _get_current_user_if_logged() -> Optional[AppUserModel]:

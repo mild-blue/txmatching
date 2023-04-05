@@ -1,4 +1,4 @@
-from tests.test_utilities.hla_preparation_utils import create_antibody
+from txmatching.utils.hla_system.hla_preparation_utils import create_antibody
 
 TYPE_A_EXAMPLE_REC = [create_antibody('A*01:01', 63, 4000),
                       create_antibody('A*02:01', 15721, 4000),

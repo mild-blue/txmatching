@@ -28,7 +28,7 @@ from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+    AntibodyMatchForHLAGroup, get_crossmatched_antibodies_per_group)
 from txmatching.utils.transplantation_warning import (TransplantWarningDetail,
                                                       TransplantWarnings)
 
@@ -92,7 +92,7 @@ def get_matchings_detailed_for_pairing_result_model(
             ci_configuration=scorer.ci_configuration) for pair in compatibility_graph_of_db_ids.keys()}
     logger.debug('Getting antibody matches dict dict with score')
     antibody_matches_dict = {
-        (pair[0], pair[1]): get_crossmatched_antibodies(
+        (pair[0], pair[1]): get_crossmatched_antibodies_per_group(
             txm_event.active_and_valid_donors_dict[pair[0]].parameters.hla_typing,
             txm_event.active_and_valid_recipients_dict[pair[1]].hla_antibodies,
             configuration_parameters.use_high_resolution) for pair in compatibility_graph_of_db_ids.keys()}

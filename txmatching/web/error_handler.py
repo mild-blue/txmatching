@@ -15,7 +15,8 @@ from txmatching.auth.exceptions import (
     InvalidJWTException, InvalidOtpException, InvalidTokenException,
     NonUniquePatient, NotFoundException, OverridingException,
     SolverAlreadyRunningException, TooComplicatedDataForAllSolutionsSolver,
-    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
+    UnauthorizedException, UserUpdateException, WrongTokenUsedException,
+    TXMNotImplementedFeatureException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -187,6 +188,16 @@ def _user_auth_handlers(api: Api):
         return {'error': 'The patient can\'t be updated, someone edited this patient in the meantime. ' +
                 'You have to reload the patient first. The changes will be lost.', 'message': str(error)}, 406
 
+    @api.errorhandler(TXMNotImplementedFeatureException)
+    @_namespace_error_response(code=501, description='The feature is not implemented yet.')
+    def handle_not_implemented_feature(error: TXMNotImplementedFeatureException):
+        """
+        The feature is not implemented yet.
+        """
+        _log_info(error)
+        return {'error': 'The functionality is not implemented',
+                'message': str(error)}, 501
+
     @api.errorhandler(NonUniquePatient)
     @_namespace_error_response(code=409, description='Non-unique patients provided.')
     def handle_non_unique_patient(error: NonUniquePatient):
@@ -263,6 +274,10 @@ def _log_exception(ex: Exception):
 
 def _log_warning(ex: Exception):
     logger.warning(_format_exception(ex))
+
+
+def _log_info(ex: Exception):
+    logger.info(_format_exception(ex))
 
 
 def _log_unexpected_error(error_code: int):

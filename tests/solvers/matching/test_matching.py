@@ -1,7 +1,7 @@
 from typing import FrozenSet, Iterable, List, Set, Tuple
 from unittest import TestCase
 
-from tests.test_utilities.hla_preparation_utils import create_antibodies
+from txmatching.utils.hla_system.hla_preparation_utils import create_antibodies
 from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters

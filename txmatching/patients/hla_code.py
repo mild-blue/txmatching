@@ -11,6 +11,12 @@ class HLACode:
     split: Optional[str]
     broad: Optional[str]
 
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
+        assert high_res is not None or broad is not None
+        self.high_res = high_res
+        self.split = split
+        self.broad = broad
+
     @property
     def display_code(self) -> str:
         if self.high_res is not None:
@@ -22,19 +28,6 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
-        assert high_res is not None or broad is not None
-        self.high_res = high_res
-        self.split = split
-        self.broad = broad
-
-    def __repr__(self):
-        return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'
-
-    def __hash__(self):
-        return hash((self.high_res, self.split, self.broad))
-
-
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
         if self.broad is not None:
             return bool(re.match(HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, self.broad))
@@ -42,3 +35,19 @@ class HLACode:
             return bool(re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, self.high_res))
         else:
             raise AssertionError(f'Broad or high res should be provided: {self}')
+
+    def __repr__(self):
+        return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'
+
+    def __hash__(self):
+        return hash((self.high_res, self.split, self.broad))
+
+    def __eq__(self, other):
+        if self.high_res and other.high_res:
+            return self.high_res == other.high_res
+        elif self.split and other.split:
+            return self.split == other.split
+        elif self.broad and other.broad:
+            return self.broad == other.broad
+
+        return False

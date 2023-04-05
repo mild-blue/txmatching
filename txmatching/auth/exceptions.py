@@ -153,6 +153,14 @@ class NonUniquePatient(BaseTxmException):
     """
 
 
+class TXMNotImplementedFeatureException(BaseTxmException):
+    """
+    Functionality is not implemented yet. Just inform user about this situation.
+    This exception is completely OK and should be loged with level INFO.
+    Do not confuse with python NotImplementedError (corresponds to unexpected internal errors with code 500).
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

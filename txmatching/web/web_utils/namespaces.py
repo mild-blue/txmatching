@@ -30,4 +30,11 @@ report_api = Namespace(REPORTS_NAMESPACE)
 ENUMS_NAMESPACE = 'enums'
 enums_api = Namespace(ENUMS_NAMESPACE)
 
+CROSSMATCH_NAMESPACE = 'crossmatch'
+crossmatch_api = Namespace(CROSSMATCH_NAMESPACE)
+
 # Note: namespace prefix urls are defined in txmatching.web.add_all_namespaces
+
+# Note: when adding new namespace, make sure that in txmatching/web/__init__.py
+# it is imported from txmatching.web.api.*namespace*_api and not from here,
+# otherwise namespace will be added to the app before endpoints and models are added to it.

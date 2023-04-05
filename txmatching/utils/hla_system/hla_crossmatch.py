@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, List, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
@@ -29,9 +29,15 @@ class AntibodyMatchForHLAGroup:
     antibody_matches: List[AntibodyMatch]
 
 
-def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
-                                recipient_antibodies: HLAAntibodies,
-                                use_high_resolution: bool):
+@dataclass
+class AntibodyMatchForHLAType:
+    hla_type: HLAType
+    antibody_matches: List[AntibodyMatch] = field(default_factory=list)
+
+
+def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
+                                          recipient_antibodies: HLAAntibodies,
+                                          use_high_resolution: bool):
     if is_recipient_type_a(recipient_antibodies):
         antibody_matches_for_groups = do_crossmatch_in_type_a(donor_hla_typing,
                                                               recipient_antibodies,
@@ -57,7 +63,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
                                use_high_resolution: bool,
                                crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.NONE,
-                               crossmatch_logic: Callable = get_crossmatched_antibodies) -> bool:
+                               crossmatch_logic: Callable = get_crossmatched_antibodies_per_group) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
     e.g. A23 -> A23 True
