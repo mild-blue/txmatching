@@ -4363,7 +4363,8 @@
         "RecipientCompatibilityInfoJson": {
             "required": [
                 "cPRA",
-                "compatible_donors"
+                "compatible_donors",
+                "compatible_donors_details"
             ],
             "properties": {
                 "cPRA": {
@@ -4384,6 +4385,12 @@
                     ],
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "compatible_donors_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecipientDonorCompatibilityDetails"
                     }
                 }
             },

@@ -10,6 +10,7 @@
   <div *ngIf="item && item.d && item.r" [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Overview" class="pair-detail__pair">
       <app-warning-overview [donor]="item.d" [recipient]="item.r"></app-warning-overview>
+      <div class="pair-detail__header"><h3>Pair with original donor</h3></div>
       <app-matching-transplant
         [donor]="item.d"
         [recipient]="item.r"
@@ -19,6 +20,21 @@
         [detailedScorePerGroup]="item.d.detailedScoreWithRelatedRecipient"
         [configuration]="configuration"
       ></app-matching-transplant>
+      <div *ngIf="donorToCompatibilityInfo && donorToCompatibilityInfo.length > 0">
+        <div class="pair-detail__header"><h3>Pairs with other compatible donors</h3></div>
+        <div *ngFor="let donorToDetail of donorToCompatibilityInfo">
+          <app-matching-transplant
+            [donor]="donorToDetail[0]"
+            [recipient]="item.r"
+            [isBloodCompatible]="donorToDetail[1].compatibleBlood"
+            [score]="donorToDetail[1].score"
+            [maxScore]="donorToDetail[1].maxScore"
+            [detailedScorePerGroup]="donorToDetail[1].detailedScore"
+            [configuration]="configuration"
+          >
+          </app-matching-transplant>
+        </div>
+      </div>
     </div>
     <app-patient-detail-donor
       *ngSwitchCase="tabs.DonorSettings"
