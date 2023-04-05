@@ -1,5 +1,4 @@
 GET {{url}}/v1/service/version
-Content-Type: application/json
 
 
 ###

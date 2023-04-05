@@ -28,7 +28,7 @@ class SplitScorerCIConfiguration(CIConfiguration):
         }
 
     @property
-    def hla_typing_bonus_per_dp_dq(self):
+    def hla_typing_bonus_per_dp_dq_chains(self):
         return {
             'DPA': 0,
             'DPB': 0,
