@@ -1,6 +1,6 @@
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
-from txmatching.utils.enums import HLAGroup, MatchType
+from txmatching.utils.enums import DQDPChain, HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
 
@@ -29,12 +29,12 @@ class HighResScorerCIConfiguration(CIConfiguration):
         }
 
     @property
-    def hla_typing_bonus_per_dp_dq(self):
+    def hla_typing_bonus_per_dp_dq_chains(self):
         return {
-            'DPA': 0,
-            'DPB': 0,
-            'DQA': 0,
-            'DQB': 0
+            DQDPChain.ALPHA_DP: 0,
+            DQDPChain.ALPHA_DQ: 0,
+            DQDPChain.BETA_DP: 0,
+            DQDPChain.BETA_DQ: 0,
         }
 
 

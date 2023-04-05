@@ -29,6 +29,13 @@ class HLAGroup(str, Enum):
     ALL = 'ALL'
 
 
+class DQDPChain(str, Enum):
+    ALPHA_DQ = 'DQA'
+    BETA_DQ = 'DQB'
+    ALPHA_DP = 'DPA'
+    BETA_DP = 'DPB'
+
+
 class Scorer(str, Enum):
     SplitScorer = 'SplitScorer'
     HighResScorer = 'HighResScorer'
