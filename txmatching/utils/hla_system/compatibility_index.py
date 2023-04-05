@@ -353,13 +353,22 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
 
 
 def _which_dq_dp_chain(hla_type: HLAType) -> DQDPChain:
-    if re.match(r'^DPA\d+', hla_type.code.broad):
-        return DQDPChain.ALPHA_DP
-    if re.match(r'^DP\d+', hla_type.code.broad):
-        return DQDPChain.BETA_DP
-    if re.match(r'^DQA\d+', hla_type.code.broad):
-        return DQDPChain.ALPHA_DQ
-    if re.match(r'^DQ\d+', hla_type.code.broad):
-        return DQDPChain.BETA_DQ
+    if hla_type.code.broad is None:
+        if re.match(r'^DPA.*', hla_type.code.high_res):
+            return DQDPChain.ALPHA_DP
+        if re.match(r'^DPB.*', hla_type.code.high_res):
+            return DQDPChain.BETA_DP
+        if re.match(r'^DQA.*', hla_type.code.high_res):
+            return DQDPChain.ALPHA_DQ
+        if re.match(r'^DQB.*', hla_type.code.high_res):
+            return DQDPChain.BETA_DQ
     else:
-        raise ValueError(f'HLA type {hla_type.code.broad} does not belong to DP/DQ group')
+        if re.match(r'^DPA\d+', hla_type.code.broad):
+            return DQDPChain.ALPHA_DP
+        if re.match(r'^DP\d+', hla_type.code.broad):
+            return DQDPChain.BETA_DP
+        if re.match(r'^DQA\d+', hla_type.code.broad):
+            return DQDPChain.ALPHA_DQ
+        if re.match(r'^DQ\d+', hla_type.code.broad):
+            return DQDPChain.BETA_DQ
+    raise ValueError(f'HLA type {hla_type.code} does not belong to DP/DQ group')
