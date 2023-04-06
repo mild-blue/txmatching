@@ -82,6 +82,11 @@ class AllPatients(Resource):
         'Specify to include raw antibodies as well. '
         'By default, raw antibodies are not included.'
     )
+    @patient_api.request_arg_flag(
+        'compute-cpra',
+        'Specify to compute cpra. '
+        'By default, cpra is not computed.'
+    )
     @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
@@ -89,11 +94,12 @@ class AllPatients(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
+        compute_cpra = request_arg_flag('compute-cpra')
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
         configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event_id, get_current_user_id())
-        lists_for_fe = to_lists_for_fe(txm_event, configuration)
+        lists_for_fe = to_lists_for_fe(txm_event, configuration, compute_cpra)
         logger.debug('Sending patients to FE')
         return response_ok(lists_for_fe)
 

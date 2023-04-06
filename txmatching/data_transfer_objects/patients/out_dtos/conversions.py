@@ -34,7 +34,7 @@ from txmatching.utils.recipient_donor_compatibility_details import \
     RecipientDonorCompatibilityDetails
 
 
-def to_lists_for_fe(txm_event: TxmEvent, configuration: Configuration) \
+def to_lists_for_fe(txm_event: TxmEvent, configuration: Configuration, compute_cpra: bool = False) \
         -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
     scorer = scorer_from_configuration(configuration.parameters)
 
@@ -49,7 +49,8 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration: Configuration) \
     for recipient in txm_event.all_recipients:
         cpra, _, compatibilities_details = \
             calculate_cpra_and_get_compatible_donors_for_recipient(
-                txm_event, recipient, configuration, compatibility_graph_of_db_ids, compute_compatibility_details=True)
+                txm_event, recipient, configuration, compatibility_graph_of_db_ids,
+                compute_compatibility_details=True, compute_cpra=compute_cpra)
 
         recipient_dto = recipient_to_recipient_dto_out(
             recipient=recipient,

@@ -1039,6 +1039,13 @@
                         "default": "default"
                     },
                     {
+                        "description": "Specify to compute cpra. By default, cpra is not computed. Example: ?compute-cpra",
+                        "type": "boolean",
+                        "required": false,
+                        "name": "compute-cpra",
+                        "in": "query"
+                    },
+                    {
                         "description": "Specify to include raw antibodies as well. By default, raw antibodies are not included. Example: ?include-antibodies-raw",
                         "type": "boolean",
                         "required": false,
