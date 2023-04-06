@@ -1,13 +1,18 @@
 from typing import Dict, List, Optional, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
     RecipientDTOOut
+from txmatching.database.services.pairing_result_service import \
+    get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.parsing_issue_service import \
     get_parsing_issues_for_patients
+from txmatching.database.services.scorer_service import \
+    compatibility_graph_from_dict
 from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.patients.recipient_compatibility import \
@@ -29,15 +34,22 @@ from txmatching.utils.recipient_donor_compatibility_details import \
     RecipientDonorCompatibilityDetails
 
 
-def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
+def to_lists_for_fe(txm_event: TxmEvent, configuration: Configuration) \
         -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
-    scorer = scorer_from_configuration(configuration_parameters)
+    scorer = scorer_from_configuration(configuration.parameters)
+
+    # Load compatibility matrix
+    pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
+    compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
+    compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
+                                                                             txm_event.active_and_valid_donors_dict,
+                                                                             compatibility_graph)
 
     recipient_dtos = []
     for recipient in txm_event.all_recipients:
         cpra, _, compatibilities_details = \
             calculate_cpra_and_get_compatible_donors_for_recipient(
-                txm_event, recipient, configuration_parameters, compatibility_details=True)
+                txm_event, recipient, configuration, compatibility_graph_of_db_ids, compute_compatibility_details=True)
 
         recipient_dto = recipient_to_recipient_dto_out(
             recipient=recipient,
@@ -50,7 +62,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     return {
         'donors': sorted([
             donor_to_donor_dto_out(
-                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event
+                donor, txm_event.all_recipients, configuration.parameters, scorer, txm_event
             ) for donor in txm_event.all_donors],
             key=lambda donor: (
                 not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
