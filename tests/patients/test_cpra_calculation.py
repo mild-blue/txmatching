@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
     create_antibody
+from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import (
     Donor, Recipient, TxmEvent)
@@ -71,14 +72,16 @@ class TestCPRACalculation(TestCase):
         # If you have changed crossmatch logic (function is_positive_hla_crossmatch()) for some config 
         # or scorer's config parameters, the expected results should be recalculated!
         self.config_parameters_general = ConfigParameters(use_high_resolution=True,
-                                                          hla_crossmatch_level=HLACrossmatchLevel.BROAD)
+                                                         hla_crossmatch_level=HLACrossmatchLevel.BROAD)
+        TestConfiguration = namedtuple('TestConfiguration', ['id', 'txm_event_id', 'parameters'])
+        self.configuration_general = TestConfiguration(0, self.txm_event_general.db_id, self.config_parameters_general)
 
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
         
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_general, 
-            config_parameters=self.config_parameters_general)
+            configuration=self.configuration_general, compute_cpra=True)
         
         self.assertEqual(
             (0.25, {3, 4, 9, 10, 11}), (cpra, compatible_donors))
@@ -88,7 +91,7 @@ class TestCPRACalculation(TestCase):
         
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_without_antibodies, 
-            config_parameters=self.config_parameters_general)
+            configuration=self.configuration_general, compute_cpra=True)
         
         self.assertEqual(
             (0, {1, 2, 3, 4, 9, 10, 11, 12}), (cpra, compatible_donors))
@@ -98,7 +101,7 @@ class TestCPRACalculation(TestCase):
         
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_against_all_donors, 
-            config_parameters=self.config_parameters_general)
+            configuration=self.configuration_general, compute_cpra=True)
         
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
@@ -111,7 +114,7 @@ class TestCPRACalculation(TestCase):
 
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=txm_event, recipient=self.recipient_against_all_donors, 
-            config_parameters=self.config_parameters_general)
+            configuration=self.configuration_general, compute_cpra=True)
         
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
