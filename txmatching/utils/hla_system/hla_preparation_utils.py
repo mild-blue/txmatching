@@ -40,12 +40,6 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibodyRaw]) -> HLAAntibodie
     )
 
 
-def _create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
-    # Example of HLA antibody raw format: DP[02:01,03:02]
-    return hla_antibody.raw_code[:2] + '[' + hla_antibody.raw_code.split('*')[1] + ',' + \
-        hla_antibody.second_raw_code.split('*')[1] + ']'
-
-
 def create_antibody(raw_code: str, mfi: int, cutoff: int) -> HLAAntibodyRaw:
     return HLAAntibodyRaw(
         raw_code=raw_code,
@@ -55,7 +49,7 @@ def create_antibody(raw_code: str, mfi: int, cutoff: int) -> HLAAntibodyRaw:
 
 
 def create_antibody_parsed(raw_code: str, mfi: int, cutoff: int, second_raw_code: str = None,
-                    antibody_type: HLAAntibodyType = HLAAntibodyType.NORMAL) -> HLAAntibody:
+                           antibody_type: HLAAntibodyType = HLAAntibodyType.NORMAL) -> HLAAntibody:
     code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
     second_code = parse_hla_raw_code_and_return_parsing_issue_list(
         second_raw_code)[1] if second_raw_code is not None else None
