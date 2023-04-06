@@ -10,7 +10,7 @@ from txmatching.utils.hla_system.compatibility_index import \
     get_detailed_compatibility_index
 from txmatching.utils.hla_system.detailed_score import get_detailed_score
 from txmatching.utils.hla_system.hla_crossmatch import \
-    get_crossmatched_antibodies_per_group
+    get_crossmatched_antibodies_per_group, is_positive_hla_crossmatch
 from txmatching.utils.recipient_donor_compatibility_details import \
     RecipientDonorCompatibilityDetails
 
@@ -54,17 +54,12 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
         antibodies = None
 
         if compute_cpra:
-            # TODO - duplicity with `is_hla_crossmatch()`, should be resolved in https://github.com/mild-blue/txmatching/issues/1163,
-            # or https://github.com/mild-blue/txmatching/issues/1160
-            antibodies = crossmatch_logic(
-                donor.parameters.hla_typing,
-                recipient.hla_antibodies,
-                configuration.parameters.use_high_resolution)
-            common_codes = {antibody_match.hla_antibody for antibody_match_group in antibodies
-                            for antibody_match in antibody_match_group.antibody_matches
-                            if antibody_match.match_type.is_positive_for_level(configuration.parameters.hla_crossmatch_level)}
-
-            if len(common_codes) == 0: # donor is compatible with the recipient (considering only hla crossmatch)
+            # donor is compatible with the recipient (considering only hla crossmatch)
+            if not is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
+                                              recipient_antibodies=recipient.hla_antibodies,
+                                              use_high_resolution=configuration.parameters.use_high_resolution,
+                                              crossmatch_level=configuration.parameters.hla_crossmatch_level,
+                                              crossmatch_logic=crossmatch_logic):
                 n_hla_crossmatch_compatible += 1
 
         if compatibility_graph is None:
@@ -88,11 +83,10 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                     recipient_hla_typing=recipient.parameters.hla_typing,
                     ci_configuration=scorer.ci_configuration
                 )
-                if antibodies is None:
-                    antibodies = crossmatch_logic(
-                        donor.parameters.hla_typing,
-                        recipient.hla_antibodies,
-                        configuration.parameters.use_high_resolution)
+                antibodies = crossmatch_logic(
+                    donor.parameters.hla_typing,
+                    recipient.hla_antibodies,
+                    configuration.parameters.use_high_resolution)
                 detailed_score = get_detailed_score(compatibility_index_detailed, antibodies)
 
                 recipient_donor_compatibility_details = RecipientDonorCompatibilityDetails(
