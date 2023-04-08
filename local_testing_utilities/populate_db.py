@@ -2,7 +2,8 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME_V2,
+    THEORETICAL_DOUBLE_TXM_EVENT_NAME, LARGE_DATA_FOLDER_V2, SMALL_DATA_FOLDER,
     SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_THEORETICAL,
     SMALL_DATA_FOLDER_WITH_CROSSMATCH, store_generated_patients_from_folder)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
@@ -181,13 +182,27 @@ def populate_db_multiple_recipients():
 
 
 def populate_db_theoretical_double_crossmach():
-    create_or_overwrite_txm_event(name=CROSSMATCH_TXM_EVENT_NAME)
+    create_or_overwrite_txm_event(name=THEORETICAL_DOUBLE_TXM_EVENT_NAME)
     add_users()
-    store_generated_patients_from_folder(SMALL_DATA_FOLDER_THEORETICAL, GENERATED_TXM_EVENT_NAME)
+    store_generated_patients_from_folder(SMALL_DATA_FOLDER_THEORETICAL, THEORETICAL_DOUBLE_TXM_EVENT_NAME)
 
 
 def populate_large_db():
     create_or_overwrite_txm_event(name='test')
+    create_or_overwrite_txm_event(name=THEORETICAL_DOUBLE_TXM_EVENT_NAME)
+    create_or_overwrite_txm_event(name=CROSSMATCH_TXM_EVENT_NAME)
+    create_or_overwrite_txm_event(name=GENERATED_TXM_EVENT_NAME_V2)
+
     user_models = add_users()
     populate_db_with_data(user_models)
+
     store_generated_patients_from_folder()
+    store_generated_patients_from_folder(txm_event_name=CROSSMATCH_TXM_EVENT_NAME,
+                                         folder=SMALL_DATA_FOLDER_WITH_CROSSMATCH)
+    store_generated_patients_from_folder(txm_event_name=THEORETICAL_DOUBLE_TXM_EVENT_NAME,
+                                         folder=SMALL_DATA_FOLDER_THEORETICAL)
+    store_generated_patients_from_folder(txm_event_name=GENERATED_TXM_EVENT_NAME_V2,
+                                         folder=LARGE_DATA_FOLDER_V2)
+
+    # Hint: Use local_testing_utilities/remove_inconsistent_patients.sql script
+    #       to remove inconsistent patients from DB.

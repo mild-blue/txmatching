@@ -1,6 +1,7 @@
 import dataclasses
 import itertools
 import json
+import logging
 import os
 import random
 import re
@@ -40,9 +41,12 @@ from txmatching.utils.hla_system.hla_table import (
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
-GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
+GENERATED_TXM_EVENT_NAME = 'high_res_example_data'  # generated with generate_patients.py
+GENERATED_TXM_EVENT_NAME_V2 = 'high_res_example_data_v2'  # generated with generate_patients.py (newer version)
+THEORETICAL_DOUBLE_TXM_EVENT_NAME = 'theoretical_double_small_event'
 CROSSMATCH_TXM_EVENT_NAME = 'mixed_resolution_with_crossmatch_types'
 LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
+LARGE_DATA_FOLDER_V2 = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME_V2}/')
 SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
 SMALL_DATA_FOLDER_MULTIPLE_DONORS = get_absolute_path('tests/resources/high_res_example_small_data_multiple_donors/')
 SMALL_DATA_FOLDER_MULTIPLE_DONORS_V2 = \
@@ -107,7 +111,7 @@ def random_acceptable() -> List[BloodGroup]:
         return []
     num_of_acceptable = random.randint(1, 4)
     blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
-    acceptable = random.sample(sorted(blood_groups), num_of_acceptable)
+    acceptable = random.sample(list(blood_groups), num_of_acceptable)
     return acceptable
 
 
