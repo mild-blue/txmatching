@@ -20,7 +20,7 @@ class TestCPRACalculation(TestCase):
         self.some_hla_raw_codes = ['A*24:09N', 'A*32:02', 'B*57:16', 'A*02:140', 'A10', 'DR4',
                                    'DRB1*04:10', 'B*44:55', 'DQB1*06:01', 'A*02:08', 'A*02:140',
                                    'DPA1*01:18', 'A32']
-        
+
         self.recipient_hla_raw_codes = ['A32', 'B57', 'A2']
 
         # creating recipients for different solutions
@@ -45,7 +45,7 @@ class TestCPRACalculation(TestCase):
             ),
             create_hla_typing(self.recipient_hla_raw_codes)
         )
-        
+
         self.PatientsTuple = namedtuple(
             typename='patients',
             field_names=['recipients', 'donors']
@@ -73,36 +73,34 @@ class TestCPRACalculation(TestCase):
         # or scorer's config parameters, the expected results should be recalculated!
         self.config_parameters_general = ConfigParameters(use_high_resolution=True,
                                                          hla_crossmatch_level=HLACrossmatchLevel.BROAD)
-        TestConfiguration = namedtuple('TestConfiguration', ['id', 'txm_event_id', 'parameters'])
-        self.configuration_general = TestConfiguration(0, self.txm_event_general.db_id, self.config_parameters_general)
 
     def test_calculate_cpra_for_recipient_general_case(self):
         """Case: usual recipient in standard conditions"""
-        
+
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_general, 
-            configuration=self.configuration_general, compute_cpra=True)
-        
+            configuration_parameters=self.config_parameters_general, compute_cpra=True)
+
         self.assertEqual(
             (0.25, {3, 4, 9, 10, 11}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_without_antibodies_case(self):
         """Case: recipient without antibodies"""
-        
+
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_without_antibodies, 
-            configuration=self.configuration_general, compute_cpra=True)
-        
+            configuration_parameters=self.config_parameters_general, compute_cpra=True)
+
         self.assertEqual(
             (0, {1, 2, 3, 4, 9, 10, 11, 12}), (cpra, compatible_donors))
 
     def test_calculate_cpra_for_recipient_against_all_donors_case(self):
         """Case: recipient is incompatible to all donors in txm_event"""
-        
+
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=self.txm_event_general, recipient=self.recipient_against_all_donors, 
-            configuration=self.configuration_general, compute_cpra=True)
-        
+            configuration_parameters=self.config_parameters_general, compute_cpra=True)
+
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
 
@@ -114,11 +112,11 @@ class TestCPRACalculation(TestCase):
 
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event=txm_event, recipient=self.recipient_against_all_donors, 
-            configuration=self.configuration_general, compute_cpra=True)
-        
+            configuration_parameters=self.config_parameters_general, compute_cpra=True)
+
         self.assertEqual(
             (1, set()), (cpra, compatible_donors))
-        
+
     @staticmethod
     @patch(f'{__name__}.Recipient')
     def __create_mock_recipient_object_with_hla_antibodies(hla_antibodies, hla_typing, mocked_Recipient):

@@ -1,6 +1,6 @@
 from typing import Callable, List, Optional, Set, Tuple
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Recipient, TxmEvent
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
@@ -21,7 +21,7 @@ from txmatching.utils.recipient_donor_compatibility_details import \
 # All arguments are needed here.
 def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                                                            recipient: Recipient,
-                                                           configuration: Configuration,
+                                                           configuration_parameters: ConfigParameters,
                                                            compatibility_graph: Optional[CompatibilityGraph] = None,
                                                            compute_compatibility_details: bool = False,
                                                            compute_cpra: bool = False,
@@ -33,12 +33,16 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
     While cPRA is computed based solely on the hla crossmatch, compatible donors are computed based on the overall
     recipient-donor score.
 
+    If the matching corresponding to `configuration_parameters` is already computed, the `compatibility_graph` is
+    passed as an argument and used to skip the computation of recipient-donor score.
+
     :param compatibility_details: Compute details of recipient-donor compatibility if True, return only set of
         compatible donors if False.
-    :return: (cpra, set of compatible donors, list of compatibilities details (optional) )
+    :param compute_cpra: Compute cpra (computationally demanding) if True.
+    :return: (cpra (optional), set of compatible donors, list of compatibilities details (optional))
     """
 
-    scorer = scorer_from_configuration(configuration.parameters)
+    scorer = scorer_from_configuration(configuration_parameters)
 
     active_donors_dict = txm_event.active_and_valid_donors_dict
 
@@ -57,8 +61,8 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
             # donor is compatible with the recipient (considering only hla crossmatch)
             if not is_positive_hla_crossmatch(donor_hla_typing=donor.parameters.hla_typing,
                                               recipient_antibodies=recipient.hla_antibodies,
-                                              use_high_resolution=configuration.parameters.use_high_resolution,
-                                              crossmatch_level=configuration.parameters.hla_crossmatch_level,
+                                              use_high_resolution=configuration_parameters.use_high_resolution,
+                                              crossmatch_level=configuration_parameters.hla_crossmatch_level,
                                               crossmatch_logic=crossmatch_logic):
                 n_hla_crossmatch_compatible += 1
 
@@ -86,7 +90,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                 antibodies = crossmatch_logic(
                     donor.parameters.hla_typing,
                     recipient.hla_antibodies,
-                    configuration.parameters.use_high_resolution)
+                    configuration_parameters.use_high_resolution)
                 detailed_score = get_detailed_score(compatibility_index_detailed, antibodies)
 
                 recipient_donor_compatibility_details = RecipientDonorCompatibilityDetails(

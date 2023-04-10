@@ -15,8 +15,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default,
     get_configuration_parameters_from_db_id_or_default,
-    save_config_parameters_to_db,
-    get_config_for_parameters_or_save)
+    save_config_parameters_to_db)
 from txmatching.database.services.pairing_result_service import \
     get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.report_service import (
@@ -119,11 +118,8 @@ class PatientsXLSReport(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
-        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event_id, get_current_user_id())
-
-        patients_dto = to_lists_for_fe(txm_event, configuration)
+        patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
         xls_file_name = f'patients_{get_formatted_now()}.xlsx'
         buffer = export_patients_to_xlsx_file(patients_dto)
