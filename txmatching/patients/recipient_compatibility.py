@@ -3,14 +3,15 @@ from typing import Callable, List, Optional, Set, Tuple
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Recipient, TxmEvent
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
-from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
+from txmatching.scorers.scorer_constants import (HLA_SCORE,
+                                                 TRANSPLANT_IMPOSSIBLE_SCORE)
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import \
     get_detailed_compatibility_index
 from txmatching.utils.hla_system.detailed_score import get_detailed_score
-from txmatching.utils.hla_system.hla_crossmatch import \
-    get_crossmatched_antibodies_per_group, is_positive_hla_crossmatch
+from txmatching.utils.hla_system.hla_crossmatch import (
+    get_crossmatched_antibodies_per_group, is_positive_hla_crossmatch)
 from txmatching.utils.recipient_donor_compatibility_details import \
     RecipientDonorCompatibilityDetails
 
@@ -73,7 +74,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
         else:
             d_r_id_pair = (donor.db_id, recipient.db_id)
             if d_r_id_pair in compatibility_graph.keys():
-                score = compatibility_graph[d_r_id_pair]['hla_compatibility_score']
+                score = compatibility_graph[d_r_id_pair][HLA_SCORE]
             else:
                 score = None
 
