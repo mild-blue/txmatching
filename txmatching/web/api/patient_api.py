@@ -42,7 +42,7 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
-    get_configuration_parameters_from_db_id_or_default, get_config_for_parameters_or_save
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
     confirm_a_parsing_issue, get_parsing_issues_for_patients,
     unconfirm_a_parsing_issue)
@@ -98,8 +98,7 @@ class AllPatients(Resource):
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
-        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event_id, get_current_user_id())
-        lists_for_fe = to_lists_for_fe(txm_event, configuration, compute_cpra)
+        lists_for_fe = to_lists_for_fe(txm_event, configuration_parameters, compute_cpra)
         logger.debug('Sending patients to FE')
         return response_ok(lists_for_fe)
 
@@ -367,14 +366,12 @@ class CalculateRecipientCPRA(Resource):
     def get(self, txm_event_id: int, recipient_id: int, config_id: Optional[int]):
         txm_event = get_txm_event_complete(txm_event_id)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
-        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event_id, get_current_user_id())
-
         recipient = _get_recipient_by_recipient_db_id(txm_event, recipient_id)
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
         cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
-            txm_event, recipient, configuration, compute_cpra=True)
+            txm_event, recipient, configuration_parameters, compute_cpra=True)
         result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
         return response_ok(result)
 

@@ -9,11 +9,10 @@ from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.utils.logged_user import get_current_user_id
 from txmatching.configuration.subclasses import ManualDonorRecipientScore
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
-    get_configuration_parameters_from_db_id_or_default, get_config_for_parameters_or_save
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
@@ -841,13 +840,12 @@ class TestPatientService(DbTests):
             txm_event=txm_event,
             configuration_db_id=None
         )
-        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event.db_id, get_current_user_id())
 
         for recipient in txm_event.all_recipients:
             expected_cPRA, expected_compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
                 txm_event=txm_event,
                 recipient=recipient,
-                configuration=configuration,
+                configuration_parameters=configuration_parameters,
                 compute_cpra=True)
             expected_json = {'cPRA': round(expected_cPRA * 100, 1),
                              'compatible_donors': list(expected_compatible_donors)}

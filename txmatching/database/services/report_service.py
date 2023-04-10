@@ -27,7 +27,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services.config_service import \
-    get_configuration_parameters_from_db_id_or_default, get_configuration_from_db_id_or_default
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto,
     get_matchings_detailed_for_pairing_result_model)
@@ -87,13 +87,8 @@ def generate_html_report(
 
     calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
                                                                configuration_db_id)
-
-    configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                                  configuration_db_id=configuration_db_id)
-    configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
-                                                            configuration_db_id=configuration_db_id)
-
-    patients_dto = to_lists_for_fe(txm_event, configuration)
+    configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, configuration_db_id)
+    patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
     _prepare_tmp_dir()
     _copy_assets()
