@@ -352,6 +352,8 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
     return True
 
 
+# This function is best readable with many return statements.
+# pylint: disable=too-many-return-statements
 def _which_dq_dp_chain(hla_type: HLAType) -> DQDPChain:
     if hla_type.code.broad is None:
         if re.match(r'^DPA.*', hla_type.code.high_res):
