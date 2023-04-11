@@ -37,7 +37,7 @@ class AntibodyMatchForHLAType:
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
                                           recipient_antibodies: HLAAntibodies,
-                                          use_high_resolution: bool):
+                                          use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     if is_recipient_type_a(recipient_antibodies):
         antibody_matches_for_groups = do_crossmatch_in_type_a(donor_hla_typing,
                                                               recipient_antibodies,

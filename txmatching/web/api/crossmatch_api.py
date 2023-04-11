@@ -1,15 +1,14 @@
 from flask_restx import Resource
 
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
-    create_antibody
 from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
     CrossmatchDTOOut
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies
-from txmatching.utils.enums import HLAAntibodyType
+from txmatching.patients.hla_model import HLAAntibodies, HLATypeRaw
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
+    create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.web.web_utils.namespaces import crossmatch_api
@@ -49,21 +48,28 @@ class DoCrossmatch(Resource):
 
         antibody_matches_for_hla_type = [AntibodyMatchForHLAType(hla_type=create_hla_type(raw_code=hla),
                                                                  antibody_matches=[])
-                                            for hla in crossmatch_dto.donor_hla_typing]
+                                         for hla in crossmatch_dto.donor_hla_typing]
         for match_per_group in crossmatched_antibodies_per_group:
             for antibody_group_match in match_per_group.antibody_matches:
-                if antibody_group_match.hla_antibody.type == HLAAntibodyType.THEORETICAL or \
-                        antibody_group_match.hla_antibody.second_raw_code:
-                    raise TXMNotImplementedFeatureException(
-                        'This functionality is not currently available for dual antibodies. '
-                        'We apologize and will try to change this in future versions.')
                 # get AntibodyMatchForHLAType object with the same hla_type
                 # as the antibody_group_match and append the antibody_group_match
-                common_matches = [antibody_hla_match for antibody_hla_match in
-                                  antibody_matches_for_hla_type
-                                  if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
+                if antibody_group_match.hla_antibody.second_raw_code:
+                    common_matches_alpha = [antibody_hla_match for antibody_hla_match in
+                                            antibody_matches_for_hla_type
+                                            if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
+                    common_matches_beta = [antibody_hla_match for antibody_hla_match in
+                                           antibody_matches_for_hla_type
+                                           if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.second_code]
+                    if not (common_matches_alpha and common_matches_beta):
+                        continue
+                    common_matches = common_matches_alpha + common_matches_beta
+                else:
+                    common_matches = [antibody_hla_match for antibody_hla_match in
+                                      antibody_matches_for_hla_type
+                                      if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
                 if common_matches:
-                    common_matches[0].antibody_matches.append(antibody_group_match)
+                    for common_match in common_matches:
+                        common_match.antibody_matches.append(antibody_group_match)
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
