@@ -352,25 +352,22 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
     return True
 
 
-# This function is best readable with many return statements.
-# pylint: disable=too-many-return-statements
 def _which_dq_dp_chain(hla_type: HLAType) -> DQDPChain:
-    if hla_type.code.broad is None:
-        if re.match(r'^DPA.*', hla_type.code.high_res):
-            return DQDPChain.ALPHA_DP
-        if re.match(r'^DPB.*', hla_type.code.high_res):
-            return DQDPChain.BETA_DP
-        if re.match(r'^DQA.*', hla_type.code.high_res):
-            return DQDPChain.ALPHA_DQ
-        if re.match(r'^DQB.*', hla_type.code.high_res):
-            return DQDPChain.BETA_DQ
+    if hla_type.code.broad:
+        code = hla_type.code.broad
     else:
-        if re.match(r'^DPA\d+', hla_type.code.broad):
+        # For hla code ending with letter, broad code is not specified, check with highres.
+        code = hla_type.code.high_res
+    
+    if code[:2] == 'DP':
+        if code[2] == 'A':
             return DQDPChain.ALPHA_DP
-        if re.match(r'^DP\d+', hla_type.code.broad):
+        else:
             return DQDPChain.BETA_DP
-        if re.match(r'^DQA\d+', hla_type.code.broad):
+    elif code[:2] == 'DQ':
+        if code[2] == 'A':
             return DQDPChain.ALPHA_DQ
-        if re.match(r'^DQ\d+', hla_type.code.broad):
+        else:
             return DQDPChain.BETA_DQ
+
     raise ValueError(f'HLA type {hla_type.code} does not belong to DP/DQ group')
