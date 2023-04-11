@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 class TestCrossmatch(unittest.TestCase):
+    # It's difficult to have a patient with type A.
+    # And in order to create the unittests for all special cases, sometimes we will state
+    # directly that a patient is type A (even if biologically he is not)
+    # and then testing things only on a few antibodies.
 
     def _assert_positive_crossmatch(self,
                                     hla_type: str,
