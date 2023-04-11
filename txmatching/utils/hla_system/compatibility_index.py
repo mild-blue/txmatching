@@ -358,7 +358,7 @@ def _which_dq_dp_chain(hla_type: HLAType) -> DQDPChain:
     else:
         # For hla code ending with letter, broad code is not specified, check with highres.
         code = hla_type.code.high_res
-    
+
     if code[:2] == 'DP':
         if code[2] == 'A':
             return DQDPChain.ALPHA_DP
