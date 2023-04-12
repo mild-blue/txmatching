@@ -233,14 +233,14 @@ def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
     # extract other occurences of alpha chain
     alpha_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
         antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
-        antibody.raw_code == double_antibody.raw_code and not antibody == double_antibody])
+        antibody.code == double_antibody.code and not antibody == double_antibody])
 
     # extract other occurences of beta chain
     beta_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
         antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
-        antibody.second_raw_code == double_antibody.second_raw_code and not antibody == double_antibody])
+        antibody.second_code == double_antibody.second_code and not antibody == double_antibody])
 
-    detailed_message = "Other antibodies with alpha: " + alpha_chain_occurences + \
+    detailed_message = " Other antibodies with alpha: " + alpha_chain_occurences + \
         ". Other antibodies with beta: " + beta_chain_occurences + "."
     return ParsingIssueBase(
         hla_code_or_group=double_antibody.raw_code + ', ' + double_antibody.second_raw_code,
@@ -251,8 +251,8 @@ def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
 
 def create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
     # Example of HLA antibody raw format: DP[02:01,03:02]
-    return hla_antibody.raw_code[:2] + '[' + hla_antibody.raw_code.split('*')[1] + ',' + \
-        hla_antibody.second_raw_code.split('*')[1] + ']'
+    return hla_antibody.code.high_res[:2] + '[' + hla_antibody.code.high_res.split('*')[1] + ',' + \
+        hla_antibody.second_code.high_res.split('*')[1] + ']'
 
 
 def _parse_double_antibody_mfi_under_cutoff(double_antibody: HLAAntibody,
