@@ -2746,6 +2746,13 @@ paths:
                 name: config_id
                 required: true
                 type: string
+            -   description: 'Do not compute donors compatible to recipients. This
+                    step is computationally demanding and not needed while loading
+                    the matching site. Example: ?without-recipient-compatibility'
+                in: query
+                name: without-recipient-compatibility
+                required: false
+                type: boolean
             -   description: 'Specify to compute cpra. By default, cpra is not computed.
                     Example: ?compute-cpra'
                 in: query

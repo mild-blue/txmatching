@@ -87,6 +87,11 @@ class AllPatients(Resource):
         'Specify to compute cpra. '
         'By default, cpra is not computed.'
     )
+    @patient_api.request_arg_flag(
+        'without-recipient-compatibility',
+        'Do not compute donors compatible to recipients. '
+        'This step is computationally demanding and not needed while loading the matching site.'
+    )
     @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
@@ -95,10 +100,13 @@ class AllPatients(Resource):
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
         compute_cpra = request_arg_flag('compute-cpra')
+        without_recipient_compatibility = request_arg_flag('without-recipient-compatibility')
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
-        lists_for_fe = to_lists_for_fe(txm_event, configuration_parameters, compute_cpra)
+        lists_for_fe = to_lists_for_fe(
+            txm_event=txm_event, configuration_parameters=configuration_parameters,
+            compute_cpra=compute_cpra, without_recipient_compatibility=without_recipient_compatibility)
         logger.debug('Sending patients to FE')
         return response_ok(lists_for_fe)
 

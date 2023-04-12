@@ -78,7 +78,7 @@ RECIPIENT_JSON = {
 class TestPatientService(DbTests):
 
     def test_get_patients(self):
-        txm_event_db_id = self.fill_db_with_patients(
+        txm_event_db_id = self.fill_db_with_patients_and_results(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -102,7 +102,7 @@ class TestPatientService(DbTests):
             self.assertIsNotNone(recipient['compatible_donors_details'])
 
     def test_get_patients_with_cpra_computation(self):
-        txm_event_db_id = self.fill_db_with_patients(
+        txm_event_db_id = self.fill_db_with_patients_and_results(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'

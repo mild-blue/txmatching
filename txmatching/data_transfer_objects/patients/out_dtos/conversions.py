@@ -35,31 +35,39 @@ from txmatching.utils.recipient_donor_compatibility_details import \
     RecipientDonorCompatibilityDetails
 
 
-def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters, compute_cpra: bool = False) \
-        -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
+def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters,
+                    compute_cpra: bool = False, without_recipient_compatibility: bool = False) \
+    -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
 
     scorer = scorer_from_configuration(configuration_parameters)
 
-    # Try to load configuration corresponding to parameters
-    configuration = find_config_for_parameters(configuration_parameters, txm_event.db_id)
+    if not without_recipient_compatibility:
+        # Try to load configuration corresponding to parameters
+        configuration = find_config_for_parameters(configuration_parameters, txm_event.db_id)
 
-    # If configuration loaded, try to load compatibility_graph to optimize
-    # `calculate_cpra_and_get_compatible_donors_for_recipient`.
-    compatibility_graph_of_db_ids = None
-    if configuration:
-        configuration_parameters = configuration.parameters
-        pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
-        if pairing_result_model is not None:
-            compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
-            compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
-                txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict, compatibility_graph)
+        # If configuration loaded, try to load compatibility_graph to optimize
+        # `calculate_cpra_and_get_compatible_donors_for_recipient`.
+        compatibility_graph_of_db_ids = None
+        if configuration:
+            pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
+            if pairing_result_model is not None:
+                compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
+                compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
+                    txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict, compatibility_graph)
 
     recipient_dtos = []
     for recipient in txm_event.all_recipients:
-        cpra, _, compatibilities_details = \
-            calculate_cpra_and_get_compatible_donors_for_recipient(
-                txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
-                compute_compatibility_details=True, compute_cpra=compute_cpra)
+
+        # If not specifically asked not to do so and the compatibility_graph for the `configuration_parameters` is
+        # already in db (corresponding pairing result is already computed): for each recipient, find all compatible
+        # donors with compatibility details and optionally also compute recipient's cpra value.
+        if (not without_recipient_compatibility) and compatibility_graph_of_db_ids:
+            cpra, _, compatibilities_details = \
+                calculate_cpra_and_get_compatible_donors_for_recipient(
+                    txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
+                    compute_compatibility_details=True, compute_cpra=compute_cpra)
+        else:
+            cpra, compatibilities_details = None, None
 
         recipient_dto = recipient_to_recipient_dto_out(
             recipient=recipient,
