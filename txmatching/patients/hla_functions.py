@@ -99,7 +99,7 @@ def _check_groups_for_multiple_cutoffs(hla_antibodies: List[HLAAntibody]) -> Lis
 
 
 def _add_single_hla_antibodies(antibody_list_single_code: List[HLAAntibody]) -> Tuple[
-    List[ParsingIssueBase], List[HLAAntibody]]:
+        List[ParsingIssueBase], List[HLAAntibody]]:
     def _group_key(hla_antibody: HLAAntibody) -> str:
         return hla_antibody.raw_code
 
@@ -201,7 +201,7 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
             # if both are mixed add double antibody
             else:
                 theoretical_parsing_issues, theoretical_antibodies = _resolve_theoretical_antibody(
-                    double_antibody, parsed_hla_codes, mfi_dictionary)
+                    double_antibody, parsed_hla_codes, mfi_dictionary, antibody_list_double_code)
                 hla_antibodies_joined.extend(theoretical_antibodies)
                 parsing_issues.extend(theoretical_parsing_issues)
 
@@ -210,26 +210,49 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
 
 def _resolve_theoretical_antibody(double_antibody: HLAAntibody,
                                   parsed_hla_codes: Set[str],
-                                  mfi_dictionary: Dict[str, List[int]]) -> \
+                                  mfi_dictionary: Dict[str, List[int]],
+                                  antibody_list_double_code: List[HLAAntibody]) -> \
         Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
     parsing_issues = []
     hla_antibodies = []
 
     # add double antibody and parsing issue
     hla_antibodies.append(double_antibody)
-    parsing_issues.append(
-        ParsingIssueBase(
-            hla_code_or_group=double_antibody.raw_code + ', ' + double_antibody.second_raw_code,
-            parsing_issue_detail=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
-            message=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY.value
-        )
-    )
+
+    parsing_issues.append(create_parsing_issue_creating_double_antibody(double_antibody, antibody_list_double_code))
 
     # join theoretical alpha and beta unparsed chains with averaged MFI
     _join_both_chains_if_unparsed(double_antibody, hla_antibodies, parsed_hla_codes,
                                   get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL)
 
     return parsing_issues, hla_antibodies
+
+
+def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
+                                                  antibody_list_double_code: List[HLAAntibody]) -> ParsingIssueBase:
+    # extract other occurences of alpha chain
+    alpha_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
+        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody.code == double_antibody.code and not antibody == double_antibody])
+
+    # extract other occurences of beta chain
+    beta_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
+        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody.second_code == double_antibody.second_code and not antibody == double_antibody])
+
+    detailed_message = " Other antibodies with alpha: " + alpha_chain_occurences + \
+        ". Other antibodies with beta: " + beta_chain_occurences + "."
+    return ParsingIssueBase(
+        hla_code_or_group=double_antibody.raw_code + ', ' + double_antibody.second_raw_code,
+        parsing_issue_detail=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+        message=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY.value + detailed_message
+    )
+
+
+def create_raw_code_for_double_antibody(hla_antibody: HLAAntibody) -> str:
+    # Example of HLA antibody raw format: DP[02:01,03:02]
+    return hla_antibody.code.high_res[:2] + '[' + hla_antibody.code.high_res.split('*')[1] + ',' + \
+        hla_antibody.second_code.high_res.split('*')[1] + ']'
 
 
 def _parse_double_antibody_mfi_under_cutoff(double_antibody: HLAAntibody,
