@@ -80,7 +80,11 @@ definitions:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
             hla_type:
-                $ref: '#/definitions/HlaType'
+                items:
+                    $ref: '#/definitions/HlaType'
+                type: array
+            summary_antibody:
+                $ref: '#/definitions/AntibodyMatch'
         required:
         - hla_type
         type: object
@@ -532,22 +536,25 @@ definitions:
         type: string
     CrossmatchInput:
         properties:
-            donor_hla_typing:
-                description: HLA typing of the patient. Use high resolution if available.
-                example: &id003
-                - A1
-                - A32
-                - B7
-                - B51
-                - DR11
-                - DR15
-                - A*02:03
-                - A*11:01:35
-                - DPA1*01:07
-                - DRB4*01:01
-                - DQB1*02:01:01:01
+            donor_hla_typing_list:
                 items:
-                    type: string
+                    description: HLA typing of the patient. Use high resolution if
+                        available.
+                    example: &id003
+                    - A1
+                    - A32
+                    - B7
+                    - B51
+                    - DR11
+                    - DR15
+                    - A*02:03
+                    - A*11:01:35
+                    - DPA1*01:07
+                    - DRB4*01:01
+                    - DQB1*02:01:01:01
+                    items:
+                        type: string
+                    type: array
                 type: array
             recipient_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution
@@ -558,7 +565,7 @@ definitions:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
         required:
-        - donor_hla_typing
+        - donor_hla_typing_list
         - recipient_antibodies
         type: object
     CrossmatchOutput:

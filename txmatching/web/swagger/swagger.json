@@ -2327,13 +2327,19 @@
             ],
             "properties": {
                 "hla_type": {
-                    "$ref": "#/definitions/HlaType"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaType"
+                    }
                 },
                 "antibody_matches": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/AntibodyMatch"
                     }
+                },
+                "summary_antibody": {
+                    "$ref": "#/definitions/AntibodyMatch"
                 }
             },
             "type": "object"
@@ -2862,28 +2868,31 @@
         },
         "CrossmatchInput": {
             "required": [
-                "donor_hla_typing",
+                "donor_hla_typing_list",
                 "recipient_antibodies"
             ],
             "properties": {
-                "donor_hla_typing": {
+                "donor_hla_typing_list": {
                     "type": "array",
-                    "description": "HLA typing of the patient. Use high resolution if available.",
-                    "example": [
-                        "A1",
-                        "A32",
-                        "B7",
-                        "B51",
-                        "DR11",
-                        "DR15",
-                        "A*02:03",
-                        "A*11:01:35",
-                        "DPA1*01:07",
-                        "DRB4*01:01",
-                        "DQB1*02:01:01:01"
-                    ],
                     "items": {
-                        "type": "string"
+                        "type": "array",
+                        "description": "HLA typing of the patient. Use high resolution if available.",
+                        "example": [
+                            "A1",
+                            "A32",
+                            "B7",
+                            "B51",
+                            "DR11",
+                            "DR15",
+                            "A*02:03",
+                            "A*11:01:35",
+                            "DPA1*01:07",
+                            "DRB4*01:01",
+                            "DQB1*02:01:01:01"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
                 "recipient_antibodies": {
