@@ -1039,6 +1039,13 @@
                         "default": "default"
                     },
                     {
+                        "description": "Do not compute donors compatible to recipients. This step is computationally demanding and not needed while loading the matching site. Example: ?without-recipient-compatibility",
+                        "type": "boolean",
+                        "required": false,
+                        "name": "without-recipient-compatibility",
+                        "in": "query"
+                    },
+                    {
                         "description": "Specify to compute cpra. By default, cpra is not computed. Example: ?compute-cpra",
                         "type": "boolean",
                         "required": false,
