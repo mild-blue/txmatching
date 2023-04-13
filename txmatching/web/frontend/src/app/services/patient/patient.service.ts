@@ -72,7 +72,8 @@ export class PatientService {
   public async getPatients(
     txmEventId: number,
     configId: number | undefined,
-    includeAntibodiesRaw: boolean
+    includeAntibodiesRaw: boolean,
+    withoutRecipientCompatibility: boolean = false
   ): Promise<PatientList> {
     // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
@@ -80,9 +81,9 @@ export class PatientService {
     return firstValueFrom(
       this._http
         .get<PatientsGenerated>(
-          `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${
-            includeAntibodiesRaw ? "?include-antibodies-raw" : ""
-          }`
+          `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}?${
+            includeAntibodiesRaw ? "include-antibodies-raw" : ""
+          }&${withoutRecipientCompatibility ? "without-recipient-compatibility" : ""}`
         )
         .pipe(map(parsePatientList))
     );

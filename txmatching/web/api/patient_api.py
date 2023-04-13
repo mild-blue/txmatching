@@ -101,7 +101,9 @@ class AllPatients(Resource):
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
         compute_cpra = request_arg_flag('compute-cpra')
         without_recipient_compatibility = request_arg_flag('without-recipient-compatibility')
-        logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
+        logger.debug(f'{include_antibodies_raw=}')
+        logger.debug(f'{compute_cpra=}')
+        logger.debug(f'{without_recipient_compatibility=}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
         lists_for_fe = to_lists_for_fe(
