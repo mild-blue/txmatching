@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    ANTIGENS_EXAMPLE, HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
+    ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE, HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibody, HLAType, HLACode
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchJson
@@ -22,7 +22,7 @@ CrossmatchJsonIn = crossmatch_api.model(
                                              cls_or_instance=fields.List(
                                                 required=True,
                                                 cls_or_instance=fields.String,
-                                                example=ANTIGENS_EXAMPLE,
+                                                example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
                                                 description=HLA_TYPING_DESCRIPTION)),
         'recipient_antibodies': fields.List(required=True,
                                             description='Detected HLA antibodies of the patient. Use high resolution '

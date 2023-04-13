@@ -2878,17 +2878,20 @@
                         "type": "array",
                         "description": "HLA typing of the patient. Use high resolution if available.",
                         "example": [
-                            "A1",
-                            "A32",
-                            "B7",
-                            "B51",
-                            "DR11",
-                            "DR15",
-                            "A*02:03",
-                            "A*11:01:35",
-                            "DPA1*01:07",
-                            "DRB4*01:01",
-                            "DQB1*02:01:01:01"
+                            [
+                                "A*01:02",
+                                "A*01:03",
+                                "A*01:04"
+                            ],
+                            [
+                                "A*02:02",
+                                "A*02:03",
+                                "A*02:04"
+                            ],
+                            [
+                                "B*07:26",
+                                "B*07:27"
+                            ]
                         ],
                         "items": {
                             "type": "string"
@@ -3626,6 +3629,9 @@
                     "$ref": "#/definitions/HlaCode"
                 },
                 "raw_code": {
+                    "type": "string"
+                },
+                "display_code": {
                     "type": "string"
                 }
             },
