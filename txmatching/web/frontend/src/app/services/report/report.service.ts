@@ -22,6 +22,7 @@ export class ReportService {
       responseType: "blob",
       observe: "response",
     };
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
     return this._http
@@ -46,6 +47,7 @@ export class ReportService {
       responseType: "blob",
       observe: "response",
     };
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
     return this._http
