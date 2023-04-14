@@ -208,7 +208,26 @@ class TestDoCrossmatchApi(DbTests):
             self.assertTrue(
                 theoretical_antibody_match in res.json['hla_to_antibody'][3]['antibody_matches'])
 
-    def test_do_crossmatch_for_assumed_hla_type(self):
+    def test_theoretical_and_double_antibodies_equal_hlas_below_cutoff(self):
+        json = {
+            "potential_donor_hla_typing": [['DQA1*01:01'], ['DQB1*03:03'], ['A*02:02']],
+            "recipient_antibodies": [{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
+                                     {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
+                                     {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
+                                     {'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000},
+                                     {'mfi': 2100, 'name': 'A*02:02', 'cutoff': 2000}]
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertEqual([{'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
+                                                'cutoff': 2000, 'mfi': 2100, 'raw_code': 'A*02:02', 'second_code': None,
+                                                'second_raw_code': None, 'type': 'NORMAL'}, 'match_type': 'HIGH_RES'}],
+                             res.json['hla_to_antibody'][0]['antibody_matches'])
+
+    def test_do_crossmatch_for_assumed_hla_types(self):
         # CASE: general case
         json = {
             "potential_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06'],
@@ -401,11 +420,11 @@ class TestDoCrossmatchApi(DbTests):
                              "split or broad resolution.",
                              res.json['message'])
 
-        # CASE: low res codes in assumed hla type with multiple codes
+        # CASE: low res codes in assumed hla type
         json = {
-            "potential_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1'],  # incorrect HLA type
-                                           ['DPA1*02:01'],
-                                           ['DQA1*01:04']],
+            "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1'],  # incorrect HLA type
+                                         ['DPA1*02:01'],
+                                         ['DQA1*01:04']],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
                                       'cutoff': 2000
