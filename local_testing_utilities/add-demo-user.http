@@ -4,12 +4,12 @@
 ### Test that api works and set demo user parameters
 
 GET {{url}}/v1/service/version
-Content-Type: application/json
 
 > {%
-client.global.set("demo_email", "demo@example.com");
+client.global.set("demo_email", "roem@ikem.cz");
 client.global.set("demo_password", "demo");
-client.global.set("txm_event_name", "DEMO_TXM_EVENT");
+client.global.set("txm_event_name", "matej_test_data_podobna_poslednimu_eventu");
+
 %}
 
 ### Registrer demo user
@@ -37,9 +37,12 @@ Authorization: Bearer {{admin_auth_token}}
   "second_factor": "",
   "require_second_factor": false,
   "allowed_countries": [
-    "AUT",
+    "IND",
     "CZE",
-    "ISR"
+    "CAN"
+  ],
+  "allowed_txm_events": [
+    "matej_test"
   ]
 }
 

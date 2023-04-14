@@ -1,5 +1,4 @@
 GET {{url}}/v1/service/version
-Content-Type: application/json
 
 
 ###
@@ -15,6 +14,17 @@ Content-Type: application/json
 
 ###
 
+POST {{url}}/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": "718107"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
 
 POST {{url}}/v1/txm-event/2/export
 Content-Type: application/json
@@ -26,7 +36,7 @@ Authorization: Bearer {{auth_token}}
   "new_txm_event_name": "test2"
 }
 
-
+>> tmp.json
 ###
 POST {{url}}/v1/user/login
 Content-Type: application/json

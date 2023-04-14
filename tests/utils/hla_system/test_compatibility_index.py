@@ -112,3 +112,15 @@ class TestCompatibilityIndex(DbTests):
         expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:04'), match_type=MatchType.BROAD)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].donor_matches))
+
+    # Following tests only check if compatibility_index finishes without error.
+    def test_compatibility_index_dqdp_split_edge_case(self):
+        hla_typing = create_hla_typing(['DPB1'])
+        self.assertEqual(compatibility_index(hla_typing, hla_typing), 0.0)
+        hla_typing = create_hla_typing(['DQB1'])
+        self.assertEqual(compatibility_index(hla_typing, hla_typing), 0.0)
+
+    def test_compatibility_index_dqdp_highres_with_letter(self):
+        hla_typing = create_hla_typing(['DPA1*01:03:01:18Q'])
+        self.assertEqual(compatibility_index(hla_typing, hla_typing), 0.0)
+        

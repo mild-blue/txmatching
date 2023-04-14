@@ -7,8 +7,6 @@ from sqlalchemy import and_
 from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                                  PATIENT_DATA_OBFUSCATED)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
-    create_antibody
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ManualDonorRecipientScore
@@ -27,6 +25,8 @@ from txmatching.patients.patient import (
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_antibody, create_hla_typing)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
@@ -225,7 +225,6 @@ class TestPatientService(DbTests):
 
         self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
         self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
-        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['warnings']))
 
         errors = [
             ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
@@ -233,10 +232,17 @@ class TestPatientService(DbTests):
             ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
             ParsingIssueDetail.UNPARSABLE_HLA_CODE,
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_GROUP,
-            ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
         ]
         self.assertCountEqual(errors,
                               [i['parsing_issue_detail'] for i in res_.json['recipients'][0]['all_messages']['errors']])
+
+        warnings = [
+            ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN,
+            ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+        ]
+        self.assertCountEqual(warnings,
+                              [i['parsing_issue_detail'] for i in
+                               res_.json['recipients'][0]['all_messages']['warnings']])
 
         parsing_issues = ParsingIssueModel.query.all()
         expected_hla_codes_or_groups = ['Group A', 'Group B', 'Group DRB1', 'TEST', 'Antibodies', 'INVALID_CODES',

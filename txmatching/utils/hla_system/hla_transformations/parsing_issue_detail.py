@@ -39,9 +39,11 @@ class ParsingIssueDetail(str, Enum):
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_GROUP = 'There were multiple cutoff values for antibodies in this group. ' \
-                                    'This means inconsistency that is not allowed.'
+                                 'This means inconsistency that is not allowed.'
     DUPLICATE_ANTIBODY_SINGLE_CHAIN = 'There were multiple instances of the same antibody with a single chain. ' \
-                                      'This is not allowed, please ensure that this antibody occurs only once in this format.'
+                                      'This is only allowed for historical data. But should never occur in newly ' \
+                                      'uploaded data not allowed, please ensure that this antibody occurs only once ' \
+                                      'in this format.'
 
     MFI_PROBLEM = 'There is a problem with MFI.'  # This string value is not used but we have it here as a fallback
     OTHER_PROBLEM = 'Some problem occurred when processing this code.'
@@ -60,7 +62,8 @@ WARNING_PROCESSING_RESULTS = {
     ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
     ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
     ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE,
-    ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY
+    ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+    ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
 }
 
 ERROR_PROCESSING_RESULTS = {
@@ -70,6 +73,5 @@ ERROR_PROCESSING_RESULTS = {
     ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
     ParsingIssueDetail.UNPARSABLE_HLA_CODE,
     ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-    ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN
+    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY
 }

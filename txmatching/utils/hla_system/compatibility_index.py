@@ -3,8 +3,9 @@ import re
 from dataclasses import dataclass
 from typing import Callable, Dict, List
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_model import HLAType, HLATyping
-from txmatching.utils.enums import HLA_GROUPS, HLAGroup, MatchType
+from txmatching.utils.enums import HLA_GROUPS, DQDPChain, HLAGroup, MatchType
 
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
@@ -45,14 +46,14 @@ class CIConfiguration:
         raise NotImplementedError('Has to be overridden')
 
     @property
-    def hla_typing_bonus_per_dp_dq(self) -> Dict[str, int]:
+    def hla_typing_bonus_per_dp_dq_chains(self) -> Dict[str, int]:
         raise NotImplementedError('Has to be overridden')
 
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup) -> float:
         return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups_without_dp_dq[hla_group]
 
-    def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, exact_group: str) -> float:
-        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_dp_dq[exact_group]
+    def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, dqdp_allele: DQDPChain) -> float:
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_dp_dq_chains[dqdp_allele]
 
 
 class DefaultCIConfiguration(CIConfiguration):
@@ -76,12 +77,12 @@ class DefaultCIConfiguration(CIConfiguration):
         }
 
     @property
-    def hla_typing_bonus_per_dp_dq(self):
+    def hla_typing_bonus_per_dp_dq_chains(self):
         return {
-            'DPA': 0,
-            'DPB': 0,
-            'DQA': 0,
-            'DQB': 0
+            DQDPChain.ALPHA_DP: 0,
+            DQDPChain.ALPHA_DQ: 0,
+            DQDPChain.BETA_DP: 0,
+            DQDPChain.BETA_DQ: 0,
         }
 
 
@@ -110,8 +111,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS + [HLAGroup.INVALID_CODES]:
-        donor_hla_types = _check_if_correct_amount_of_hla_types(donor_hla_typing, hla_group)
-        recipient_hla_types = _check_if_correct_amount_of_hla_types(recipient_hla_typing, hla_group)
+        donor_hla_types = _get_hla_types_for_hla_group_and_check_if_correct_amount(donor_hla_typing, hla_group)
+        recipient_hla_types = _get_hla_types_for_hla_group_and_check_if_correct_amount(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_types_in_group(
             donor_hla_types=donor_hla_types,
@@ -128,7 +129,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS:
-        donor_hla_types = _check_if_correct_amount_of_hla_types(donor_hla_typing, hla_group)
+        donor_hla_types = _get_hla_types_for_hla_group_and_check_if_correct_amount(donor_hla_typing, hla_group)
         donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
@@ -167,9 +168,9 @@ def _match_through_lambda(current_compatibility_index: float,
             # TODO: change this in the future, this is not the prettiest. this was the easiest way how to add
             # compatibility index for particular DP and DQ subgroups.
             if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-                specific_group = _find_specific_group_dp_dq(donor_hla_type)
+                dq_dp_chain = _which_dq_dp_chain(donor_hla_type)
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index_dp_dq(
-                    result_match_type, specific_group
+                    result_match_type, dq_dp_chain
                 )
             else:
                 current_compatibility_index += ci_configuration.compute_match_compatibility_index(
@@ -305,22 +306,31 @@ def _get_ci_for_recipient_donor_types_in_group(
     )
 
 
-def _check_if_correct_amount_of_hla_types(hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+def _get_hla_types_for_hla_group_and_check_if_correct_amount(
+        hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     hla_types = _hla_types_for_hla_group(hla_typing, hla_group)
 
     if hla_group in {HLAGroup.DP, HLAGroup.DQ}:
-        a_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'A']
-        b_genes = [code for code in hla_types if _find_specific_group_dp_dq(code)[-1] == 'B']
-        if len(a_genes) > 2 or len(b_genes) > 2:
+        alpha_genes = []
+        beta_genes = []
+        for code in hla_types:
+            dq_dp_chain = _which_dq_dp_chain(code)
+            if dq_dp_chain in [DQDPChain.ALPHA_DP, DQDPChain.ALPHA_DQ]:
+                alpha_genes.append(code)
+            elif dq_dp_chain in [DQDPChain.BETA_DP, DQDPChain.BETA_DQ]:
+                beta_genes.append(code)
+            else:
+                raise InvalidArgumentException(f'Invalid allele for DQ/DP group: {code}')
+        if len(alpha_genes) > 2 or len(beta_genes) > 2:
             logger.error(
                 f'Invalid list of alleles for group {hla_group.name} - there have to be maximum 2 per gene'
                 f'. List of patient alleles in group: {[hla_type.code.display_code for hla_type in hla_types]} '
                 f'For the moment this is ignored, in future version it will be an error.')
-        if len(a_genes) == 1:
-            a_genes = a_genes + a_genes
-        if len(b_genes) == 1:
-            b_genes = b_genes + b_genes
-        return a_genes + b_genes
+        if len(alpha_genes) == 1:
+            alpha_genes = alpha_genes + alpha_genes
+        if len(beta_genes) == 1:
+            beta_genes = beta_genes + beta_genes
+        return alpha_genes + beta_genes
 
     if len(hla_types) > 2:
         logger.error(
@@ -343,13 +353,22 @@ def _high_res_code_without_letter(hla_type: HLAType) -> bool:
     return True
 
 
-def _find_specific_group_dp_dq(hla_type: HLAType) -> str:
-    dp_dq_regexes = {('DPA', r'^DPA\d+', r'DPA1\*'), ('DPB', r'^DP\d+', r'DPB1\*'),
-                     ('DQA', r'^DQA\d+', r'DQA1\*'), ('DQB', r'^DQ\d+', r'DQB1\*')}
+def _which_dq_dp_chain(hla_type: HLAType) -> DQDPChain:
+    if hla_type.code.broad:
+        code = hla_type.code.broad
+    else:
+        # For hla code ending with letter, broad code is not specified, check with highres.
+        code = hla_type.code.high_res
 
-    specific_group = None
-    for regex_tuple in dp_dq_regexes:
-        if re.match(regex_tuple[1], hla_type.raw_code) or re.match(regex_tuple[2], hla_type.raw_code):
-            specific_group = regex_tuple[0]
-            break
-    return specific_group
+    if code[:2] == 'DP':
+        if code[2] == 'A':
+            return DQDPChain.ALPHA_DP
+        else:
+            return DQDPChain.BETA_DP
+    elif code[:2] == 'DQ':
+        if code[2] == 'A':
+            return DQDPChain.ALPHA_DQ
+        else:
+            return DQDPChain.BETA_DQ
+
+    raise ValueError(f'HLA type {hla_type.code} does not belong to DP/DQ group')
