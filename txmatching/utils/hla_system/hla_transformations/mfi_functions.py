@@ -144,6 +144,11 @@ def get_negative_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]]
     return int(np.mean(mfis))
 
 
+def get_positive_average_mfi(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> int:
+    mfis = np.array([mfi for mfi in mfi_dictionary[raw_code] if mfi >= cutoff])
+    return int(np.mean(mfis))
+
+
 def create_mfi_dictionary(antibody_list_double_code: List[HLAAntibody]) -> Dict[str, List[int]]:
     mfi_dictionary = {}
     for antibody in antibody_list_double_code:

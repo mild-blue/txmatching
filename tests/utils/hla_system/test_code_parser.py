@@ -339,13 +339,13 @@ class TestCodeParser(DbTests):
         expected_antibodies_in_group = [
             create_antibody_parsed('DPA1*02:02', 2100, 2000),
             create_antibody_parsed('DPB1*02:01', 2100, 2000),
-            create_antibody_parsed('DPB1*03:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody_parsed('DPA1*01:04', 1950, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPB1*03:01', 2100, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 2100, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
             create_antibody_parsed('DPA1*01:04', 2100, 2000, 'DPB1*03:01'),
             create_antibody_parsed('DPA1*01:03', 1900, 2000),
             create_antibody_parsed('DPB1*04:01', 1800, 2000)
         ]
-
+        self.maxDiff = None
         self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
         self.assertCountEqual([ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
                                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES],
@@ -377,8 +377,8 @@ class TestCodeParser(DbTests):
         issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
 
         expected_antibodies_in_group = [
-            create_antibody_parsed('DPB1*01:01', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
-            create_antibody_parsed('DPA1*01:04', 2000, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPB1*01:01', 2100, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:04', 2100, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
             create_antibody_parsed('DPA1*01:04', 2100, 2000, 'DPB1*01:01'),
             create_antibody_parsed('DPA1*01:03', 1900, 2000),
             create_antibody_parsed('DPB1*03:01', 1900, 2000)

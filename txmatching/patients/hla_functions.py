@@ -15,7 +15,7 @@ from txmatching.utils.enums import HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.hla_system.hla_transformations.mfi_functions import (
     create_mfi_dictionary, get_average_mfi,
     get_mfi_from_multiple_hla_codes_single_chain, get_negative_average_mfi,
-    is_negative_mfi_present, is_only_one_positive_mfi_present,
+    get_positive_average_mfi, is_negative_mfi_present, is_only_one_positive_mfi_present,
     is_positive_mfi_present)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
@@ -223,7 +223,7 @@ def _resolve_theoretical_antibody(double_antibody: HLAAntibody,
 
     # join theoretical alpha and beta unparsed chains with averaged MFI
     _join_both_chains_if_unparsed(double_antibody, hla_antibodies, parsed_hla_codes,
-                                  get_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL)
+                                  get_positive_average_mfi, mfi_dictionary, HLAAntibodyType.THEORETICAL)
 
     return parsing_issues, hla_antibodies
 
