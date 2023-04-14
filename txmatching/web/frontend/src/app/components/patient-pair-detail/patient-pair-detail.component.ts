@@ -38,10 +38,10 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
   }
 
   ngOnInit(): void {
-    if (this.item && this.item.r && this.defaultTxmEvent && this.configuration && this.patients) {
+    if (this.item?.r && this.defaultTxmEvent && this.configuration && this.patients) {
       this.getRecipientCompatibilityInfo(
         this.item.r.dbId,
-        this.defaultTxmEvent?.id,
+        this.defaultTxmEvent.id,
         this.configuration,
         this.patients.donors
       );

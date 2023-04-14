@@ -74,6 +74,7 @@ export class PatientService {
     configId: number | undefined,
     includeAntibodiesRaw: boolean
   ): Promise<PatientList> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
 
     return firstValueFrom(
@@ -89,9 +90,10 @@ export class PatientService {
 
   public async getRecipientCompatbileDonorsAndCPRA(
     txmEventId: number,
-    configId: number | undefined,
-    recipientId: number
+    recipientId: number,
+    configId?: number
   ): Promise<RecipientCompatibilityInfo> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
 
     return firstValueFrom(
@@ -110,6 +112,7 @@ export class PatientService {
     donorEditable: DonorEditable,
     configId: number | undefined
   ): Promise<UpdatedDonor> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
 
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
