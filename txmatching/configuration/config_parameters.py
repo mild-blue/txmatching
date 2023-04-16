@@ -159,3 +159,7 @@ class ConfigParameters:
 
     def __post_init__(self):
         self.non_negative()
+
+    def __eq__(self, other):
+        return (isinstance(other, ConfigParameters) and
+                vars(self) == vars(other))
