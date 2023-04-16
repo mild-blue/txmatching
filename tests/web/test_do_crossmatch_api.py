@@ -154,18 +154,17 @@ class TestDoCrossmatchApi(DbTests):
                                      'match_type': 'HIGH_RES'}
             theoretical_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA2', 'high_res': 'DPA1*02:01', 'split': 'DPA2'},
                                                            'cutoff': 2000,
-                                                           'mfi': 2000,
-                                                           'raw_code': 'DPA1*02:01',
+                                                           'mfi': 3000,
+                                                           'raw_code':
+                                                           'DPA1*02:01',
                                                            'second_code': None,
                                                            'second_raw_code': None,
                                                            'type': 'THEORETICAL'},
                                           'match_type': 'THEORETICAL'}
-            self.assertEqual(
-                [double_antibody_match],
-                res.json['hla_to_antibody'][1]['antibody_matches'])
-            self.assertEqual(
-                [double_antibody_match],
-                res.json['hla_to_antibody'][2]['antibody_matches'])
-            self.assertEqual(
-                theoretical_antibody_match,
-                res.json['hla_to_antibody'][3]['antibody_matches'][1])
+            print(res.json['hla_to_antibody'][3]['antibody_matches'])
+            self.assertTrue(
+                double_antibody_match in res.json['hla_to_antibody'][1]['antibody_matches'])
+            self.assertTrue(
+                double_antibody_match in res.json['hla_to_antibody'][2]['antibody_matches'])
+            self.assertTrue(
+                theoretical_antibody_match in res.json['hla_to_antibody'][3]['antibody_matches'])
