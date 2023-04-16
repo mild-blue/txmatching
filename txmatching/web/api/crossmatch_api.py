@@ -54,15 +54,10 @@ class DoCrossmatch(Resource):
                 # get AntibodyMatchForHLAType object with the same hla_type
                 # as the antibody_group_match and append the antibody_group_match
                 if antibody_group_match.hla_antibody.second_raw_code:
-                    common_matches_alpha = [antibody_hla_match for antibody_hla_match in
-                                            antibody_matches_for_hla_type
-                                            if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
-                    common_matches_beta = [antibody_hla_match for antibody_hla_match in
-                                           antibody_matches_for_hla_type
-                                           if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.second_code]
-                    if not (common_matches_alpha and common_matches_beta):
-                        continue
-                    common_matches = common_matches_alpha + common_matches_beta
+                    common_matches = [antibody_hla_match for antibody_hla_match in
+                                      antibody_matches_for_hla_type
+                                      if antibody_hla_match.hla_type.code in (antibody_group_match.hla_antibody.code,
+                                                                              antibody_group_match.hla_antibody.second_code)]
                 else:
                     common_matches = [antibody_hla_match for antibody_hla_match in
                                       antibody_matches_for_hla_type

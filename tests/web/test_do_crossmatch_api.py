@@ -32,11 +32,11 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
+                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                 res.json['parsing_issues'][0]['parsing_issue_detail'])
-            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][1]['parsing_issue_detail'])
-            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][2]['parsing_issue_detail'])
 
     def test_do_crossmatch_api_with_different_code_formats(self):
@@ -68,9 +68,9 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                 res.json['parsing_issues'][0]['parsing_issue_detail'])
-            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][1]['parsing_issue_detail'])
 
         # case: donor - SPLIT, recipient - HIGH_RES
@@ -101,14 +101,14 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
+                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                 res.json['parsing_issues'][0]['parsing_issue_detail'])
-            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][1]['parsing_issue_detail'])
 
-    def test_theoretical_and_double_antibodies_not_implemented(self):
+    def test_theoretical_and_double_antibodies(self):
         json = {
-            "donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04'],
+            "donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04', 'DPA1*02:01'],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DP[01:04,03:01]',
                                       'cutoff': 2000
@@ -124,17 +124,26 @@ class TestDoCrossmatchApi(DbTests):
                                      {'mfi': 1000,
                                       'name': 'DP[01:03,03:01]',
                                       'cutoff': 2000
+                                      },
+                                     {'mfi': 3000,
+                                      'name': 'DP[02:01,01:01]',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 1000,
+                                      'name': 'DP[02:01,01:01]',
+                                      'cutoff': 2000
                                       }],
         }
 
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
-            self.assertCountEqual([ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY.value,
-                                   ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
-                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
-                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
-                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value],
+            self.assertCountEqual([ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+                                   ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+                                   ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
                                   [parsing_issue['parsing_issue_detail'] for parsing_issue in res.json['parsing_issues']])
             double_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA1', 'high_res': 'DPA1*01:04', 'split': 'DPA1'},
                                                       'cutoff': 2000,
@@ -143,9 +152,20 @@ class TestDoCrossmatchApi(DbTests):
                                                       'second_code': {'broad': 'DP3', 'high_res': 'DPB1*03:01', 'split': 'DP3'},
                                                       'second_raw_code': 'DPB1*03:01', 'type': 'NORMAL'},
                                      'match_type': 'HIGH_RES'}
+            theoretical_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA2', 'high_res': 'DPA1*02:01', 'split': 'DPA2'},
+                                                           'cutoff': 2000,
+                                                           'mfi': 2000,
+                                                           'raw_code': 'DPA1*02:01',
+                                                           'second_code': None,
+                                                           'second_raw_code': None,
+                                                           'type': 'THEORETICAL'},
+                                          'match_type': 'THEORETICAL'}
             self.assertEqual(
                 [double_antibody_match],
                 res.json['hla_to_antibody'][1]['antibody_matches'])
             self.assertEqual(
                 [double_antibody_match],
                 res.json['hla_to_antibody'][2]['antibody_matches'])
+            self.assertEqual(
+                theoretical_antibody_match,
+                res.json['hla_to_antibody'][3]['antibody_matches'][1])
