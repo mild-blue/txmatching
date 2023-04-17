@@ -9,7 +9,7 @@ class TestDoCrossmatchApi(DbTests):
     def test_do_crossmatch_api(self):
         # case: donor - HIGH_RES, recipient - HIGH_RES
         json = {
-            "donor_hla_typing": ['A*02:02', 'A*01:01'],
+            "assumed_donor_hla_typing": [['A*02:02'], ['A*01:01']],
             "recipient_antibodies": [{'mfi': 2350,
                                       'name': 'A*02:02',
                                       'cutoff': 1000
@@ -42,7 +42,7 @@ class TestDoCrossmatchApi(DbTests):
     def test_do_crossmatch_api_with_different_code_formats(self):
         # case: donor - HIGH_RES, recipient - SPLIT
         json = {
-            "donor_hla_typing": ['A*02:02', 'A*01:01'],
+            "assumed_donor_hla_typing": [['A*02:02'], ['A*01:01']],
             "recipient_antibodies": [{'mfi': 2350,
                                       'name': 'A2',
                                       'cutoff': 1000
@@ -75,7 +75,7 @@ class TestDoCrossmatchApi(DbTests):
 
         # case: donor - SPLIT, recipient - HIGH_RES
         json = {
-            "donor_hla_typing": ['A2', 'A*01:01'],
+            "assumed_donor_hla_typing": [['A2'], ['A*01:01']],
             "recipient_antibodies": [{'mfi': 2350,
                                       'name': 'A*02:02',
                                       'cutoff': 1000
@@ -108,7 +108,7 @@ class TestDoCrossmatchApi(DbTests):
 
     def test_theoretical_and_double_antibodies(self):
         json = {
-            "donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04', 'DPA1*02:01'],
+            "assumed_donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04', 'DPA1*02:01'],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DP[01:04,03:01]',
                                       'cutoff': 2000
