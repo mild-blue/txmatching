@@ -18,12 +18,12 @@ AntibodyMatchJson = crossmatch_api.clone("AntibodyMatch", AntibodyMatchJson)
 CrossmatchJsonIn = crossmatch_api.model(
     'CrossmatchInput',
     {
-        'donor_hla_typing_list': fields.List(required=True,
-                                             cls_or_instance=fields.List(
-                                                required=True,
-                                                cls_or_instance=fields.String,
-                                                example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
-                                                description=HLA_TYPING_DESCRIPTION)),
+        'assumed_donor_hla_typing': fields.List(required=True,
+                                                cls_or_instance=fields.List(
+                                                        required=True,
+                                                        cls_or_instance=fields.String,
+                                                        example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
+                                                        description=HLA_TYPING_DESCRIPTION)),
         'recipient_antibodies': fields.List(required=True,
                                             description='Detected HLA antibodies of the patient. Use high resolution '
                                                         'if available. If high resolution is provided it is assumed '
@@ -36,7 +36,7 @@ CrossmatchJsonIn = crossmatch_api.model(
 )
 
 AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
-    'hla_type': fields.List(required=True, cls_or_instance=fields.Nested(HLAType, required=True)),
+    'assumed_hla_type': fields.List(required=True, cls_or_instance=fields.Nested(HLAType, required=True)),
     'antibody_matches': fields.List(required=False, cls_or_instance=fields.Nested(AntibodyMatchJson)),
     'summary_antibody': fields.Nested(AntibodyMatchJson)
 })

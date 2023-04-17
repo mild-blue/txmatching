@@ -2323,10 +2323,10 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "hla_type"
+                "assumed_hla_type"
             ],
             "properties": {
-                "hla_type": {
+                "assumed_hla_type": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/HlaType"
@@ -2868,11 +2868,11 @@
         },
         "CrossmatchInput": {
             "required": [
-                "donor_hla_typing_list",
+                "assumed_donor_hla_typing",
                 "recipient_antibodies"
             ],
             "properties": {
-                "donor_hla_typing_list": {
+                "assumed_donor_hla_typing": {
                     "type": "array",
                     "items": {
                         "type": "array",

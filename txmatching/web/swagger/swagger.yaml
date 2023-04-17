@@ -79,14 +79,14 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            hla_type:
+            assumed_hla_type:
                 items:
                     $ref: '#/definitions/HlaType'
                 type: array
             summary_antibody:
                 $ref: '#/definitions/AntibodyMatch'
         required:
-        - hla_type
+        - assumed_hla_type
         type: object
     AntigenMatch:
         properties:
@@ -536,7 +536,7 @@ definitions:
         type: string
     CrossmatchInput:
         properties:
-            donor_hla_typing_list:
+            assumed_donor_hla_typing:
                 items:
                     description: HLA typing of the patient. Use high resolution if
                         available.
@@ -562,7 +562,7 @@ definitions:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
         required:
-        - donor_hla_typing_list
+        - assumed_donor_hla_typing
         - recipient_antibodies
         type: object
     CrossmatchOutput:
