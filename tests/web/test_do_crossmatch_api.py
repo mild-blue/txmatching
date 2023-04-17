@@ -1,4 +1,7 @@
+from dataclasses import asdict
+
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -168,3 +171,32 @@ class TestDoCrossmatchApi(DbTests):
                 double_antibody_match in res.json['hla_to_antibody'][2]['antibody_matches'])
             self.assertTrue(
                 theoretical_antibody_match in res.json['hla_to_antibody'][3]['antibody_matches'])
+
+    def test_do_crossmatch_for_assumed_hla_type(self):
+        json = {
+            "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06'],
+                                         ['DPA1*02:01'],
+                                         ['DPA1*01:04']],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DPA1*02:01',
+                                      'cutoff': 2000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertEqual(2, len(res.json['hla_to_antibody']))
+            res_assumed_hla_typing = \
+                [res.json['hla_to_antibody'][i]['assumed_hla_type']
+                 for i in range(len(res.json['hla_to_antibody']))]
+            expected_assumed_hla_typing = [[asdict(create_hla_type('DPA1*01:04'))],
+                                           [asdict(create_hla_type('DPA1*02:01'))]]
+            self.assertCountEqual(expected_assumed_hla_typing,
+                                  res_assumed_hla_typing)
