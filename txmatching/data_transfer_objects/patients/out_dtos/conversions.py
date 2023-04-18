@@ -31,7 +31,7 @@ from txmatching.utils.hla_system.hla_crossmatch import \
     get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
-from txmatching.utils.recipient_donor_compatibility_details import \
+from txmatching.utils.recipient_donor_compatibility import \
     RecipientDonorCompatibilityDetails
 
 
@@ -62,19 +62,20 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
         # already in db (corresponding pairing result is already computed): for each recipient, find all compatible
         # donors with compatibility details and optionally also compute recipient's cpra value.
         if (not without_recipient_compatibility) and compatibility_graph_of_db_ids:
-            cpra, _, compatibilities_details = \
+            recipient_donors_compatibility = \
                 calculate_cpra_and_get_compatible_donors_for_recipient(
                     txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
                     compute_compatibility_details=True, compute_cpra=compute_cpra)
+            recipient_dto = recipient_to_recipient_dto_out(
+                recipient=recipient,
+                txm_event_id=txm_event.db_id,
+                cpra=recipient_donors_compatibility.cpra,
+                compatible_donors_details=recipient_donors_compatibility.compatible_donors_details)
         else:
-            cpra, compatibilities_details = None, None
+            recipient_dto = recipient_to_recipient_dto_out(
+                recipient=recipient,
+                txm_event_id=txm_event.db_id)
 
-        recipient_dto = recipient_to_recipient_dto_out(
-            recipient=recipient,
-            txm_event_id=txm_event.db_id,
-            cpra=cpra,
-            compatible_donors_details=compatibilities_details
-        )
         recipient_dtos.append(recipient_dto)
 
     return {

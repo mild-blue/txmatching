@@ -836,13 +836,13 @@ class TestPatientService(DbTests):
         )
 
         for recipient in txm_event.all_recipients:
-            expected_cPRA, expected_compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
+            recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
                 txm_event=txm_event,
                 recipient=recipient,
                 configuration_parameters=configuration_parameters,
                 compute_cpra=True)
-            expected_json = {'cPRA': round(expected_cPRA * 100, 1),
-                             'compatible_donors': list(expected_compatible_donors)}
+            expected_json = {'cPRA': round(recipient_donors_compatibility.cpra * 100, 1),
+                             'compatible_donors': list(recipient_donors_compatibility.compatible_donors)}
 
             with self.app.test_client() as client:
                 res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'

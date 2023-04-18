@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Set, Tuple
+from typing import Callable, Optional
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Recipient, TxmEvent
@@ -12,8 +12,8 @@ from txmatching.utils.hla_system.compatibility_index import \
 from txmatching.utils.hla_system.detailed_score import get_detailed_score
 from txmatching.utils.hla_system.hla_crossmatch import (
     get_crossmatched_antibodies_per_group, is_positive_hla_crossmatch)
-from txmatching.utils.recipient_donor_compatibility_details import \
-    RecipientDonorCompatibilityDetails
+from txmatching.utils.recipient_donor_compatibility import \
+    RecipientDonorsCompatibility, RecipientDonorCompatibilityDetails
 
 
 # pylint: disable=too-many-locals
@@ -27,7 +27,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                                                            compute_compatibility_details: bool = False,
                                                            compute_cpra: bool = False,
                                                            crossmatch_logic: Callable = get_crossmatched_antibodies_per_group) \
-                -> Tuple[Optional[int], Set[int], Optional[List[RecipientDonorCompatibilityDetails]]]:
+                -> RecipientDonorsCompatibility:
     """
     Calculates cPRA for recipient (which part of donors [as decimal] is incompatible) for txm_event and returns list of
     compatible donors optionally with details about compatibility.
@@ -48,7 +48,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
     active_donors_dict = txm_event.active_and_valid_donors_dict
 
     if len(active_donors_dict) == 0:  # no donors = not compatible to the whole donor population
-        return 1, set(), []
+        return RecipientDonorsCompatibility(1, set(), None)
 
     compatible_donors_details = []
     compatible_donors = set()
@@ -108,4 +108,4 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
 
     cpra = 1 - n_hla_crossmatch_compatible / len(active_donors_dict) if compute_cpra else None
     compatible_donors_details = compatible_donors_details if compute_compatibility_details else None
-    return cpra, compatible_donors, compatible_donors_details
+    return RecipientDonorsCompatibility(cpra, compatible_donors, compatible_donors_details)

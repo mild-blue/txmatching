@@ -380,9 +380,10 @@ class CalculateRecipientCPRA(Resource):
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
-        cpra, compatible_donors, _ = calculate_cpra_and_get_compatible_donors_for_recipient(
+        recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event, recipient, configuration_parameters, compute_cpra=True)
-        result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
+        result = {'cPRA': round(recipient_donors_compatibility.cpra*100, 1),
+                  'compatible_donors': list(recipient_donors_compatibility.compatible_donors)}  # cPRA to %
         return response_ok(result)
 
 
