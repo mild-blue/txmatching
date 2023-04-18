@@ -1560,9 +1560,14 @@ definitions:
                 items:
                     type: integer
                 type: array
+            compatible_donors_details:
+                items:
+                    $ref: '#/definitions/RecipientDonorCompatibilityDetails'
+                type: array
         required:
         - cPRA
         - compatible_donors
+        - compatible_donors_details
         type: object
     RecipientDonorCompatibilityDetails:
         properties:

@@ -20,6 +20,7 @@ export class ConfigurationService {
   constructor(private _http: HttpClient) {}
 
   public async getConfiguration(txmEventId: number, configId: number | undefined): Promise<Configuration> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
     return firstValueFrom(
       this._http

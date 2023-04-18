@@ -9,6 +9,7 @@ import { Configuration } from "@app/model/Configuration";
 import { PatientList } from "@app/model/PatientList";
 import { DonorType } from "@app/model/enums/DonorType";
 import { countAllMessages } from "@app/helpers/messages";
+import { ConfigurationService } from "@app/services/configuration/configuration.service";
 
 @Component({
   selector: "app-matching-detail",
@@ -27,7 +28,11 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
 
   countAllMessages = countAllMessages;
 
-  constructor(private _patientsService: PatientService, private _uiInteractionsService: UiInteractionsService) {
+  constructor(
+    private _patientsService: PatientService,
+    private _configService: ConfigurationService,
+    private _uiInteractionsService: UiInteractionsService
+  ) {
     super();
 
     this._activeTransplantSubscription = this._uiInteractionsService.focusedTransplantId.subscribe((id) => {

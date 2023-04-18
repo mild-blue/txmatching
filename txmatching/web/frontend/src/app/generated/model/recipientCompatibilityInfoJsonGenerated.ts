@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { RecipientDonorCompatibilityDetailsGenerated } from './recipientDonorCompatibilityDetailsGenerated';
 
 
 export interface RecipientCompatibilityInfoJsonGenerated { 
@@ -17,5 +18,6 @@ export interface RecipientCompatibilityInfoJsonGenerated {
      */
     cPRA: number;
     compatible_donors: Array<number>;
+    compatible_donors_details: Array<RecipientDonorCompatibilityDetailsGenerated>;
 }
 
