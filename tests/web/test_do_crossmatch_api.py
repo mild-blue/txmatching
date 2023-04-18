@@ -161,7 +161,7 @@ class TestDoCrossmatchApi(DbTests):
                                                            'second_raw_code': None,
                                                            'type': 'THEORETICAL'},
                                           'match_type': 'THEORETICAL'}
-            print(res.json['hla_to_antibody'][3]['antibody_matches'])
+
             self.assertTrue(
                 double_antibody_match in res.json['hla_to_antibody'][1]['antibody_matches'])
             self.assertTrue(
