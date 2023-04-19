@@ -79,14 +79,14 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            assumed_hla_type:
+            hla_type:
                 items:
                     $ref: '#/definitions/HlaType'
                 type: array
             summary_antibody:
                 $ref: '#/definitions/AntibodyMatch'
         required:
-        - assumed_hla_type
+        - hla_type
         type: object
     AntigenMatch:
         properties:

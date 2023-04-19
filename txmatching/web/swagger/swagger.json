@@ -2323,10 +2323,10 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "assumed_hla_type"
+                "hla_type"
             ],
             "properties": {
-                "assumed_hla_type": {
+                "hla_type": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/HlaType"

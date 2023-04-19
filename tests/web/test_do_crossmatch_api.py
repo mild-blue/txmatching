@@ -194,7 +194,7 @@ class TestDoCrossmatchApi(DbTests):
 
             self.assertEqual(2, len(res.json['hla_to_antibody']))
             res_assumed_hla_typing = \
-                [res.json['hla_to_antibody'][i]['assumed_hla_type']
+                [res.json['hla_to_antibody'][i]['hla_type']
                  for i in range(len(res.json['hla_to_antibody']))]
             expected_assumed_hla_typing = [[asdict(create_hla_type('DPA1*01:04'))],
                                            [asdict(create_hla_type('DPA1*02:01'))]]

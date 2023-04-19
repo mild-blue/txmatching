@@ -36,7 +36,7 @@ CrossmatchJsonIn = crossmatch_api.model(
 )
 
 AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
-    'assumed_hla_type': fields.List(required=True, cls_or_instance=fields.Nested(HLAType, required=True)),
+    'hla_type': fields.List(required=True, cls_or_instance=fields.Nested(HLAType, required=True)),
     'antibody_matches': fields.List(required=False, cls_or_instance=fields.Nested(AntibodyMatchJson)),
     'summary_antibody': fields.Nested(AntibodyMatchJson)
 })
