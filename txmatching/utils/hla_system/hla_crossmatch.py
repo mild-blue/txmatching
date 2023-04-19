@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Callable, List, Set
+from typing import Callable, List, Set, Optional
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
@@ -31,8 +31,29 @@ class AntibodyMatchForHLAGroup:
 
 @dataclass
 class AntibodyMatchForHLAType:
-    hla_type: HLAType
+    # in this case we return HLAType as a List[HLAType], because we cannot choose which of these
+    # HLATypes is correct, so we return several at once
+    hla_type: List[HLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
+    summary_antibody: Optional[AntibodyMatch] = None  # TODO: get summary antibody
+
+    def __post_init__(self):
+        if self.is_hla_type_assumed() and not self.__is_hla_type_in_high_res():
+            raise ValueError("Assumed HLA type is available only"
+                             " for HLA type in high resolution.")
+
+    def is_hla_type_assumed(self):
+        return len(self.hla_type) > 1
+
+    def __is_hla_type_in_high_res(self):
+        return len([hla_type for hla_type in self.hla_type
+                    if not hla_type.code.is_in_high_res()]) == 0
+
+    def __hash__(self):
+        return hash(tuple(self.hla_type))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,

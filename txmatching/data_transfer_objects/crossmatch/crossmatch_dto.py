@@ -8,8 +8,13 @@ from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAType
 
 @dataclass
 class CrossmatchDTOIn:
-    donor_hla_typing: List[str]
+    assumed_donor_hla_typing: List[List[str]]
     recipient_antibodies: List[HLAAntibodiesUploadDTO]
+
+    def __post_init__(self):
+        # TODO:
+        self.maximum_donor_hla_typing = [hla_type for hla_typing in self.assumed_donor_hla_typing
+                                         for hla_type in hla_typing]
 
 
 @dataclass

@@ -1,16 +1,24 @@
+from typing import List, Tuple
+
 from flask_restx import Resource
 
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, \
+    AntibodyMatchForHLAType, \
     CrossmatchDTOOut
-from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut
+from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, \
+    CrossmatchJsonOut
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
 from txmatching.patients.hla_model import HLAAntibodies, HLATypeRaw
+from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibody
+from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
+    parse_hla_antibodies_raw_and_return_parsing_issue_list, \
+    parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.web.web_utils.namespaces import crossmatch_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -25,46 +33,81 @@ class DoCrossmatch(Resource):
                                     add_default_namespace_errors=True)
     @crossmatch_api.require_user_login()
     def post(self):
+
+        def get_hla_antibodies_and_parsing_issues(antibodies) \
+                -> Tuple[HLAAntibodies, List[ParsingIssueBase]]:
+            antibodies_raw_list = [create_antibody(antibody.name,
+                                                   antibody.mfi,
+                                                   antibody.cutoff)
+                                   for antibody in antibodies]
+            parsing_issues, antibodies_dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(
+                antibodies_raw_list)
+            return HLAAntibodies(
+                hla_antibodies_raw_list=antibodies_raw_list,
+                hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
+
+        def raise_not_implemented_if_theoretical_antibody(hla_antibody):
+            if hla_antibody.type == HLAAntibodyType.THEORETICAL or \
+                    hla_antibody.second_raw_code:
+                raise TXMNotImplementedFeatureException(
+                    'This functionality is not currently available for dual antibodies. '
+                    'We apologize and will try to change this in future versions.')
+
+        def get_hla_types_correspond_antibody(assumed_hla_type: List[HLAType],
+                                              hla_antibody: HLAAntibody) -> List[HLAType]:
+            return [hla_type for hla_type in assumed_hla_type
+                    if hla_type.code == hla_antibody.code]
+
+        def fulfill_with_common_matches(antibody_hla_match, antibody_group_match):
+            common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
+                antibody_hla_match.hla_type, antibody_group_match.hla_antibody
+            )
+            if len(common_matched_hla_types) > 0:
+                antibody_hla_match.hla_type = common_matched_hla_types
+                antibody_hla_match.antibody_matches.append(antibody_group_match)
+
+        def solve_uncrossmatched_hla_types(antibody_hla_matches: List[AntibodyMatchForHLAType]):
+            def convert_assumed_hla_type_to_split(antibody_hla_match):
+                antibody_hla_match.hla_type = [
+                    create_hla_type(
+                        raw_code=antibody_hla_match.hla_type[0].code.get_low_res_code())]
+
+            for antibody_hla_match in antibody_hla_matches:
+                if antibody_hla_matches.count(antibody_hla_match) > 1:
+                    del antibody_hla_matches[antibody_hla_matches.index(antibody_hla_match)]  # TODO: mb wrong.
+                if len(antibody_hla_match.hla_type) > 1 and \
+                        antibody_hla_match.antibody_matches:
+                    convert_assumed_hla_type_to_split(antibody_hla_match)
+
         crossmatch_dto = request_body(CrossmatchDTOIn)
 
-        antibodies_raw_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
-                               crossmatch_dto.recipient_antibodies]
-
-        antibodies_parsing_issues, antibodies_dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(
-            antibodies_raw_list)
-        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
-            hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
-        ))
-
-        hla_antibodies = HLAAntibodies(
-            hla_antibodies_raw_list=antibodies_raw_list,
-            hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
-        )
+        hla_antibodies, antibodies_parsing_issues = get_hla_antibodies_and_parsing_issues(
+            crossmatch_dto.recipient_antibodies)
 
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
-            donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
+            donor_hla_typing=create_hla_typing(crossmatch_dto.maximum_donor_hla_typing),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
-
-        antibody_matches_for_hla_type = [AntibodyMatchForHLAType(hla_type=create_hla_type(raw_code=hla),
-                                                                 antibody_matches=[])
-                                         for hla in crossmatch_dto.donor_hla_typing]
+        antibody_matches_for_hla_type = [AntibodyMatchForHLAType(
+            hla_type=[create_hla_type(raw_code=hla) for hla in hla_typing],
+            antibody_matches=[]) for hla_typing in crossmatch_dto.assumed_donor_hla_typing]
+        # TODO: validate (1.
+        #  - ALL IN HIGH RES
+        #  - ALL HAVE THE SAME LOW RES)
         for match_per_group in crossmatched_antibodies_per_group:
             for antibody_group_match in match_per_group.antibody_matches:
-                # get AntibodyMatchForHLAType object with the same hla_type
-                # as the antibody_group_match and append the antibody_group_match
-                if antibody_group_match.hla_antibody.second_raw_code:
-                    common_matches = [antibody_hla_match for antibody_hla_match in
-                                      antibody_matches_for_hla_type
-                                      if antibody_hla_match.hla_type.code in (antibody_group_match.hla_antibody.code,
-                                                                              antibody_group_match.hla_antibody.second_code)]
-                else:
-                    common_matches = [antibody_hla_match for antibody_hla_match in
-                                      antibody_matches_for_hla_type
-                                      if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
-                if common_matches:
-                    for common_match in common_matches:
-                        common_match.antibody_matches.append(antibody_group_match)
+                raise_not_implemented_if_theoretical_antibody(antibody_group_match.hla_antibody)
+                for antibody_hla_match in antibody_matches_for_hla_type:
+                    fulfill_with_common_matches(antibody_hla_match, antibody_group_match)
+
+        solve_uncrossmatched_hla_types(antibody_matches_for_hla_type)  # TODO: rename?
+
+        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
+            HLATypingRawDTO(
+                hla_types_list=[HLATypeRaw(hla_type) for hla_type in
+                                crossmatch_dto.maximum_donor_hla_typing]
+                # TODO: change it! not maximum, ale only used
+            ))
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,

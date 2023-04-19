@@ -15,6 +15,12 @@ class HLABase:
 
 @dataclass
 class HLAType(HLABase, PersistentlyHashable):
+    # TODO:
+    display_code: Optional[str] = None
+
+    def __post_init__(self):
+        self.display_code = self.code.display_code
+
     def __eq__(self, other):
         """
         Needed for List[HLAType].remove()
