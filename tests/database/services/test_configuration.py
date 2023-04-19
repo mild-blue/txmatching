@@ -107,6 +107,12 @@ class TestConfiguration(DbTests):
         self.assertFalse(
             ConfigParameters(required_patient_db_ids=[1]).comparable(ConfigParameters(required_patient_db_ids=[1, 2])))
 
+        self.assertTrue(
+            ConfigParameters(minimum_total_score=5).comparable(ConfigParameters(minimum_total_score=2)))
+
+        self.assertTrue(
+            ConfigParameters(blood_group_compatibility_bonus=1).comparable(ConfigParameters(blood_group_compatibility_bonus=1.3)))
+
     def test_configuration_non_negative_parameter(self):
         with self.assertRaises(ValueError):
             ConfigParameters(minimum_total_score=-1)
@@ -170,4 +176,12 @@ class TestConfiguration(DbTests):
         self.assertEqual(
             ConfigParameters(max_matchings_to_show_to_viewer=20),
             ConfigParameters(max_matchings_to_show_to_viewer=20)
+        )
+        self.assertNotEqual(
+            ConfigParameters(minimum_total_score=5),
+            ConfigParameters(minimum_total_score=2)
+        )
+        self.assertNotEqual(
+            ConfigParameters(blood_group_compatibility_bonus=1),
+            ConfigParameters(blood_group_compatibility_bonus=1.3)
         )

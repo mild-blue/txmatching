@@ -66,13 +66,15 @@ class ConfigParameters:
     solver_constructor_name: Solver = Solver.AllSolutionsSolver
     require_compatible_blood_group: bool = False
     minimum_total_score: float = field(default=0.0,
-                                       compare=False,
-                                       metadata={NON_NEGATIVE: True})
+                                       compare=True,
+                                       metadata={COMPARISON_MODE: ComparisonMode.IGNORE,
+                                                 NON_NEGATIVE: True})
     require_better_match_in_compatibility_index: bool = False
     require_better_match_in_compatibility_index_or_blood_group: bool = False
     blood_group_compatibility_bonus: float = field(default=0.0,
-                                                   compare=False,
-                                                   metadata={NON_NEGATIVE: True})
+                                                   compare=True,
+                                                   metadata={COMPARISON_MODE: ComparisonMode.IGNORE,
+                                                             NON_NEGATIVE: True})
     use_binary_scoring: bool = False
     max_cycle_length: int = field(default=4,
                                   compare=True,
@@ -159,7 +161,3 @@ class ConfigParameters:
 
     def __post_init__(self):
         self.non_negative()
-
-    def __eq__(self, other):
-        return (isinstance(other, ConfigParameters) and
-                vars(self) == vars(other))
