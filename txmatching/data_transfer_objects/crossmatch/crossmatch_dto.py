@@ -11,10 +11,9 @@ class CrossmatchDTOIn:
     assumed_donor_hla_typing: List[List[str]]
     recipient_antibodies: List[HLAAntibodiesUploadDTO]
 
-    def __post_init__(self):
-        # TODO:
-        self.maximum_donor_hla_typing = [hla_type for hla_typing in self.assumed_donor_hla_typing
-                                         for hla_type in hla_typing]
+    def get_maximum_donor_hla_typing(self):
+        return [hla_type for hla_typing in self.assumed_donor_hla_typing
+                for hla_type in hla_typing]
 
 
 @dataclass

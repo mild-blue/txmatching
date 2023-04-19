@@ -1,3 +1,4 @@
+from copy import copy
 from dataclasses import dataclass, field
 from typing import Callable, List, Set, Optional
 
@@ -9,6 +10,7 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel, HLAGroup)
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
 
@@ -35,7 +37,7 @@ class AntibodyMatchForHLAType:
     # HLATypes is correct, so we return several at once
     hla_type: List[HLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
-    summary_antibody: Optional[AntibodyMatch] = None  # TODO: get summary antibody
+    summary_antibody: Optional[AntibodyMatch] = None
 
     def __post_init__(self):
         if self.is_hla_type_assumed() and not self.__is_hla_type_in_high_res():
@@ -44,8 +46,23 @@ class AntibodyMatchForHLAType:
         if self.__is_hla_type_assumed_in_low_res():
             raise ValueError("HLA Type can be assumed just in high resolution.")
 
+        self.summary_antibody = \
+            max(self.antibody_matches,
+                key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
+
     def is_hla_type_assumed(self):
         return len(self.hla_type) > 1
+
+    def get_low_res_code_from_assumed(self):
+        return self.hla_type[0].code.get_low_res_code()
+
+    def convert_assumed_to_low_res(self):
+        self.hla_type = [create_hla_type(raw_code=self.get_low_res_code_from_assumed())]
+
+    def get_copy_with_converted_assumed_to_low_res(self):
+        res = copy(self)
+        res.convert_assumed_to_low_res()
+        return res
 
     def __is_hla_type_in_high_res(self):
         return len([hla_type for hla_type in self.hla_type
@@ -55,7 +72,7 @@ class AntibodyMatchForHLAType:
         return len({hla_type.code.get_low_res_code() for hla_type in self.hla_type}) > 1
 
     def __hash__(self):
-        return hash(tuple(self.hla_type))
+        return hash((tuple(self.hla_type), tuple(self.antibody_matches)))
 
     def __eq__(self, other):
         return hash(self) == hash(other)

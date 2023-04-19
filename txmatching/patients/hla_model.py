@@ -15,7 +15,6 @@ class HLABase:
 
 @dataclass
 class HLAType(HLABase, PersistentlyHashable):
-    # TODO:
     display_code: Optional[str] = None
 
     def __post_init__(self):
