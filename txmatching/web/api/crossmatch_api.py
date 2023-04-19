@@ -58,13 +58,17 @@ class DoCrossmatch(Resource):
             return [hla_type for hla_type in assumed_hla_type
                     if hla_type.code == hla_antibody.code]
 
-        def fulfill_with_common_matches(antibody_hla_match, antibody_group_match):
-            common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
-                antibody_hla_match.hla_type, antibody_group_match.hla_antibody
-            )
-            if len(common_matched_hla_types) > 0:
-                antibody_hla_match.hla_type = common_matched_hla_types
-                antibody_hla_match.antibody_matches.append(antibody_group_match)
+        def fulfill_with_common_matches(antibody_matches, crossmatched_antibodies):
+            for match_per_group in crossmatched_antibodies:
+                for antibody_group_match in match_per_group.antibody_matches:
+                    raise_not_implemented_if_theoretical_antibody(antibody_group_match.hla_antibody)
+                    for antibody_hla_match in antibody_matches:
+                        common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
+                            antibody_hla_match.hla_type, antibody_group_match.hla_antibody
+                        )
+                        if len(common_matched_hla_types) > 0:
+                            antibody_hla_match.hla_type = common_matched_hla_types
+                            antibody_hla_match.antibody_matches.append(antibody_group_match)
 
         def solve_uncrossmatched_hla_types(antibody_hla_matches: List[AntibodyMatchForHLAType]):
             def convert_assumed_hla_type_to_split(antibody_hla_match):
@@ -91,15 +95,9 @@ class DoCrossmatch(Resource):
         antibody_matches_for_hla_type = [AntibodyMatchForHLAType(
             hla_type=[create_hla_type(raw_code=hla) for hla in hla_typing],
             antibody_matches=[]) for hla_typing in crossmatch_dto.assumed_donor_hla_typing]
-        # TODO: validate (1.
-        #  - ALL IN HIGH RES
-        #  - ALL HAVE THE SAME LOW RES)
-        for match_per_group in crossmatched_antibodies_per_group:
-            for antibody_group_match in match_per_group.antibody_matches:
-                raise_not_implemented_if_theoretical_antibody(antibody_group_match.hla_antibody)
-                for antibody_hla_match in antibody_matches_for_hla_type:
-                    fulfill_with_common_matches(antibody_hla_match, antibody_group_match)
 
+        fulfill_with_common_matches(antibody_matches_for_hla_type,
+                                    crossmatched_antibodies_per_group)
         solve_uncrossmatched_hla_types(antibody_matches_for_hla_type)  # TODO: rename?
 
         typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(

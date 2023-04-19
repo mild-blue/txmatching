@@ -40,7 +40,9 @@ class AntibodyMatchForHLAType:
     def __post_init__(self):
         if self.is_hla_type_assumed() and not self.__is_hla_type_in_high_res():
             raise ValueError("Assumed HLA type is available only"
-                             " for HLA type in high resolution.")
+                             " for HLA types in high resolution.")
+        if self.__is_hla_type_assumed_in_low_res():
+            raise ValueError("HLA Type can be assumed just in high resolution.")
 
     def is_hla_type_assumed(self):
         return len(self.hla_type) > 1
@@ -48,6 +50,9 @@ class AntibodyMatchForHLAType:
     def __is_hla_type_in_high_res(self):
         return len([hla_type for hla_type in self.hla_type
                     if not hla_type.code.is_in_high_res()]) == 0
+
+    def __is_hla_type_assumed_in_low_res(self):
+        return len({hla_type.code.get_low_res_code() for hla_type in self.hla_type}) > 1
 
     def __hash__(self):
         return hash(tuple(self.hla_type))

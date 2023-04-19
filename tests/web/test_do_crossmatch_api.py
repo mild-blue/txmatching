@@ -173,6 +173,7 @@ class TestDoCrossmatchApi(DbTests):
                 theoretical_antibody_match in res.json['hla_to_antibody'][3]['antibody_matches'])
 
     def test_do_crossmatch_for_assumed_hla_type(self):
+        # general case
         json = {
             "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06'],
                                          ['DPA1*02:01'],
@@ -200,3 +201,46 @@ class TestDoCrossmatchApi(DbTests):
                                            [asdict(create_hla_type('DPA1*02:01'))]]
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
+
+        # hla type is assumed in split/broad
+        json = {
+            "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*02:06'],
+                                         ['DPA1*02:01'],
+                                         ['DPA1*01:04']],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DPA1*02:01',
+                                      'cutoff': 2000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(400, res.status_code)  # ValueError
+            self.assertEqual('HLA Type can be assumed just in high resolution.',
+                             res.json['message'])
+
+        # low res codes in assumed hla type
+        json = {
+            "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1'],
+                                         ['DPA1*02:01'],
+                                         ['DPA1*01:04']],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DPA1*02:01',
+                                      'cutoff': 2000
+                                      }],
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(400, res.status_code)  # ValueError
+            self.assertEqual('Assumed HLA type is available only for HLA types in high resolution.',
+                             res.json['message'])
