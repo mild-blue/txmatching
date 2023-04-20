@@ -10,9 +10,7 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLAAntibodies, HLATypeRaw
 from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibody
-from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
@@ -88,21 +86,15 @@ class DoCrossmatch(Resource):
     @staticmethod
     def __fulfill_with_common_matches(antibody_matches, crossmatched_antibodies):
 
-        def raise_not_implemented_if_theoretical_antibody(hla_antibody):
-            if hla_antibody.type == HLAAntibodyType.THEORETICAL or \
-                    hla_antibody.second_raw_code:
-                raise TXMNotImplementedFeatureException(
-                    'This functionality is not currently available for dual antibodies. '
-                    'We apologize and will try to change this in future versions.')
-
         def get_hla_types_correspond_antibody(assumed_hla_type: List[HLAType],
                                               hla_antibody: HLAAntibody) -> List[HLAType]:
             return [hla_type for hla_type in assumed_hla_type
-                    if hla_type.code == hla_antibody.code]
+                    if (not hla_antibody.second_raw_code and hla_type.code == hla_antibody.code)
+                    or hla_type.code in (hla_antibody.code,
+                                         hla_antibody.second_code)]
 
         for match_per_group in crossmatched_antibodies:
             for antibody_group_match in match_per_group.antibody_matches:
-                raise_not_implemented_if_theoretical_antibody(antibody_group_match.hla_antibody)
                 for antibody_hla_match in antibody_matches:
                     common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
                         antibody_hla_match.hla_type, antibody_group_match.hla_antibody

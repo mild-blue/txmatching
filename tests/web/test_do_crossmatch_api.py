@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -111,7 +111,7 @@ class TestDoCrossmatchApi(DbTests):
 
     def test_theoretical_and_double_antibodies(self):
         json = {
-            "assumed_donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04', 'DPA1*02:01'],
+            "assumed_donor_hla_typing": [['DPA1*01:03'], ['DPB1*03:01'], ['DPA1*01:04'], ['DPA1*02:01']],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DP[01:04,03:01]',
                                       'cutoff': 2000

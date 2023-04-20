@@ -49,6 +49,8 @@ class HLACode:
         return hash((self.high_res, self.split, self.broad))
 
     def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
         if self.high_res and other.high_res:
             return self.high_res == other.high_res
         elif self.split and other.split:
