@@ -89,9 +89,8 @@ class DoCrossmatch(Resource):
         def get_hla_types_correspond_antibody(assumed_hla_type: List[HLAType],
                                               hla_antibody: HLAAntibody) -> List[HLAType]:
             return [hla_type for hla_type in assumed_hla_type
-                    if (not hla_antibody.second_raw_code and hla_type.code == hla_antibody.code)
-                    or hla_type.code in (hla_antibody.code,
-                                         hla_antibody.second_code)]
+                    if hla_type.code == hla_antibody.code or
+                    (hla_antibody.second_raw_code and hla_type.code == hla_antibody.second_code)]
 
         for match_per_group in crossmatched_antibodies:
             for antibody_group_match in match_per_group.antibody_matches:
