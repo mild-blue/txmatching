@@ -52,10 +52,10 @@ class AntibodyMatchForHLAType:
             max(self.antibody_matches,
                 key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
 
-    def is_hla_type_assumed(self):
+    def is_hla_type_assumed(self) -> bool:
         return len(self.hla_type) > 1
 
-    def get_low_res_code_from_assumed(self):
+    def get_low_res_code_from_assumed(self) -> str:
         return self.hla_type[0].code.get_low_res_code()
 
     def convert_assumed_to_low_res(self):
@@ -67,8 +67,8 @@ class AntibodyMatchForHLAType:
         return res
 
     def __is_hla_type_in_high_res(self):
-        return len([hla_type for hla_type in self.hla_type
-                    if not hla_type.code.is_in_high_res()]) == 0
+        return not [hla_type for hla_type in self.hla_type
+                    if not hla_type.code.is_in_high_res()]
 
     def __is_hla_type_assumed_in_low_res(self):
         return len({hla_type.code.get_low_res_code() for hla_type in self.hla_type}) > 1

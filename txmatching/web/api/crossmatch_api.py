@@ -98,7 +98,7 @@ class DoCrossmatch(Resource):
                     common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
                         antibody_hla_match.hla_type, antibody_group_match.hla_antibody
                     )
-                    if len(common_matched_hla_types) > 0:
+                    if common_matched_hla_types:
                         antibody_hla_match.hla_type = common_matched_hla_types
                         antibody_hla_match.antibody_matches.append(antibody_group_match)
 
