@@ -40,6 +40,8 @@ class AntibodyMatchForHLAType:
     summary_antibody: Optional[AntibodyMatch] = None
 
     def __post_init__(self):
+        if not self.hla_type:
+            raise AttributeError("AntibodyMatchForHLAType needs at least one hla_type.")
         if self.is_hla_type_assumed() and not self.__is_hla_type_in_high_res():
             raise ValueError("Assumed HLA type is available only"
                              " for HLA types in high resolution.")
