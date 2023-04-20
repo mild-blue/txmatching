@@ -37,7 +37,7 @@ class AntibodyMatchForHLAType:
     # HLATypes is correct, so we return several at once
     hla_type: List[HLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
-    summary_antibody: Optional[AntibodyMatch] = None
+    summary_antibody: Optional[AntibodyMatch] = field(init=False)
 
     def __post_init__(self):
         if not self.hla_type:
@@ -48,9 +48,14 @@ class AntibodyMatchForHLAType:
         if self.__is_hla_type_assumed_in_low_res():
             raise ValueError("HLA Type can be assumed just in high resolution.")
 
-        self.summary_antibody = \
-            max(self.antibody_matches,
-                key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
+    @property
+    def summary_antibody(self) -> Optional[AntibodyMatch]:
+        return max(self.antibody_matches,
+                   key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
+
+    @summary_antibody.setter
+    def summary_antibody(self, value):
+        pass
 
     def is_hla_type_assumed(self) -> bool:
         return len(self.hla_type) > 1

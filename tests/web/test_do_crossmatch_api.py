@@ -202,6 +202,8 @@ class TestDoCrossmatchApi(DbTests):
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
 
+        # TODO: multiple matches for one HLA Type
+
         # assumed hla type without matched antibodies
         json = {
             "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06'],
@@ -274,6 +276,34 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual('Assumed HLA type is available only for HLA types in high resolution.',
                              res.json['message'])
 
-        # TODO: test display_code
-
-        # TODO: test summary antibody
+        # test summary antibody
+        json = {
+            "assumed_donor_hla_typing": [['DPA1*01:04', 'DPA1*01:05', 'DPA1*01:06'],
+                                         ['DPA1*02:01'],
+                                         ['DPA1*01:07']],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2050,
+                                      'name': 'DPA1*01:05',
+                                      'cutoff': 2000
+                                      }],
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+        expected_summary_antibody = {'hla_antibody':
+                                         {'code': {'broad': 'DPA1',
+                                                   'high_res': 'DPA1*01:04',
+                                                   'split': 'DPA1'},
+                                          'cutoff': 2000,
+                                          'mfi': 2100,
+                                          'raw_code': 'DPA1*01:04',
+                                          'second_code': None,
+                                          'second_raw_code': None,
+                                          'type': 'NORMAL'},
+                                     'match_type': 'UNDECIDABLE'}
+        self.assertEqual(expected_summary_antibody,
+                         res.json['hla_to_antibody'][0]['summary_antibody'])
