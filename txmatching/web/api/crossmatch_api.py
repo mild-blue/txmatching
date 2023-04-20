@@ -92,15 +92,18 @@ class DoCrossmatch(Resource):
                     if hla_type.code == hla_antibody.code or
                     (hla_antibody.second_raw_code and hla_type.code == hla_antibody.second_code)]
 
-        for match_per_group in crossmatched_antibodies:
-            for antibody_group_match in match_per_group.antibody_matches:
-                for antibody_hla_match in antibody_matches:
+        for antibody_hla_match in antibody_matches:
+            solved_hla_types = set()
+            for match_per_group in crossmatched_antibodies:
+                for antibody_group_match in match_per_group.antibody_matches:
                     common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
                         antibody_hla_match.hla_type, antibody_group_match.hla_antibody
                     )
                     if common_matched_hla_types:
-                        antibody_hla_match.hla_type = common_matched_hla_types
+                        solved_hla_types.update(common_matched_hla_types)
                         antibody_hla_match.antibody_matches.append(antibody_group_match)
+            if solved_hla_types:
+                antibody_hla_match.hla_type = list(solved_hla_types)
 
     def __solve_uncrossmatched_assumed_hla_types(self, antibody_matches, hla_antibodies):
 
