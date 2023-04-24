@@ -21,8 +21,8 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event = create_txm_event(UPLOADED_TXM_EVENT_NAME)
         to_upload_json = get_patients_upload_json_from_txm_event_for_country(txm_event_id, Country.CZE,
                                                                              UPLOADED_TXM_EVENT_NAME)
-        self.assertEqual(15, len(to_upload_json.donors))
-        self.assertEqual(12, len(to_upload_json.recipients))
+        self.assertEqual(21, len(to_upload_json.donors))
+        self.assertEqual(14, len(to_upload_json.recipients))
 
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
@@ -34,5 +34,5 @@ class TestSaveAndGetConfiguration(DbTests):
         self.assertEqual(res.status_code, 200)
         uploaded = get_txm_event_complete(txm_event.db_id, load_antibodies_raw=True)
 
-        self.assertEqual(15, len(uploaded.all_donors))
-        self.assertEqual(12, len(uploaded.all_recipients) )
+        self.assertEqual(21, len(uploaded.all_donors))
+        self.assertEqual(14, len(uploaded.all_recipients) )
