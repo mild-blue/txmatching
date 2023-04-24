@@ -2339,7 +2339,12 @@
                     }
                 },
                 "summary_antibody": {
-                    "$ref": "#/definitions/AntibodyMatch"
+                    "readOnly": true,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/AntibodyMatch"
+                        }
+                    ]
                 }
             },
             "type": "object"

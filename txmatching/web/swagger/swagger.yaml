@@ -84,7 +84,9 @@ definitions:
                     $ref: '#/definitions/HlaType'
                 type: array
             summary_antibody:
-                $ref: '#/definitions/AntibodyMatch'
+                allOf:
+                -   $ref: '#/definitions/AntibodyMatch'
+                readOnly: true
         required:
         - hla_type
         type: object
