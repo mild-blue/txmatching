@@ -226,7 +226,8 @@ class TestDoCrossmatchApi(DbTests):
                 [res.json['hla_to_antibody'][i]['hla_type']
                  for i in range(len(res.json['hla_to_antibody']))]
             expected_assumed_hla_type = [asdict(create_hla_type('DPA1*01:03')), asdict(create_hla_type('DPA1*01:04'))]
-            self.assertIn(expected_assumed_hla_type, res_assumed_hla_typing)
+            for hla_type in expected_assumed_hla_type:
+                self.assertIn(hla_type, res_assumed_hla_typing[0])
 
         # assumed hla type without matched antibodies
         json = {
