@@ -58,8 +58,8 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
     const configurationId = response.configId;
     const recipientCompatibilityInfo = await this._patientsService.getRecipientCompatbileDonorsAndCPRA(
       TxmEventId,
-      configurationId,
-      recipientId
+      recipientId,
+      configurationId
     );
     this.recipientCompatibilityInfo = recipientCompatibilityInfo;
     const donorToCompatibilityInfo: [Donor, RecipientDonorCompatibilityDetail][] = [];
