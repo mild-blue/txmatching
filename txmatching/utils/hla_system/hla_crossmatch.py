@@ -73,8 +73,10 @@ class AntibodyMatchForHLAType:
         return res
 
     def __is_hla_type_in_high_res(self):
-        return not [hla_type for hla_type in self.hla_type
-                    if not hla_type.code.is_in_high_res()]
+        for hla_type in self.hla_type:
+            if not hla_type.code.is_in_high_res():
+                return false
+        return true
 
     def __is_hla_type_assumed_in_low_res(self):
         return len({hla_type.code.get_low_res_code() for hla_type in self.hla_type}) > 1
