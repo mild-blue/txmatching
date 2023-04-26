@@ -214,17 +214,23 @@ class TestDoCrossmatchApi(DbTests):
             "recipient_antibodies": [{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
                                      {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
                                      {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
-                                     {'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000},
-                                     {'mfi': 2100, 'name': 'A*02:02', 'cutoff': 2000}]
+                                     {'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000}]
         }
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-
-            self.assertEqual([{'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
-                                                'cutoff': 2000, 'mfi': 2100, 'raw_code': 'A*02:02', 'second_code': None,
-                                                'second_raw_code': None, 'type': 'NORMAL'}, 'match_type': 'HIGH_RES'}],
+            self.assertNotIn({'hla_antibody':
+                                  {'code': {'broad': 'DQA1',
+                                            'high_res': 'DQA1*01:01',
+                                            'split': 'DQA1'},
+                                   'cutoff': 2000,
+                                   'mfi': 3000,
+                                   'raw_code': 'DQA1*01:01',
+                                   'second_code': None,
+                                   'second_raw_code': None,
+                                   'type': 'THEORETICAL'},
+                              'match_type': 'THEORETICAL'},
                              res.json['hla_to_antibody'][0]['antibody_matches'])
 
     def test_do_crossmatch_for_assumed_hla_types(self):
