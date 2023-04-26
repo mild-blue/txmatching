@@ -112,23 +112,24 @@ class DoCrossmatch(Resource):
             unsolved_antibody_matches = []
             for antibody_match in matches:
                 if not antibody_match.antibody_matches and antibody_match.is_hla_type_assumed():
-                    unsolved_antibody_matches.append(
-                        antibody_match.get_copy_with_converted_assumed_to_low_res())
+                    unsolved_antibody_matches.append(antibody_match)
                 else:
                     solved_antibody_matches.append(antibody_match)
             return solved_antibody_matches, unsolved_antibody_matches
 
         solved_antibody_matches, unsolved_assumed_antibody_matches = \
             distribute_antibody_matches_solved_unsolved(antibody_matches)
+        unsolved_in_low_res = [match.get_copy_with_converted_assumed_to_low_res()
+                                for match in unsolved_assumed_antibody_matches]
         crossmatched_antibodies_for_unsolved = \
             get_crossmatched_antibodies_per_group(
                 donor_hla_typing=create_hla_typing([match.get_low_res_code_from_assumed()
-                                                    for match in unsolved_assumed_antibody_matches]),
+                                                    for match in unsolved_in_low_res]),
                 recipient_antibodies=hla_antibodies,
                 use_high_resolution=True
             )
-        self.__fulfill_with_common_matches(unsolved_assumed_antibody_matches,
-                                    crossmatched_antibodies_for_unsolved)
+        self.__fulfill_with_common_matches(unsolved_in_low_res,
+                                           crossmatched_antibodies_for_unsolved)
 
-        solved_antibody_matches.extend(unsolved_assumed_antibody_matches)
+        solved_antibody_matches.extend(unsolved_in_low_res)
         return solved_antibody_matches
