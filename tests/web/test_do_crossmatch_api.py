@@ -277,7 +277,8 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(400, res.status_code)  # ValueError
-            self.assertEqual('HLA Type can be assumed just in high resolution.',
+            self.assertEqual("Assumed HLA type can't have multiple codes in low resolution. "
+                             "In other words, HLA type can be assumed just in high resolution.",
                              res.json['message'])
 
         # low res codes in assumed hla type

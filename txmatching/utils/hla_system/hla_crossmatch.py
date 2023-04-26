@@ -51,7 +51,7 @@ class AntibodyMatchForHLAType:
             raise ValueError("Assumed HLA type is available only"
                              " for HLA types in high resolution.")
         if self.__is_hla_type_uniquely_defined_in_low_res():
-            raise ValueError("Assumed HLA type can't have multiple codes in low resolution."
+            raise ValueError("Assumed HLA type can't have multiple codes in low resolution. "
                              "In other words, HLA type can be assumed just in high resolution.")
 
     @property
