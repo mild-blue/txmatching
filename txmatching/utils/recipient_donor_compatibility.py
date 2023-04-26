@@ -17,4 +17,4 @@ class RecipientDonorCompatibilityDetails:
 class RecipientDonorsCompatibility:
     cpra: Optional[int]
     compatible_donors: Set[int]
-    compatible_donors_details: RecipientDonorCompatibilityDetails
+    compatible_donors_details: Optional[List[RecipientDonorCompatibilityDetails]]

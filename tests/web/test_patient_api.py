@@ -840,9 +840,12 @@ class TestPatientService(DbTests):
                 txm_event=txm_event,
                 recipient=recipient,
                 configuration_parameters=configuration_parameters,
+                compute_compatibility_details=True,
                 compute_cpra=True)
             expected_json = {'cPRA': round(recipient_donors_compatibility.cpra * 100, 1),
-                             'compatible_donors': list(recipient_donors_compatibility.compatible_donors)}
+                             'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
+                             'compatible_donors_details': [dataclasses.asdict(cdd) for cdd in 
+                                                           recipient_donors_compatibility.compatible_donors_details]}
 
             with self.app.test_client() as client:
                 res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'
