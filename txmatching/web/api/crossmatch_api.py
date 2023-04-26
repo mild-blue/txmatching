@@ -55,6 +55,7 @@ class DoCrossmatch(Resource):
             return typing_parsing_issues
 
         def get_unique_from_list(lst: list):
+            # this fancy approach is used to prevent reordering how it would be through the set()
             return list(dict.fromkeys(lst).keys())
 
         crossmatch_dto = request_body(CrossmatchDTOIn)
