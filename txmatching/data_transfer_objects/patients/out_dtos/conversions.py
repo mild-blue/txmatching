@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
@@ -37,7 +37,9 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
             ) for donor in txm_event.all_donors],
             key=lambda donor: (
                 not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
-        'recipients': sorted([recipient_to_recipient_dto_out(recipient, txm_event.db_id) for recipient in txm_event.all_recipients], key=_patient_order_for_fe)
+        'recipients': sorted([
+            recipient_to_recipient_dto_out(
+                recipient, txm_event.db_id) for recipient in txm_event.all_recipients], key=_patient_order_for_fe)
     }
 
 

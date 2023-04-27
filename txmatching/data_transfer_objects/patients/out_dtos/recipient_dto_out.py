@@ -3,8 +3,6 @@ from typing import Dict, List, Optional
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.patient import Recipient
-from txmatching.utils.recipient_donor_compatibility import \
-    RecipientDonorCompatibilityDetails
 
 
 @dataclass
