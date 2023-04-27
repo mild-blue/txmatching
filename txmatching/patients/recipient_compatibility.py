@@ -24,7 +24,6 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                                                            recipient: Recipient,
                                                            configuration_parameters: ConfigParameters,
                                                            compatibility_graph: Optional[CompatibilityGraph] = None,
-                                                           compute_compatibility_details: bool = False,
                                                            compute_cpra: bool = False,
                                                            crossmatch_logic: Callable = get_crossmatched_antibodies_per_group) \
                 -> RecipientDonorsCompatibility:
@@ -82,7 +81,7 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
             compatible_donors.add(donor.db_id)
 
             # Do not compute compatibility details with the original donor
-            if compute_compatibility_details and (donor.related_recipient_db_id != recipient.db_id):
+            if donor.related_recipient_db_id != recipient.db_id:
                 compatibility_index_detailed = get_detailed_compatibility_index(
                     donor_hla_typing=donor.parameters.hla_typing,
                     recipient_hla_typing=recipient.parameters.hla_typing,
@@ -107,5 +106,4 @@ def calculate_cpra_and_get_compatible_donors_for_recipient(txm_event: TxmEvent,
                 compatible_donors_details.append(recipient_donor_compatibility_details)
 
     cpra = 1 - n_hla_crossmatch_compatible / len(active_donors_dict) if compute_cpra else None
-    compatible_donors_details = compatible_donors_details if compute_compatibility_details else None
     return RecipientDonorsCompatibility(cpra, compatible_donors, compatible_donors_details)
