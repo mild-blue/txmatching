@@ -87,16 +87,6 @@ class AllPatients(Resource):
         'Specify to include raw antibodies as well. '
         'By default, raw antibodies are not included.'
     )
-    @patient_api.request_arg_flag(
-        'compute-cpra',
-        'Specify to compute cpra. '
-        'By default, cpra is not computed.'
-    )
-    @patient_api.request_arg_flag(
-        'without-recipient-compatibility',
-        'Do not compute donors compatible to recipients. '
-        'This step is computationally demanding and not needed while loading the matching site.'
-    )
     @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
@@ -104,11 +94,7 @@ class AllPatients(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
-        compute_cpra = request_arg_flag('compute-cpra')
-        without_recipient_compatibility = request_arg_flag('without-recipient-compatibility')
         logger.debug(f'{include_antibodies_raw=}')
-        logger.debug(f'{compute_cpra=}')
-        logger.debug(f'{without_recipient_compatibility=}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
         lists_for_fe = to_lists_for_fe(txm_event=txm_event, configuration_parameters=configuration_parameters)
@@ -396,15 +382,15 @@ class CalculateRecipientCPRA(Resource):
                 scorer = scorer_from_configuration(configuration_parameters)
                 compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
                     txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict, compatibility_graph)
-                
+
         recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
             txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
             compute_compatibility_details=True, compute_cpra=True)
-        
+
         result = {'cPRA': round(recipient_donors_compatibility.cpra*100, 1), # cPRA to %
                   'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
                   'compatible_donors_details': recipient_donors_compatibility.compatible_donors_details}
-        
+
         return response_ok(result)
 
 

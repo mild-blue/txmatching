@@ -1039,20 +1039,6 @@
                         "default": "default"
                     },
                     {
-                        "description": "Do not compute donors compatible to recipients. This step is computationally demanding and not needed while loading the matching site. Example: ?without-recipient-compatibility",
-                        "type": "boolean",
-                        "required": false,
-                        "name": "without-recipient-compatibility",
-                        "in": "query"
-                    },
-                    {
-                        "description": "Specify to compute cpra. By default, cpra is not computed. Example: ?compute-cpra",
-                        "type": "boolean",
-                        "required": false,
-                        "name": "compute-cpra",
-                        "in": "query"
-                    },
-                    {
                         "description": "Specify to include raw antibodies as well. By default, raw antibodies are not included. Example: ?include-antibodies-raw",
                         "type": "boolean",
                         "required": false,
