@@ -1499,13 +1499,6 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            compatible_donors_details:
-                items:
-                    $ref: '#/definitions/RecipientDonorCompatibilityDetails'
-                type: array
-            cpra:
-                description: Recipient's cPRA [%].
-                type: number
             db_id: *id011
             etag: *id005
             hla_antibodies:

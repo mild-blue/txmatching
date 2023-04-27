@@ -11,7 +11,6 @@
  */
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { PatientParametersGenerated } from './patientParametersGenerated';
-import { RecipientDonorCompatibilityDetailsGenerated } from './recipientDonorCompatibilityDetailsGenerated';
 import { AllMessagesGenerated } from './allMessagesGenerated';
 import { ParsingIssueGenerated } from './parsingIssueGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
@@ -21,11 +20,6 @@ import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 export interface RecipientGenerated { 
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
     all_messages?: AllMessagesGenerated;
-    compatible_donors_details?: Array<RecipientDonorCompatibilityDetailsGenerated>;
-    /**
-     * Recipient\'s cPRA [%].
-     */
-    cpra?: number;
     /**
      * Database id of the patient
      */

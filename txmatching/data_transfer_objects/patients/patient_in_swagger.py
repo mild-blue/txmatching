@@ -62,8 +62,6 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
         required=False,
         cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
-    'cpra': fields.Float(required=False, description="Recipient's cPRA [%]."),
-    'compatible_donors_details': fields.List(required=False, cls_or_instance=fields.Nested(RecipientDonorCompatibilityDetailsJson)),
     'all_messages': fields.Nested(required=False, model=AllMessagesJson),
 }})
 

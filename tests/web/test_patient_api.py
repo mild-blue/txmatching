@@ -97,9 +97,6 @@ class TestPatientService(DbTests):
                     self.assertEqual(detailed_score_for_group['antibody_matches'], [])
                     self.assertEqual(detailed_score_for_group['recipient_matches'], [])
                     self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
-        for recipient in res.json['recipients']:
-            self.assertIsNone(recipient['cpra'])
-            self.assertIsNotNone(recipient['compatible_donors_details'])
 
     def test_get_patients_with_cpra_computation(self):
         txm_event_db_id = self.fill_db_with_patients_and_results(
