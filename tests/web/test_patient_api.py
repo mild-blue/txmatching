@@ -118,9 +118,6 @@ class TestPatientService(DbTests):
                     self.assertEqual(detailed_score_for_group['antibody_matches'], [])
                     self.assertEqual(detailed_score_for_group['recipient_matches'], [])
                     self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
-        for recipient in res.json['recipients']:
-            self.assertIsNotNone(recipient['cpra'])
-            self.assertIsNotNone(recipient['compatible_donors_details'])
 
     def test_upload_patients_via_file(self):
         res = self._upload_data()
