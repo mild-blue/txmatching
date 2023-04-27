@@ -6,18 +6,10 @@ from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
     RecipientDTOOut
-from txmatching.database.services.config_service import \
-    find_config_for_parameters
-from txmatching.database.services.pairing_result_service import \
-    get_pairing_result_comparable_to_config
 from txmatching.database.services.parsing_issue_service import \
     get_parsing_issues_for_patients
-from txmatching.database.services.scorer_service import \
-    compatibility_graph_from_dict
 from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
-from txmatching.patients.recipient_compatibility import \
-    calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -31,52 +23,12 @@ from txmatching.utils.hla_system.hla_crossmatch import \
     get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
     ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
-from txmatching.utils.recipient_donor_compatibility import \
-    RecipientDonorCompatibilityDetails
 
 
-def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters,
-                    compute_cpra: bool = False, without_recipient_compatibility: bool = False) \
+def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
     -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
 
     scorer = scorer_from_configuration(configuration_parameters)
-
-    if not without_recipient_compatibility:
-        # Try to load configuration corresponding to parameters
-        configuration = find_config_for_parameters(configuration_parameters, txm_event.db_id)
-
-        # If configuration loaded, try to load compatibility_graph to optimize
-        # `calculate_cpra_and_get_compatible_donors_for_recipient`.
-        compatibility_graph_of_db_ids = None
-        if configuration:
-            pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
-            if pairing_result_model is not None:
-                compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
-                compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
-                    txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict, compatibility_graph)
-
-    recipient_dtos = []
-    for recipient in txm_event.all_recipients:
-
-        # If not specifically asked not to do so and the compatibility_graph for the `configuration_parameters` is
-        # already in db (corresponding pairing result is already computed): for each recipient, find all compatible
-        # donors with compatibility details and optionally also compute recipient's cpra value.
-        if (not without_recipient_compatibility) and compatibility_graph_of_db_ids:
-            recipient_donors_compatibility = \
-                calculate_cpra_and_get_compatible_donors_for_recipient(
-                    txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
-                    compute_compatibility_details=True, compute_cpra=compute_cpra)
-            recipient_dto = recipient_to_recipient_dto_out(
-                recipient=recipient,
-                txm_event_id=txm_event.db_id,
-                cpra=recipient_donors_compatibility.cpra,
-                compatible_donors_details=recipient_donors_compatibility.compatible_donors_details)
-        else:
-            recipient_dto = recipient_to_recipient_dto_out(
-                recipient=recipient,
-                txm_event_id=txm_event.db_id)
-
-        recipient_dtos.append(recipient_dto)
 
     return {
         'donors': sorted([
@@ -85,7 +37,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
             ) for donor in txm_event.all_donors],
             key=lambda donor: (
                 not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
-        'recipients': sorted(recipient_dtos, key=_patient_order_for_fe)
+        'recipients': sorted([recipient_to_recipient_dto_out(recipient, txm_event.db_id) for recipient in txm_event.all_recipients], key=_patient_order_for_fe)
     }
 
 
@@ -95,9 +47,7 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, RecipientDTOOut]) -> str:
 
 def recipient_to_recipient_dto_out(
         recipient: Recipient,
-        txm_event_id: int,
-        cpra: Optional[float] = None,
-        compatible_donors_details: Optional[List[RecipientDonorCompatibilityDetails]] = None) -> RecipientDTOOut:
+        txm_event_id: int) -> RecipientDTOOut:
     return RecipientDTOOut(
         db_id=recipient.db_id,
         medical_id=recipient.medical_id,
@@ -112,9 +62,7 @@ def recipient_to_recipient_dto_out(
         waiting_since=recipient.waiting_since,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id,
-        all_messages=get_messages(recipient_id=recipient.db_id, txm_event_id=txm_event_id),
-        cpra = cpra,
-        compatible_donors_details=compatible_donors_details
+        all_messages=get_messages(recipient_id=recipient.db_id, txm_event_id=txm_event_id)
     )
 
 

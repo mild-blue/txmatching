@@ -4358,16 +4358,6 @@
                         "$ref": "#/definitions/ParsingIssue"
                     }
                 },
-                "cpra": {
-                    "type": "number",
-                    "description": "Recipient's cPRA [%]."
-                },
-                "compatible_donors_details": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/RecipientDonorCompatibilityDetails"
-                    }
-                },
                 "all_messages": {
                     "$ref": "#/definitions/AllMessages"
                 }

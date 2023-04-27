@@ -10,8 +10,6 @@ from txmatching.utils.recipient_donor_compatibility import \
 @dataclass
 class RecipientDTOOut(Recipient):
     all_messages: Optional[Dict[str, List[ParsingIssue]]] = None
-    cpra: Optional[float] = None
-    compatible_donors_details: Optional[List[RecipientDonorCompatibilityDetails]] = None
 
 
 @dataclass
