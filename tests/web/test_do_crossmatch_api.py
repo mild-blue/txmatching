@@ -42,6 +42,41 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][2]['parsing_issue_detail'])
 
+    def test_do_crossmatch_api_with_ultra_high_res(self):
+        json = {
+            "assumed_donor_hla_typing": [['A*02:02:01:02'], ['A*01:01:03:04N']],
+            "recipient_antibodies": [{'mfi': 2350,
+                                      'name': 'A*02:02:01:02',
+                                      'cutoff': 1000
+                                      },
+                                     {'mfi': 500,
+                                      'name': 'A*01:01:02:01',
+                                      'cutoff': 1000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertEqual(
+                [{'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
+                                   'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02:01:02',
+                                   'second_code': None,
+                                   'second_raw_code': None, 'type': 'NORMAL'},
+                  'match_type': 'HIGH_RES'}],
+                res.json['hla_to_antibody'][0]['antibody_matches'])
+            self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
+
+            self.assertEqual(
+                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                res.json['parsing_issues'][0]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][1]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][2]['parsing_issue_detail'])
+
     def test_do_crossmatch_api_with_different_code_formats(self):
         # case: donor - HIGH_RES, recipient - SPLIT
         json = {
