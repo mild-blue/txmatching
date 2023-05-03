@@ -110,6 +110,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
 
 def parse_hla_typing_raw_and_return_parsing_issue_list(
         hla_typing_raw: HLATypingRawDTO,
+        ignore_max_number_hla_types: bool = False
 ) -> Tuple[List[ParsingIssueBase], HLATypingDTO]:
     parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
@@ -139,17 +140,18 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     invalid_hla_groups = []
 
     # 4. check if the number of hla_types per group exceedes the max number of hla_types for that group
-    for group in hla_per_groups:
-        if group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group):
-            invalid_hla_groups.append(group.hla_group.name)
-            group_name = 'Group ' + group.hla_group.name
-            parsing_issues.append(
-                ParsingIssueBase(
-                    hla_code_or_group=group_name,
-                    parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                    message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
+    if not ignore_max_number_hla_types:
+        for group in hla_per_groups:
+            if group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group):
+                invalid_hla_groups.append(group.hla_group.name)
+                group_name = 'Group ' + group.hla_group.name
+                parsing_issues.append(
+                    ParsingIssueBase(
+                        hla_code_or_group=group_name,
+                        parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+                        message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
+                    )
                 )
-            )
 
     # TODO https://github.com/mild-blue/txmatching/issues/790 hla_code should be nullable
     # 5. check if a basic group is missing

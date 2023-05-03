@@ -230,8 +230,8 @@ class TestDoCrossmatchApi(DbTests):
 
             self.assertEqual(2, len(res.json['hla_to_antibody']))
             res_assumed_hla_typing = \
-                [res.json['hla_to_antibody'][i]['hla_types']
-                 for i in range(len(res.json['hla_to_antibody']))]
+                [antibody_match['hla_types']
+                 for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [[asdict(create_hla_type('DPA1*01:04'))],
                                            [asdict(create_hla_type('DPA1*02:01'))]]
             self.assertCountEqual(expected_assumed_hla_typing,
@@ -258,8 +258,8 @@ class TestDoCrossmatchApi(DbTests):
 
             self.assertEqual(3, len(res.json['hla_to_antibody']))
             res_assumed_hla_typing = \
-                [res.json['hla_to_antibody'][i]['hla_types']
-                 for i in range(len(res.json['hla_to_antibody']))]
+                [antibody_match['hla_types']
+                 for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_type = [asdict(create_hla_type('DPA1*01:03')), asdict(create_hla_type('DPA1*01:04'))]
             for hla_type in expected_assumed_hla_type:
                 self.assertIn(hla_type, res_assumed_hla_typing[0])
@@ -285,8 +285,8 @@ class TestDoCrossmatchApi(DbTests):
 
             self.assertEqual(3, len(res.json['hla_to_antibody']))
             res_assumed_hla_typing = \
-                [res.json['hla_to_antibody'][i]['hla_types']
-                 for i in range(len(res.json['hla_to_antibody']))]
+                [antibody_match['hla_types']
+                 for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [[asdict(create_hla_type('DPA1'))],
                                            [asdict(create_hla_type('DPA1*01:08'))],
                                            [asdict(create_hla_type('DPA1*02:01'))]]
@@ -365,6 +365,6 @@ class TestDoCrossmatchApi(DbTests):
                                           'second_code': None,
                                           'second_raw_code': None,
                                           'type': 'NORMAL'},
-                                     'match_type': 'UNDECIDABLE'}
+                                     'match_type': 'HIGH_RES'}
         self.assertEqual(expected_summary_antibody,
                          res.json['hla_to_antibody'][0]['summary_antibody'])

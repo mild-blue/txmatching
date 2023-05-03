@@ -10,12 +10,15 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_antibodies_raw_and_return_parsing_issue_list
 
 
-def create_hla_typing(hla_types_list: List[str]) -> HLATyping:
+def create_hla_typing(hla_types_list: List[str],
+                      ignore_max_number_hla_types_per_group: bool = False) -> HLATyping:
     raw_type_list = [HLATypeRaw(hla_type) for hla_type in hla_types_list]
     typing_dto = HLATypingRawDTO(
         hla_types_list=raw_type_list
     )
-    parsed_typing_dto = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw=typing_dto)[1]
+    parsed_typing_dto = parse_hla_typing_raw_and_return_parsing_issue_list(
+        hla_typing_raw=typing_dto,
+        ignore_max_number_hla_types=ignore_max_number_hla_types_per_group)[1]
     return HLATyping(
         hla_types_raw_list=raw_type_list,
         hla_per_groups=parsed_typing_dto.hla_per_groups

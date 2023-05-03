@@ -63,7 +63,8 @@ class DoCrossmatch(Resource):
             crossmatch_dto.recipient_antibodies)
 
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
-            donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing()),
+            donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
+                                               ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
         antibody_matches_for_hla_type = [AntibodyMatchForHLAType(
