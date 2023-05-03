@@ -79,7 +79,7 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            hla_type:
+            hla_types:
                 items:
                     $ref: '#/definitions/HlaType'
                 type: array
@@ -88,7 +88,7 @@ definitions:
                 -   $ref: '#/definitions/AntibodyMatch'
                 readOnly: true
         required:
-        - hla_type
+        - hla_types
         type: object
     AntigenMatch:
         properties:

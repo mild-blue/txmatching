@@ -46,7 +46,7 @@ class DoCrossmatch(Resource):
 
         def get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type):
             maximum_hla_typing_raw = [hla_type.raw_code for antibody_match in antibody_matches_for_hla_type
-                                         for hla_type in antibody_match.hla_type]
+                                      for hla_type in antibody_match.hla_types]
             typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
                 HLATypingRawDTO(
                     hla_types_list=[HLATypeRaw(hla_type) for hla_type in
@@ -98,13 +98,13 @@ class DoCrossmatch(Resource):
             for match_per_group in crossmatched_antibodies:
                 for antibody_group_match in match_per_group.antibody_matches:
                     common_matched_hla_types: List[HLAType] = get_hla_types_correspond_antibody(
-                        antibody_hla_match.hla_type, antibody_group_match.hla_antibody
+                        antibody_hla_match.hla_types, antibody_group_match.hla_antibody
                     )
                     if common_matched_hla_types:
                         solved_hla_types.update(common_matched_hla_types)
                         antibody_hla_match.antibody_matches.append(antibody_group_match)
             if solved_hla_types:
-                antibody_hla_match.hla_type = list(solved_hla_types)
+                antibody_hla_match.hla_types = list(solved_hla_types)
 
     def __solve_uncrossmatched_assumed_hla_types(self, antibody_matches, hla_antibodies):
 

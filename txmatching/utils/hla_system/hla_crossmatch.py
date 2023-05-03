@@ -35,7 +35,7 @@ class AntibodyMatchForHLAGroup:
 class AntibodyMatchForHLAType:
     # in this case we return HLAType as a List[HLAType], because we cannot choose which of these
     # HLATypes is correct, so we return several at once
-    hla_type: List[HLAType]
+    hla_types: List[HLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
     summary_antibody: Optional[AntibodyMatch] = field(init=False)
 
@@ -44,7 +44,7 @@ class AntibodyMatchForHLAType:
         if not hla_type:
             raise AttributeError("AntibodyMatchForHLAType needs at least one hla_type.")
 
-        self.hla_type = hla_type
+        self.hla_types = hla_type
         self.antibody_matches = antibody_matches or []
 
         if self.is_hla_type_assumed() and not self.__is_hla_type_in_high_res():
@@ -60,13 +60,13 @@ class AntibodyMatchForHLAType:
                    key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
 
     def is_hla_type_assumed(self) -> bool:
-        return len(self.hla_type) > 1
+        return len(self.hla_types) > 1
 
     def get_low_res_code_from_assumed(self) -> str:
-        return self.hla_type[0].code.get_low_res_code()
+        return self.hla_types[0].code.get_low_res_code()
 
     def convert_assumed_to_low_res(self):
-        self.hla_type = [create_hla_type(raw_code=self.get_low_res_code_from_assumed())]
+        self.hla_types = [create_hla_type(raw_code=self.get_low_res_code_from_assumed())]
 
     def get_copy_with_converted_assumed_to_low_res(self):
         res = copy(self)
@@ -74,16 +74,16 @@ class AntibodyMatchForHLAType:
         return res
 
     def __is_hla_type_in_high_res(self):
-        for hla_type in self.hla_type:
+        for hla_type in self.hla_types:
             if not hla_type.code.is_in_high_res():
                 return False
         return True
 
     def __is_hla_type_uniquely_defined_in_low_res(self):
-        return len({hla_type.code.get_low_res_code() for hla_type in self.hla_type}) > 1
+        return len({hla_type.code.get_low_res_code() for hla_type in self.hla_types}) > 1
 
     def __hash__(self):
-        return hash((tuple(self.hla_type), tuple(self.antibody_matches)))
+        return hash((tuple(self.hla_types), tuple(self.antibody_matches)))
 
     def __eq__(self, other):
         return hash(self) == hash(other)
