@@ -15,6 +15,9 @@ class HLABase:
 
 @dataclass
 class HLAType(HLABase, PersistentlyHashable):
+    # We get this display_code attribute from the self.code: HLACode for the do-crossmatch endpoint, because
+    # this trick bypasses several problems associated with passing this attribute to the output of the endpoint.
+    # Try to use explicitly self.code.display_code (not self.display_code) in every possible place in the code.
     display_code: Optional[str] = None
 
     def __post_init__(self):
