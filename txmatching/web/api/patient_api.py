@@ -381,13 +381,13 @@ class CalculateRecipientCPRA(Resource):
                 compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
                 scorer = scorer_from_configuration(configuration_parameters)
                 compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
-                    txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict, compatibility_graph)
+                    txm_event.active_and_valid_recipients_dict,
+                    txm_event.active_and_valid_donors_dict, compatibility_graph)
 
         recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
-            txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids,
-            compute_compatibility_details=True, compute_cpra=True)
+            txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids, compute_cpra=True)
 
-        result = {'cPRA': round(recipient_donors_compatibility.cpra*100, 1), # cPRA to %
+        result = {'cPRA': round(recipient_donors_compatibility.cpra*100, 1),  # cPRA to %
                   'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
                   'compatible_donors_details': recipient_donors_compatibility.compatible_donors_details}
 

@@ -98,27 +98,6 @@ class TestPatientService(DbTests):
                     self.assertEqual(detailed_score_for_group['recipient_matches'], [])
                     self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
 
-    def test_get_patients_with_cpra_computation(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results(
-            get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{PATIENT_NAMESPACE}/configs/default?compute-cpra',
-                             headers=self.auth_headers)
-        self.assertEqual(200, res.status_code)
-        self.assertEqual(38, len(res.json['donors']))
-        self.assertEqual(34, len(res.json['recipients']))
-        for donor in res.json['donors']:
-            self.assertIn('detailed_score_with_related_recipient', donor)
-            detailed_score_for_groups = donor['detailed_score_with_related_recipient']
-            if donor['related_recipient_db_id']:
-                pass
-            else:
-                for detailed_score_for_group in detailed_score_for_groups:
-                    self.assertEqual(detailed_score_for_group['antibody_matches'], [])
-                    self.assertEqual(detailed_score_for_group['recipient_matches'], [])
-                    self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
-
     def test_upload_patients_via_file(self):
         res = self._upload_data()
 
@@ -840,7 +819,6 @@ class TestPatientService(DbTests):
                 txm_event=txm_event,
                 recipient=recipient,
                 configuration_parameters=configuration_parameters,
-                compute_compatibility_details=True,
                 compute_cpra=True)
             expected_json = {'cPRA': round(recipient_donors_compatibility.cpra * 100, 1),
                              'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
