@@ -12,8 +12,8 @@ from txmatching.web.web_utils.namespaces import patient_api, public_api
 
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DPA1*01:07', 'DRB4*01:01',
                     'DQB1*02:01:01:01']
-ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE = [['A*01:02', 'A*01:03', 'A*01:04'],
-                                     ['A*02:02', 'A*02:03', 'A*02:04'],
+ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE = [['A*01:02', 'A*01:03', 'A*01:06'],
+                                     ['A*02:02', 'A*02:04', 'A*02:05'],
                                      ['B*07:26', 'B*07:27']]
 
 ANTIBODIES_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DRB4*01:01',

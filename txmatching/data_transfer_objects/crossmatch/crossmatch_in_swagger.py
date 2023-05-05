@@ -21,9 +21,9 @@ CrossmatchJsonIn = crossmatch_api.model(
         'assumed_donor_hla_typing': fields.List(required=True,
                                                 cls_or_instance=fields.List(
                                                         required=True,
-                                                        cls_or_instance=fields.String,
-                                                        example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
-                                                        description=HLA_TYPING_DESCRIPTION)),
+                                                        cls_or_instance=fields.String),
+                                                example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
+                                                description=HLA_TYPING_DESCRIPTION),
         'recipient_antibodies': fields.List(required=True,
                                             description='Detected HLA antibodies of the patient. Use high resolution '
                                                         'if available. If high resolution is provided it is assumed '

@@ -539,18 +539,17 @@ definitions:
     CrossmatchInput:
         properties:
             assumed_donor_hla_typing:
+                description: HLA typing of the patient. Use high resolution if available.
+                example:
+                -   - A*01:02
+                    - A*01:03
+                    - A*01:06
+                -   - A*02:02
+                    - A*02:04
+                    - A*02:05
+                -   - B*07:26
+                    - B*07:27
                 items:
-                    description: HLA typing of the patient. Use high resolution if
-                        available.
-                    example:
-                    -   - A*01:02
-                        - A*01:03
-                        - A*01:04
-                    -   - A*02:02
-                        - A*02:03
-                        - A*02:04
-                    -   - B*07:26
-                        - B*07:27
                     items:
                         type: string
                     type: array
