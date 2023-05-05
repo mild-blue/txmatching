@@ -54,10 +54,6 @@ class DoCrossmatch(Resource):
                 ))
             return typing_parsing_issues
 
-        def get_unique_from_list(lst: list):
-            # this fancy approach is used to prevent reordering how it would be through the set()
-            return list(dict.fromkeys(lst).keys())
-
         crossmatch_dto = request_body(CrossmatchDTOIn)
         hla_antibodies, antibodies_parsing_issues = get_hla_antibodies_and_parsing_issues(
             crossmatch_dto.recipient_antibodies)
@@ -74,7 +70,6 @@ class DoCrossmatch(Resource):
         self.__fulfill_with_common_matches(antibody_matches_for_hla_type,
                                     crossmatched_antibodies_per_group)
 
-        antibody_matches_for_hla_type = get_unique_from_list(antibody_matches_for_hla_type)
         antibody_matches_for_hla_type = self.__solve_uncrossmatched_assumed_hla_types(
             antibody_matches_for_hla_type, hla_antibodies)
 
