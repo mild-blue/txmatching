@@ -60,6 +60,7 @@ class DoCrossmatch(Resource):
 
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
             donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
+                                               # TODO: https://github.com/mild-blue/txmatching/issues/1204
                                                ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)

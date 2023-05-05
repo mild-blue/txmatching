@@ -140,6 +140,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     invalid_hla_groups = []
 
     # 4. check if the number of hla_types per group exceedes the max number of hla_types for that group
+    # TODO: https://github.com/mild-blue/txmatching/issues/1204
     if not ignore_max_number_hla_types:
         for group in hla_per_groups:
             if group_exceedes_max_number_of_hla_types(group.hla_types, group.hla_group):
