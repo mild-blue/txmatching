@@ -1,4 +1,6 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
 
 
@@ -30,14 +32,12 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                'All antibodies are in high resolution, some of them below cutoff and less then 20 were provided. '
-                'This is fine and antibodies will be processed properly, but we are assuming that not all antibodies '
-                'the patient was tested for were sent. It is better to send all to improve crossmatch estimation.',
-                res.json['parsing_issues'][0]['message'])
-            self.assertEqual('This HLA group should contain at least one antigen.',
-                             res.json['parsing_issues'][1]['message'])
-            self.assertEqual('This HLA group should contain at least one antigen.',
-                             res.json['parsing_issues'][2]['message'])
+                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                res.json['parsing_issues'][0]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][1]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][2]['parsing_issue_detail'])
 
     def test_do_crossmatch_api_with_different_code_formats(self):
         # case: donor - HIGH_RES, recipient - SPLIT
@@ -68,10 +68,10 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                'This HLA group should contain at least one antigen.',
-                res.json['parsing_issues'][0]['message'])
-            self.assertEqual('This HLA group should contain at least one antigen.',
-                             res.json['parsing_issues'][1]['message'])
+                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                res.json['parsing_issues'][0]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][1]['parsing_issue_detail'])
 
         # case: donor - SPLIT, recipient - HIGH_RES
         json = {
@@ -101,16 +101,14 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
-                'All antibodies are in high resolution, some of them below cutoff and less then 20 were provided. '
-                'This is fine and antibodies will be processed properly, but we are assuming that not all antibodies '
-                'the patient was tested for were sent. It is better to send all to improve crossmatch estimation.',
-                res.json['parsing_issues'][0]['message'])
-            self.assertEqual('This HLA group should contain at least one antigen.',
-                             res.json['parsing_issues'][1]['message'])
+                ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                res.json['parsing_issues'][0]['parsing_issue_detail'])
+            self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                             res.json['parsing_issues'][1]['parsing_issue_detail'])
 
-    def test_theoretical_and_double_antibodies_not_implemented(self):
+    def test_theoretical_and_double_antibodies(self):
         json = {
-            "donor_hla_typing": ['DPA1*01:03', 'DPA1*02:01', 'DPA1*01:04'],
+            "donor_hla_typing": ['DPA1*01:03', 'DPB1*03:01', 'DPA1*01:04', 'DPA1*02:01'],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DP[01:04,03:01]',
                                       'cutoff': 2000
@@ -126,13 +124,47 @@ class TestDoCrossmatchApi(DbTests):
                                      {'mfi': 1000,
                                       'name': 'DP[01:03,03:01]',
                                       'cutoff': 2000
+                                      },
+                                     {'mfi': 3000,
+                                      'name': 'DP[02:01,01:01]',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 1000,
+                                      'name': 'DP[02:01,01:01]',
+                                      'cutoff': 2000
                                       }],
         }
 
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
-            self.assertEqual(501, res.status_code)
-            self.assertEqual('This functionality is not currently available for dual antibodies. '
-                             'We apologize and will try to change this in future versions.',
-                             res.json['message'])
+            self.assertCountEqual([ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+                                   ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
+                                   ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
+                                  [parsing_issue['parsing_issue_detail'] for parsing_issue in res.json['parsing_issues']])
+            double_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA1', 'high_res': 'DPA1*01:04', 'split': 'DPA1'},
+                                                      'cutoff': 2000,
+                                                      'mfi': 2100,
+                                                      'raw_code': 'DPA1*01:04',
+                                                      'second_code': {'broad': 'DP3', 'high_res': 'DPB1*03:01', 'split': 'DP3'},
+                                                      'second_raw_code': 'DPB1*03:01', 'type': 'NORMAL'},
+                                     'match_type': 'HIGH_RES'}
+            theoretical_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA2', 'high_res': 'DPA1*02:01', 'split': 'DPA2'},
+                                                           'cutoff': 2000,
+                                                           'mfi': 3000,
+                                                           'raw_code':
+                                                           'DPA1*02:01',
+                                                           'second_code': None,
+                                                           'second_raw_code': None,
+                                                           'type': 'THEORETICAL'},
+                                          'match_type': 'THEORETICAL'}
+
+            self.assertTrue(
+                double_antibody_match in res.json['hla_to_antibody'][1]['antibody_matches'])
+            self.assertTrue(
+                double_antibody_match in res.json['hla_to_antibody'][2]['antibody_matches'])
+            self.assertTrue(
+                theoretical_antibody_match in res.json['hla_to_antibody'][3]['antibody_matches'])
