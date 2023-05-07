@@ -10,6 +10,8 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
+from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
 from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
@@ -55,7 +57,7 @@ class DoCrossmatch(Resource):
         ))
 
 
-def _get_hla_antibodies_and_parsing_issues(antibodies) \
+def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadDTO]) \
         -> Tuple[HLAAntibodies, List[ParsingIssueBase]]:
     antibodies_raw_list = [create_antibody(antibody.name,
                                            antibody.mfi,
@@ -68,7 +70,8 @@ def _get_hla_antibodies_and_parsing_issues(antibodies) \
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
 
 
-def _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type):
+def _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType])\
+        -> List[ParsingIssueBase]:
     maximum_hla_typing_raw = [hla_type.raw_code for antibody_match in antibody_matches_for_hla_type
                               for hla_type in antibody_match.hla_types]
     typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
