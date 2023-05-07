@@ -44,7 +44,7 @@ class TestDoCrossmatchApi(DbTests):
 
     def test_do_crossmatch_api_with_ultra_high_res(self):
         json = {
-            "assumed_donor_hla_typing": [['A*02:02:01:02'], ['A*01:01:03:04N']],
+            "assumed_donor_hla_typing": [['A*02:02:01:02'], ['A*01:01:01:07']],
             "recipient_antibodies": [{'mfi': 2350,
                                       'name': 'A*02:02',
                                       'cutoff': 1000
