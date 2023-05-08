@@ -25,4 +25,16 @@
     border-color: $code-border-color--bad-matching !important;
     color: $code-color--bad-matching !important;
   }
+
+  &.bad-matching.theoretical-antibody > .code {
+    background: $code-bg--bad-matching-theoretical;
+    border-color: $code-border-color--bad-matching-theoretical;
+    color: $code-color--bad-matching-theoretical;
+  }
+
+  &.theoretical-antibody > .code {
+    background: $code-bg--theoretical;
+    border-color: $code-border-color--theoretical;
+    color: $code-color--theoretical;
+  }  
 }
