@@ -41,17 +41,17 @@ export class MatchingTransplantComponent {
   }
 
   public getAntibodyClass(match: AntibodyMatch): string {
-    var classes = "";
+    let classes = [];
     if (match.matchType !== AntibodyMatchType.NONE) {
       // recipient antibody matches some donor antigen
-      classes = classes.concat("bad-matching");
+      classes.push("bad-matching");
     }
 
     if (match.hlaAntibody.type == HlaAntibodyType.THEORETICAL) {
-      classes = classes.concat(" theoretical-antibody");
+      classes.push("theoretical-antibody");
     }
 
-    return classes;
+    return classes.join(" ");
   }
 
   public getPatientHeightAndWeight(patient: Patient): string | null {
