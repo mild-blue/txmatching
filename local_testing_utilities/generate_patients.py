@@ -40,7 +40,8 @@ from txmatching.utils.hla_system.hla_table import (
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
-GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
+GENERATED_TXM_EVENT_NAME = 'high_res_example_data'  # generated with generate_patients.py
+THEORETICAL_DOUBLE_TXM_EVENT_NAME = 'theoretical_double_small_event'
 CROSSMATCH_TXM_EVENT_NAME = 'mixed_resolution_with_crossmatch_types'
 LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
 SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
@@ -107,7 +108,7 @@ def random_acceptable() -> List[BloodGroup]:
         return []
     num_of_acceptable = random.randint(1, 4)
     blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
-    acceptable = random.sample(blood_groups, num_of_acceptable)
+    acceptable = random.sample(list(blood_groups), num_of_acceptable)
     return acceptable
 
 

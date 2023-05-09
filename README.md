@@ -82,6 +82,8 @@ sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 You need to have docker installed. And you need to have activated environment from the previous step.
 
 After that simply run `make setup-small-non-empty-db` or `make setup-non-empty-db` for larger one.
+If you want to remove the majority of patients with errors that often do not occur in real data, 
+then use the script [remove_inconsistent_patients.sql](local_testing_utilities/remove_inconsistent_patients.sql)
 
 This runs postgres database in docker that has already some data inside.
 

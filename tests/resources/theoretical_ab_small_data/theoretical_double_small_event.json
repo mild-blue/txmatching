@@ -1,9 +1,9 @@
 {
   "country": "CZE",
-  "txm_event_name": "high_res_example_data",
+  "txm_event_name": "theoretical_double_small_event",
   "donors": [
     {
-      "medical_id": "CZE_0",
+      "medical_id": "CZE_T0",
       "blood_group": "A",
       "hla_typing": [
         "A*26:08",
@@ -18,7 +18,7 @@
         "DQB1*06:09"
       ],
       "donor_type": "DONOR",
-      "related_recipient_medical_id": "CZE_0R",
+      "related_recipient_medical_id": "CZE_T0R",
       "sex": "F",
       "height": 160,
       "weight": 67,
@@ -27,7 +27,7 @@
       "internal_medical_id": "internal_medical_id"
     },
     {
-      "medical_id": "CZE_1",
+      "medical_id": "CZE_T1",
       "blood_group": "AB",
       "hla_typing": [
         "A*02:13",
@@ -40,7 +40,7 @@
         "DQB1*06:09"
       ],
       "donor_type": "DONOR",
-      "related_recipient_medical_id": "CZE_1R",
+      "related_recipient_medical_id": "CZE_T1R",
       "sex": "F",
       "height": 168,
       "weight": 90,
@@ -49,7 +49,7 @@
       "internal_medical_id": "internal_medical_id"
     },
     {
-      "medical_id": "CZE_2",
+      "medical_id": "CZE_T2",
       "blood_group": "A",
       "hla_typing": [
         "A*02:08",
@@ -78,7 +78,7 @@
   "recipients": [
     {
       "acceptable_blood_groups": [],
-      "medical_id": "CZE_0R",
+      "medical_id": "CZE_T0R",
       "blood_group": "A",
       "hla_typing": [
         "A*26:04",
@@ -1096,7 +1096,7 @@
     },
     {
       "acceptable_blood_groups": [],
-      "medical_id": "CZE_1R",
+      "medical_id": "CZE_T1R",
       "blood_group": "A",
       "hla_typing": [
         "A*36:04",
