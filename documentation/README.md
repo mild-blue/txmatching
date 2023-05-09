@@ -463,9 +463,9 @@ DPB1*02:02 MFI 100 (average negative MFI), cutoff 2000
 Pay attention that a similar mixed chain, `DPB1*01:05`,
 but for the antibody `DP*[04:01;01:05]`, is not parsed through this antibody but
 through the `DP*[03:01;01:05]` antibody, as explained in the next section.
-In summary, if we detect the mixed chain, which has several positive 
-representations among all the antibodies, in the positive + mixed double antibody, 
-we expect to parse this mixed chain through other antibodies.
+In summary, if we encounter this positive and mixed chain case where the mixed 
+chain has several positive representations among all the antibodies, 
+we expect to parse the mixed chain through other antibodies.
 
 #### 4. Both chains are mixed
 
