@@ -32,16 +32,20 @@ class AntibodyMatchForHLAGroup:
 
 @dataclass
 class AntibodyMatchForHLAType:
-    # in this case we return HLAType as a List[HLAType], because we cannot choose which of these
-    # HLATypes is correct, so we return several at once
-    hla_types: List[HLAType]
+    # If we have List[HLAType], which biologically carries the meaning of only one HLA Type
+    # (we simply cannot choose which one is the right one),
+    # then we call that object assumed_hla_type, and it has the following properties:
+    # - must not be empty
+    # - must have a uniform HLA code in low res, i.e we do not allow situation ['A*01:01', 'A*02:01']
+    # - must not have several codes in low res, i.e. we do not allow situation ['A1', 'A1']
+    assumed_hla_type: List[HLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
-    summary_antibody: Optional[AntibodyMatch] = field(init=False)
+    summary_antibody: Optional[AntibodyMatch] = field(init=False)  # antibody with the largest MFI value
 
-    def __init__(self, hla_types: List[HLAType],
+    def __init__(self, assumed_hla_type: List[HLAType],
                        antibody_matches: List[AntibodyMatch] = None):
-        self.__class__._validate_hla_types(hla_types)
-        self.hla_types = hla_types
+        self.__class__._validate_assumed_hla_type(assumed_hla_type)
+        self.assumed_hla_type = assumed_hla_type
         self.antibody_matches = antibody_matches or []
 
     @property
@@ -50,23 +54,37 @@ class AntibodyMatchForHLAType:
                    key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
 
     @classmethod
-    def from_crossmatched_antibodies(cls, hla_types: List[HLAType],
+    def from_crossmatched_antibodies(cls, potential_hla_type: List[HLAType],
                                      crossmatched_antibodies: List[AntibodyMatchForHLAGroup]):
-        cls._validate_hla_types(hla_types)
+        """
+        Generates an instance of the AntibodyMatchForHLAType according to the potential HLA type
+        and possible pre-calculated crossmatched antibodies.
+        :param potential_hla_type: has a very similar meaning to assumed (has all the same limitations),
+                                   but is a more extended version. Usually, all codes in assumed have
+                                   a crossmatch with antibodies, when we still have to check this for
+                                   potential HLA type and leave only those that have a crossmatch
+                                   or are in a single copy. Only after that we will call them assumed.
+                                   If the crossmatch did not occur with any of the antibodies,
+                                   then we will transfer the entire potential to low-res assumed.
+       :param crossmatched_antibodies: antibodies that we know are likely to have a crossmatch
+                                       but are categorized into HLA groups.
+       :return: instance of this class
+        """
+        cls._validate_assumed_hla_type(potential_hla_type)
 
-        antibody_matches, solved_assumed_hla_types = _find_common_matches_and_solve_assumed_hla_types(
-            hla_types, crossmatched_antibodies)
+        antibody_matches, solved_assumed_hla_type = _find_common_matches_and_solve_assumed_hla_type(
+            potential_hla_type, crossmatched_antibodies)
         if antibody_matches:
-            # antibodies were found, so assumed hla types were also solved
-            return cls(solved_assumed_hla_types, antibody_matches)
-        elif not cls._are_multiple_hlas_in_assumed(hla_types):
+            # antibodies were found, so assumed hla type was also solved
+            return cls(solved_assumed_hla_type, antibody_matches)
+        elif not cls._are_multiple_hlas_in_assumed(potential_hla_type):
             # hla type is determined (there is only one possible),
             # so no antibodies just match for this hla type
-            return cls(hla_types, [])
+            return cls(potential_hla_type, [])
         else:
             # convert assumed to low res, then try to find matched antibodies again
-            low_res_assumed_hla_type = cls.convert_assumed_hla_type_to_low_res(hla_types)
-            antibody_matches, _ = _find_common_matches_and_solve_assumed_hla_types(
+            low_res_assumed_hla_type = cls.convert_assumed_hla_type_to_low_res(potential_hla_type)
+            antibody_matches, _ = _find_common_matches_and_solve_assumed_hla_type(
                 low_res_assumed_hla_type, crossmatched_antibodies)
             return cls(low_res_assumed_hla_type, antibody_matches)
 
@@ -75,38 +93,38 @@ class AntibodyMatchForHLAType:
         return assumed_hla_types[0].code.get_low_res_code()
 
     @classmethod
-    def convert_assumed_hla_type_to_low_res(cls, assumed_hla_types: List[HLAType]) -> List[HLAType]:
-        return [create_hla_type(raw_code=cls.get_low_res_code_from_assumed_hla_type(assumed_hla_types))]
+    def convert_assumed_hla_type_to_low_res(cls, assumed_hla_type: List[HLAType]) -> List[HLAType]:
+        return [create_hla_type(raw_code=cls.get_low_res_code_from_assumed_hla_type(assumed_hla_type))]
 
     @classmethod
-    def _validate_hla_types(cls, hla_types: List[HLAType]):
-        if not hla_types:
-            raise AttributeError("AntibodyMatchForHLAType needs at least one hla_type.")
-        if cls._are_multiple_hlas_in_assumed(hla_types) and \
-                not cls._is_hla_type_in_high_res(hla_types):
-            raise ValueError("Assumed HLA type is available only"
-                             " for HLA types in high resolution.")
-        if cls._is_hla_type_uniquely_defined_in_low_res(hla_types):
-            raise ValueError("Assumed HLA type can't have multiple codes in low resolution. "
-                             "In other words, HLA type can be assumed just in high resolution.")
+    def _validate_assumed_hla_type(cls, assumed_hla_type: List[HLAType]):
+        if not assumed_hla_type:
+            raise AttributeError("AntibodyMatchForHLAType needs at least one assumed hla_type.")
+        if cls._are_multiple_hlas_in_assumed(assumed_hla_type) and \
+                not cls._is_assumed_hla_type_in_high_res(assumed_hla_type):
+            raise ValueError("Multiple HLA codes in assumed HLA type are only accepted"
+                             " in high resolution.")
+        if cls._is_assumed_hla_type_uniquely_defined_in_low_res(assumed_hla_type):
+            raise ValueError("Assumed HLA type must be uniquely defined in "
+                             "split or broad resolution.")
 
     @classmethod
-    def _is_hla_type_in_high_res(cls, hla_types: List[HLAType]) -> bool:
-        for hla_type in hla_types:
+    def _is_assumed_hla_type_in_high_res(cls, assumed_hla_type: List[HLAType]) -> bool:
+        for hla_type in assumed_hla_type:
             if not hla_type.code.is_in_high_res():
                 return False
         return True
 
     @classmethod
-    def _are_multiple_hlas_in_assumed(cls, hla_types: List[HLAType]) -> bool:
-        return len(hla_types) > 1
+    def _are_multiple_hlas_in_assumed(cls, assumed_hla_type: List[HLAType]) -> bool:
+        return len(assumed_hla_type) > 1
 
     @classmethod
-    def _is_hla_type_uniquely_defined_in_low_res(cls, hla_types: List[HLAType]) -> bool:
-        return len({hla_type.code.get_low_res_code() for hla_type in hla_types}) > 1
+    def _is_assumed_hla_type_uniquely_defined_in_low_res(cls, assumed_hla_type: List[HLAType]) -> bool:
+        return len({hla_type.code.get_low_res_code() for hla_type in assumed_hla_type}) > 1
 
     def __hash__(self):
-        return hash((tuple(self.hla_types), tuple(self.antibody_matches)))
+        return hash((tuple(self.assumed_hla_type), tuple(self.antibody_matches)))
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -507,26 +525,26 @@ def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
             positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
 
 
-def _find_common_matches_and_solve_assumed_hla_types(
-        hla_types: List[HLAType], crossmatched_antibodies: List[AntibodyMatchForHLAGroup]) \
+def _find_common_matches_and_solve_assumed_hla_type(
+        potential_hla_type: List[HLAType], crossmatched_antibodies: List[AntibodyMatchForHLAGroup]) \
             -> Optional[Tuple[List[AntibodyMatch], List[HLAType]]]:
-    solved_assumed_hla_types = set()
+    solved_assumed_hla_type = set()
     antibody_matches = []
 
     for match_per_group in crossmatched_antibodies:
         for antibody_group_match in match_per_group.antibody_matches:
-            common_matched_hla_types = _get_hla_types_correspond_antibody(
-                hla_types, antibody_group_match.hla_antibody
+            common_matched_hla_types = _get_hla_types_matching_antibody(
+                potential_hla_type, antibody_group_match.hla_antibody
             )
             if common_matched_hla_types:
-                solved_assumed_hla_types.update(common_matched_hla_types)
+                solved_assumed_hla_type.update(common_matched_hla_types)
                 antibody_matches.append(antibody_group_match)
 
-    return antibody_matches, list(solved_assumed_hla_types) if antibody_matches else None
+    return antibody_matches, list(solved_assumed_hla_type) if antibody_matches else None
 
 
-def _get_hla_types_correspond_antibody(assumed_hla_type: List[HLAType],
-                                       hla_antibody: HLAAntibody) -> List[HLAType]:
-    return [hla_type for hla_type in assumed_hla_type
+def _get_hla_types_matching_antibody(hla_types: List[HLAType],
+                                     hla_antibody: HLAAntibody) -> List[HLAType]:
+    return [hla_type for hla_type in hla_types
             if hla_type.code == hla_antibody.code or
             (hla_antibody.second_raw_code and hla_type.code == hla_antibody.second_code)]

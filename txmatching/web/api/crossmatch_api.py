@@ -45,9 +45,9 @@ class DoCrossmatch(Resource):
             use_high_resolution=True)
         antibody_matches_for_hla_type = [
             AntibodyMatchForHLAType.from_crossmatched_antibodies(
-                hla_types=[create_hla_type(raw_code=hla) for hla in hla_typing],
+                potential_hla_type=[create_hla_type(raw_code=hla) for hla in hla_typing],
                 crossmatched_antibodies=crossmatched_antibodies_per_group)
-            for hla_typing in crossmatch_dto.assumed_donor_hla_typing]
+            for hla_typing in crossmatch_dto.potential_donor_hla_typing]
 
         typing_parsing_issues = _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type)
 
@@ -73,7 +73,7 @@ def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadD
 def _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType])\
         -> List[ParsingIssueBase]:
     maximum_hla_typing_raw = [hla_type.raw_code for antibody_match in antibody_matches_for_hla_type
-                              for hla_type in antibody_match.hla_types]
+                              for hla_type in antibody_match.assumed_hla_type]
     typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
         HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(hla_type) for hla_type in
