@@ -55,7 +55,8 @@ class AntibodyMatchForHLAType:
 
     @classmethod
     def from_crossmatched_antibodies(cls, potential_hla_type: List[HLAType],
-                                     crossmatched_antibodies: List[AntibodyMatchForHLAGroup]):
+                                     crossmatched_antibodies: List[AntibodyMatchForHLAGroup],
+                                     supportive_antibodies_to_solve_potential_hla_type: Optional[List[HLAAntibody]] = None):
         """
         Generates an instance of the AntibodyMatchForHLAType according to the potential HLA type
         and possible pre-calculated crossmatched antibodies.
@@ -66,20 +67,28 @@ class AntibodyMatchForHLAType:
                                    or are in a single copy. Only after that we will call them assumed.
                                    If the crossmatch did not occur with any of the antibodies,
                                    then we will transfer the entire potential to low-res assumed.
-       :param crossmatched_antibodies: antibodies that we know are likely to have a crossmatch
-                                       but are categorized into HLA groups.
-       :return: instance of this class
+        :param crossmatched_antibodies: antibodies that we know are likely to have a crossmatch
+                                        but are categorized into HLA groups.
+        :param supportive_antibodies_to_solve_potential_hla_type:
+                                    is a list of antibodies that do not crossmatch with HLA type,
+                                    but are involved in assumed HLA type solving.
+        :return: instance of this class.
         """
         cls._validate_assumed_hla_type(potential_hla_type)
 
         antibody_matches, solved_assumed_hla_type = _find_common_matches_and_solve_assumed_hla_type(
-            potential_hla_type, crossmatched_antibodies)
+            potential_hla_type, crossmatched_antibodies, supportive_antibodies_to_solve_potential_hla_type)
         if antibody_matches:
-            # antibodies were found, so assumed hla type was also solved
+            # antibodies were found, so assumed hla type
+            # was also solved (some of them HLAs may have been solved with supportive antibodies)
             return cls(solved_assumed_hla_type, antibody_matches)
+        elif solved_assumed_hla_type:
+            # despite the fact that no matched antibodies were found,
+            # we are able to solve several potential HLA types using supportive antibodies
+            return cls(solved_assumed_hla_type, [])
         elif not cls._are_multiple_hlas_in_assumed(potential_hla_type):
             # hla type is determined (there is only one possible),
-            # so no antibodies just match for this hla type
+            # but no antibodies just match for this hla type
             return cls(potential_hla_type, [])
         else:
             # convert assumed to low res, then try to find matched antibodies again
@@ -526,25 +535,34 @@ def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
 
 
 def _find_common_matches_and_solve_assumed_hla_type(
-        potential_hla_type: List[HLAType], crossmatched_antibodies: List[AntibodyMatchForHLAGroup]) \
+        potential_hla_type: List[HLAType],
+        crossmatched_antibodies: List[AntibodyMatchForHLAGroup],
+        supportive_antibodies_to_solve_potential_hla_type: Optional[List[HLAAntibody]] = None) \
             -> Optional[Tuple[List[AntibodyMatch], List[HLAType]]]:
     solved_assumed_hla_type = set()
     antibody_matches = []
 
     for match_per_group in crossmatched_antibodies:
         for antibody_group_match in match_per_group.antibody_matches:
-            common_matched_hla_types = _get_hla_types_matching_antibody(
+            common_matched_hla_types = _get_hla_types_corresponding_antibody(
                 potential_hla_type, antibody_group_match.hla_antibody
             )
             if common_matched_hla_types:
                 solved_assumed_hla_type.update(common_matched_hla_types)
                 antibody_matches.append(antibody_group_match)
 
-    return antibody_matches, list(solved_assumed_hla_type) if antibody_matches else None
+    if not supportive_antibodies_to_solve_potential_hla_type:
+        return antibody_matches, list(solved_assumed_hla_type)
+
+    # add HLA types corresponding supportive HLA antibodies
+    for supportive_antibody in supportive_antibodies_to_solve_potential_hla_type:
+        solved_assumed_hla_type.update(_get_hla_types_corresponding_antibody(potential_hla_type,
+                                                                             supportive_antibody))
+    return antibody_matches, list(solved_assumed_hla_type)
 
 
-def _get_hla_types_matching_antibody(hla_types: List[HLAType],
-                                     hla_antibody: HLAAntibody) -> List[HLAType]:
+def _get_hla_types_corresponding_antibody(hla_types: List[HLAType],
+                                          hla_antibody: HLAAntibody) -> List[HLAType]:
     return [hla_type for hla_type in hla_types
             if hla_type.code == hla_antibody.code or
             (hla_antibody.second_raw_code and hla_type.code == hla_antibody.second_code)]

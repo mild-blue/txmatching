@@ -140,6 +140,10 @@ class HLAAntibodies(PersistentlyHashable):
     def hla_antibodies_per_groups_over_cutoff(self) -> List[AntibodiesPerGroup]:
         return _filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups)
 
+    def get_antibodies_below_cutoff_as_list(self) -> List[HLAAntibody]:
+        return [antibody for group in self.hla_antibodies_per_groups
+                for antibody in group.hla_antibody_list if antibody.mfi < antibody.cutoff]
+
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)
         update_persistent_hash(hash_, self.hla_antibodies_per_groups)

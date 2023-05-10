@@ -34,19 +34,22 @@ class DoCrossmatch(Resource):
     @crossmatch_api.require_user_login()
     def post(self):
         crossmatch_dto = request_body(CrossmatchDTOIn)
+
         hla_antibodies, antibodies_parsing_issues = _get_hla_antibodies_and_parsing_issues(
             crossmatch_dto.recipient_antibodies)
-
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
             donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
                                                # TODO: https://github.com/mild-blue/txmatching/issues/1204
                                                ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
+        antibodies_below_cutoff = hla_antibodies.get_antibodies_below_cutoff_as_list()
+
         antibody_matches_for_hla_type = [
             AntibodyMatchForHLAType.from_crossmatched_antibodies(
                 potential_hla_type=[create_hla_type(raw_code=hla) for hla in hla_typing],
-                crossmatched_antibodies=crossmatched_antibodies_per_group)
+                crossmatched_antibodies=crossmatched_antibodies_per_group,
+                supportive_antibodies_to_solve_potential_hla_type=antibodies_below_cutoff)
             for hla_typing in crossmatch_dto.potential_donor_hla_typing]
 
         typing_parsing_issues = _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type)
