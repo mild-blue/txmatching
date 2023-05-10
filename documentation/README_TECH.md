@@ -73,9 +73,8 @@ The algorithm scheme is represented in this PDF
 
 ### Where is this algorithm implemented
 
-Antibodies in generall are parsed
-in `parse_hla_antibodies_raw_and_return_parsing_issue_list` function. The
-antibodies raw codes are preprocessed, and single and double antibodies are
+Antibodies in general are parsed
+in `parse_hla_antibodies_raw_and_return_parsing_issue_list` function. The antibodies' raw codes are preprocessed, and single and double antibodies are
 parsed separately afterwards. Double antibodies are parsed
 in `_add_double_hla_antibodies` function which uses the algorithm described
 above.

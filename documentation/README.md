@@ -414,7 +414,7 @@ DP*[04:01;03:03] MFI 3000, cutoff 2000
 ```
 
 In this case, the antibody `DP*[03:03;02:02]` has both chains positive because
-either `DPA1*03:03` or `DPB1*02:02` have only positive MFIs among all
+both `DPA1*03:03` and `DPB1*02:02` have only positive MFIs among all
 antibodies.
 As a result, we parse this antibody as two separate chains:
 
@@ -440,7 +440,7 @@ DP*[01:01;01:05] MFI 200, cutoff 2000
 DP*[03:01;06:02] MFI 100, cutoff 2000
 ```
 
-In this case, the antibody `DP*[03:03;02:02]` has only a positive chain,
+In this case, the antibody `DP*[03:03;02:02]` has an only positive chain,
 `DPA1*03:03`, and a mixed chain, `DPB1*02:02`, because `DPB1*02:02` has a
 negative
 MFI representation in the antibody `DP*[01:01;02:02]` with an
@@ -480,7 +480,7 @@ DP*[03:03;05:02] MFI 2200, cutoff 2000
 In this case, the antibody `DP*[03:03;02:02]` has both chains as mixed because
 its chains,
 `DPA1*03:03` and `DPB1*02:02`, have negative representation in the antibodies
-`DP*[03:03;04:01]` and `DP*[01:01;02:02]`, respectively.
+`DP*[03:03;04:01]` and `DP*[01:01;02:02]` respectively.
 As a result, we parse this double antibody in its entirety as follows:
 
 ```text
