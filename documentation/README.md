@@ -459,6 +459,8 @@ antibodies where this chain has positive MFI), is parsed as
 ```text
 DPB1*02:02 MFI 100 (average negative MFI), cutoff 2000
 ```
+We suppose that the positive MFI is caused by the second chain, 
+so we do not consider this positive value for the mixed `DPB1*02:02` chain.
 
 Pay attention that a similar mixed chain, `DPB1*01:05`,
 but for the antibody `DP*[04:01;01:05]`, is not parsed through this antibody but
