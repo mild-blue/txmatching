@@ -340,6 +340,43 @@ class TestDoCrossmatchApi(DbTests):
             # This means that we transfer assumed to split in all cases when we did not find
             # matches in high res, no matter if there are matches in low res or not
 
+        # CASE: assumed hla type from antibodies below cutoff
+        json = {
+            "potential_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06'],
+                                           ['DQA1*02:01'],
+                                           ['DPA1*01:04'],
+                                           ['A*02:01', 'A*02:02']],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DQA1*02:01',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 500,
+                                      'name': 'A*02:01',
+                                      'cutoff': 2000}
+                                     ]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            res_assumed_hla_typing = [antibody_match['assumed_hla_type']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            expected_assumed_hla_typing = [
+                [asdict(create_hla_type('DPA1*01:04'))],
+                [asdict(create_hla_type('DQA1*02:01'))],
+                [asdict(create_hla_type('DPA1*01:04'))],
+                [asdict(create_hla_type('A*02:01'))]  # was recognized by supportive HLA antibody with MFI below cutoff
+            ]
+            self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
+            self.assertCountEqual(expected_assumed_hla_typing,
+                                  res_assumed_hla_typing)
+
         # CASE: assumed hla type has several split/broad codes
         json = {
             "potential_donor_hla_typing": [
