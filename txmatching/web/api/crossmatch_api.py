@@ -12,7 +12,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueB
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
-from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies
+from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
@@ -43,16 +43,14 @@ class DoCrossmatch(Resource):
                                                ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
-        antibodies_below_cutoff = hla_antibodies.get_antibodies_below_cutoff_as_list()
 
+        assumed_hla_typing, typing_parsing_issues = _solve_potential_hla_typing(
+            crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
         antibody_matches_for_hla_type = [
             AntibodyMatchForHLAType.from_crossmatched_antibodies(
-                potential_hla_type=[create_hla_type(raw_code=hla) for hla in hla_typing],
-                crossmatched_antibodies=crossmatched_antibodies_per_group,
-                supportive_antibodies_to_solve_potential_hla_type=antibodies_below_cutoff)
-            for hla_typing in crossmatch_dto.potential_donor_hla_typing]
-
-        typing_parsing_issues = _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type)
+                assumed_hla_type=assumed_hla_type,
+                crossmatched_antibodies=crossmatched_antibodies_per_group)
+            for assumed_hla_type in assumed_hla_typing]
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
@@ -73,13 +71,50 @@ def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadD
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
 
 
-def _get_parsing_issues_for_hla_typing(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType])\
-        -> List[ParsingIssueBase]:
-    maximum_hla_typing_raw = [hla_type.raw_code for antibody_match in antibody_matches_for_hla_type
-                              for hla_type in antibody_match.assumed_hla_type]
-    typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
+def _solve_potential_hla_typing(potential_hla_typing_raw: List[List[str]],
+                                antibodies_to_solve_hla_typing: HLAAntibodies) \
+        -> Tuple[List[List[HLAType]], List[ParsingIssueBase]]:
+    """
+    :param potential_hla_typing_raw: has a very similar meaning to assumed
+                                     (has all the same limitations, viz AntibodyMatchForHLAType),
+                                     but is a more extended version. Usually, all high res codes for
+                                     assumed HLA type are presented in the corresponding antibodies,
+                                     or they occur just once. So we have to analyze all potential
+                                     hla types against certain list of antibodies to satisfy this condition.
+    :param antibodies_to_solve_hla_typing: certain antibodies which help to transform potential
+                                           HLA Typing into assumed.
+    :return: solved assumed HLA typing and parsing issues for the remaining assumed HLA typing.
+    """
+    antibodies_codes = antibodies_to_solve_hla_typing.get_antibodies_codes_as_list()
+    # Solve potential HLA typing, thus we get assumed HLA typing
+    assumed_hla_typing = []
+    for potential_hla_type_raw in potential_hla_typing_raw:
+        potential_hla_type = [create_hla_type(hla) for hla in potential_hla_type_raw]
+        AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
+
+        if len(potential_hla_type) == 1:
+            # just one code -> solved
+            assumed_hla_typing.append(potential_hla_type)
+            continue
+        # Try to leave only those HLA types that have their codes among antibodies
+        maybe_assumed_hla_type = [hla_type for hla_type in potential_hla_type
+                                  if hla_type.code in antibodies_codes]
+        if maybe_assumed_hla_type:
+            assumed_hla_typing.append(maybe_assumed_hla_type)
+            continue
+        # If there are none found, then it's not a problem.
+        # Convert the entire potential HLA type to low resolution.
+        assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
+
+    # Get parsing issues
+    assumed_hla_typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
         HLATypingRawDTO(
-            hla_types_list=[HLATypeRaw(hla_type) for hla_type in
-                            maximum_hla_typing_raw]
+            hla_types_list=[HLATypeRaw(hla.raw_code) for assumed_hla_type in
+                            assumed_hla_typing for hla in assumed_hla_type]
         ))
-    return typing_parsing_issues
+
+    return assumed_hla_typing, assumed_hla_typing_parsing_issues
+
+
+def _convert_potential_hla_type_to_low_res(potential_hla_type: List[HLAType]) -> List[HLAType]:
+    return [create_hla_type(raw_code=potential_hla_type[0].code.get_low_res_code())]
