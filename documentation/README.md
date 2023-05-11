@@ -196,6 +196,9 @@ details see section Configuring Cutoff).
 
 This case can handle also an antibody in the form of DP*[01:01;02:02]. It uses
 an algorithm that parses the specific antibodies against alpha and beta chains.
+After parsing, most double antibodies are decomposed into separate chains and 
+analyzed as normal single antibodies. The remaining double antibodies for a positive 
+crossmatch must have a positive crossmatch for each of their chains.
 In case there is some unclear case it raises a warning and requires an
 immunologist to check the correctness of the algorithm result.
 
