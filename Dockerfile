@@ -37,6 +37,8 @@ CMD . ~/.bashrc && \
     conda activate txmatching && \
     gunicorn  \
         --config txmatching/web/gunicorn_configuration.py \
+        # to get rid of non-json logs at the beggining
+        --log-level 'warning' \
         --bind 0.0.0.0:${PORT} \
         --timeout 1800 \
         --graceful-timeout 1800 \
