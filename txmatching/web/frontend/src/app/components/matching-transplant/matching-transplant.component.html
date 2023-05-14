@@ -115,7 +115,7 @@
           <td>
             <app-code
               *ngFor="let match of compatibilityIndex.antibodyMatches"
-              [class]="getAntibodyMatchClass(match.matchType)"
+              [class]="getAntibodyClass(match)"
               [matTooltip]="match | antibodyTitle"
               matTooltipPosition="above"
               >{{ match.hlaAntibody.displayCode }}</app-code

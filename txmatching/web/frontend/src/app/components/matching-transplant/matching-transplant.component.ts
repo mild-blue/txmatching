@@ -1,13 +1,14 @@
 import { Component, Input } from "@angular/core";
 import { PatientService } from "@app/services/patient/patient.service";
 import { Configuration } from "@app/model/Configuration";
-import { DetailedScorePerGroup } from "@app/model/Hla";
+import { AntibodyMatch, DetailedScorePerGroup } from "@app/model/Hla";
 import { Recipient, RecipientRequirements } from "@app/model/Recipient";
 import { Donor } from "@app/model/Donor";
 import { Patient } from "@app/model/Patient";
 import { PatientPairStyle } from "@app/components/patient-pair/patient-pair.interface";
 import { AntigenMatchType } from "@app/model/enums/AntigenMatchType";
 import { AntibodyMatchType } from "@app/model/enums/AntibodyMatchType";
+import { HlaAntibodyType } from "@app/model/enums/HlaAntibodyType";
 
 @Component({
   selector: "app-matching-transplant",
@@ -39,13 +40,18 @@ export class MatchingTransplantComponent {
     return "";
   }
 
-  public getAntibodyMatchClass(match: AntibodyMatchType): string {
-    if (match !== AntibodyMatchType.NONE) {
+  public getAntibodyClass(match: AntibodyMatch): string {
+    let classes = [];
+    if (match.matchType !== AntibodyMatchType.NONE) {
       // recipient antibody matches some donor antigen
-      return "bad-matching";
+      classes.push("bad-matching");
     }
 
-    return "";
+    if (match.hlaAntibody.type == HlaAntibodyType.THEORETICAL) {
+      classes.push("theoretical-antibody");
+    }
+
+    return classes.join(" ");
   }
 
   public getPatientHeightAndWeight(patient: Patient): string | null {
