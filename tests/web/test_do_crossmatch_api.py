@@ -259,7 +259,7 @@ class TestDoCrossmatchApi(DbTests):
 
         # ULTRA HIGH RES
         json = {
-            "assumed_donor_hla_typing": [['DQA1*01:01:02:01'], ['DQB1*02:02']],
+            "potential_donor_hla_typing": [['DQA1*01:01:02:01'], ['DQB1*02:02']],
             "recipient_antibodies": [{'mfi': 100, 'name': 'DQ[01:01, 02:02]', 'cutoff': 2000},
                                      {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
                                      {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
@@ -477,9 +477,9 @@ class TestDoCrossmatchApi(DbTests):
 
         # CASE: low res codes in assumed hla type
         json = {
-            "assumed_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1'],  # incorrect HLA type
-                                         ['DPA1*02:01'],
-                                         ['DQA1*01:04']],
+            "potential_donor_hla_typing": [['DPA1*01:03', 'DPA1*01:04', 'DPA1'],  # incorrect HLA type
+                                           ['DPA1*02:01'],
+                                           ['DQA1*01:04']],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
                                       'cutoff': 2000

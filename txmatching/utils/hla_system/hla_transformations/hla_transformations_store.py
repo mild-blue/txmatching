@@ -175,7 +175,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
     ))
 
 
-def preprocess_hla_antibodies_raw(hla_antibodies_raw):
+def preprocess_hla_antibodies_raw(hla_antibodies_raw: List[HLAAntibodyRaw]):
     return [
         HLAAntibodyPreprocessed(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
                                 hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)

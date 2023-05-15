@@ -11,15 +11,18 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
-    HLAAntibodiesUploadDTO
-from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
+from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibodyRaw
+from txmatching.utils.enums import HLAAntibodyType
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
+    AntibodyMatchForHLAGroup
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, \
-    parse_hla_typing_raw_and_return_parsing_issue_list
+    parse_hla_typing_raw_and_return_parsing_issue_list, \
+    parse_hla_raw_code_with_details, \
+    preprocess_hla_antibodies_raw, \
+    HLAAntibodyPreprocessed
 from txmatching.web.web_utils.namespaces import crossmatch_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -42,14 +45,24 @@ class DoCrossmatch(Resource):
     def post(self):
         crossmatch_dto = request_body(CrossmatchDTOIn)
 
+        antibodies_raw_list = [create_antibody(antibody.name,
+                                               antibody.mfi,
+                                               antibody.cutoff)
+                               for antibody in crossmatch_dto.recipient_antibodies]
         hla_antibodies, antibodies_parsing_issues = _get_hla_antibodies_and_parsing_issues(
-            crossmatch_dto.recipient_antibodies)
+            antibodies_raw_list)
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
             donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
                                                # TODO: https://github.com/mild-blue/txmatching/issues/1204
                                                ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
+        # Remove some antibody matches as exclusion.
+        # For this endpoint, double antibodies under cutoff,
+        # in which both chains are present in the donor's HLA typing, do not have a crossmatch.
+        _remove_exclusive_theoretical_antibodies(crossmatched_antibodies_per_group,
+                                                 antibodies_raw_list,
+                                                 crossmatch_dto.get_maximum_donor_hla_typing())
 
         assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
             crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
@@ -68,17 +81,59 @@ class DoCrossmatch(Resource):
         ))
 
 
-def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadDTO]) \
+def _get_hla_antibodies_and_parsing_issues(antibodies_raw_list: List[HLAAntibodyRaw]) \
         -> Tuple[HLAAntibodies, List[ParsingIssueBase]]:
-    antibodies_raw_list = [create_antibody(antibody.name,
-                                           antibody.mfi,
-                                           antibody.cutoff)
-                           for antibody in antibodies]
     parsing_issues, antibodies_dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(
         antibodies_raw_list)
     return HLAAntibodies(
         hla_antibodies_raw_list=antibodies_raw_list,
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
+
+
+def _remove_exclusive_theoretical_antibodies(crossmatched_antibodies: List[AntibodyMatchForHLAGroup],
+                                             antibodies_raw: List[HLAAntibodyRaw],
+                                             maximum_hla_typing_raw: List[str]):
+    """
+    Removes some antibody matches as exclusion. For this endpoint, double antibodies under cutoff,
+    in which both chains are present in the donor's HLA typing, do not have a crossmatch.
+    """
+    preprocessed_hla_types_raw = list(map(_preprocess_hla_raw_code, maximum_hla_typing_raw))
+    exclusive_raw_codes = _get_double_antibodies_chains_totally_represented_in_typing(
+        antibodies_raw, preprocessed_hla_types_raw)
+    for match_per_group in crossmatched_antibodies:
+        for antibody_group_match in match_per_group.antibody_matches:
+            antibody = antibody_group_match.hla_antibody
+            if not antibody.type == HLAAntibodyType.THEORETICAL \
+                    or antibody.raw_code not in exclusive_raw_codes:
+                continue
+            # delete antibody_group_match as exclusive
+            del match_per_group.antibody_matches[
+                match_per_group.antibody_matches.index(antibody_group_match)]
+
+
+def _preprocess_hla_raw_code(hla_raw_code: str) -> str:
+    maybe_high_res_code = parse_hla_raw_code_with_details(hla_raw_code).maybe_hla_code
+    return maybe_high_res_code.display_code if maybe_high_res_code is not None else hla_raw_code
+
+
+def _preprocess_antibodies_raw(antibodies_raw: List[HLAAntibodyRaw]) -> List[HLAAntibodyPreprocessed]:
+    for antibody_raw in antibodies_raw:
+        antibody_raw.raw_code = _preprocess_hla_raw_code(antibody_raw.raw_code)
+    return preprocess_hla_antibodies_raw(antibodies_raw)
+
+
+def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: List[HLAAntibodyRaw],
+                                                                hla_types_raw_codes: List[str]) \
+        -> List[str]:
+    preprocessed_antibodies = _preprocess_antibodies_raw(antibodies_raw)
+    exclusive_codes = []
+    for antibody_raw_preprocessed in preprocessed_antibodies:
+        if antibody_raw_preprocessed.mfi < antibody_raw_preprocessed.cutoff \
+                and antibody_raw_preprocessed.raw_code in hla_types_raw_codes \
+                and antibody_raw_preprocessed.secondary_raw_code in hla_types_raw_codes:
+            exclusive_codes.extend([antibody_raw_preprocessed.raw_code,
+                                    antibody_raw_preprocessed.secondary_raw_code])
+    return exclusive_codes
 
 
 def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[str]],
