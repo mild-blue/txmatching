@@ -605,8 +605,10 @@ class TestCrossmatch(DbTests):
 
         txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(CROSSMATCH_TXM_EVENT_NAME))
 
-        recipient_db_id = 5
-        donor_db_id = 5
+        recipient_db_id = [recipient.db_id for recipient in txm_event.active_and_valid_recipients_dict.values()
+                           if recipient.medical_id == 'CAN_5R'][0]
+        donor_db_id = [donor.db_id for donor in txm_event.active_and_valid_donors_dict.values()
+                       if donor.medical_id == 'CAN_5'][0]
 
         recipient_antibodies = txm_event.active_and_valid_recipients_dict[recipient_db_id].hla_antibodies
         donor_antigens = txm_event.active_and_valid_donors_dict[donor_db_id].parameters.hla_typing
