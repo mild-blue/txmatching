@@ -3,12 +3,15 @@ import os
 import unittest
 from typing import Callable, List
 
-from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
-    create_antibodies, create_antibody, create_antibody_parsed
+from local_testing_utilities.generate_patients import (CROSSMATCH_TXM_EVENT_NAME, 
+                                                       LARGE_DATA_FOLDER,
+                                                       SMALL_DATA_FOLDER_WITH_CROSSMATCH,
+                                                       store_generated_patients_from_folder)
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
+from txmatching.database.services.txm_event_service import get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodyRaw
+from txmatching.patients.hla_model import HLAAntibodyRaw, HLAType
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
@@ -16,11 +19,12 @@ from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
-
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
+    create_antibodies, create_antibody, create_antibody_parsed
 logger = logging.getLogger(__name__)
 
 
-class TestCrossmatch(unittest.TestCase):
+class TestCrossmatch(DbTests):
     # It's difficult to have a patient with type A.
     # And in order to create the unittests for all special cases, sometimes we will state
     # directly that a patient is type A (even if biologically he is not)
@@ -595,3 +599,31 @@ class TestCrossmatch(unittest.TestCase):
         )
 
         self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
+
+    def test_positive_crossmatch_theoretical_antibody(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_CROSSMATCH, CROSSMATCH_TXM_EVENT_NAME)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(CROSSMATCH_TXM_EVENT_NAME))
+
+        recipient_db_id = 5
+        donor_db_id = 5
+
+        recipient_antibodies = txm_event.active_and_valid_recipients_dict[recipient_db_id].hla_antibodies
+        donor_antigens = txm_event.active_and_valid_donors_dict[donor_db_id].parameters.hla_typing
+
+        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
+            create_antibody_parsed('DQA1*02:03', 2100, 2000, 'DQB1*18:01')
+        )
+        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
+            create_antibody_parsed('DQA1*02:03', 2100, 2000, None, HLAAntibodyType.THEORETICAL)
+        )
+        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
+            create_antibody_parsed('DQB1*18:01', 2100, 2000, None, HLAAntibodyType.THEORETICAL)
+        )
+
+        donor_antigens.hla_per_groups[5].hla_types.append(HLAType('DQA1*02:03', HLACode('DQA1*02:03', None, None)))
+
+        self.assertTrue(is_positive_hla_crossmatch(donor_antigens,
+                                                   recipient_antibodies,
+                                                   use_high_resolution=True,
+                                                   crossmatch_logic=do_crossmatch_in_type_a))
