@@ -13,7 +13,10 @@
 {% endmacro %}
 
 {% macro antibody_class(code) %}
-  {% if code != 'NONE' %}
+  {% if code.match_type != 'NONE' %}
     bad-matching
+  {% endif %}
+  {% if code.hla_antibody.type == 'THEORETICAL' %}
+    theoretical-antibody
   {% endif %}
 {% endmacro %}

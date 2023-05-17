@@ -26,7 +26,9 @@ $success-lighter: rgba($success, 0.2);
 $danger: #dc3545;
 $danger-lighter: rgba($danger, 0.2);
 $info: #007bff;
+$info-lighter: rgba($info, 0.2);
 $warning: #c17a3c;
+$warning-lighter: rgba($warning, 0.2);
 
 // === TRANSPLANT STATES === //
 $transplant-bg--compatible: $gray-200;
@@ -49,6 +51,16 @@ $code-color--matching: $success;
 $code-bg--bad-matching: $danger-lighter;
 $code-border-color--bad-matching: $danger;
 $code-color--bad-matching: $danger;
+
+// theoretical code
+$code-bg--theoretical: $info-lighter;
+$code-border-color--theoretical: $info;
+$code-color--theoretical: $info;
+
+// bad matching theoretical code
+$code-bg--bad-matching-theoretical: $warning-lighter;
+$code-border-color--bad-matching-theoretical: $warning;
+$code-color--bad-matching-theoretical: $warning;
 
 //warning
 $warning-icon: #ffc82e;
