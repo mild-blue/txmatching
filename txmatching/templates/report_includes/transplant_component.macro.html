@@ -169,7 +169,7 @@
           </td>
           <td>
             {% for match in detailed_score_per_group.antibody_matches %}
-              <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_antibody|hla_type_filter }}</div>
+              <div class="code {{ antibody_class(match) }}">{{ match.hla_antibody|hla_type_filter }}</div>
             {% endfor %}
           </td>
           <td>
