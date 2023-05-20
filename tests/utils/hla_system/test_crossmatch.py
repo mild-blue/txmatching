@@ -625,7 +625,8 @@ class TestCrossmatch(DbTests):
 
         donor_antigens.hla_per_groups[5].hla_types.append(HLAType('DQA1*02:03', HLACode('DQA1*02:03', None, None)))
 
-        self.assertTrue(is_positive_hla_crossmatch(donor_antigens,
-                                                   recipient_antibodies,
-                                                   use_high_resolution=True,
-                                                   crossmatch_logic=do_crossmatch_in_type_a))
+        self.assertTrue(do_crossmatch_in_type_a(
+            donor_antigens,
+            recipient_antibodies,
+            True
+        ) is not None)
