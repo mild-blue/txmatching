@@ -144,6 +144,8 @@ def _add_single_hla_antibodies(antibody_list_single_code: List[HLAAntibody]) -> 
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-nested-blocks
+# The algorithm scheme is represented in this PDF
+# documentation/double_antibodies_parsing/double_antibodies_parsing_algorithm.pdf.
 def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                                single_antibodies_joined: List[HLAAntibody]) -> \
         Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
