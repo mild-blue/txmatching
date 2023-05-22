@@ -307,6 +307,49 @@ class TestCodeParser(DbTests):
         ]
         self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
 
+        # case: only positive + mixed for DPB1*01:05 with several positive representations
+        antibodies_raw = [
+            create_antibody('DP[04:01,01:05]', 3000, 2000),
+            create_antibody('DP[03:01,01:05]', 2500, 2000),
+            create_antibody('DP[01:01,01:05]', 200, 2000)
+        ]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*04:01', 3000, 2000),
+            create_antibody_parsed('DPA1*03:01', 2500, 2000),
+            create_antibody_parsed('DPA1*01:01', 200, 2000),
+            # DPB1*01:05 always occurs in the positive + mixed antibody, so it won't be parsed
+        ]
+        self.assertCountEqual(expected_antibodies_in_group,
+                              antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+
+        # case: mixed with several positive representations for DPB1*01:05
+        # (but not just in positive+mixed antibody)
+        antibodies_raw = [
+            create_antibody('DP[04:01,01:05]', 3000, 2000),
+            create_antibody('DP[03:01,01:05]', 2500, 2000),
+            create_antibody('DP[01:01,01:05]', 200, 2000),
+            create_antibody('DP[03:01,01:04]', 200, 2000)
+        ]
+        issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
+        self.maxDiff = None
+        expected_antibodies_in_group = [
+            create_antibody_parsed('DPA1*04:01', 3000, 2000),
+            create_antibody_parsed('DPA1*03:01', 2500, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*01:01', 200, 2000),
+            # compared to the previous case, the chain DPB1*01:05 will be parsed despite the fact,
+            # that we still skipped parsing for positive + mixed cases,
+            # but this chain will be parsed in the mixed + mixed antibody DP[03:01,01:05].
+            # Usually in positive + mixed cases with multiple positive representations,
+            # we expect it to be parsed in the mixed + mixed case.
+            create_antibody_parsed('DPB1*01:05', 2750, 2000, antibody_type=HLAAntibodyType.THEORETICAL),
+            create_antibody_parsed('DPA1*03:01', 2500, 2000, 'DPB1*01:05'),
+            create_antibody_parsed('DPB1*01:04', 200, 2000)
+        ]
+        self.assertCountEqual(expected_antibodies_in_group,
+                              antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
+
         # process via the old way
         antibodies_raw = [
             create_antibody('DPA1*01:03', 1900, 2000),
