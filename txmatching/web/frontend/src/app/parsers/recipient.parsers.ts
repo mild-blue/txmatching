@@ -5,7 +5,6 @@ import { parseAntibodies } from "./hla.parsers";
 import { ListItem } from "@app/components/list-item/list-item.interface";
 import { PatientPairItemComponent } from "@app/components/patient-pair-item/patient-pair-item.component";
 import { PatientPairDetailComponent } from "@app/components/patient-pair-detail/patient-pair-detail.component";
-import { parseParsingIssue } from "@app/parsers/parsingIssue.parsers";
 import { parseParsingIssuePublic } from "./parsingIssuePublic.parsers";
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {

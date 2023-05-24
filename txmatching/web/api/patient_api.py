@@ -41,8 +41,11 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
-from txmatching.database.services.config_service import \
-    get_configuration_parameters_from_db_id_or_default
+from txmatching.database.services.config_service import (
+    find_config_for_parameters,
+    get_configuration_parameters_from_db_id_or_default)
+from txmatching.database.services.pairing_result_service import \
+    get_pairing_result_comparable_to_config
 from txmatching.database.services.parsing_issue_service import (
     confirm_a_parsing_issue, get_parsing_issues_for_patients,
     unconfirm_a_parsing_issue)
@@ -53,11 +56,14 @@ from txmatching.database.services.patient_service import (
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, get_patients_parsing_issues_from_pair_dto,
     replace_or_add_patients_from_excel)
+from txmatching.database.services.scorer_service import \
+    compatibility_graph_from_dict
 from txmatching.database.services.txm_event_service import (
     TxmEvent, get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
-from txmatching.patients.patient import (
-    Recipient, calculate_cpra_and_get_compatible_donors_for_recipient)
+from txmatching.patients.patient import Recipient
+from txmatching.patients.recipient_compatibility import \
+    calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
@@ -88,10 +94,10 @@ class AllPatients(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
-        logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
+        logger.debug(f'{include_antibodies_raw=}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
-        lists_for_fe = to_lists_for_fe(txm_event, configuration_parameters)
+        lists_for_fe = to_lists_for_fe(txm_event=txm_event, configuration_parameters=configuration_parameters)
         logger.debug('Sending patients to FE')
         return response_ok(lists_for_fe)
 
@@ -358,17 +364,33 @@ class CalculateRecipientCPRA(Resource):
     @require_role(UserRole.ADMIN)
     def get(self, txm_event_id: int, recipient_id: int, config_id: Optional[int]):
         txm_event = get_txm_event_complete(txm_event_id)
-        config_parameters = get_configuration_parameters_from_db_id_or_default(txm_event,
-                                                                               config_id)
-
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
         recipient = _get_recipient_by_recipient_db_id(txm_event, recipient_id)
         if recipient is None:
             raise KeyError('Incorrect recipient_id for current txm_event.')
 
-        cpra, compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(txm_event,
-                                                                                         recipient,
-                                                                                         config_parameters)
-        result = {'cPRA': round(cpra*100, 1), 'compatible_donors': list(compatible_donors)}  # cPRA to %
+        # Try to load configuration corresponding to parameters
+        configuration = find_config_for_parameters(configuration_parameters, txm_event.db_id)
+
+        # If configuration loaded, try to load compatibility_graph to optimize
+        # `calculate_cpra_and_get_compatible_donors_for_recipient`.
+        compatibility_graph_of_db_ids = None
+        if configuration:
+            pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
+            if pairing_result_model is not None:
+                compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
+                scorer = scorer_from_configuration(configuration_parameters)
+                compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(
+                    txm_event.active_and_valid_recipients_dict,
+                    txm_event.active_and_valid_donors_dict, compatibility_graph)
+
+        recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
+            txm_event, recipient, configuration_parameters, compatibility_graph_of_db_ids, compute_cpra=True)
+
+        result = {'cPRA': round(recipient_donors_compatibility.cpra*100, 1),  # cPRA to %
+                  'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
+                  'compatible_donors_details': recipient_donors_compatibility.compatible_donors_details}
+
         return response_ok(result)
 
 

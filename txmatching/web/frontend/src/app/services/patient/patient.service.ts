@@ -12,6 +12,7 @@ import {
   ParsingIssueGenerated,
   PatientsGenerated,
   PatientUploadSuccessResponseGenerated,
+  RecipientCompatibilityInfoJsonGenerated,
   RecipientModelToUpdateGenerated,
   UpdatedDonorGenerated,
   UpdatedRecipientGenerated,
@@ -27,6 +28,8 @@ import { parseParsingIssue } from "@app/parsers/parsingIssue.parsers";
 import { parseParsingIssuePublic } from "@app/parsers/parsingIssuePublic.parsers";
 import { ParsingIssueConfirmation } from "@app/model/ParsingIssueConfirmation";
 import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
+import { RecipientCompatibilityInfo } from "@app/model/RecipientCompatibilityInfo";
+import { parseRecipientCompatibilityInfo } from "@app/parsers/recipientCompatibilityInfo.parsers";
 
 @Injectable({
   providedIn: "root",
@@ -71,16 +74,34 @@ export class PatientService {
     configId: number | undefined,
     includeAntibodiesRaw: boolean
   ): Promise<PatientList> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
 
     return firstValueFrom(
       this._http
         .get<PatientsGenerated>(
-          `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${
-            includeAntibodiesRaw ? "?include-antibodies-raw" : ""
+          `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}?${
+            includeAntibodiesRaw ? "include-antibodies-raw" : ""
           }`
         )
         .pipe(map(parsePatientList))
+    );
+  }
+
+  public async getRecipientCompatbileDonorsAndCPRA(
+    txmEventId: number,
+    recipientId: number,
+    configId?: number
+  ): Promise<RecipientCompatibilityInfo> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
+    const configIdStr = configId !== undefined ? configId.toString() : "default";
+
+    return firstValueFrom(
+      this._http
+        .get<RecipientCompatibilityInfoJsonGenerated>(
+          `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient-compatibility-info/${recipientId}/${configIdStr}`
+        )
+        .pipe(map(parseRecipientCompatibilityInfo))
     );
   }
 
@@ -91,6 +112,7 @@ export class PatientService {
     donorEditable: DonorEditable,
     configId: number | undefined
   ): Promise<UpdatedDonor> {
+    // TODO https://github.com/mild-blue/txmatching/issues/1191
     const configIdStr = configId !== undefined ? configId.toString() : "default";
 
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);

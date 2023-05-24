@@ -89,8 +89,8 @@ class DbTests(unittest.TestCase):
 
         self._set_bearer_token()
 
-    def fill_db_with_patients_and_results(self) -> int:
-        txm_event_db_id = self.fill_db_with_patients()
+    def fill_db_with_patients_and_results(self, file=get_absolute_path('/tests/resources/data.xlsx')) -> int:
+        txm_event_db_id = self.fill_db_with_patients(file=file)
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration_parameters = ConfigParameters()
         configuration = save_config_parameters_to_db(

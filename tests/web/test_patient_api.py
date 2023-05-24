@@ -19,9 +19,9 @@ from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
-from txmatching.patients.patient import (
-    DonorType, RecipientRequirements,
-    calculate_cpra_and_get_compatible_donors_for_recipient)
+from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.patients.recipient_compatibility import \
+    calculate_cpra_and_get_compatible_donors_for_recipient
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -78,7 +78,7 @@ RECIPIENT_JSON = {
 class TestPatientService(DbTests):
 
     def test_get_patients(self):
-        txm_event_db_id = self.fill_db_with_patients(
+        txm_event_db_id = self.fill_db_with_patients_and_results(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -815,12 +815,15 @@ class TestPatientService(DbTests):
         )
 
         for recipient in txm_event.all_recipients:
-            expected_cPRA, expected_compatible_donors = calculate_cpra_and_get_compatible_donors_for_recipient(
+            recipient_donors_compatibility = calculate_cpra_and_get_compatible_donors_for_recipient(
                 txm_event=txm_event,
                 recipient=recipient,
-                config_parameters=configuration_parameters)
-            expected_json = {'cPRA': round(expected_cPRA * 100, 1),
-                             'compatible_donors': list(expected_compatible_donors)}
+                configuration_parameters=configuration_parameters,
+                compute_cpra=True)
+            expected_json = {'cPRA': round(recipient_donors_compatibility.cpra * 100, 1),
+                             'compatible_donors': list(recipient_donors_compatibility.compatible_donors),
+                             'compatible_donors_details': [dataclasses.asdict(cdd) for cdd in 
+                                                           recipient_donors_compatibility.compatible_donors_details]}
 
             with self.app.test_client() as client:
                 res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event.db_id}/'

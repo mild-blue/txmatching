@@ -14,7 +14,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_swagger import (
     ParsingIssueJson, ParsingIssuePublicJson)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
-    DetailedScoreForGroupJson)
+    DetailedScoreForGroupJson, RecipientDonorCompatibilityDetailsJson)
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
@@ -62,7 +62,7 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
         required=False,
         cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
-    'all_messages': fields.Nested(required=False, model=AllMessagesJson)
+    'all_messages': fields.Nested(required=False, model=AllMessagesJson),
 }})
 
 PatientsJson = patient_api.model('Patients', {
@@ -89,6 +89,7 @@ RecipientToUpdateJson = patient_api.inherit('RecipientModelToUpdate', PatientToU
 RecipientCompatibilityInfoJson = patient_api.model('RecipientCompatibilityInfoJson', {
     'cPRA': fields.Float(required=True, example=95, description="recipient's cPRA [%]."),
     'compatible_donors': fields.List(required=True, cls_or_instance=fields.Integer(), example=[3, 4, 5, 7, 8, 10, 15]),
+    'compatible_donors_details': fields.List(required=True, cls_or_instance=fields.Nested(RecipientDonorCompatibilityDetailsJson)),
 })
 
 HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {

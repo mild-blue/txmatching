@@ -118,10 +118,7 @@ class PatientsXLSReport(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-
-        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                                      configuration_db_id=config_id)
-
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
         patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
         xls_file_name = f'patients_{get_formatted_now()}.xlsx'

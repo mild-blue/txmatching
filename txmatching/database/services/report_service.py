@@ -87,10 +87,7 @@ def generate_html_report(
 
     calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
                                                                configuration_db_id)
-
-    configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                                  configuration_db_id=configuration_db_id)
-
+    configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, configuration_db_id)
     patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
     _prepare_tmp_dir()
