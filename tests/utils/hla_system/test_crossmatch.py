@@ -11,13 +11,13 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.database.services.txm_event_service import get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodyRaw, HLAType
+from txmatching.patients.hla_model import HLAAntibody, HLAAntibodyRaw, HLAType
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel)
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
+    AntibodyMatch, add_theoretical_crossmatch_type, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibodies, create_antibody, create_antibody_parsed
@@ -601,32 +601,36 @@ class TestCrossmatch(DbTests):
         self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
 
     def test_positive_crossmatch_theoretical_antibody(self):
-        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_CROSSMATCH, CROSSMATCH_TXM_EVENT_NAME)
+        positive_matches = {AntibodyMatch(
+                                hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                                         code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                                         mfi=2100,
+                                                         cutoff=2000,
+                                                         second_raw_code=None,
+                                                         second_code=None,
+                                                         type=HLAAntibodyType.THEORETICAL),
+                                match_type=AntibodyMatchTypes.HIGH_RES), 
+                            AntibodyMatch(
+                                hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                                         code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                                         mfi=2100,
+                                                         cutoff=2000,
+                                                         second_raw_code=None,
+                                                         second_code=None,
+                                                         type=HLAAntibodyType.THEORETICAL),
+                                match_type=AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
+                           }
 
-        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(CROSSMATCH_TXM_EVENT_NAME))
+        expected_positive_matches = {AntibodyMatch(
+                                        hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                                                 code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                                                 mfi=2100,
+                                                                 cutoff=2000,
+                                                                 second_raw_code=None,
+                                                                 second_code=None,
+                                                                 type=HLAAntibodyType.THEORETICAL),
+                                        match_type=AntibodyMatchTypes.THEORETICAL)
+                                    }
 
-        recipient_db_id = [recipient.db_id for recipient in txm_event.active_and_valid_recipients_dict.values()
-                           if recipient.medical_id == 'CAN_5R'][0]
-        donor_db_id = [donor.db_id for donor in txm_event.active_and_valid_donors_dict.values()
-                       if donor.medical_id == 'CAN_5'][0]
-
-        recipient_antibodies = txm_event.active_and_valid_recipients_dict[recipient_db_id].hla_antibodies
-        donor_antigens = txm_event.active_and_valid_donors_dict[donor_db_id].parameters.hla_typing
-
-        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
-            create_antibody_parsed('DQA1*02:03', 2100, 2000, 'DQB1*18:01')
-        )
-        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
-            create_antibody_parsed('DQA1*02:03', 2100, 2000, None, HLAAntibodyType.THEORETICAL)
-        )
-        recipient_antibodies.hla_antibodies_per_groups[5].hla_antibody_list.append(
-            create_antibody_parsed('DQB1*18:01', 2100, 2000, None, HLAAntibodyType.THEORETICAL)
-        )
-
-        donor_antigens.hla_per_groups[5].hla_types.append(HLAType('DQA1*02:03', HLACode('DQA1*02:03', None, None)))
-
-        self.assertTrue(do_crossmatch_in_type_a(
-            donor_antigens,
-            recipient_antibodies,
-            True
-        ) is not None)
+        add_theoretical_crossmatch_type(positive_matches)
+        self.assertEqual(positive_matches, expected_positive_matches)

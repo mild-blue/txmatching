@@ -303,7 +303,7 @@ def do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                     _do_crossmatch_for_hlas_recipient_was_not_tested_for(
                         hla_per_group, [antibody], antibodies, positive_matches, use_high_resolution)
 
-        _add_theoretical_crossmatch_type(positive_matches)
+        add_theoretical_crossmatch_type(positive_matches)
         _add_none_crossmatch_type(_get_antibodies_over_cutoff(antibodies), positive_matches)
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
     return antibody_matches_for_groups
@@ -388,7 +388,7 @@ def do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                 if _add_broad_crossmatch_type(hla_type, tested_antibodies_that_match, positive_matches):
                     continue
 
-        _add_theoretical_crossmatch_type(positive_matches)
+        add_theoretical_crossmatch_type(positive_matches)
         _add_none_crossmatch_type(antibodies, positive_matches)
 
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, list(positive_matches)))
@@ -497,14 +497,14 @@ def _add_undecidable_crossmatch_type(antibodies: List[HLAAntibody],
             positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 
 
-def _add_theoretical_crossmatch_type(positive_matches: Set[AntibodyMatch]):
-    matches_to_remove = set()
+def add_theoretical_crossmatch_type(positive_matches: Set[AntibodyMatch]):
+    # matches_to_remove = set()
     for match in positive_matches:
         if match.hla_antibody.type == HLAAntibodyType.THEORETICAL and match.match_type != AntibodyMatchTypes.UNDECIDABLE:
-            matches_to_remove.add(match)
-    for match in matches_to_remove:
-        positive_matches.remove(match)
-        positive_matches.add(AntibodyMatch(match.hla_antibody, AntibodyMatchTypes.THEORETICAL))
+    #         matches_to_remove.add(match)
+    # for match in matches_to_remove:
+            positive_matches.remove(match)
+            positive_matches.add(AntibodyMatch(match.hla_antibody, AntibodyMatchTypes.THEORETICAL))
 
 
 def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
