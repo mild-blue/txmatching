@@ -498,13 +498,13 @@ def _add_undecidable_crossmatch_type(antibodies: List[HLAAntibody],
 
 
 def add_theoretical_crossmatch_type(positive_matches: Set[AntibodyMatch]):
-    # matches_to_remove = set()
+    matches_to_remove = set()
     for match in positive_matches:
         if match.hla_antibody.type == HLAAntibodyType.THEORETICAL and match.match_type != AntibodyMatchTypes.UNDECIDABLE:
-    #         matches_to_remove.add(match)
-    # for match in matches_to_remove:
-            positive_matches.remove(match)
-            positive_matches.add(AntibodyMatch(match.hla_antibody, AntibodyMatchTypes.THEORETICAL))
+            matches_to_remove.add(match)
+    for match in matches_to_remove:
+        positive_matches.remove(match)
+        positive_matches.add(AntibodyMatch(match.hla_antibody, AntibodyMatchTypes.THEORETICAL))
 
 
 def _add_none_crossmatch_type(antibodies: List[HLAAntibody],
