@@ -15,6 +15,14 @@ class HLABase:
 
 @dataclass
 class HLAType(HLABase, PersistentlyHashable):
+    # We get this display_code attribute from the self.code: HLACode for the do-crossmatch endpoint, because
+    # this trick bypasses several problems associated with passing this attribute to the output of the endpoint.
+    # Try to use explicitly self.code.display_code (not self.display_code) in every possible place in the code.
+    display_code: Optional[str] = None
+
+    def __post_init__(self):
+        self.display_code = self.code.display_code
+
     def __eq__(self, other):
         """
         Needed for List[HLAType].remove()
@@ -131,6 +139,16 @@ class HLAAntibodies(PersistentlyHashable):
     @property
     def hla_antibodies_per_groups_over_cutoff(self) -> List[AntibodiesPerGroup]:
         return _filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups)
+
+    def get_antibodies_codes_as_list(self) -> List[HLACode]:
+        hla_codes = []
+        for antibody_group in self.hla_antibodies_per_groups:
+            for antibody in antibody_group.hla_antibody_list:
+                if antibody.code:
+                    hla_codes.append(antibody.code)
+                if antibody.second_code:
+                    hla_codes.append(antibody.second_code)
+        return hla_codes
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)

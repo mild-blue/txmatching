@@ -28,6 +28,12 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
+    def get_low_res_code(self):
+        return self.split or self.broad
+
+    def is_in_high_res(self):
+        return self.high_res is not None
+
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
         if self.broad is not None:
             return bool(re.match(HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, self.broad))
@@ -43,6 +49,8 @@ class HLACode:
         return hash((self.high_res, self.split, self.broad))
 
     def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
         if self.high_res and other.high_res:
             return self.high_res == other.high_res
         elif self.split and other.split:
