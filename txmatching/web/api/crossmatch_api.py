@@ -51,7 +51,7 @@ class DoCrossmatch(Resource):
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
 
-        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_return_parsing_issues(
+        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
             crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
         assumed_hla_typing = assumed_hla_typing_parsing_result.assumed_hla_typing
         typing_parsing_issues = assumed_hla_typing_parsing_result.parsing_issues
@@ -81,8 +81,8 @@ def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadD
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
 
 
-def _get_assumed_hla_typing_and_return_parsing_issues(potential_hla_typing_raw: List[List[str]],
-                                                      antibodies_to_solve_hla_typing: HLAAntibodies) \
+def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[str]],
+                                               supportive_antibodies: HLAAntibodies) \
         -> AssumedHLATypingParsingResult:
     """
     :param potential_hla_typing_raw: all potential hla_typing codes that were derived from
@@ -90,12 +90,12 @@ def _get_assumed_hla_typing_and_return_parsing_issues(potential_hla_typing_raw: 
                                      This is then processed to assumed hla_typing that contains only
                                      the typing that has a match with antibodies and therefore is
                                      meaning for crossmatch computation.
-    :param antibodies_to_solve_hla_typing: certain antibodies which help to transform potential
+    :param supportive_antibodies: certain antibodies which help to transform potential
                                            HLA Typing into assumed.
-    :return: solved assumed HLA typing and parsing issues for the remaining assumed HLA typing.
+    :return: assumed HLA typing and parsing issues for the remaining assumed HLA typing.
     """
-    antibodies_codes = antibodies_to_solve_hla_typing.get_antibodies_codes_as_list()
-    # Solve potential HLA typing, thus we get assumed HLA typing
+    antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
+    # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
     for potential_hla_type_raw in potential_hla_typing_raw:
         potential_hla_type = [create_hla_type(hla) for hla in potential_hla_type_raw]
