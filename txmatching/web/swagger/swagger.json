@@ -2323,17 +2323,28 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "hla_type"
+                "assumed_hla_type"
             ],
             "properties": {
-                "hla_type": {
-                    "$ref": "#/definitions/HlaType"
+                "assumed_hla_type": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaType"
+                    }
                 },
                 "antibody_matches": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/AntibodyMatch"
                     }
+                },
+                "summary_antibody": {
+                    "readOnly": true,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/AntibodyMatch"
+                        }
+                    ]
                 }
             },
             "type": "object"
@@ -2862,28 +2873,34 @@
         },
         "CrossmatchInput": {
             "required": [
-                "donor_hla_typing",
+                "potential_donor_hla_typing",
                 "recipient_antibodies"
             ],
             "properties": {
-                "donor_hla_typing": {
+                "potential_donor_hla_typing": {
                     "type": "array",
                     "description": "HLA typing of the patient. Use high resolution if available.",
                     "example": [
-                        "A1",
-                        "A32",
-                        "B7",
-                        "B51",
-                        "DR11",
-                        "DR15",
-                        "A*02:03",
-                        "A*11:01:35",
-                        "DPA1*01:07",
-                        "DRB4*01:01",
-                        "DQB1*02:01:01:01"
+                        [
+                            "A*01:02",
+                            "A*01:03",
+                            "A*01:06"
+                        ],
+                        [
+                            "A*02:02",
+                            "A*02:04",
+                            "A*02:05"
+                        ],
+                        [
+                            "B*07:26",
+                            "B*07:27"
+                        ]
                     ],
                     "items": {
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
                 "recipient_antibodies": {
@@ -3617,6 +3634,9 @@
                     "$ref": "#/definitions/HlaCode"
                 },
                 "raw_code": {
+                    "type": "string"
+                },
+                "display_code": {
                     "type": "string"
                 }
             },

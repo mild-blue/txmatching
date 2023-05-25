@@ -54,6 +54,7 @@ HLACode = patient_api.model('HlaCode', {
 HLAType = patient_api.model('HlaType', {
     'code': fields.Nested(HLACode, required=True),
     'raw_code': fields.String(required=True),
+    'display_code': fields.String(required=False)
 })
 
 HLATypeRaw = patient_api.model('HlaTypeRaw', {

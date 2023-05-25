@@ -1,18 +1,33 @@
+from dataclasses import dataclass
+from typing import List, Tuple
+
 from flask_restx import Resource
 
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, AntibodyMatchForHLAType, \
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import CrossmatchDTOIn, \
+    AntibodyMatchForHLAType, \
     CrossmatchDTOOut
-from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, CrossmatchJsonOut
+from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import CrossmatchJsonIn, \
+    CrossmatchJsonOut
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLAAntibodies, HLATypeRaw
+from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
+from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_antibodies_raw_and_return_parsing_issue_list, parse_hla_typing_raw_and_return_parsing_issue_list
+    parse_hla_antibodies_raw_and_return_parsing_issue_list, \
+    parse_hla_typing_raw_and_return_parsing_issue_list
 from txmatching.web.web_utils.namespaces import crossmatch_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
+
+
+@dataclass
+class AssumedHLATypingParsingResult:
+    assumed_hla_typing: List[List[HLAType]]
+    parsing_issues: List[ParsingIssueBase]
 
 
 @crossmatch_api.route('/do-crossmatch', methods=['POST'])
@@ -27,46 +42,88 @@ class DoCrossmatch(Resource):
     def post(self):
         crossmatch_dto = request_body(CrossmatchDTOIn)
 
-        antibodies_raw_list = [create_antibody(antibody.name, antibody.mfi, antibody.cutoff) for antibody in
-                               crossmatch_dto.recipient_antibodies]
-
-        antibodies_parsing_issues, antibodies_dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(
-            antibodies_raw_list)
-        typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(HLATypingRawDTO(
-            hla_types_list=[HLATypeRaw(hla_type) for hla_type in crossmatch_dto.donor_hla_typing]
-        ))
-
-        hla_antibodies = HLAAntibodies(
-            hla_antibodies_raw_list=antibodies_raw_list,
-            hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
-        )
-
+        hla_antibodies, antibodies_parsing_issues = _get_hla_antibodies_and_parsing_issues(
+            crossmatch_dto.recipient_antibodies)
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
-            donor_hla_typing=create_hla_typing(crossmatch_dto.donor_hla_typing),
+            donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
+                                               # TODO: https://github.com/mild-blue/txmatching/issues/1204
+                                               ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
 
-        antibody_matches_for_hla_type = [AntibodyMatchForHLAType(hla_type=create_hla_type(raw_code=hla),
-                                                                 antibody_matches=[])
-                                         for hla in crossmatch_dto.donor_hla_typing]
-        for match_per_group in crossmatched_antibodies_per_group:
-            for antibody_group_match in match_per_group.antibody_matches:
-                # get AntibodyMatchForHLAType object with the same hla_type
-                # as the antibody_group_match and append the antibody_group_match
-                if antibody_group_match.hla_antibody.second_raw_code:
-                    common_matches = [antibody_hla_match for antibody_hla_match in
-                                      antibody_matches_for_hla_type
-                                      if antibody_hla_match.hla_type.code in (antibody_group_match.hla_antibody.code,
-                                                                              antibody_group_match.hla_antibody.second_code)]
-                else:
-                    common_matches = [antibody_hla_match for antibody_hla_match in
-                                      antibody_matches_for_hla_type
-                                      if antibody_hla_match.hla_type.code == antibody_group_match.hla_antibody.code]
-                if common_matches:
-                    for common_match in common_matches:
-                        common_match.antibody_matches.append(antibody_group_match)
+        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
+            crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
+        assumed_hla_typing = assumed_hla_typing_parsing_result.assumed_hla_typing
+        typing_parsing_issues = assumed_hla_typing_parsing_result.parsing_issues
+
+        antibody_matches_for_hla_type = [
+            AntibodyMatchForHLAType.from_crossmatched_antibodies(
+                assumed_hla_type=assumed_hla_type,
+                crossmatched_antibodies=crossmatched_antibodies_per_group)
+            for assumed_hla_type in assumed_hla_typing]
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues
         ))
+
+
+def _get_hla_antibodies_and_parsing_issues(antibodies: List[HLAAntibodiesUploadDTO]) \
+        -> Tuple[HLAAntibodies, List[ParsingIssueBase]]:
+    antibodies_raw_list = [create_antibody(antibody.name,
+                                           antibody.mfi,
+                                           antibody.cutoff)
+                           for antibody in antibodies]
+    parsing_issues, antibodies_dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(
+        antibodies_raw_list)
+    return HLAAntibodies(
+        hla_antibodies_raw_list=antibodies_raw_list,
+        hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups), parsing_issues
+
+
+def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[str]],
+                                               supportive_antibodies: HLAAntibodies) \
+        -> AssumedHLATypingParsingResult:
+    """
+    :param potential_hla_typing_raw: all potential hla_typing codes that were derived from
+                                     a lab test (likely PCR) of patient are stored.
+                                     This is then processed to assumed hla_typing that contains only
+                                     the typing that has a match with antibodies and therefore is
+                                     meaning for crossmatch computation.
+    :param supportive_antibodies: certain antibodies which help to transform potential
+                                           HLA Typing into assumed.
+    :return: assumed HLA typing and parsing issues for the remaining assumed HLA typing.
+    """
+    antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
+    # Transform potential HLA typing into assumed HLA typing
+    assumed_hla_typing = []
+    for potential_hla_type_raw in potential_hla_typing_raw:
+        potential_hla_type = [create_hla_type(hla) for hla in potential_hla_type_raw]
+        AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
+
+        if len(potential_hla_type) == 1:
+            # just one code -> solved
+            assumed_hla_typing.append(potential_hla_type)
+            continue
+        # Try to leave only those HLA types that have their codes among antibodies
+        maybe_assumed_hla_type = [hla_type for hla_type in potential_hla_type
+                                  if hla_type.code in antibodies_codes]
+        if maybe_assumed_hla_type:
+            assumed_hla_typing.append(maybe_assumed_hla_type)
+            continue
+        # If there are none found, then it's not a problem.
+        # Convert the entire potential HLA type to low resolution.
+        assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
+
+    # Get parsing issues
+    assumed_hla_typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
+        HLATypingRawDTO(
+            hla_types_list=[HLATypeRaw(hla.raw_code) for assumed_hla_type in
+                            assumed_hla_typing for hla in assumed_hla_type]
+        ))
+
+    return AssumedHLATypingParsingResult(assumed_hla_typing, assumed_hla_typing_parsing_issues)
+
+
+def _convert_potential_hla_type_to_low_res(potential_hla_type: List[HLAType]) -> List[HLAType]:
+    return [create_hla_type(raw_code=potential_hla_type[0].code.get_low_res_code())]
