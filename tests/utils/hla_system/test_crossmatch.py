@@ -3,15 +3,10 @@ import os
 import unittest
 from typing import Callable, List
 
-from local_testing_utilities.generate_patients import (CROSSMATCH_TXM_EVENT_NAME, 
-                                                       LARGE_DATA_FOLDER,
-                                                       SMALL_DATA_FOLDER_WITH_CROSSMATCH,
-                                                       store_generated_patients_from_folder)
-from tests.test_utilities.prepare_app_for_tests import DbTests
+from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
-from txmatching.database.services.txm_event_service import get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibody, HLAAntibodyRaw, HLAType
+from txmatching.patients.hla_model import HLAAntibody, HLAAntibodyRaw
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
@@ -24,7 +19,7 @@ from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing,
 logger = logging.getLogger(__name__)
 
 
-class TestCrossmatch(DbTests):
+class TestCrossmatch(unittest.TestCase):
     # It's difficult to have a patient with type A.
     # And in order to create the unittests for all special cases, sometimes we will state
     # directly that a patient is type A (even if biologically he is not)
@@ -601,6 +596,8 @@ class TestCrossmatch(DbTests):
         self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
 
     def test_positive_crossmatch_theoretical_antibody(self):
+        # add_theoretical_crossmatch_type changes match_type of theoretical antibodies to theoretical, thus these two
+        # antibodies will be equal
         positive_matches = {AntibodyMatch(
                                 hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
                                                          code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
