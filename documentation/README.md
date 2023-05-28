@@ -155,7 +155,7 @@ directed against HLA.
 The patient's antibodies are found by a special lab test. This test does not
 find the antibodies directly but tests which antigens (from a limited set) the
 patient has the antibodies against. The lab test can differ from lab to lab,
-each can use a bit different set of antigens in the test.
+each can use a bit different set of antigens in the test. This set of found antibodies is called the luminex.
 
 For each antigen, the test reports an MFI value, higher MFI values indicate the
 stronger immunological response. The lab then uses some cutoff value to
@@ -224,6 +224,15 @@ antibodies in split or mixed resolution. In this case, the results are limited:
   HIGH_RES_WITH_SPLIT crossmatch types where type A is required.). This is more
   important in the case the antibodies are in high resolution. Because in split
   it can be usually quite safely assumed that all split antibodies were tested.
+
+## What is MFI and cutoff?
+
+MFI stands for Mean Fluorescence Intensity. The MFI is supposed to measure the
+shift in fluorescence intensity of a
+population of cells. Basically it is saying how strong an antibody is, and
+whether to perceive it as a threat. That’s
+why we define “cutoffs”. They are thresholds that indicate which antibodies are
+dangerous for the transplantation.
 
 ## Crossmatch
 
@@ -336,14 +345,42 @@ donor has not been typed for.
 Example: the donor has not been typed for DP and DQ antigens, but the recipient
 has an antibody DQB1*03:10.
 
-## What is MFI and cutoff?
+#### Evaluating crossmatch
 
-MFI stands for Mean Fluorescence Intensity. The MFI is supposed to measure the
-shift in fluorescence intensity of a
-population of cells. Basically it is saying how strong an antibody is, and
-whether to perceive it as a threat. That’s
-why we define “cutoffs”. They are thresholds that indicate which antibodies are
-dangerous for the transplantation.
+When determining a crossmatch, we need the antigens of the donor and the antibodies of the recipient.
+However, each HLA has a specific level of detail. For instance, an HLA may look like this: `A*01:02:03:05`,
+but some transplant centers might shorten it to `A*01:02`. Moreover, each allele occurs with varying frequencies.
+For instance, `A*01:02:03:05` is a very rare allele, whereas `A*01:02:01:01` is quite common, but both are shortened
+to the same form: `A*01:02`.
+
+
+Therefore, we accept "potential hla typing" for the donor as a list of lists. Each inner list is a collection of HLA
+codes, all of which share the same code on the split level. Furthermore, each code is accompanied by information about
+whether it occurs frequently or not, denoted as 1 (the code occurs frequently) or 0 (the code does not occur frequently).
+
+To evaluate the potential hla typing and to determine which codes the donor likely has, we use the following logic:
+
+**If all codes in such a list have 1** (they are all frequent), we consider them all.
+**If all codes in such a list have 0** (none of them are frequent), we take only the split code they all share.
+**If some codes are 0 and some are 1**, we consider all the codes, and we calculate the crossmatch as usual. The only
+difference arises when we create the final summary of the crossmatch. For HLA codes that have a 1, if we have
+at least one positive match, we report the crossmatch as usual, but we consider only the highest crossmatch for this
+one HLA code. If there is a positive crossmatch with an HLA code labeled with 0, we issue an empty summary with a
+warning that further detailed investigation may be required.
+
+Detailed example:
+
+Donor has either (`A*01:02:03:05`, 0) or (`A*01:02:01:01`, 1). But we only get `A*01:02` with MFI 3000 and `A*01:02`
+with MFI 1000. But recipient has also an antibody `A*01:02`.
+Thus we say that there is a crossmatch for `A*01:02` with MFI 3000. But this is a problem, since `A*01:02:03:05` has a
+very small frequency and there is a much bigger chance that the donor has a HLA `A*01:02:01:01`. This gets evaluated
+as "there is most probably not a crossmatch but this case needs further investigation".
+
+Suppose the donor could have either `A*01:02:03:05` (marked as 0) or `A*01:02:01:01` (marked as 1). However,
+we only receive `A*01:02` with MFI 3000 and `A*01:02` with MFI 1000, and the recipient also has an antibody `A*01:02`.
+Consequently, we conclude that there is a crossmatch for `A*01:02` with MFI 3000. However, this could be problematic as
+`A*01:02:03:05` has a very low frequency, and there is a much higher chance that the donor has the HLA `A*01:02:01:01`.
+As a result, this case is evaluated as "there is most likely no crossmatch, but this case requires further investigation."
 
 ## What is PRA?
 
