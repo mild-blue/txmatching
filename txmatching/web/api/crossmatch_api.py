@@ -11,7 +11,7 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibodyRaw
+from txmatching.patients.hla_model import AssumedHLAType, HLATypeRaw, HLAAntibodies, HLAType, HLAAntibodyRaw
 from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
     AntibodyMatchForHLAGroup
@@ -136,7 +136,7 @@ def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: 
     return exclusive_codes
 
 
-def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[str]],
+def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[AssumedHLAType]],
                                                supportive_antibodies: HLAAntibodies) \
         -> AssumedHLATypingParsingResult:
     """
@@ -153,7 +153,7 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
     for potential_hla_type_raw in potential_hla_typing_raw:
-        potential_hla_type = [create_hla_type(hla) for hla in potential_hla_type_raw]
+        potential_hla_type = [create_hla_type(hla.hla_code) for hla in potential_hla_type_raw]
         AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
 
         if len(potential_hla_type) == 1:

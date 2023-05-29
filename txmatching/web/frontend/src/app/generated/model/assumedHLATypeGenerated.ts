@@ -9,13 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HlaTypeGenerated } from './hlaTypeGenerated';
-import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
 
 
-export interface AntibodyMatchForHLATypeGenerated { 
-    antibody_matches?: Array<AntibodyMatchGenerated>;
-    assumed_hla_type: Array<HlaTypeGenerated>;
-    summary_antibody?: AntibodyMatchGenerated;
+export interface AssumedHLATypeGenerated { 
+    hla_code: string;
+    is_frequent: boolean;
 }
 

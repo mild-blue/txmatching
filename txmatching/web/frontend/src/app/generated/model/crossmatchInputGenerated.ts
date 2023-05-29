@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AssumedHLATypeGenerated } from './assumedHLATypeGenerated';
 import { HLAAntibodyInGenerated } from './hLAAntibodyInGenerated';
 
 
@@ -16,7 +17,7 @@ export interface CrossmatchInputGenerated {
     /**
      * HLA typing of the patient. Use high resolution if available.
      */
-    donor_hla_typing: Array<string>;
+    potential_donor_hla_typing: Array<Array<AssumedHLATypeGenerated>>;
     /**
      * Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.
      */
