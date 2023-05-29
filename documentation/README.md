@@ -345,7 +345,7 @@ donor has not been typed for.
 Example: the donor has not been typed for DP and DQ antigens, but the recipient
 has an antibody DQB1*03:10.
 
-#### Evaluating crossmatch
+#### Evaluating crossmatch with cadaverous donors
 
 When determining a crossmatch, we need the antigens of the donor and the antibodies of the recipient.
 However, each HLA has a specific level of detail. For instance, an HLA may look like this: `A*01:02:03:05`,
@@ -356,31 +356,28 @@ to the same form: `A*01:02`.
 
 Therefore, we accept "potential hla typing" for the donor as a list of lists. Each inner list is a collection of HLA
 codes, all of which share the same code on the split level. Furthermore, each code is accompanied by information about
-whether it occurs frequently or not, denoted as 1 (the code occurs frequently) or 0 (the code does not occur frequently).
+whether it occurs frequently or not. The necessity for having multiple potential HLA codes stems from the occasional
+uncertainty about the exact code the donor has, thus we have to consider several variants of one HLA code.
 
 To evaluate the potential hla typing and to determine which codes the donor likely has, we use the following logic:
 
-**If all codes in such a list have 1** (they are all frequent), we consider them all.
-**If all codes in such a list have 0** (none of them are frequent), we take only the split code they all share.
-**If some codes are 0 and some are 1**, we consider all the codes, and we calculate the crossmatch as usual. The only
-difference arises when we create the final summary of the crossmatch. For HLA codes that have a 1, if we have
+**If all codes in such a list are frequent**, we consider them all.
+**If none of the codes in such a list are frequent** (none of them are frequent), we resort to using only the shared
+split code.
+**If some codes are frequent and some arent**, we consider all the codes, and we calculate the crossmatch as usual.
+The only difference arises when we create the final summary of the crossmatch. For HLA codes that are frequent, if we have
 at least one positive match, we report the crossmatch as usual, but we consider only the highest crossmatch for this
-one HLA code. If there is a positive crossmatch with an HLA code labeled with 0, we issue an empty summary with a
+one HLA code. If there is a positive crossmatch with an HLA code that is not frequent, we issue an empty summary with a
 warning that further detailed investigation may be required.
 
 Detailed example:
 
-Donor has either (`A*01:02:03:05`, 0) or (`A*01:02:01:01`, 1). But we only get `A*01:02` with MFI 3000 and `A*01:02`
-with MFI 1000. But recipient has also an antibody `A*01:02`.
+Donor has either `A*01:02:03:05` which is not frequent or `A*01:02:01:01` which is frequent. But we only get `A*01:02`
+with MFI 3000 and `A*01:02` with MFI 1000 on the input. The recipient has an antibody `A*01:02`.
 Thus we say that there is a crossmatch for `A*01:02` with MFI 3000. But this is a problem, since `A*01:02:03:05` has a
-very small frequency and there is a much bigger chance that the donor has a HLA `A*01:02:01:01`. This gets evaluated
-as "there is most probably not a crossmatch but this case needs further investigation".
-
-Suppose the donor could have either `A*01:02:03:05` (marked as 0) or `A*01:02:01:01` (marked as 1). However,
-we only receive `A*01:02` with MFI 3000 and `A*01:02` with MFI 1000, and the recipient also has an antibody `A*01:02`.
-Consequently, we conclude that there is a crossmatch for `A*01:02` with MFI 3000. However, this could be problematic as
-`A*01:02:03:05` has a very low frequency, and there is a much higher chance that the donor has the HLA `A*01:02:01:01`.
-As a result, this case is evaluated as "there is most likely no crossmatch, but this case requires further investigation."
+very small frequency and there is a much higher probability that the donor has a HLA `A*01:02:01:01`. This situation is
+evaluated as, "there is most likely no crossmatch, but there's a small chance that a crossmatch could occur. Therefore,
+this case requires further investigation."
 
 ## What is PRA?
 
