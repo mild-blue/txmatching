@@ -155,7 +155,7 @@ directed against HLA.
 The patient's antibodies are found by a special lab test. This test does not
 find the antibodies directly but tests which antigens (from a limited set) the
 patient has the antibodies against. The lab test can differ from lab to lab,
-each can use a bit different set of antigens in the test.
+each can use a bit different set of antigens in the test. This set of found antibodies is called the luminex.
 
 For each antigen, the test reports an MFI value, higher MFI values indicate the
 stronger immunological response. The lab then uses some cutoff value to
@@ -224,6 +224,15 @@ antibodies in split or mixed resolution. In this case, the results are limited:
   HIGH_RES_WITH_SPLIT crossmatch types where type A is required.). This is more
   important in the case the antibodies are in high resolution. Because in split
   it can be usually quite safely assumed that all split antibodies were tested.
+
+## What is MFI and cutoff?
+
+MFI stands for Mean Fluorescence Intensity. The MFI is supposed to measure the
+shift in fluorescence intensity of a
+population of cells. Basically it is saying how strong an antibody is, and
+whether to perceive it as a threat. That’s
+why we define “cutoffs”. They are thresholds that indicate which antibodies are
+dangerous for the transplantation.
 
 ## Crossmatch
 
@@ -335,15 +344,6 @@ donor has not been typed for.
 
 Example: the donor has not been typed for DP and DQ antigens, but the recipient
 has an antibody DQB1*03:10.
-
-## What is MFI and cutoff?
-
-MFI stands for Mean Fluorescence Intensity. The MFI is supposed to measure the
-shift in fluorescence intensity of a
-population of cells. Basically it is saying how strong an antibody is, and
-whether to perceive it as a threat. That’s
-why we define “cutoffs”. They are thresholds that indicate which antibodies are
-dangerous for the transplantation.
 
 ## What is PRA?
 
@@ -515,3 +515,134 @@ the patient has antibodies. However, only antibodies with MFI only slightly over
 the original cutoff. This is possible in the app via an increase in the cutoff
 of the patient. Whether to increase the cutoff and how much is always up to the
 user to decide.
+
+## Evaluating crossmatch with cadaverous donors
+
+When determining a crossmatch, we need the antigens of the cadaverous donor and the antibodies of the recipient.
+We accept "potential hla typing" for the donor as a list of lists. Each inner list is a collection of HLA
+codes, all of which share the same code on the split level. Furthermore, each code is accompanied by information about
+whether it occurs frequently or not. The necessity for having multiple potential HLA codes stems from the occasional
+uncertainty about the exact code the donor has, thus we have to consider several variants of one HLA code.
+
+### The determination of donor's most likely HLA typing
+
+To evaluate the potential hla typing and to determine the assumed hla typing based on it
+with codes the donor likely has, we aim to retain only codes that are present
+among recipients' antibodies. If it isn't possible, we convert these codes to their split version.
+However, if there is only one code in the list, we leave it unchanged.
+
+For example, donor has such potential hla typing
+
+```
+[
+  [
+    {
+      hla_code: "A*01:01", is_frequent: True
+    },
+    {
+      hla_code: "A*01:02", is_frequent: True
+    }
+  ],
+  [
+    {
+      hla_code: "A*02:01", is_frequent: True
+    }
+  ],
+  [
+    {
+      hla_code: "B*01:01", is_frequent: False 
+    },
+    {
+      hla_code: "B*01:03", is_frequent: True
+    }
+  ]
+  ...
+]
+```
+
+and recipient has some antibodies
+```text
+["A*01:01", "A*02:03"]
+```
+
+In this case the first `A1` potential HLA type is evaluated just as
+```text
+[{hla_code: "A*01:01", is_frequent: True}]
+```
+because crossmatch occurs just with `A1*01:01` antibody.
+
+Further note that in the case of `B1` potential HLA type, the crossmatch did not occur with any of the antibodies, 
+so this potential HLA type transforms to the assumed HLA type with only one SPLIT:
+```text
+[{hla_code: "B1", is_frequent: True}]
+```
+
+In the last case, with only one HLA code, `A*02:01`, in the potential HLA type, it will remain unchanged.
+
+### Special crossmatch with theoretical antibodies
+
+One more distinguishing feature of this API compared to the classical TXM virtual crossmatch
+is the fact that if we have a double antibody that has both chains among the donor's antigens 
+and splits into two separate theoretical antibodies, 
+these theoretical antibodies have a negative crossmatch.
+
+For example, donor has such potential hla typing:
+
+```
+[
+  [
+    {hla_code: "DQA1*01:01", "is_frequent": True}
+  ],
+  [
+    {hla_code: "DQB1*02:02", is_frequent: True}
+  ]
+  ...
+],
+```
+
+And recipient has some antibodies:
+```text
+[{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
+{'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
+{'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
+{'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000}]
+```
+
+Note that both chains of the first antibody `DQ[01:01,02:02]` in the list correspond to two
+potential HLA typing codes `DQA1*01:01`, respectively `DQB1*02:02`.
+Moreover, these antibody chains will be parsed by our algorithm 
+(which you can also read about in this document) as two separate theoretical antibodies. 
+In a normal situation with living patients, a virtual crossmatch on TXM will find a 
+positive crossmatch with these antigens, but in the case of cadaverous donors, 
+we evaluate this crossmatch as **negative**.
+
+### Allele frequencies in a population
+There is one more aspect that we want to take into account:
+each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a very rare allele, 
+whereas `A*01:02:01:01` is quite common, but both are shortened to the same form: `A*01:02`.
+
+Furthermore, for a brief summarization of this match, we select one summary antibody
+that best represents the presence or absence of a crossmatch. For this we consider 
+antibodies' MFI values and their frequencies of occurrence in the population 
+using the following logic:
+
+#### All codes in such a list are frequent
+If all codes in such a list are frequent, we take the antibody with the largest MFI as the summary.
+
+#### None of the codes in such a list are frequent
+If none of the codes in such a list are frequent, we resort to using only the shared
+split code as the summary.
+
+#### Some codes are frequent and some aren't
+If we have a crossmatch with at least one frequently occurring HLA type in the population, 
+we select the antibody with the highest MFI corresponding to these positively frequently encountered 
+HLA types as the summary antibody.</br>
+If such HLA type is not found, we do not select any antibody and provide a warning 
+indicating that there is most likely no crossmatch, but there's a small chance that a crossmatch could occur,
+so this case requires further investigation.</br>
+For example, donor has either `A*01:02:03:05` which is not frequent or `A*01:02:01:01` which is frequent. But we only get `A*01:02`
+with MFI 3000 and `A*01:02` with MFI 1000 on the input. The recipient has an antibody `A*01:02`.
+Thus we say that there is a crossmatch for `A*01:02` with MFI 3000. But this is a problem, since `A*01:02:03:05` has a
+very small frequency and there is a much higher probability that the donor has a HLA `A*01:02:01:01`. This situation is
+evaluated with warning "there is most likely no crossmatch, but there's a small chance that a crossmatch could occur. Therefore,
+this case requires further investigation."
