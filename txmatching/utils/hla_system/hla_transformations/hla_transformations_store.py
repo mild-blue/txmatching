@@ -28,6 +28,14 @@ MAX_ANTIGENS_PER_GROUP = 2
 MAX_ANTIGENS_PER_OTHER_DR = 3
 
 
+@dataclass
+class HLAAntibodyPreprocessed:
+    raw_code: str
+    mfi: int
+    cutoff: int
+    secondary_raw_code: Optional[str] = None
+
+
 def parse_hla_raw_code_and_return_parsing_issue_list(
         hla_raw_code: str
 ) -> Tuple[List[ParsingIssueBase], Optional[HLACode]]:
@@ -57,21 +65,10 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         hla_antibodies_raw: List[HLAAntibodyRaw]
 ) -> Tuple[List[ParsingIssueBase], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
-    @dataclass
-    class HLAAntibodyPreprocessed:
-        raw_code: str
-        mfi: int
-        cutoff: int
-        secondary_raw_code: Optional[str] = None
 
     parsing_issues = []
     # 2. Extract antibodies from raw code (sometimes there can be multiple in one raw code)
-    hla_antibodies_preprocessed = [
-        HLAAntibodyPreprocessed(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
-                                hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
-        for hla_antibody_raw in hla_antibodies_raw
-        for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
-    ]
+    hla_antibodies_preprocessed = preprocess_hla_antibodies_raw(hla_antibodies_raw)
 
     # 3. Parse antibodies
     hla_antibodies_parsed = []
@@ -176,6 +173,15 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
             ) for group in hla_per_groups
         ],
     ))
+
+
+def preprocess_hla_antibodies_raw(hla_antibodies_raw: List[HLAAntibodyRaw]):
+    return [
+        HLAAntibodyPreprocessed(preprocessed_antibody.raw_code, hla_antibody_raw.mfi,
+                                hla_antibody_raw.cutoff, preprocessed_antibody.secondary_raw_code)
+        for hla_antibody_raw in hla_antibodies_raw
+        for preprocessed_antibody in preprocess_hla_code_in(hla_antibody_raw.raw_code)
+    ]
 
 
 def group_exceedes_max_number_of_hla_types(hla_types: List[HLAType], hla_group: HLAGroup):
