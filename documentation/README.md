@@ -586,6 +586,36 @@ is the fact that if we have a double antibody that has both chains among the don
 and splits into two separate theoretical antibodies, 
 these theoretical antibodies have a negative crossmatch.
 
+For example, donor has such potential hla typing:
+
+```
+[
+  [
+    {hla_code: "DQA1*01:01", "is_frequent": True}
+  ],
+  [
+    {hla_code: "DQB1*02:02", is_frequent: True}
+  ]
+  ...
+],
+```
+
+And recipient has some antibodies:
+```text
+[{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
+{'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
+{'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
+{'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000}]
+```
+
+Note that both chains of the first antibody `DQ[01:01,02:02]` in the list correspond to two
+potential HLA typing codes `DQA1*01:01`, respectively `DQB1*02:02`.
+Moreover, these antibody chains will be parsed by our algorithm 
+(which you can also read about in this document) as two separate theoretical antibodies. 
+In a normal situation with living patients, a virtual crossmatch on TXM will find a 
+positive crossmatch with these antigens, but in the case of cadaverous donors, 
+we evaluate this crossmatch as **negative**.
+
 ### Allele frequencies in a population
 There is one more aspect that we want to take into account:
 each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a very rare allele, 
