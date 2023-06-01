@@ -64,7 +64,7 @@ class DoCrossmatch(Resource):
                                                  antibodies_raw_list,
                                                  crossmatch_dto.get_maximum_donor_hla_typing())
 
-        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
+        assumed_hla_typing_parsing_result, hla_typing_parsing_issues = _get_assumed_hla_typing_and_parsing_issues(
             crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
         assumed_hla_typing = assumed_hla_typing_parsing_result.assumed_hla_typing
         typing_parsing_issues = assumed_hla_typing_parsing_result.parsing_issues
@@ -77,7 +77,7 @@ class DoCrossmatch(Resource):
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
-            parsing_issues=antibodies_parsing_issues + typing_parsing_issues
+            parsing_issues=antibodies_parsing_issues + typing_parsing_issues + hla_typing_parsing_issues
         ))
 
 
@@ -138,7 +138,7 @@ def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: 
 
 def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[AssumedHLAType]],
                                                supportive_antibodies: HLAAntibodies) \
-        -> AssumedHLATypingParsingResult:
+        -> Tuple[AssumedHLATypingParsingResult, List[ParsingIssueBase]]:
     """
     :param potential_hla_typing_raw: all potential hla_typing codes that were derived from
                                      a lab test (likely PCR) of patient are stored.
@@ -150,22 +150,46 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     :return: assumed HLA typing and parsing issues for the remaining assumed HLA typing.
     """
     antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
+    parsing_issues = []
     # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
     for potential_hla_type_raw in potential_hla_typing_raw:
+        code_frequencies = {hla.hla_code: hla.is_frequent for hla in potential_hla_type_raw}
+        num_of_codes = len(potential_hla_type_raw)
+        num_of_infrequent_codes = len([hla_type for hla_type in potential_hla_type_raw
+                 if code_frequencies[hla_type.hla_code] == False])
+
         potential_hla_type = [create_hla_type(hla.hla_code) for hla in potential_hla_type_raw]
+
+        # if all codes are infrequent we take only split
+        if num_of_infrequent_codes == num_of_codes:
+            potential_hla_type = _convert_potential_hla_type_to_low_res(potential_hla_type)
+
         AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
 
         if len(potential_hla_type) == 1:
             # just one code -> solved
             assumed_hla_typing.append(potential_hla_type)
             continue
+
         # Try to leave only those HLA types that have their codes among antibodies
         maybe_assumed_hla_type = [hla_type for hla_type in potential_hla_type
                                   if hla_type.code in antibodies_codes]
-        if maybe_assumed_hla_type:
-            assumed_hla_typing.append(maybe_assumed_hla_type)
+
+        # if there is a mix of frequent and infrequent codes we evaluate them separately
+        if num_of_infrequent_codes < num_of_codes and num_of_infrequent_codes > 0:
+            for hla_type in maybe_assumed_hla_type:
+                assumed_hla_typing.append([hla_type])
+                if code_frequencies[hla_type.display_code] == False:
+                    parsing_issues.append(ParsingIssueBase(hla_code_or_group=hla_type.display_code,
+                                          parsing_issue_detail=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH,
+                                          message=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value))
             continue
+        else:
+            if maybe_assumed_hla_type:
+                assumed_hla_typing.append(maybe_assumed_hla_type)
+                continue
+
         # If there are none found, then it's not a problem.
         # Convert the entire potential HLA type to low resolution.
         assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
@@ -177,7 +201,8 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
                             assumed_hla_typing for hla in assumed_hla_type]
         ))
 
-    return AssumedHLATypingParsingResult(assumed_hla_typing, assumed_hla_typing_parsing_issues)
+    return AssumedHLATypingParsingResult(assumed_hla_typing,
+                                         assumed_hla_typing_parsing_issues), parsing_issues
 
 
 def _convert_potential_hla_type_to_low_res(potential_hla_type: List[HLAType]) -> List[HLAType]:

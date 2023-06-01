@@ -46,7 +46,7 @@ class TestDoCrossmatchApi(DbTests):
     def test_do_crossmatch_api_with_ultra_high_res(self):
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'A*02:02:01:02', "is_frequent": True}],
-                                           [{"hla_code": 'A*01:01:01:07', "is_frequent": False}]],
+                                           [{"hla_code": 'A*01:01:01:07', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2350,
                                       'name': 'A*02:02',
                                       'cutoff': 1000
@@ -151,8 +151,8 @@ class TestDoCrossmatchApi(DbTests):
     def test_theoretical_and_double_antibodies(self):
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True}],
-                                           [{"hla_code": 'DPB1*03:01', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*01:04', "is_frequent": False}],
+                                           [{"hla_code": 'DPB1*03:01', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*01:04', "is_frequent": True}],
                                            [{"hla_code": 'DPA1*02:01', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DP[01:04,03:01]',
@@ -292,9 +292,9 @@ class TestDoCrossmatchApi(DbTests):
         # CASE: general case
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*01:04', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*01:04', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*02:01', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
@@ -329,9 +329,9 @@ class TestDoCrossmatchApi(DbTests):
         # CASE: multiple matched antibodies for one hla type
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:08', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:03',
@@ -362,9 +362,9 @@ class TestDoCrossmatchApi(DbTests):
         # CASE: potential hla type without matched antibodies in high res
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:08', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:07',
@@ -395,9 +395,9 @@ class TestDoCrossmatchApi(DbTests):
         # CASE: potential hla type without matched antibodies even in low res
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:08', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DQA1*01:08',
@@ -431,10 +431,10 @@ class TestDoCrossmatchApi(DbTests):
         # CASE: assumed hla type from antibodies below cutoff
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DQA1*02:01', "is_frequent": False}],
-                                           [{"hla_code": 'A*02:01', "is_frequent": False},
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DQA1*02:01', "is_frequent": True}],
+                                           [{"hla_code": 'A*02:01', "is_frequent": True},
                                             {"hla_code": 'A*02:02', "is_frequent": True}],
                                            [{"hla_code": 'DPA1*01:04', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
@@ -472,9 +472,9 @@ class TestDoCrossmatchApi(DbTests):
         json = {
             "potential_donor_hla_typing": [# both splits DPA1 and DPA2 are presented here
                                            [{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1*02:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*02:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:04', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
@@ -498,9 +498,9 @@ class TestDoCrossmatchApi(DbTests):
         json = {
             "potential_donor_hla_typing": [# incorrect HLA type
                                            [{"hla_code": 'DPA1*01:03', "is_frequent": True},
-                                            {"hla_code": 'DPA1', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:04', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
@@ -524,9 +524,9 @@ class TestDoCrossmatchApi(DbTests):
 
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:05', "is_frequent": True},
-                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
-                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}],
-                                           [{"hla_code": 'DPA1*02:01', "is_frequent": False}],
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": True}],
+                                           [{"hla_code": 'DPA1*02:01', "is_frequent": True}],
                                            [{"hla_code": 'DQA1*01:08', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
