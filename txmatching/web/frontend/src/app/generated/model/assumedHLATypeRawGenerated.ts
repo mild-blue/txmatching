@@ -9,11 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HlaTypeGenerated } from './hlaTypeGenerated';
 
 
-export interface AssumedHLATypeGenerated { 
-    hla_type?: HlaTypeGenerated;
+export interface AssumedHLATypeRawGenerated { 
+    hla_code: string;
     is_frequent: boolean;
 }
 

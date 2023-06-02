@@ -5,6 +5,7 @@ export * from './antibodyMatchForHLATypeGenerated';
 export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
 export * from './assumedHLATypeGenerated';
+export * from './assumedHLATypeRawGenerated';
 export * from './bloodGroupEnumGenerated';
 export * from './calculatedMatchingsGenerated';
 export * from './compatibilityGraphEntryGenerated';

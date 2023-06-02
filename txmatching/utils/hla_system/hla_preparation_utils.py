@@ -1,8 +1,9 @@
 from typing import List
 
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLATyping, HLATypeRaw, HLAType, HLAAntibodyRaw, \
-    HLAAntibodies, HLAAntibody
+from txmatching.patients.hla_model import (AssumedHLAType, AssumedHLATypeRaw, HLATyping, 
+                                           HLATypeRaw, HLAType, HLAAntibodyRaw,
+                                           HLAAntibodies, HLAAntibody)
 from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_typing_raw_and_return_parsing_issue_list, \
@@ -30,6 +31,18 @@ def create_hla_type(raw_code: str) -> HLAType:
     return HLAType(
         raw_code=raw_code,
         code=code
+    )
+
+
+def create_assumed_hla_type(raw_type: AssumedHLATypeRaw) -> AssumedHLAType:
+    code = parse_hla_raw_code_and_return_parsing_issue_list(raw_type.hla_code)[1]
+    hla_type = HLAType(
+        raw_code=raw_type.hla_code,
+        code=code
+    )
+    return AssumedHLAType(
+        hla_type=hla_type,
+        is_frequent=raw_type.is_frequent
     )
 
 

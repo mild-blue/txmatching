@@ -15,11 +15,14 @@ HLACode = crossmatch_api.clone("HlaCode", HLACode)
 
 HLAAntibody = crossmatch_api.clone("HlaAntibody", HLAAntibody)
 
-HLAType = crossmatch_api.clone("HlaType", HLAType)
-
 AntibodyMatchJson = crossmatch_api.clone("AntibodyMatch", AntibodyMatchJson)
 
 AssumedHLAType = crossmatch_api.model('AssumedHLAType', {
+    'hla_type': fields.Nested(HLAType),
+    'is_frequent': fields.Boolean(required=True),
+})
+
+AssumedHLATypeRaw = crossmatch_api.model('AssumedHLATypeRaw', {
     'hla_code': fields.String(required=True),
     'is_frequent': fields.Boolean(required=True),
 })
@@ -30,7 +33,7 @@ CrossmatchJsonIn = crossmatch_api.model(
         'potential_donor_hla_typing': fields.List(required=True,
                                                 cls_or_instance=fields.List(
                                                         required=True,
-                                                        cls_or_instance=fields.Nested(AssumedHLAType, required=True)),
+                                                        cls_or_instance=fields.Nested(AssumedHLATypeRaw, required=True)),
                                                 example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
                                                 description=HLA_TYPING_DESCRIPTION),
         'recipient_antibodies': fields.List(required=True,
@@ -46,7 +49,7 @@ CrossmatchJsonIn = crossmatch_api.model(
 )
 
 AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
-    'assumed_hla_type': fields.List(required=True, cls_or_instance=fields.Nested(HLAType, required=True)),
+    'assumed_hla_type': fields.List(required=True, cls_or_instance=fields.Nested(AssumedHLAType, required=True)),
     'antibody_matches': fields.List(required=False, cls_or_instance=fields.Nested(AntibodyMatchJson)),
     'summary_antibody': fields.Nested(AntibodyMatchJson, readonly=True)
 })

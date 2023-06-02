@@ -5,7 +5,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a, is_all_antibodies_in_high_res)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
+from txmatching.patients.hla_model import (AssumedHLAType, HLAAntibodies, HLAAntibody,
                                            HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel, HLAGroup)
@@ -37,11 +37,11 @@ class AntibodyMatchForHLAType:
     # - must not be empty
     # - must have a uniform HLA code in low res, i.e we do not allow situation ['A*01:01', 'A*02:01']
     # - must not have several codes in low res, i.e. we do not allow situation ['A1', 'A1']
-    assumed_hla_type: List[HLAType]
+    assumed_hla_type: List[AssumedHLAType]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
     summary_antibody: Optional[AntibodyMatch] = field(init=False)  # antibody with the largest MFI value
 
-    def __init__(self, assumed_hla_type: List[HLAType],
+    def __init__(self, assumed_hla_type: List[AssumedHLAType],
                        antibody_matches: List[AntibodyMatch] = None):
         self.__class__.validate_assumed_hla_type(assumed_hla_type)
         self.assumed_hla_type = assumed_hla_type
@@ -49,11 +49,15 @@ class AntibodyMatchForHLAType:
 
     @property
     def summary_antibody(self) -> Optional[AntibodyMatch]:
+        # extract only frequent codes
+        frequent_codes = [hla_type for hla_type in self.assumed_hla_type if hla_type.is_frequent == True]
+        # if there is crossmatch only with infrequent codes, don't return anything
+
         return max(self.antibody_matches,
                    key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
 
     @classmethod
-    def from_crossmatched_antibodies(cls, assumed_hla_type: List[HLAType],
+    def from_crossmatched_antibodies(cls, assumed_hla_type: List[AssumedHLAType],
                                      crossmatched_antibodies: List[AntibodyMatchForHLAGroup]):
         """
         Generates an instance of the AntibodyMatchForHLAType according to the assumed HLA type
@@ -69,7 +73,7 @@ class AntibodyMatchForHLAType:
         return cls(assumed_hla_type, antibody_matches)
 
     @classmethod
-    def validate_assumed_hla_type(cls, assumed_hla_type: List[HLAType]):
+    def validate_assumed_hla_type(cls, assumed_hla_type: List[AssumedHLAType]):
         if not assumed_hla_type:
             raise AttributeError("AntibodyMatchForHLAType needs at least one assumed hla_type.")
         if cls._are_multiple_hlas_in_assumed(assumed_hla_type) and \
@@ -81,7 +85,7 @@ class AntibodyMatchForHLAType:
                              "split or broad resolution.")
 
     @classmethod
-    def _find_common_matches(cls, assumed_hla_type: List[HLAType],
+    def _find_common_matches(cls, assumed_hla_type: List[AssumedHLAType],
                                   crossmatched_antibodies: List[AntibodyMatchForHLAGroup]) \
             -> Optional[List[AntibodyMatch]]:
         return [antibody_group_match for match_per_group in crossmatched_antibodies
@@ -90,26 +94,26 @@ class AntibodyMatchForHLAType:
                                                                  antibody_group_match.hla_antibody)]
 
     @classmethod
-    def _is_assumed_hla_type_in_high_res(cls, assumed_hla_type: List[HLAType]) -> bool:
-        for hla_type in assumed_hla_type:
-            if not hla_type.code.is_in_high_res():
+    def _is_assumed_hla_type_in_high_res(cls, assumed_hla_type: List[AssumedHLAType]) -> bool:
+        for single_assumed_hla_type in assumed_hla_type:
+            if not single_assumed_hla_type.hla_type.code.is_in_high_res():
                 return False
         return True
 
     @classmethod
-    def _are_multiple_hlas_in_assumed(cls, assumed_hla_type: List[HLAType]) -> bool:
+    def _are_multiple_hlas_in_assumed(cls, assumed_hla_type: List[AssumedHLAType]) -> bool:
         return len(assumed_hla_type) > 1
 
     @classmethod
-    def _is_assumed_hla_type_uniquely_defined_in_low_res(cls, assumed_hla_type: List[HLAType]) -> bool:
-        return len({hla_type.code.get_low_res_code() for hla_type in assumed_hla_type}) > 1
+    def _is_assumed_hla_type_uniquely_defined_in_low_res(cls, assumed_hla_type: List[AssumedHLAType]) -> bool:
+        return len({single_assumed_hla_type.hla_type.code.get_low_res_code() for single_assumed_hla_type in assumed_hla_type}) > 1
 
     @classmethod
-    def _is_assumed_hla_type_corresponds_antibody(cls, assumed_hla_type: List[HLAType],
+    def _is_assumed_hla_type_corresponds_antibody(cls, assumed_hla_type: List[AssumedHLAType],
                                                   hla_antibody: HLAAntibody) -> bool:
-        for hla_type in assumed_hla_type:
-            if hla_type.code == hla_antibody.code or (hla_antibody.second_code and
-                                                      hla_type.code == hla_antibody.second_code):
+        for single_assumed_hla_type in assumed_hla_type:
+            if single_assumed_hla_type.hla_type.code == hla_antibody.code or (hla_antibody.second_code and
+                                                      single_assumed_hla_type.hla_type.code == hla_antibody.second_code):
                 return True
         return False
 

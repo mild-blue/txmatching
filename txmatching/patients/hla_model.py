@@ -76,7 +76,7 @@ class HLATyping(PersistentlyHashable):
 
 
 @dataclass
-class AssumedHLAType(PersistentlyHashable):
+class AssumedHLATypeRaw(PersistentlyHashable):
     hla_code: str
     is_frequent: bool
 
@@ -85,6 +85,19 @@ class AssumedHLAType(PersistentlyHashable):
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, self.hla_code)
+        update_persistent_hash(hash_, self.is_frequent)
+
+
+@dataclass
+class AssumedHLAType(PersistentlyHashable):
+    hla_type: HLAType
+    is_frequent: bool
+
+    def __hash__(self):
+        return hash((self.hla_type, self.is_frequent))
+
+    def update_persistent_hash(self, hash_: HashType):
+        update_persistent_hash(hash_, self.hla_type)
         update_persistent_hash(hash_, self.is_frequent)
 
 
