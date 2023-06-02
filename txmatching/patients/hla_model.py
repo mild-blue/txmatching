@@ -76,7 +76,7 @@ class HLATyping(PersistentlyHashable):
 
 
 @dataclass
-class AssumedHLATypeRaw(PersistentlyHashable):
+class PotentialHLATypeRaw(PersistentlyHashable):
     hla_code: str
     is_frequent: bool
 

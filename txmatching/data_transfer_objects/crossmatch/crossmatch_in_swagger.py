@@ -22,7 +22,7 @@ AssumedHLAType = crossmatch_api.model('AssumedHLAType', {
     'is_frequent': fields.Boolean(required=True),
 })
 
-AssumedHLATypeRaw = crossmatch_api.model('AssumedHLATypeRaw', {
+PotentialHLATypeRaw = crossmatch_api.model('PotentialHLATypeRaw', {
     'hla_code': fields.String(required=True),
     'is_frequent': fields.Boolean(required=True),
 })
@@ -33,7 +33,7 @@ CrossmatchJsonIn = crossmatch_api.model(
         'potential_donor_hla_typing': fields.List(required=True,
                                                 cls_or_instance=fields.List(
                                                         required=True,
-                                                        cls_or_instance=fields.Nested(AssumedHLATypeRaw, required=True)),
+                                                        cls_or_instance=fields.Nested(PotentialHLATypeRaw, required=True)),
                                                 example=ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
                                                 description=HLA_TYPING_DESCRIPTION),
         'recipient_antibodies': fields.List(required=True,

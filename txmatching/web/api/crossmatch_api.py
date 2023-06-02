@@ -13,9 +13,9 @@ from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueB
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
-from txmatching.patients.hla_model import AssumedHLAType, HLATypeRaw, HLAAntibodies, HLAType
+from txmatching.patients.hla_model import AssumedHLAType, AssumedHLATypeRaw, HLATypeRaw, HLAAntibodies
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
+from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type, create_hla_typing, \
     create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, \
@@ -84,9 +84,9 @@ class DoCrossmatch(Resource):
         ))
 
 
-def _all_codes_infrequent(hla_type_list: Union[List[AssumedHLATypeRaw], List[AssumedHLAType]]) -> bool:
+def _all_codes_infrequent(hla_type_list: Union[List[PotentialHLATypeRaw], List[AssumedHLAType]]) -> bool:
     for hla_type in hla_type_list:
-        if hla_type.is_frequent is True:
+        if hla_type.is_frequent:
             return False
     return True
 
@@ -95,7 +95,9 @@ def _get_zero_frequency_parsing_issues(antibody_matches_for_hla_type: List[Antib
     List[ParsingIssueBase]:
     parsing_issues = []
     for antibody_match in antibody_matches_for_hla_type:
-        if _all_codes_infrequent(antibody_match.assumed_hla_type):
+        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(antibody_match.assumed_hla_type,
+                                                                                        antibody_match.antibody_matches)
+        if len(antibody_match.antibody_matches) > 0 and len(antibody_matches_with_frequent_codes) == 0:
             hla_codes = ', '.join([hla_code.hla_type.display_code for hla_code in antibody_match.assumed_hla_type])
             parsing_issues.append(
             ParsingIssueBase(hla_code_or_group=hla_codes,
@@ -160,7 +162,7 @@ def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: 
     return exclusive_codes
 
 
-def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[AssumedHLATypeRaw]],
+def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[PotentialHLATypeRaw]],
                                                supportive_antibodies: HLAAntibodies) \
         -> AssumedHLATypingParsingResult:
     """
@@ -215,7 +217,7 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
 
 
 def _convert_potential_hla_type_to_low_res(potential_hla_type: List[AssumedHLAType]) -> List[AssumedHLAType]:
-    assumed_hla_type_raw = AssumedHLATypeRaw(
+    assumed_hla_type_raw = PotentialHLATypeRaw(
         hla_code=potential_hla_type[0].hla_type.code.get_low_res_code(),
         is_frequent=True
     )
