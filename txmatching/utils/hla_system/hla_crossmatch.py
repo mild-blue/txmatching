@@ -49,12 +49,18 @@ class AntibodyMatchForHLAType:
 
     @property
     def summary_antibody(self) -> Optional[AntibodyMatch]:
-        # extract only frequent codes
-        frequent_codes = [hla_type for hla_type in self.assumed_hla_type if hla_type.is_frequent == True]
-        # if there is crossmatch only with infrequent codes, don't return anything
-
-        return max(self.antibody_matches,
-                   key=lambda match: match.hla_antibody.mfi) if self.antibody_matches else None
+        frequent_codes = {
+                hla_type.hla_type.code
+                for hla_type in self.assumed_hla_type
+                if hla_type.is_frequent
+                }
+        antibodies_against_frequent_codes = [
+                antibody 
+                for antibody in self.antibody_matches 
+                if antibody.hla_antibody.code in frequent_codes
+                ]
+        return max(antibodies_against_frequent_codes,
+                   key=lambda match: match.hla_antibody.mfi) if antibodies_against_frequent_codes else None
 
     @classmethod
     def from_crossmatched_antibodies(cls, assumed_hla_type: List[AssumedHLAType],

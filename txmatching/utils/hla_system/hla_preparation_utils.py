@@ -1,7 +1,7 @@
 from typing import List
 
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import (AssumedHLAType, AssumedHLATypeRaw, HLATyping, 
+from txmatching.patients.hla_model import (AssumedHLAType, AssumedHLATypeRaw, HLATyping,
                                            HLATypeRaw, HLAType, HLAAntibodyRaw,
                                            HLAAntibodies, HLAAntibody)
 from txmatching.utils.enums import HLAAntibodyType

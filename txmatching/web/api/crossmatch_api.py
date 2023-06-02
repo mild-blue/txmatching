@@ -86,7 +86,7 @@ class DoCrossmatch(Resource):
 
 def _all_codes_infrequent(hla_type_list: Union[List[AssumedHLATypeRaw], List[AssumedHLAType]]) -> bool:
     for hla_type in hla_type_list:
-        if hla_type.is_frequent == True:
+        if hla_type.is_frequent is True:
             return False
     return True
 

@@ -1,7 +1,8 @@
 from dataclasses import asdict
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
+from txmatching.patients.hla_model import AssumedHLATypeRaw
+from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type, create_hla_type
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -318,10 +319,10 @@ class TestDoCrossmatchApi(DbTests):
                 # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
                 # just DPA1*01:04 matches with recipients antibody, so we can determine the only
                 # one correct HLA type 'DPA1*01:04' from the given potential:
-                asdict(create_hla_type('DPA1*01:04'))
+                asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*01:04', True)))
                 ],
-                [asdict(create_hla_type('DQA1*02:01'))],
-                [asdict(create_hla_type('DPA1*01:04'))]]
+                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DQA1*02:01', True)))],
+                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*01:04', True)))]]
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
@@ -385,10 +386,11 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [
-                [asdict(create_hla_type('DPA1'))],  # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
-                                                    # potential HLA type at the input (no matched antibodies in high res)
-                [asdict(create_hla_type('DQA1*01:08'))],
-                [asdict(create_hla_type('DPA1*02:01'))]]
+                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1', True)))],
+                # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
+                # potential HLA type at the input (no matched antibodies in high res)
+                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DQA1*01:08', True)))],
+                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*02:01', True)))]]
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
 
