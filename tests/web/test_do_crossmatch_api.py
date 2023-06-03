@@ -1,8 +1,8 @@
 from dataclasses import asdict
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.patients.hla_model import AssumedHLATypeRaw
-from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type, create_hla_type
+from txmatching.patients.hla_model import PotentialHLATypeRaw
+from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -189,7 +189,7 @@ class TestDoCrossmatchApi(DbTests):
                                    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                                    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                                    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
+                                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
                                   [parsing_issue['parsing_issue_detail'] for parsing_issue in res.json['parsing_issues']])
             double_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA1', 'high_res': 'DPA1*01:04', 'split': 'DPA1'},
                                                       'cutoff': 2000,
@@ -217,7 +217,8 @@ class TestDoCrossmatchApi(DbTests):
 
     def test_theoretical_and_double_antibodies_equal_hlas_below_cutoff(self):
         json = {
-            "potential_donor_hla_typing": [['DQA1*01:01'], ['DQB1*02:02']],
+            "potential_donor_hla_typing": [[{"hla_code": 'DQA1*01:01', "is_frequent": True}],
+                                           [{"hla_code": 'DQB1*02:02', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
                                      {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
                                      {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
@@ -241,7 +242,8 @@ class TestDoCrossmatchApi(DbTests):
                              res.json['hla_to_antibody'][0]['antibody_matches'])
 
         json = {
-            "potential_donor_hla_typing": [['DQA1*01:01'], ['DQB1*02:02']],
+            "potential_donor_hla_typing": [[{"hla_code": 'DQA1*01:01', "is_frequent": True}],
+                                           [{"hla_code": 'DQB1*02:02', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 2100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},  # mfi >= cutoff
                                      {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
                                      {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
@@ -266,7 +268,8 @@ class TestDoCrossmatchApi(DbTests):
 
         # ULTRA HIGH RES
         json = {
-            "potential_donor_hla_typing": [['DQA1*01:01:02:01'], ['DQB1*02:02']],
+            "potential_donor_hla_typing": [[{"hla_code": 'DQA1*01:01:02:01', "is_frequent": True}],
+                                           [{"hla_code": 'DQB1*02:02', "is_frequent": True}]],
             "recipient_antibodies": [{'mfi': 100, 'name': 'DQ[01:01, 02:02]', 'cutoff': 2000},
                                      {'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
                                      {'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
@@ -319,10 +322,10 @@ class TestDoCrossmatchApi(DbTests):
                 # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
                 # just DPA1*01:04 matches with recipients antibody, so we can determine the only
                 # one correct HLA type 'DPA1*01:04' from the given potential:
-                asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*01:04', True)))
+                asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', True)))
                 ],
-                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DQA1*02:01', True)))],
-                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*01:04', True)))]]
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DQA1*02:01', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', True)))]]
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
@@ -356,8 +359,8 @@ class TestDoCrossmatchApi(DbTests):
             # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
             # both antibodies 'DPA1*01:03' and 'DPA1*01:04' matches at the same time,
             # so we cannot determine the only one correct HLA type for this potential (leave both)
-            expected_assumed_hla_type = [asdict(create_hla_type('DPA1*01:03')),
-                                         asdict(create_hla_type('DPA1*01:04'))]
+            expected_assumed_hla_type = [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:03', True))),
+                                         asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', True)))]
             self.assertCountEqual(expected_assumed_hla_type, res_assumed_hla_typing[0])
 
         # CASE: potential hla type without matched antibodies in high res
@@ -386,11 +389,11 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [
-                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1', True)))],
                 # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
                 # potential HLA type at the input (no matched antibodies in high res)
-                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DQA1*01:08', True)))],
-                [asdict(create_assumed_hla_type(AssumedHLATypeRaw('DPA1*02:01', True)))]]
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DQA1*01:08', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*02:01', True)))]]
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
 
@@ -421,10 +424,10 @@ class TestDoCrossmatchApi(DbTests):
                                       for antibody_match in res.json['hla_to_antibody']]
             # The expected results are no different from the results of the previous case.
             expected_assumed_hla_typing = [
-                [asdict(create_hla_type('DPA1'))],  # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1', True)))],  # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
                                                     # potential HLA type at the input (no matched antibodies even in low res)
-                [asdict(create_hla_type('DQA1*01:08'))],
-                [asdict(create_hla_type('DPA1*02:01'))]]
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DQA1*01:08', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*02:01', True)))]]
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
             # This means that we transfer assumed to split in all cases when we did not find
@@ -461,10 +464,11 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [
-                [asdict(create_hla_type('DPA1*01:04'))],
-                [asdict(create_hla_type('DQA1*02:01'))],
-                [asdict(create_hla_type('DPA1*01:04'))],
-                [asdict(create_hla_type('A*02:01'))]  # was recognized by supportive HLA antibody with MFI below cutoff
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DQA1*02:01', True)))],
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', True)))],
+                # was recognized by supportive HLA antibody with MFI below cutoff
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('A*02:01', True)))]
             ]
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
@@ -520,6 +524,96 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual('Multiple HLA codes in assumed HLA type are only accepted'
                              ' in high resolution.',
                              res.json['message'])
+
+        # CASE: only infrequent codes
+        json = {
+            "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": False},
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": False},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}]],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DQA1*02:01',
+                                      'cutoff': 2000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            res_assumed_hla_typing = [antibody_match['assumed_hla_type']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            expected_assumed_hla_typing = [[asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1', True)))]]
+            self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
+            self.assertCountEqual(expected_assumed_hla_typing,
+                                  res_assumed_hla_typing)
+
+        # CASE: mixed frequency without warning
+        json = {
+            "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}]],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DPA1*01:06',
+                                      'cutoff': 2000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            res_assumed_hla_typing = [antibody_match['assumed_hla_type']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            res_parsing_issues = res.json['parsing_issues']
+            expected_assumed_hla_typing =  [
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:03', True))),
+                asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:06', True)))]
+            ]
+            self.assertFalse(ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value in [
+                parsing_issue['message'] for parsing_issue in res_parsing_issues
+            ])
+            self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
+            self.assertCountEqual(expected_assumed_hla_typing,
+                                  res_assumed_hla_typing)
+
+        # CASE: mixed frequency with warning
+        json = {
+            "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:06', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}]],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            res_assumed_hla_typing = [antibody_match['assumed_hla_type']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            res_parsing_issues = res.json['parsing_issues']
+            expected_assumed_hla_typing =  [
+                [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', False)))]
+            ]
+            self.assertTrue(ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value in [
+                parsing_issue['message'] for parsing_issue in res_parsing_issues
+            ])
+            self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
+            self.assertCountEqual(expected_assumed_hla_typing,
+                                  res_assumed_hla_typing)
 
     def test_summary_antibody(self):
         # summary antibody is the antibody that is key for a given HLA type, thus having the highest MFI

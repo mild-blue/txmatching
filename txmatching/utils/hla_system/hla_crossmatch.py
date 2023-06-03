@@ -130,9 +130,10 @@ def get_antibody_matches_with_frequent_codes(assumed_hla_type: List[AssumedHLATy
         if hla_type.is_frequent
         }
     return [
-        antibody_match 
-        for antibody_match in antibody_matches 
+        antibody_match
+        for antibody_match in antibody_matches
         if antibody_match.hla_antibody.code in frequent_codes
+        or antibody_match.hla_antibody.second_code in frequent_codes
         ]
 
 

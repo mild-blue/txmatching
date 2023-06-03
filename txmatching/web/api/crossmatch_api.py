@@ -11,11 +11,11 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
-    HLAAntibodiesUploadDTO
-from txmatching.patients.hla_model import AssumedHLAType, AssumedHLATypeRaw, HLATypeRaw, HLAAntibodies
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group
-from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type, create_hla_typing, \
+from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibodyRaw
+from txmatching.utils.enums import HLAAntibodyType
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
+    AntibodyMatchForHLAGroup
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
     create_antibody
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_antibodies_raw_and_return_parsing_issue_list, \
@@ -23,6 +23,8 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_raw_code_with_details, \
     preprocess_hla_antibodies_raw, \
     HLAAntibodyPreprocessed
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.web.web_utils.namespaces import crossmatch_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -160,7 +162,6 @@ def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: 
             exclusive_codes.extend([antibody_raw_preprocessed.raw_code,
                                     antibody_raw_preprocessed.secondary_raw_code])
     return exclusive_codes
-
 
 def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[PotentialHLATypeRaw]],
                                                supportive_antibodies: HLAAntibodies) \
