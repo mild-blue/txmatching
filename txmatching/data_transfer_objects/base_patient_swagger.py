@@ -8,6 +8,7 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLATyping)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueJson
 from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import ParsingIssueDetail
 from txmatching.web.web_utils.namespaces import patient_api, public_api
 
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DPA1*01:07', 'DRB4*01:01',
@@ -89,7 +90,7 @@ ANTIBODIES_SPECIAL_EXAMPLE = [
         "cutoff": 2000
     },
     {
-        "name": 'DRB4*01:0',
+        "name": 'DRB4*01:01',
         "mfi": 1000,
         "cutoff": 2000
     },
@@ -499,6 +500,24 @@ HLA_TO_ANTIBODY_EXAMPLE = [
             "summary_antibody": None
         }
     ]
+
+HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE = [
+    {
+        "hla_code_or_group": "A*02:29",
+        "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
+        "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
+    },
+    {
+        "hla_code_or_group": "DPA1*02:01",
+        "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
+        "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
+    },
+    {
+        "hla_code_or_group": "DRB1*15:03, DRB1*15:112, DRB1*15:07",
+        "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
+        "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
+    }
+]
 
 MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough the system and can be used for the \
 identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.'

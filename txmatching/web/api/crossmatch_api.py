@@ -76,22 +76,22 @@ class DoCrossmatch(Resource):
                 crossmatched_antibodies=crossmatched_antibodies_per_group)
             for assumed_hla_type in assumed_hla_typing]
 
-        zero_frequency_parsing_issues = _get_zero_frequency_parsing_issues(antibody_matches_for_hla_type)
+        low_frequency_parsing_issues = _get_parsing_issues_for_unlikely_crossmatches(antibody_matches_for_hla_type)
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
-            parsing_issues=antibodies_parsing_issues + typing_parsing_issues + zero_frequency_parsing_issues
+            parsing_issues=antibodies_parsing_issues + typing_parsing_issues + low_frequency_parsing_issues
         ))
 
 
-def _all_codes_infrequent(hla_type_list: Union[List[PotentialHLATypeRaw], List[AssumedHLAType]]) -> bool:
+def _are_all_codes_infrequent(hla_type_list: Union[List[PotentialHLATypeRaw], List[AssumedHLAType]]) -> bool:
     for hla_type in hla_type_list:
         if hla_type.is_frequent:
             return False
     return True
 
 
-def _get_zero_frequency_parsing_issues(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType]) -> \
+def _get_parsing_issues_for_unlikely_crossmatches(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType]) -> \
     List[ParsingIssueBase]:
     parsing_issues = []
     for antibody_match in antibody_matches_for_hla_type:
@@ -183,7 +183,7 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
         potential_hla_type = [create_assumed_hla_type(hla) for hla in potential_hla_type_raw]
 
         # if all codes are infrequent we take only split
-        if _all_codes_infrequent(potential_hla_type_raw):
+        if _are_all_codes_infrequent(potential_hla_type_raw):
             potential_hla_type = _convert_potential_hla_type_to_low_res(potential_hla_type)
 
         AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)

@@ -11,7 +11,7 @@
  */
 
 
-export interface AssumedHLATypeRawGenerated { 
+export interface PotentialHLATypeRawGenerated { 
     hla_code: string;
     is_frequent: boolean;
 }

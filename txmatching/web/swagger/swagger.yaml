@@ -115,16 +115,6 @@ definitions:
         required:
         - is_frequent
         type: object
-    AssumedHLATypeRaw:
-        properties:
-            hla_code:
-                type: string
-            is_frequent:
-                type: boolean
-        required:
-        - hla_code
-        - is_frequent
-        type: object
     BloodGroupEnum:
         enum:
         - A
@@ -622,7 +612,7 @@ definitions:
                         is_frequent: true
                 items:
                     items:
-                        $ref: '#/definitions/AssumedHLATypeRaw'
+                        $ref: '#/definitions/PotentialHLATypeRaw'
                     type: array
                 type: array
             recipient_antibodies:
@@ -657,7 +647,7 @@ definitions:
                     name: A*11:01:35
                 -   cutoff: 2000
                     mfi: 1000
-                    name: DRB4*01:0
+                    name: DRB4*01:01
                 -   cutoff: 2000
                     mfi: 3000
                     name: DP[02:01,02:01]
@@ -941,6 +931,28 @@ definitions:
                     $ref: '#/definitions/AntibodyMatchForHLAType'
                 type: array
             parsing_issues:
+                example:
+                -   hla_code_or_group: A*02:29
+                    message: There is most likely no crossmatch, but there is a small
+                        chance that a crossmatch could occur. Therefore, this case
+                        requires further investigation.
+                    parsing_issue_detail: There is most likely no crossmatch, but
+                        there is a small chance that a crossmatch could occur. Therefore,
+                        this case requires further investigation.
+                -   hla_code_or_group: DPA1*02:01
+                    message: There is most likely no crossmatch, but there is a small
+                        chance that a crossmatch could occur. Therefore, this case
+                        requires further investigation.
+                    parsing_issue_detail: There is most likely no crossmatch, but
+                        there is a small chance that a crossmatch could occur. Therefore,
+                        this case requires further investigation.
+                -   hla_code_or_group: DRB1*15:03, DRB1*15:112, DRB1*15:07
+                    message: There is most likely no crossmatch, but there is a small
+                        chance that a crossmatch could occur. Therefore, this case
+                        requires further investigation.
+                    parsing_issue_detail: There is most likely no crossmatch, but
+                        there is a small chance that a crossmatch could occur. Therefore,
+                        this case requires further investigation.
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
@@ -1875,6 +1887,16 @@ definitions:
         - patients_changed_antigens
         - patients_checked_antibodies
         - patients_checked_antigens
+        type: object
+    PotentialHLATypeRaw:
+        properties:
+            hla_code:
+                type: string
+            is_frequent:
+                type: boolean
+        required:
+        - hla_code
+        - is_frequent
         type: object
     Recipient:
         properties:

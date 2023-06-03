@@ -2385,21 +2385,6 @@
             },
             "type": "object"
         },
-        "AssumedHLATypeRaw": {
-            "required": [
-                "hla_code",
-                "is_frequent"
-            ],
-            "properties": {
-                "hla_code": {
-                    "type": "string"
-                },
-                "is_frequent": {
-                    "type": "boolean"
-                }
-            },
-            "type": "object"
-        },
         "BloodGroupEnum": {
             "enum": [
                 "A",
@@ -3054,7 +3039,7 @@
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/AssumedHLATypeRaw"
+                            "$ref": "#/definitions/PotentialHLATypeRaw"
                         }
                     }
                 },
@@ -3103,7 +3088,7 @@
                             "cutoff": 2000
                         },
                         {
-                            "name": "DRB4*01:0",
+                            "name": "DRB4*01:01",
                             "mfi": 1000,
                             "cutoff": 2000
                         },
@@ -3533,6 +3518,23 @@
                 },
                 "parsing_issues": {
                     "type": "array",
+                    "example": [
+                        {
+                            "hla_code_or_group": "A*02:29",
+                            "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
+                            "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
+                        },
+                        {
+                            "hla_code_or_group": "DPA1*02:01",
+                            "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
+                            "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
+                        },
+                        {
+                            "hla_code_or_group": "DRB1*15:03, DRB1*15:112, DRB1*15:07",
+                            "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
+                            "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
+                        }
+                    ],
                     "items": {
                         "$ref": "#/definitions/ParsingIssueBase"
                     }
@@ -4897,6 +4899,21 @@
                     "items": {
                         "$ref": "#/definitions/ParsingIssue"
                     }
+                }
+            },
+            "type": "object"
+        },
+        "PotentialHLATypeRaw": {
+            "required": [
+                "hla_code",
+                "is_frequent"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "is_frequent": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

@@ -4,6 +4,7 @@ from txmatching.data_transfer_objects.base_patient_swagger import (
     ANTIBODIES_SPECIAL_EXAMPLE,
     ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
     HLA_TO_ANTIBODY_EXAMPLE,
+    HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
     HLA_TYPING_DESCRIPTION,
     HLAAntibodyJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibody, HLAType, HLACode
@@ -61,6 +62,7 @@ CrossmatchJsonOut = crossmatch_api.model(
                                        cls_or_instance=fields.Nested(AntibodyMatchForHLAType),
                                        example=HLA_TO_ANTIBODY_EXAMPLE),
         'parsing_issues': fields.List(required=True,
-                                      cls_or_instance=fields.Nested(ParsingIssueBaseJson))
+                                      cls_or_instance=fields.Nested(ParsingIssueBaseJson),
+                                      example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE)
     }
 )
