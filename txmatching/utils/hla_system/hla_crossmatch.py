@@ -136,6 +136,7 @@ def get_antibody_matches_with_frequent_codes(assumed_hla_type: List[AssumedHLATy
         ]
 
 
+# pylint: disable=consider-using-in
 def _antibody_matches_frequent_code(antibody_match: AntibodyMatch, frequent_codes: List[HLACode]) -> bool:
     for frequent_code in frequent_codes:
         if frequent_code == antibody_match.hla_antibody.code or \
