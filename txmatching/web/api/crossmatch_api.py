@@ -11,7 +11,7 @@ from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import Cr
     CrossmatchJsonOut
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLATypeRaw, HLAAntibodies, HLAType, HLAAntibodyRaw
+from txmatching.patients.hla_model import AssumedHLAType, HLAAntibodyRaw, HLATypeRaw, HLAAntibodies, PotentialHLATypeRaw
 from txmatching.utils.enums import HLAAntibodyType
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies_per_group, \
     AntibodyMatchForHLAGroup
@@ -177,7 +177,6 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     :return: assumed HLA typing and parsing issues for the remaining assumed HLA typing.
     """
     antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
-    parsing_issues_zero_frequency = []
     # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
     for potential_hla_type_raw in potential_hla_typing_raw:
@@ -195,8 +194,8 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
             continue
 
         # Try to leave only those HLA types that have their codes among antibodies
-        maybe_assumed_hla_type = [single_potential_hla_type for single_potential_hla_type in potential_hla_type
-                                  if single_potential_hla_type.hla_type.code in antibodies_codes]
+        maybe_assumed_hla_type = [single_assumed_hla_type for single_assumed_hla_type in potential_hla_type
+                                  if single_assumed_hla_type.hla_type.code in antibodies_codes]
 
         if maybe_assumed_hla_type:
             assumed_hla_typing.append(maybe_assumed_hla_type)
@@ -214,10 +213,10 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
         ))
 
     return AssumedHLATypingParsingResult(assumed_hla_typing,
-                                         assumed_hla_typing_parsing_issues + parsing_issues_zero_frequency)
+                                         assumed_hla_typing_parsing_issues)
 
 
-def _convert_potential_hla_type_to_low_res(potential_hla_type: List[AssumedHLAType]) -> List[AssumedHLAType]:
+def _convert_potential_hla_type_to_low_res(potential_hla_type: List[PotentialHLATypeRaw]) -> List[AssumedHLAType]:
     assumed_hla_type_raw = PotentialHLATypeRaw(
         hla_code=potential_hla_type[0].hla_type.code.get_low_res_code(),
         is_frequent=True

@@ -132,9 +132,16 @@ def get_antibody_matches_with_frequent_codes(assumed_hla_type: List[AssumedHLATy
     return [
         antibody_match
         for antibody_match in antibody_matches
-        if antibody_match.hla_antibody.code in frequent_codes
-        or antibody_match.hla_antibody.second_code in frequent_codes
+        if _antibody_matches_frequent_code(antibody_match, frequent_codes)
         ]
+
+
+def _antibody_matches_frequent_code(antibody_match: AntibodyMatch, frequent_codes: List[HLACode]) -> bool:
+    for frequent_code in frequent_codes:
+        if frequent_code == antibody_match.hla_antibody.code or \
+           frequent_code == antibody_match.hla_antibody.second_code:
+            return True
+    return False
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,

@@ -544,13 +544,17 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
+            res_summary_antibody = [antibody_match['summary_antibody']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            # This is evaluated as a frequent code because, in the event that all codes are infrequent,
+            # we resort to their 'split'. The 'split' is always considered frequent.
             expected_assumed_hla_typing = [[asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1', True)))]]
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
+            self.assertNotEqual(res_summary_antibody, [None])
 
         # CASE: mixed frequency without warning
         json = {
@@ -605,6 +609,10 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
             res_parsing_issues = res.json['parsing_issues']
+            res_summary_antibody = [antibody_match['summary_antibody']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            # Here, the code is evaluated as infrequent because the potential typing comprises a mix of
+            # frequent and infrequent codes, and a crossmatch occurred only with the infrequent one.
             expected_assumed_hla_typing =  [
                 [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:04', False)))]
             ]
@@ -614,6 +622,8 @@ class TestDoCrossmatchApi(DbTests):
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
+            # When a crossmatch occurs with only infrequent codes, we leave the summary empty.
+            self.assertEqual(res_summary_antibody, [None])
 
     def test_summary_antibody(self):
         # summary antibody is the antibody that is key for a given HLA type, thus having the highest MFI

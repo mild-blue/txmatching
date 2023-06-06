@@ -503,7 +503,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
 
 HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE = [
     {
-        "hla_code_or_group": "A*02:29",
+        "hla_code_or_group": "A*01:02, A*01:03, A*01:06, A*01:19",
         "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
         "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
     },
