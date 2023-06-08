@@ -503,17 +503,12 @@ HLA_TO_ANTIBODY_EXAMPLE = [
 
 HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE = [
     {
-        "hla_code_or_group": "A*01:02, A*01:03, A*01:06, A*01:19",
-        "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
-        "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
+        "hla_code_or_group": "A*01:06",
+        "message": ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE.value,
+        "parsing_issue_detail": ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE.value
     },
     {
         "hla_code_or_group": "DPA1*02:01",
-        "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
-        "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
-    },
-    {
-        "hla_code_or_group": "DRB1*15:03, DRB1*15:112, DRB1*15:07",
         "message": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
         "parsing_issue_detail": ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
     }

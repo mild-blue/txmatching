@@ -3520,17 +3520,12 @@
                     "type": "array",
                     "example": [
                         {
-                            "hla_code_or_group": "A*01:02, A*01:03, A*01:06, A*01:19",
-                            "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
-                            "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
+                            "hla_code_or_group": "A*01:06",
+                            "message": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct.",
+                            "parsing_issue_detail": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct."
                         },
                         {
                             "hla_code_or_group": "DPA1*02:01",
-                            "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
-                            "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
-                        },
-                        {
-                            "hla_code_or_group": "DRB1*15:03, DRB1*15:112, DRB1*15:07",
                             "message": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.",
                             "parsing_issue_detail": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation."
                         }
