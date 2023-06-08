@@ -124,25 +124,17 @@ class AntibodyMatchForHLAType:
 
 def get_antibody_matches_with_frequent_codes(assumed_hla_type: List[AssumedHLAType],
                                              antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
-    frequent_codes = {
+    frequent_codes = [
         hla_type.hla_type.code
         for hla_type in assumed_hla_type
         if hla_type.is_frequent
-        }
+    ]
     return [
         antibody_match
         for antibody_match in antibody_matches
-        if _antibody_matches_frequent_code(antibody_match, frequent_codes)
-        ]
-
-
-# pylint: disable=consider-using-in
-def _antibody_matches_frequent_code(antibody_match: AntibodyMatch, frequent_codes: List[HLACode]) -> bool:
-    for frequent_code in frequent_codes:
-        if frequent_code == antibody_match.hla_antibody.code or \
-           frequent_code == antibody_match.hla_antibody.second_code:
-            return True
-    return False
+        if antibody_match.hla_antibody.code in frequent_codes
+        or antibody_match.hla_antibody.second_code in frequent_codes
+    ]
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
