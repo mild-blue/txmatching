@@ -932,7 +932,7 @@ definitions:
                 type: array
             parsing_issues:
                 example:
-                -   hla_code_or_group: A*02:29
+                -   hla_code_or_group: A*01:02, A*01:03, A*01:06, A*01:19
                     message: There is most likely no crossmatch, but there is a small
                         chance that a crossmatch could occur. Therefore, this case
                         requires further investigation.
