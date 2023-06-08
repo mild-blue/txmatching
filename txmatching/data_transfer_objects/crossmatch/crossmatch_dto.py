@@ -12,10 +12,6 @@ class CrossmatchDTOIn:
     potential_donor_hla_typing: List[List[PotentialHLATypeRaw]]
     recipient_antibodies: List[HLAAntibodiesUploadDTO]
 
-    def get_maximum_donor_hla_typing(self):
-        return [hla_type.hla_code for hla_typing in self.potential_donor_hla_typing
-                for hla_type in hla_typing]
-
 
 @dataclass
 class CrossmatchDTOOut:

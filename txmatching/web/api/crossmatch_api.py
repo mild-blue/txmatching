@@ -34,6 +34,11 @@ class AssumedHLATypingParsingResult:
     assumed_hla_typing: List[List[AssumedHLAType]]
     parsing_issues: List[ParsingIssueBase]
 
+    def get_maximum_donor_hla_typing_raw(self) -> List[str]:
+        return [single_assumed_hla_type.hla_type.raw_code
+                for assumed_hla_type in self.assumed_hla_typing
+                for single_assumed_hla_type in assumed_hla_type]
+
 
 @crossmatch_api.route('/do-crossmatch', methods=['POST'])
 class DoCrossmatch(Resource):
@@ -53,21 +58,24 @@ class DoCrossmatch(Resource):
                                for antibody in crossmatch_dto.recipient_antibodies]
         hla_antibodies, antibodies_parsing_issues = _get_hla_antibodies_and_parsing_issues(
             antibodies_raw_list)
+
+        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
+            crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
+
         crossmatched_antibodies_per_group = get_crossmatched_antibodies_per_group(
-            donor_hla_typing=create_hla_typing(crossmatch_dto.get_maximum_donor_hla_typing(),
-                                               # TODO: https://github.com/mild-blue/txmatching/issues/1204
-                                               ignore_max_number_hla_types_per_group=True),
+            donor_hla_typing=create_hla_typing(
+                assumed_hla_typing_parsing_result.get_maximum_donor_hla_typing_raw(),
+                # TODO: https://github.com/mild-blue/txmatching/issues/1204
+                ignore_max_number_hla_types_per_group=True),
             recipient_antibodies=hla_antibodies,
             use_high_resolution=True)
         # Remove some antibody matches as exclusion.
         # For this endpoint, double antibodies under cutoff,
         # in which both chains are present in the donor's HLA typing, do not have a crossmatch.
-        _remove_exclusive_theoretical_antibodies(crossmatched_antibodies_per_group,
-                                                 antibodies_raw_list,
-                                                 crossmatch_dto.get_maximum_donor_hla_typing())
-
-        assumed_hla_typing_parsing_result = _get_assumed_hla_typing_and_parsing_issues(
-            crossmatch_dto.potential_donor_hla_typing, hla_antibodies)
+        _remove_exclusive_theoretical_antibodies(
+            crossmatched_antibodies_per_group,
+            antibodies_raw_list,
+            assumed_hla_typing_parsing_result.get_maximum_donor_hla_typing_raw())
 
         assumed_hla_typing = assumed_hla_typing_parsing_result.assumed_hla_typing
         typing_parsing_issues = assumed_hla_typing_parsing_result.parsing_issues
@@ -181,12 +189,12 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     assumed_hla_typing = []
     for potential_hla_type_raw in potential_hla_typing_raw:
         potential_hla_type = [create_assumed_hla_type(hla) for hla in potential_hla_type_raw]
+        AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
 
         # if all codes are infrequent we take only split
         if _are_all_codes_infrequent(potential_hla_type_raw):
-            potential_hla_type = _convert_potential_hla_type_to_low_res(potential_hla_type)
-
-        AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
+            assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
+            continue
 
         if len(potential_hla_type) == 1:
             # just one code -> solved
@@ -216,7 +224,7 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
                                          assumed_hla_typing_parsing_issues)
 
 
-def _convert_potential_hla_type_to_low_res(potential_hla_type: List[PotentialHLATypeRaw]) -> List[AssumedHLAType]:
+def _convert_potential_hla_type_to_low_res(potential_hla_type: List[AssumedHLAType]) -> List[AssumedHLAType]:
     assumed_hla_type_raw = PotentialHLATypeRaw(
         hla_code=potential_hla_type[0].hla_type.code.get_low_res_code(),
         is_frequent=True
