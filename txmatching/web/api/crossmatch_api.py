@@ -105,14 +105,16 @@ def _get_parsing_issues_for_unlikely_crossmatches(antibody_matches_for_hla_type:
     List[ParsingIssueBase]:
     parsing_issues = []
     for antibody_match in antibody_matches_for_hla_type:
-        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(antibody_match.assumed_hla_type,
-                                                                                        antibody_match.antibody_matches)
-        if len(antibody_match.antibody_matches) > 0 and len(antibody_matches_with_frequent_codes) == 0:
-            hla_codes = ', '.join([hla_code.hla_type.display_code for hla_code in antibody_match.assumed_hla_type])
-            parsing_issues.append(
-            ParsingIssueBase(hla_code_or_group=hla_codes,
-            parsing_issue_detail=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH,
-            message=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value))
+        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(
+            antibody_match.assumed_hla_type, antibody_match.antibody_matches)
+        if len(antibody_match.antibody_matches) > 0 and \
+                len(antibody_matches_with_frequent_codes) == 0:
+            hla_codes = ', '.join([hla_code.hla_type.display_code
+                                   for hla_code in antibody_match.assumed_hla_type])
+            parsing_issues.append(ParsingIssueBase(
+                hla_code_or_group=hla_codes,
+                parsing_issue_detail=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH,
+                message=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value))
 
     return parsing_issues
 
@@ -171,6 +173,7 @@ def _get_double_antibodies_chains_totally_represented_in_typing(antibodies_raw: 
                                     antibody_raw_preprocessed.secondary_raw_code])
     return exclusive_codes
 
+
 def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[List[PotentialHLATypeRaw]],
                                                supportive_antibodies: HLAAntibodies) \
         -> AssumedHLATypingParsingResult:
@@ -218,7 +221,8 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
         HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(hla.hla_type.raw_code) for assumed_hla_type in
                             assumed_hla_typing for hla in assumed_hla_type]
-        ))
+        ),
+        ignore_max_number_hla_types=True)  # TODO: https://github.com/mild-blue/txmatching/issues/1204
 
     return AssumedHLATypingParsingResult(assumed_hla_typing,
                                          assumed_hla_typing_parsing_issues)
