@@ -2,7 +2,10 @@ from dataclasses import asdict
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.hla_model import PotentialHLATypeRaw
-from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type
+from txmatching.utils.enums import AntibodyMatchTypes
+from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
+from txmatching.utils.hla_system.hla_preparation_utils import create_assumed_hla_type, \
+    create_antibody_parsed
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -554,14 +557,21 @@ class TestDoCrossmatchApi(DbTests):
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
-            self.assertNotEqual(res_summary_antibody, [None])
+            expected_summary_antibody = AntibodyMatch(
+                hla_antibody=create_antibody_parsed(
+                    raw_code='DPA1*01:04',
+                    mfi=2100,
+                    cutoff=2000),
+                match_type=AntibodyMatchTypes.SPLIT
+            )
+            self.assertEqual(res_summary_antibody, [asdict(expected_summary_antibody)])
 
         # CASE: mixed frequency without warning
         json = {
             "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
                                             {"hla_code": 'DPA1*01:06', "is_frequent": True},
                                             {"hla_code": 'DPA1*01:04', "is_frequent": False}]],
-            "recipient_antibodies": [{'mfi': 2100,
+            "recipient_antibodies": [{'mfi': 2200,
                                       'name': 'DPA1*01:03',
                                       'cutoff': 2000
                                       },
@@ -579,9 +589,9 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_type']
                                       for antibody_match in res.json['hla_to_antibody']]
             res_parsing_issues = res.json['parsing_issues']
-            expected_assumed_hla_typing =  [
+            expected_assumed_hla_typing = [
                 [asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:03', True))),
-                asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:06', True)))]
+                 asdict(create_assumed_hla_type(PotentialHLATypeRaw('DPA1*01:06', True)))]
             ]
             self.assertFalse(ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value in [
                 parsing_issue['message'] for parsing_issue in res_parsing_issues
@@ -589,6 +599,48 @@ class TestDoCrossmatchApi(DbTests):
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
+            res_summary_antibody = [antibody_match['summary_antibody']
+                                      for antibody_match in res.json['hla_to_antibody']]
+            expected_summary_antibody = AntibodyMatch(
+                hla_antibody=create_antibody_parsed(
+                    raw_code='DPA1*01:03',
+                    mfi=2200,
+                    cutoff=2000),
+                match_type=AntibodyMatchTypes.HIGH_RES
+            )
+            self.assertEqual(res_summary_antibody, [asdict(expected_summary_antibody)])
+
+        # CASE: mixed frequency without warning: summary antibody
+        # has the highest MFI among frequent, but not among all
+        json = {
+            "potential_donor_hla_typing": [[{"hla_code": 'DPA1*01:03', "is_frequent": True},
+                                            {"hla_code": 'DPA1*01:04', "is_frequent": False}]],
+            "recipient_antibodies": [{'mfi': 2100,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 4000,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      }],
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary_antibody = [antibody_match['summary_antibody']
+                                    for antibody_match in res.json['hla_to_antibody']]
+            # DPA1*01:04 has the highest MFI 4000, but this is a rather rare antibody,
+            # so this crossmatch is better described by the DPA1*01:03
+            # with the highest MFI among frequent antibodies:
+            expected_summary_antibody = AntibodyMatch(
+                hla_antibody=create_antibody_parsed(
+                    raw_code='DPA1*01:03',
+                    mfi=2100,
+                    cutoff=2000),
+                match_type=AntibodyMatchTypes.HIGH_RES
+            )
+            self.assertEqual(res_summary_antibody, [asdict(expected_summary_antibody)])
 
         # CASE: mixed frequency with warning
         json = {
