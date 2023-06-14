@@ -79,7 +79,7 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            assumed_hla_type:
+            assumed_hla_types:
                 items:
                     $ref: '#/definitions/AssumedHLAType'
                 type: array
@@ -88,7 +88,7 @@ definitions:
                 -   $ref: '#/definitions/AntibodyMatch'
                 readOnly: true
         required:
-        - assumed_hla_type
+        - assumed_hla_types
         type: object
     AntigenMatch:
         properties:
@@ -678,7 +678,7 @@ definitions:
                             second_raw_code: null
                             type: NORMAL
                         match_type: SPLIT
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: A1
@@ -725,7 +725,7 @@ definitions:
                             type: NORMAL
                         match_type: SPLIT
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: A2
@@ -748,7 +748,7 @@ definitions:
                             second_raw_code: null
                             type: NORMAL
                         match_type: SPLIT
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: B7
@@ -771,7 +771,7 @@ definitions:
                             type: NORMAL
                         match_type: SPLIT
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: B35
@@ -794,7 +794,7 @@ definitions:
                             second_raw_code: null
                             type: NORMAL
                         match_type: SPLIT
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DR2
@@ -833,7 +833,7 @@ definitions:
                             type: NORMAL
                         match_type: SPLIT
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DR5
@@ -872,7 +872,7 @@ definitions:
                             second_raw_code: null
                             type: NORMAL
                         match_type: HIGH_RES
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DPA2
@@ -895,7 +895,7 @@ definitions:
                             type: NORMAL
                         match_type: HIGH_RES
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DP1054
@@ -906,7 +906,7 @@ definitions:
                         is_frequent: true
                     summary_antibody: null
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DQA1
@@ -917,7 +917,7 @@ definitions:
                         is_frequent: true
                     summary_antibody: null
                 -   antibody_matches: []
-                    assumed_hla_type:
+                    assumed_hla_types:
                     -   hla_type:
                             code:
                                 broad: DQ1

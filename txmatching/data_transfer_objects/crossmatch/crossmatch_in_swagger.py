@@ -1,22 +1,22 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    ANTIBODIES_SPECIAL_EXAMPLE,
-    ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
-    HLA_TO_ANTIBODY_EXAMPLE,
-    HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
-    HLA_TYPING_DESCRIPTION,
-    HLAAntibodyJsonIn)
-from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibody, HLAType, HLACode
-from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueBaseJson
-from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatchJson
+    ANTIBODIES_SPECIAL_EXAMPLE, ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
+    HLA_TO_ANTIBODY_EXAMPLE, HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
+    HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
+from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
+                                                              HLACode, HLAType)
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
+    ParsingIssueBaseJson
+from txmatching.data_transfer_objects.matchings.matching_swagger import \
+    AntibodyMatchJson
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
-HLACode = crossmatch_api.clone("HlaCode", HLACode)
+HLACode = crossmatch_api.clone('HlaCode', HLACode)
 
-HLAAntibody = crossmatch_api.clone("HlaAntibody", HLAAntibody)
+HLAAntibody = crossmatch_api.clone('HlaAntibody', HLAAntibody)
 
-AntibodyMatchJson = crossmatch_api.clone("AntibodyMatch", AntibodyMatchJson)
+AntibodyMatchJson = crossmatch_api.clone('AntibodyMatch', AntibodyMatchJson)
 
 AssumedHLAType = crossmatch_api.model('AssumedHLAType', {
     'hla_type': fields.Nested(HLAType),
@@ -50,7 +50,7 @@ CrossmatchJsonIn = crossmatch_api.model(
 )
 
 AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
-    'assumed_hla_type': fields.List(required=True, cls_or_instance=fields.Nested(AssumedHLAType, required=True)),
+    'assumed_hla_types': fields.List(required=True, cls_or_instance=fields.Nested(AssumedHLAType, required=True)),
     'antibody_matches': fields.List(required=False, cls_or_instance=fields.Nested(AntibodyMatchJson)),
     'summary_antibody': fields.Nested(AntibodyMatchJson, readonly=True)
 })

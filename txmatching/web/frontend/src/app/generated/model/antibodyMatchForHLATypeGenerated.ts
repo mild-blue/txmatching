@@ -15,7 +15,7 @@ import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
 
 export interface AntibodyMatchForHLATypeGenerated { 
     antibody_matches?: Array<AntibodyMatchGenerated>;
-    assumed_hla_type: Array<AssumedHLATypeGenerated>;
+    assumed_hla_types: Array<AssumedHLATypeGenerated>;
     summary_antibody?: AntibodyMatchGenerated;
 }
 

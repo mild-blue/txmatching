@@ -2323,10 +2323,10 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "assumed_hla_type"
+                "assumed_hla_types"
             ],
             "properties": {
-                "assumed_hla_type": {
+                "assumed_hla_types": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/AssumedHLAType"
@@ -3138,7 +3138,7 @@
                                     "match_type": "SPLIT"
                                 }
                             ],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3207,7 +3207,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3242,7 +3242,7 @@
                                     "match_type": "SPLIT"
                                 }
                             ],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3275,7 +3275,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3310,7 +3310,7 @@
                                     "match_type": "SPLIT"
                                 }
                             ],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3367,7 +3367,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3426,7 +3426,7 @@
                                     "match_type": "HIGH_RES"
                                 }
                             ],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3459,7 +3459,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3477,7 +3477,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
@@ -3495,7 +3495,7 @@
                         },
                         {
                             "antibody_matches": [],
-                            "assumed_hla_type": [
+                            "assumed_hla_types": [
                                 {
                                     "hla_type": {
                                         "code": {
