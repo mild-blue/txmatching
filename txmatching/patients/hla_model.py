@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from txmatching.patients.hla_code import HLACode
-from txmatching.utils.enums import HLAGroup, HLAAntibodyType
+from txmatching.utils.enums import HLAAntibodyType, HLAGroup
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -73,6 +73,32 @@ class HLATyping(PersistentlyHashable):
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLATyping)
         update_persistent_hash(hash_, self.hla_per_groups)
+
+
+@dataclass
+class HLATypeWithFrequencyRaw(PersistentlyHashable):
+    hla_code: str
+    is_frequent: bool
+
+    def __hash__(self):
+        return hash((self.hla_code, self.is_frequent))
+
+    def update_persistent_hash(self, hash_: HashType):
+        update_persistent_hash(hash_, self.hla_code)
+        update_persistent_hash(hash_, self.is_frequent)
+
+
+@dataclass
+class HLATypeWithFrequency(PersistentlyHashable):
+    hla_type: HLAType
+    is_frequent: bool
+
+    def __hash__(self):
+        return hash((self.hla_type, self.is_frequent))
+
+    def update_persistent_hash(self, hash_: HashType):
+        update_persistent_hash(hash_, self.hla_type)
+        update_persistent_hash(hash_, self.is_frequent)
 
 
 @dataclass
