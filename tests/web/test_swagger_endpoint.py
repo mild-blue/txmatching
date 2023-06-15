@@ -8,10 +8,10 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
-                            MATCHING_NAMESPACE, PATH_TO_SWAGGER_YAML,
-                            PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
-                            SERVICE_NAMESPACE, TXM_EVENT_NAMESPACE,
-                            USER_NAMESPACE)
+                            CROSSMATCH_NAMESPACE, MATCHING_NAMESPACE,
+                            PATH_TO_SWAGGER_YAML, PATIENT_NAMESPACE,
+                            PUBLIC_NAMESPACE, SERVICE_NAMESPACE,
+                            TXM_EVENT_NAMESPACE, USER_NAMESPACE)
 
 
 class TestSwaggerEndpoints(DbTests):
@@ -24,6 +24,7 @@ class TestSwaggerEndpoints(DbTests):
             },
             'post': {
                 f'{API_VERSION[1:]}/optimizer': [200],
+                f'{API_VERSION[1:]}/{CROSSMATCH_NAMESPACE}/do-crossmatch': [200],
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403]
