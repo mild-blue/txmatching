@@ -192,24 +192,27 @@ class TestDoCrossmatchApi(DbTests):
                                    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                                    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                                    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-                                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
-                                  [parsing_issue['parsing_issue_detail'] for parsing_issue in res.json['parsing_issues']])
-            double_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA1', 'high_res': 'DPA1*01:04', 'split': 'DPA1'},
-                                                      'cutoff': 2000,
-                                                      'mfi': 2100,
-                                                      'raw_code': 'DPA1*01:04',
-                                                      'second_code': {'broad': 'DP3', 'high_res': 'DPB1*03:01', 'split': 'DP3'},
-                                                      'second_raw_code': 'DPB1*03:01', 'type': 'NORMAL'},
-                                     'match_type': 'HIGH_RES'}
-            theoretical_antibody_match = {'hla_antibody': {'code': {'broad': 'DPA2', 'high_res': 'DPA1*02:01', 'split': 'DPA2'},
-                                                           'cutoff': 2000,
-                                                           'mfi': 3000,
-                                                           'raw_code':
-                                                           'DPA1*02:01',
-                                                           'second_code': None,
-                                                           'second_raw_code': None,
-                                                           'type': 'THEORETICAL'},
-                                          'match_type': 'THEORETICAL'}
+                                   ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY],
+                                  [parsing_issue['parsing_issue_detail'] for parsing_issue in
+                                   res.json['parsing_issues']])
+            double_antibody_match = {
+                'hla_antibody': {'code': {'broad': 'DPA1', 'high_res': 'DPA1*01:04', 'split': 'DPA1'},
+                                 'cutoff': 2000,
+                                 'mfi': 2100,
+                                 'raw_code': 'DPA1*01:04',
+                                 'second_code': {'broad': 'DP3', 'high_res': 'DPB1*03:01', 'split': 'DP3'},
+                                 'second_raw_code': 'DPB1*03:01', 'type': 'NORMAL'},
+                'match_type': 'HIGH_RES'}
+            theoretical_antibody_match = {
+                'hla_antibody': {'code': {'broad': 'DPA2', 'high_res': 'DPA1*02:01', 'split': 'DPA2'},
+                                 'cutoff': 2000,
+                                 'mfi': 3000,
+                                 'raw_code':
+                                     'DPA1*02:01',
+                                 'second_code': None,
+                                 'second_raw_code': None,
+                                 'type': 'THEORETICAL'},
+                'match_type': 'THEORETICAL'}
 
             self.assertTrue(
                 double_antibody_match in res.json['hla_to_antibody'][1]['antibody_matches'])
@@ -257,17 +260,17 @@ class TestDoCrossmatchApi(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertIn({'hla_antibody':
-                                  {'code': {'broad': 'DQA1',
-                                            'high_res': 'DQA1*01:01',
-                                            'split': 'DQA1'},
-                                   'cutoff': 2000,
-                                   'mfi': 2550,
-                                   'raw_code': 'DQA1*01:01',
-                                   'second_code': None,
-                                   'second_raw_code': None,
-                                   'type': 'THEORETICAL'},
-                              'match_type': 'THEORETICAL'},
-                             res.json['hla_to_antibody'][0]['antibody_matches'])
+                               {'code': {'broad': 'DQA1',
+                                         'high_res': 'DQA1*01:01',
+                                         'split': 'DQA1'},
+                                'cutoff': 2000,
+                                'mfi': 2550,
+                                'raw_code': 'DQA1*01:01',
+                                'second_code': None,
+                                'second_raw_code': None,
+                                'type': 'THEORETICAL'},
+                           'match_type': 'THEORETICAL'},
+                          res.json['hla_to_antibody'][0]['antibody_matches'])
 
         # ULTRA HIGH RES
         json = {
@@ -322,10 +325,10 @@ class TestDoCrossmatchApi(DbTests):
                                       for antibody_match in res.json['hla_to_antibody']]
             expected_assumed_hla_typing = [
                 [
-                # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
-                # just DPA1*01:04 matches with recipients antibody, so we can determine the only
-                # one correct HLA type 'DPA1*01:04' from the given potential:
-                asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', True)))
+                    # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
+                    # just DPA1*01:04 matches with recipients antibody, so we can determine the only
+                    # one correct HLA type 'DPA1*01:04' from the given potential:
+                    asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', True)))
                 ],
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DQA1*02:01', True)))],
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', True)))]]
@@ -362,8 +365,9 @@ class TestDoCrossmatchApi(DbTests):
             # for potential HLA type ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
             # both antibodies 'DPA1*01:03' and 'DPA1*01:04' matches at the same time,
             # so we cannot determine the only one correct HLA type for this potential (leave both)
-            expected_assumed_hla_type = [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:03', True))),
-                                         asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', True)))]
+            expected_assumed_hla_type = [
+                asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:03', True))),
+                asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', True)))]
             self.assertCountEqual(expected_assumed_hla_type, res_assumed_hla_typing[0])
 
         # CASE: potential hla type without matched antibodies in high res
@@ -427,8 +431,9 @@ class TestDoCrossmatchApi(DbTests):
                                       for antibody_match in res.json['hla_to_antibody']]
             # The expected results are no different from the results of the previous case.
             expected_assumed_hla_typing = [
-                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))],  # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
-                                                    # potential HLA type at the input (no matched antibodies even in low res)
+                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))],
+                # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
+                # potential HLA type at the input (no matched antibodies even in low res)
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DQA1*01:08', True)))],
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*02:01', True)))]]
             self.assertCountEqual(expected_assumed_hla_typing,
@@ -479,14 +484,18 @@ class TestDoCrossmatchApi(DbTests):
 
         # CASE: assumed hla type has several split/broad codes
         json = {
-            'potential_donor_hla_typing': [# both splits DPA1 and DPA2 are presented here
-                                           [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
-                                            {'hla_code': 'DPA1*02:06', 'is_frequent': True},
-                                            {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
-                                           [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
-                                           [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
+            'potential_donor_hla_typing': [  # both splits DPA1 and DPA2 are presented here
+                [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
+                 {'hla_code': 'DPA1*02:06', 'is_frequent': True},
+                 {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
+                [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
+                [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
             'recipient_antibodies': [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2100,
+                                      'name': 'DPA1*02:06',
                                       'cutoff': 2000
                                       },
                                      {'mfi': 2100,
@@ -498,19 +507,18 @@ class TestDoCrossmatchApi(DbTests):
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
-            self.assertEqual(400, res.status_code)  # ValueError
-            self.assertEqual('Assumed HLA type must be uniquely defined in '
-                             'split or broad resolution.',
-                             res.json['message'])
+            self.assertEqual(200, res.status_code)
+            self.assertCountEqual(['DPA1', 'DPA2'], [code['hla_type']['code']['split'] for code in
+                                                     res.json['hla_to_antibody'][0]['assumed_hla_types']])
 
         # CASE: low res codes in assumed hla type
         json = {
-            'potential_donor_hla_typing': [# incorrect HLA type
-                                           [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
-                                            {'hla_code': 'DPA1', 'is_frequent': True},
-                                            {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
-                                           [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
-                                           [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
+            'potential_donor_hla_typing': [  # incorrect HLA type
+                [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
+                 {'hla_code': 'DPA1', 'is_frequent': True},
+                 {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
+                [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
+                [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
             'recipient_antibodies': [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
                                       'cutoff': 2000
@@ -551,7 +559,8 @@ class TestDoCrossmatchApi(DbTests):
                                       for antibody_match in res.json['hla_to_antibody']]
             # This is evaluated as a frequent code because, in the event that all codes are infrequent,
             # we resort to their 'split'. The 'split' is always considered frequent.
-            expected_assumed_hla_typing = [[asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))]]
+            expected_assumed_hla_typing = [
+                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))]]
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
@@ -656,7 +665,7 @@ class TestDoCrossmatchApi(DbTests):
                 'second_code': None,
                 'second_raw_code': None,
                 'type': 'NORMAL'},
-             'match_type': 'HIGH_RES'},
+                'match_type': 'HIGH_RES'},
             {'hla_antibody': {
                 'code': {'broad': 'DPA1',
                          'high_res': 'DPA1*01:05',
@@ -667,8 +676,8 @@ class TestDoCrossmatchApi(DbTests):
                 'second_code': None,
                 'second_raw_code': None,
                 'type': 'NORMAL'},
-             'match_type': 'HIGH_RES'}],
-        res.json['hla_to_antibody'][0]['antibody_matches'])
+                'match_type': 'HIGH_RES'}],
+            res.json['hla_to_antibody'][0]['antibody_matches'])
         # so we expect DPA1*01:04 as summary antibody because it has the highest
         # mfi among matched antibodies (MFI DPA1*01:04 (2100) > MFI DPA1*01:05 (2050))
         expected_summary_antibody = {'hla_antibody':
@@ -681,7 +690,7 @@ class TestDoCrossmatchApi(DbTests):
                                           'second_code': None,
                                           'second_raw_code': None,
                                           'type': 'NORMAL'},
-                                        'match_type': 'HIGH_RES'}
+                                     'match_type': 'HIGH_RES'}
         self.assertEqual(expected_summary_antibody, res.json['hla_to_antibody'][0]['summary_antibody'])
 
         # there are no matched antibodies to both antigen DPA1*02:01 and antigen DQA1*01:08

@@ -77,9 +77,6 @@ class AntibodyMatchForHLAType:
                 not cls._is_assumed_hla_type_in_high_res(assumed_hla_types):
             raise ValueError('Multiple HLA codes in assumed HLA type are only accepted'
                              ' in high resolution.')
-        if cls._is_assumed_hla_type_uniquely_defined_in_low_res(assumed_hla_types):
-            raise ValueError('Assumed HLA type must be uniquely defined in '
-                             'split or broad resolution.')
 
     @classmethod
     def _find_common_matches(cls, assumed_hla_types: List[HLATypeWithFrequency],
@@ -100,11 +97,6 @@ class AntibodyMatchForHLAType:
     @classmethod
     def _are_multiple_hlas_in_assumed(cls, assumed_hla_types: List[HLATypeWithFrequency]) -> bool:
         return len(assumed_hla_types) > 1
-
-    @classmethod
-    def _is_assumed_hla_type_uniquely_defined_in_low_res(cls, assumed_hla_types: List[HLATypeWithFrequency]) -> bool:
-        return len({single_assumed_hla_type.hla_type.code.get_low_res_code() for single_assumed_hla_type in
-                    assumed_hla_types}) > 1
 
     @classmethod
     def _is_assumed_hla_type_corresponds_antibody(cls, assumed_hla_types: List[HLATypeWithFrequency],

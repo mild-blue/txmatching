@@ -52,7 +52,6 @@ class DoCrossmatch(Resource):
     @crossmatch_api.response_ok(CrossmatchJsonOut)
     @crossmatch_api.response_errors(exceptions={TXMNotImplementedFeatureException},
                                     add_default_namespace_errors=True)
-    @crossmatch_api.require_user_login()
     def post(self):
         crossmatch_dto = request_body(CrossmatchDTOIn)
 
