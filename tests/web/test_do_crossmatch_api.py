@@ -431,9 +431,9 @@ class TestDoCrossmatchApi(DbTests):
                                       for antibody_match in res.json['hla_to_antibody']]
             # The expected results are no different from the results of the previous case.
             expected_assumed_hla_typing = [
-                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))],
                 # corresponds to ['DPA1*01:03', 'DPA1*01:04', 'DPA1*01:06']
                 # potential HLA type at the input (no matched antibodies even in low res)
+                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1', True)))],
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DQA1*01:08', True)))],
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*02:01', True)))]]
             self.assertCountEqual(expected_assumed_hla_typing,
@@ -482,7 +482,7 @@ class TestDoCrossmatchApi(DbTests):
             self.assertCountEqual(expected_assumed_hla_typing,
                                   res_assumed_hla_typing)
 
-        # CASE: assumed hla type has several split/broad codes
+        # CASE: assumed hla type has several split/broad codes (with corresponding antibodies)
         json = {
             'potential_donor_hla_typing': [  # both splits DPA1 and DPA2 are presented here
                 [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
@@ -511,6 +511,28 @@ class TestDoCrossmatchApi(DbTests):
             self.assertCountEqual(['DPA1', 'DPA2'], [code['hla_type']['code']['split'] for code in
                                                      res.json['hla_to_antibody'][0]['assumed_hla_types']])
 
+            # CASE: assumed hla type has several split/broad codes (without corresponding antibodies)
+            json = {
+                'potential_donor_hla_typing': [  # both splits DPA1 and DPA2 are presented here
+                    [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
+                     {'hla_code': 'DPA1*02:06', 'is_frequent': True},
+                     {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
+                    [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
+                    [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
+                'recipient_antibodies': [{'mfi': 2100,
+                                          'name': 'DPA1*02:01',
+                                          'cutoff': 2000
+                                          }],
+            }
+
+            with self.app.test_client() as client:
+                res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                                  headers=self.auth_headers)
+                self.assertEqual(200, res.status_code)
+                self.assertCountEqual(['DPA1', 'DPA2'],
+                                      [code['hla_type']['code']['split'] for code in
+                                       res.json['hla_to_antibody'][0]['assumed_hla_types']])
+
         # CASE: low res codes in assumed hla type
         json = {
             'potential_donor_hla_typing': [  # incorrect HLA type
@@ -532,7 +554,7 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(400, res.status_code)  # ValueError
-            self.assertEqual('Multiple HLA codes in assumed HLA type are only accepted'
+            self.assertEqual('Multiple HLA codes in potential HLA types are only accepted'
                              ' in high resolution.',
                              res.json['message'])
 

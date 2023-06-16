@@ -195,7 +195,7 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     assumed_hla_typing = []
     for potential_hla_types_raw in potential_hla_typing_raw:
         potential_hla_types = [create_hla_type_with_frequency(hla) for hla in potential_hla_types_raw]
-        AntibodyMatchForHLAType.validate_assumed_hla_types(potential_hla_types)
+        _validate_potential_hla_types(potential_hla_types)
 
         # if all codes are infrequent we take only split
         if _are_all_codes_infrequent(potential_hla_types_raw):
@@ -233,8 +233,26 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
 
 def _convert_potential_hla_types_to_low_res(
         potential_hla_types: List[HLATypeWithFrequency]) -> List[HLATypeWithFrequency]:
-    assumed_hla_type_raw = HLATypeWithFrequencyRaw(
-        hla_code=potential_hla_types[0].hla_type.code.get_low_res_code(),
+    # TODO: count with frequent/infrequent? https://github.com/mild-blue/txmatching/issues/1224
+    assumed_hla_types_raw = {HLATypeWithFrequencyRaw(
+        hla_code=potential_hla_type.hla_type.code.get_low_res_code(),
         is_frequent=True
-    )
-    return [create_hla_type_with_frequency(assumed_hla_type_raw)]
+    ) for potential_hla_type in potential_hla_types}
+    return [create_hla_type_with_frequency(assumed_hla_type_raw)
+            for assumed_hla_type_raw in assumed_hla_types_raw]
+
+
+def _validate_potential_hla_types(potential_hla_types):
+    if not potential_hla_types:
+        raise AttributeError('At least one potential HLA type must be provided '
+                             'in the potential HLA types list.')
+    if len(potential_hla_types) > 1 and not _are_potential_hla_types_in_high_res(potential_hla_types):
+        raise ValueError('Multiple HLA codes in potential HLA types are only accepted'
+                         ' in high resolution.')
+
+
+def _are_potential_hla_types_in_high_res(potential_hla_types: List[HLATypeWithFrequency]) -> bool:
+    for potential_hla_type in potential_hla_types:
+        if not potential_hla_type.hla_type.code.is_in_high_res():
+            return False
+    return True
