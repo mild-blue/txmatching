@@ -193,37 +193,37 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
     # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
-    for potential_hla_type_raw in potential_hla_typing_raw:
-        potential_hla_type = [create_hla_type_with_frequency(hla) for hla in potential_hla_type_raw]
-        AntibodyMatchForHLAType.validate_assumed_hla_type(potential_hla_type)
+    for potential_hla_types_raw in potential_hla_typing_raw:
+        potential_hla_types = [create_hla_type_with_frequency(hla) for hla in potential_hla_types_raw]
+        AntibodyMatchForHLAType.validate_assumed_hla_types(potential_hla_types)
 
         # if all codes are infrequent we take only split
-        if _are_all_codes_infrequent(potential_hla_type_raw):
-            assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
+        if _are_all_codes_infrequent(potential_hla_types_raw):
+            assumed_hla_typing.append(_convert_potential_hla_types_to_low_res(potential_hla_types))
             continue
 
-        if len(potential_hla_type) == 1:
+        if len(potential_hla_types) == 1:
             # just one code -> solved
-            assumed_hla_typing.append(potential_hla_type)
+            assumed_hla_typing.append(potential_hla_types)
             continue
 
         # Try to leave only those HLA types that have their codes among antibodies
-        maybe_assumed_hla_type = [single_assumed_hla_type for single_assumed_hla_type in potential_hla_type
-                                  if single_assumed_hla_type.hla_type.code in antibodies_codes]
+        maybe_assumed_hla_types = [assumed_hla_type for assumed_hla_type in potential_hla_types
+                                   if assumed_hla_type.hla_type.code in antibodies_codes]
 
-        if maybe_assumed_hla_type:
-            assumed_hla_typing.append(maybe_assumed_hla_type)
+        if maybe_assumed_hla_types:
+            assumed_hla_typing.append(maybe_assumed_hla_types)
             continue
 
         # If there are none found, then it's not a problem.
         # Convert the entire potential HLA type to low resolution.
-        assumed_hla_typing.append(_convert_potential_hla_type_to_low_res(potential_hla_type))
+        assumed_hla_typing.append(_convert_potential_hla_types_to_low_res(potential_hla_types))
 
     # Get parsing issues
     assumed_hla_typing_parsing_issues, _ = parse_hla_typing_raw_and_return_parsing_issue_list(
         HLATypingRawDTO(
-            hla_types_list=[HLATypeRaw(hla.hla_type.raw_code) for assumed_hla_type in
-                            assumed_hla_typing for hla in assumed_hla_type]
+            hla_types_list=[HLATypeRaw(assumed_hla_type.hla_type.raw_code) for assumed_hla_types in
+                            assumed_hla_typing for assumed_hla_type in assumed_hla_types]
         ),
         ignore_max_number_hla_types=True)  # TODO: https://github.com/mild-blue/txmatching/issues/1204
 
@@ -231,10 +231,10 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
                                          assumed_hla_typing_parsing_issues)
 
 
-def _convert_potential_hla_type_to_low_res(
-        potential_hla_type: List[HLATypeWithFrequency]) -> List[HLATypeWithFrequency]:
+def _convert_potential_hla_types_to_low_res(
+        potential_hla_types: List[HLATypeWithFrequency]) -> List[HLATypeWithFrequency]:
     assumed_hla_type_raw = HLATypeWithFrequencyRaw(
-        hla_code=potential_hla_type[0].hla_type.code.get_low_res_code(),
+        hla_code=potential_hla_types[0].hla_type.code.get_low_res_code(),
         is_frequent=True
     )
     return [create_hla_type_with_frequency(assumed_hla_type_raw)]
