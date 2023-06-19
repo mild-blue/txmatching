@@ -511,27 +511,27 @@ class TestDoCrossmatchApi(DbTests):
             self.assertCountEqual(['DPA1', 'DPA2'], [code['hla_type']['code']['split'] for code in
                                                      res.json['hla_to_antibody'][0]['assumed_hla_types']])
 
-            # CASE: assumed hla type has several split/broad codes (without corresponding antibodies)
-            json = {
-                'potential_donor_hla_typing': [  # both splits DPA1 and DPA2 are presented here
-                    [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
-                     {'hla_code': 'DPA1*02:06', 'is_frequent': True},
-                     {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
-                    [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
-                    [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
-                'recipient_antibodies': [{'mfi': 2100,
-                                          'name': 'DPA1*02:01',
-                                          'cutoff': 2000
-                                          }],
-            }
+        # CASE: assumed hla type has several split/broad codes (without corresponding antibodies)
+        json = {
+            'potential_donor_hla_typing': [  # both splits DPA1 and DPA2 are presented here
+                [{'hla_code': 'DPA1*01:03', 'is_frequent': True},
+                 {'hla_code': 'DPA1*02:06', 'is_frequent': True},
+                 {'hla_code': 'DPA1*01:04', 'is_frequent': True}],
+                [{'hla_code': 'DPA1*02:01', 'is_frequent': True}],
+                [{'hla_code': 'DQA1*01:04', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 2100,
+                                      'name': 'DPA1*02:01',
+                                      'cutoff': 2000
+                                      }],
+        }
 
-            with self.app.test_client() as client:
-                res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
-                                  headers=self.auth_headers)
-                self.assertEqual(200, res.status_code)
-                self.assertCountEqual(['DPA1', 'DPA2'],
-                                      [code['hla_type']['code']['split'] for code in
-                                       res.json['hla_to_antibody'][0]['assumed_hla_types']])
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            self.assertCountEqual(['DPA1', 'DPA2'],
+                                  [code['hla_type']['display_code'] for code in
+                                   res.json['hla_to_antibody'][0]['assumed_hla_types']])
 
         # CASE: low res codes in assumed hla type
         json = {
