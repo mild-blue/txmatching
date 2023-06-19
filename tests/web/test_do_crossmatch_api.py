@@ -508,6 +508,8 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
+            # so we successfully expect types in different not only HIGH RES, but also SPLIT levels
+            # it's not a problem at all
             self.assertCountEqual(['DPA1', 'DPA2'], [code['hla_type']['code']['split'] for code in
                                                      res.json['hla_to_antibody'][0]['assumed_hla_types']])
 
@@ -529,6 +531,8 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
+            # so even in a situation where we are converting assumed HLA types from HIGH RES to SPLIT,
+            # having different SPLIT codes is ok (even though we do not allow such a situation directly on the input)
             self.assertCountEqual(['DPA1', 'DPA2'],
                                   [code['hla_type']['display_code'] for code in
                                    res.json['hla_to_antibody'][0]['assumed_hla_types']])
