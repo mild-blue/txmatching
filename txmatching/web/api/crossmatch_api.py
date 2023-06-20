@@ -238,8 +238,13 @@ def _convert_potential_hla_types_to_low_res(
         hla_code=potential_hla_type.hla_type.code.get_low_res_code(),
         is_frequent=True
     ) for potential_hla_type in potential_hla_types}
-    return [create_hla_type_with_frequency(assumed_hla_type_raw)
-            for assumed_hla_type_raw in assumed_hla_types_raw]
+    assumed_hla_types = [create_hla_type_with_frequency(assumed_hla_type_raw)
+                         for assumed_hla_type_raw in assumed_hla_types_raw
+                         # if code does not have low res version, try to ignore it
+                         if assumed_hla_type_raw.hla_code is not None]
+
+    # if all codes doesn't have low res, leave them in high resolution as the lowest possible resolution
+    return assumed_hla_types or potential_hla_types
 
 
 def _validate_potential_hla_types(potential_hla_types):
