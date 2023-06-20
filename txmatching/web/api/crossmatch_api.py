@@ -239,7 +239,9 @@ def _convert_potential_hla_types_to_low_res(
         is_frequent=True
     ) for potential_hla_type in potential_hla_types}
     return [create_hla_type_with_frequency(assumed_hla_type_raw)
-            for assumed_hla_type_raw in assumed_hla_types_raw]
+            for assumed_hla_type_raw in assumed_hla_types_raw
+            # if code does not have low res version, ignore it
+            if assumed_hla_type_raw.hla_code is not None]
 
 
 def _validate_potential_hla_types(potential_hla_types):

@@ -152,6 +152,45 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][1]['parsing_issue_detail'])
 
+        # CASE: donor has code that does not have a SPLIT level
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DPB1*218:01N', 'is_frequent': False},
+                                            {'hla_code': 'DPB1*01:01', 'is_frequent': False}]],
+            'recipient_antibodies': [],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            # here we will try to convert these potential HLA types from HIGH RES to split.
+            # Due to the fact that the DPB1*218:01N code does not have a SPLIT level,
+            # it will not fall into the assumed HLA types
+            self.assertEqual(200, res.status_code)
+            expected_assumed_hla_types = [
+                asdict(create_hla_type_with_frequency(
+                    HLATypeWithFrequencyRaw('DP1', is_frequent=True)
+                ))]
+            self.assertCountEqual(expected_assumed_hla_types,
+                                  res.json['hla_to_antibody'][0]['assumed_hla_types'])
+
+        # CASE: donor has code that does not have a SPLIT level
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DPB1*218:01N', 'is_frequent': False}]],
+            'recipient_antibodies': [],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            # here we will try to convert these potential HLA types from HIGH RES to split.
+            # Due to the fact that the DPB1*218:01N code does not have a SPLIT level,
+            # it will not fall into the assumed HLA types
+            # TODO: handle this case
+            self.assertEqual(500, res.status_code)
+            #expected_assumed_hla_types = []
+            #self.assertCountEqual(expected_assumed_hla_types,
+            #                      res.json['hla_to_antibody'][0]['assumed_hla_types'])
+
     def test_theoretical_and_double_antibodies(self):
         json = {
             'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': True}],
