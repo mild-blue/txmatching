@@ -672,7 +672,10 @@ class TestDoCrossmatchApi(DbTests):
             'recipient_antibodies': [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
                                       'cutoff': 2000
-                                      }]
+                                      },
+                                     {'mfi': 100,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000}]
         }
 
         with self.app.test_client() as client:
@@ -680,20 +683,19 @@ class TestDoCrossmatchApi(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
-            res_assumed_hla_typing = [antibody_match['assumed_hla_types']
-                                      for antibody_match in res.json['hla_to_antibody']]
+            res_assumed_hla_types = res.json['hla_to_antibody'][0]['assumed_hla_types']
             res_parsing_issues = res.json['parsing_issues']
             # Here, the code is evaluated as infrequent because the potential typing comprises a mix of
             # frequent and infrequent codes, and a crossmatch occurred only with the infrequent one.
-            expected_assumed_hla_typing = [
-                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', False)))]
-            ]
+            expected_assumed_hla_types = \
+                [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', False))),
+                 asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:03', True)))]
             self.assertTrue(ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value in [
                 parsing_issue['message'] for parsing_issue in res_parsing_issues
             ])
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
-            self.assertCountEqual(expected_assumed_hla_typing,
-                                  res_assumed_hla_typing)
+            self.assertCountEqual(expected_assumed_hla_types,
+                                  res_assumed_hla_types)
 
     def test_summary_antibody(self):
         # summary antibody is the antibody that is key for a given HLA type, thus having the highest MFI
@@ -833,7 +835,10 @@ class TestDoCrossmatchApi(DbTests):
             'recipient_antibodies': [{'mfi': 2100,
                                       'name': 'DPA1*01:04',
                                       'cutoff': 2000
-                                      }]
+                                      },
+                                     {'mfi': 100,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000}]
         }
 
         with self.app.test_client() as client:
