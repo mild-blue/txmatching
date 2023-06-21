@@ -193,26 +193,28 @@ def _get_assumed_hla_typing_and_parsing_issues(potential_hla_typing_raw: List[Li
     antibodies_codes = supportive_antibodies.get_antibodies_codes_as_list()
     # Transform potential HLA typing into assumed HLA typing
     assumed_hla_typing = []
+
+    def append_to_assumed_hla_typing_with_frequency_check(assumed_hla_types):
+        if _are_all_codes_infrequent(assumed_hla_types):
+            # if all codes are infrequent we take only split
+            assumed_hla_typing.append(_convert_potential_hla_types_to_low_res(assumed_hla_types))
+        else:
+            assumed_hla_typing.append(assumed_hla_types)
+
     for potential_hla_types_raw in potential_hla_typing_raw:
         potential_hla_types = [create_hla_type_with_frequency(hla) for hla in potential_hla_types_raw]
         _validate_potential_hla_types(potential_hla_types)
 
-        # if all codes are infrequent we take only split
-        if _are_all_codes_infrequent(potential_hla_types_raw):
-            assumed_hla_typing.append(_convert_potential_hla_types_to_low_res(potential_hla_types))
-            continue
-
         if len(potential_hla_types) == 1:
             # just one code -> solved
-            assumed_hla_typing.append(potential_hla_types)
+            append_to_assumed_hla_typing_with_frequency_check(potential_hla_types)
             continue
 
         # Try to leave only those HLA types that have their codes among antibodies
         maybe_assumed_hla_types = [assumed_hla_type for assumed_hla_type in potential_hla_types
                                    if assumed_hla_type.hla_type.code in antibodies_codes]
-
         if maybe_assumed_hla_types:
-            assumed_hla_typing.append(maybe_assumed_hla_types)
+            append_to_assumed_hla_typing_with_frequency_check(maybe_assumed_hla_types)
             continue
 
         # If there are none found, then it's not a problem.
