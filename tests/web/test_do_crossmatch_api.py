@@ -1,4 +1,6 @@
+import json as jsonlib
 from dataclasses import asdict
+from pathlib import Path
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.hla_model import HLATypeWithFrequencyRaw
@@ -9,6 +11,13 @@ from txmatching.utils.hla_system.hla_preparation_utils import (
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
+
+# txmatching/tests/resources/crossmatch_api_big_data_input.json
+BIG_DATA_INPUT_JSON_PATH = Path(__file__).parents[1].joinpath(
+    Path('resources/crossmatch_api_big_data_input.json'))
+# txmatching/tests/resources/crossmatch_api_big_data_output.json
+BIG_DATA_OUTPUT_JSON_PATH = Path(__file__).parents[1].joinpath(
+    Path('resources/crossmatch_api_big_data_output.json'))
 
 
 class TestDoCrossmatchApi(DbTests):
@@ -849,3 +858,14 @@ class TestDoCrossmatchApi(DbTests):
                                     for antibody_match in res.json['hla_to_antibody']]
             # When a crossmatch occurs with only infrequent codes, we leave the summary empty.
             self.assertEqual(res_summary_antibody, [None])
+
+    def test_on_big_data(self):
+        with open(BIG_DATA_INPUT_JSON_PATH, 'r') as file:
+            json = jsonlib.load(file)
+        with open(BIG_DATA_OUTPUT_JSON_PATH, 'r') as file:
+            expected_json = jsonlib.load(file)
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            self.assertCountEqual(res.json, expected_json)
