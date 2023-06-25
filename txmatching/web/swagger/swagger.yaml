@@ -83,9 +83,9 @@ definitions:
                 items:
                     $ref: '#/definitions/AssumedHLAType'
                 type: array
-            summary_antibody:
+            summary:
                 allOf:
-                -   $ref: '#/definitions/AntibodyMatch'
+                -   $ref: '#/definitions/CrossmatchSummary'
                 readOnly: true
         required:
         - assumed_hla_types
@@ -955,6 +955,39 @@ definitions:
         - hla_to_antibody
         - parsing_issues
         type: object
+    CrossmatchSummary:
+        properties:
+            hla_code:
+                $ref: '#/definitions/HlaCode'
+            issues:
+                enum:
+                - There is most likely no crossmatch, but there is a small chance
+                    that a crossmatch could occur. Therefore, this case requires further
+                    investigation.
+                - Antibodies against this HLA Type might not be DSA, for more see
+                    detailed section.
+                example: There is most likely no crossmatch, but there is a small
+                    chance that a crossmatch could occur. Therefore, this case requires
+                    further investigation.
+                type: string
+            match_type:
+                enum:
+                - SPLIT
+                - BROAD
+                - HIGH_RES
+                - NONE
+                - UNDECIDABLE
+                - HIGH_RES_WITH_SPLIT
+                - HIGH_RES_WITH_BROAD
+                - THEORETICAL
+                example: SPLIT
+                type: string
+            mfi:
+                type: integer
+        required:
+        - hla_code
+        - match_type
+        type: object
     CycleOrChain:
         properties:
             patients:
@@ -1708,7 +1741,6 @@ definitions:
                 - HIGH_RES_WITH_LETTER
                 - HIGH_RES_WITH_ASSUMED_SPLIT_CODE
                 - CREATED_THEORETICAL_ANTIBODY
-                - RARE_ALLELE_POSITIVE_CROSSMATCH
                 - MULTIPLE_SPLITS_OR_BROADS_FOUND
                 - IRRELEVANT_CODE
                 - UNEXPECTED_SPLIT_RES_CODE
@@ -1744,7 +1776,6 @@ definitions:
                 - HIGH_RES_WITH_LETTER
                 - HIGH_RES_WITH_ASSUMED_SPLIT_CODE
                 - CREATED_THEORETICAL_ANTIBODY
-                - RARE_ALLELE_POSITIVE_CROSSMATCH
                 - MULTIPLE_SPLITS_OR_BROADS_FOUND
                 - IRRELEVANT_CODE
                 - UNEXPECTED_SPLIT_RES_CODE
