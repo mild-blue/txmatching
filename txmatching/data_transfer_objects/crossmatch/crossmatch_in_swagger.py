@@ -10,6 +10,8 @@ from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     AntibodyMatchJson
+from txmatching.utils.enums import AntibodyMatchTypes
+from txmatching.utils.hla_system.hla_crossmatch import CadaverousCrossmatchIssueDetail
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
 HLACode = crossmatch_api.clone('HlaCode', HLACode)
@@ -27,6 +29,18 @@ PotentialHLATypeRaw = crossmatch_api.model('PotentialHLATypeRaw', {
     'hla_code': fields.String(required=True),
     'is_frequent': fields.Boolean(required=True),
 })
+
+CrossmatchSummaryJson = crossmatch_api.model(
+    'CrossmatchSummary',
+    {
+        'hla_code': fields.Nested(HLACode, required=True),
+        'mfi': fields.Integer(reqired=False),
+        'match_type': fields.String(required=True, enum=[match_type.name for match_type
+                                                         in AntibodyMatchTypes]),
+        'issues': fields.String(required=False, enum=[issue.value for issue
+                                                      in CadaverousCrossmatchIssueDetail])
+    }
+)
 
 CrossmatchJsonIn = crossmatch_api.model(
     'CrossmatchInput',
@@ -52,7 +66,7 @@ CrossmatchJsonIn = crossmatch_api.model(
 AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
     'assumed_hla_types': fields.List(required=True, cls_or_instance=fields.Nested(AssumedHLAType, required=True)),
     'antibody_matches': fields.List(required=False, cls_or_instance=fields.Nested(AntibodyMatchJson)),
-    'summary_antibody': fields.Nested(AntibodyMatchJson, readonly=True)
+    'summary': fields.Nested(CrossmatchSummaryJson, readonly=True)
 })
 
 CrossmatchJsonOut = crossmatch_api.model(
