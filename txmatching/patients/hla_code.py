@@ -31,8 +31,24 @@ class HLACode:
     def get_low_res_code(self):
         return self.split or self.broad
 
+    def to_low_res_hla_code(self):
+        return self.__class__(high_res=None, split=self.split, broad=self.broad)
+
     def is_in_high_res(self):
         return self.high_res is not None
+
+    @classmethod
+    def are_codes_in_high_res(cls, hla_codes) -> bool:
+        for hla_code in hla_codes:
+            if not hla_code.is_in_high_res():
+                return False
+        return True
+
+    @classmethod
+    def do_codes_have_different_low_res(cls, hla_codes) -> bool:
+        low_res_raw_codes = [hla_code.get_low_res_code()
+                             for hla_code in hla_codes]
+        return len(low_res_raw_codes) > 1
 
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
         if self.broad is not None:
