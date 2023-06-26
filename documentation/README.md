@@ -683,14 +683,28 @@ The summary MFI in this case will be `4000`, because we just calculated the arit
 codes that have the summary HLA code at low res level `A*02:01`: `(4000) / 1 = 4000`. Also, we will send crossmatch issue 
 `Ambiguity in HLA typization, for more see detailed section`.
 
+#### Summary in case of no crossmatch
+The description above assumes that there are some antibodies crossmatched with the frequent assumed hla types.
+It can, however, happen that there are no such antibodies (all the antibodies that supported the determination of 
+assumed hla typing have mfi values below cutoff).
+In such case, we simply look for the antibody with highest mfi value among the antibodies that match with some of the
+frequent assumed hla types and display this antibody in the summary.
+
+A rare case can occur, where there is no antibody with hla code matching to any of the assumed hla types.
+This can for example happen if there is an hla type of special form ending with letter (e.g. `A*01:01N`).
+In this case, we display the assumed hla type as the hla code in the summary with mfi set to `None`.
+
 #### More examples for crossmatch summarization. Crossmatch issues during the summary count.
 
 1. The recipient doesn't have any crossmatched antibodies against donor's assumed hla types:
 ```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 1000, "cutoff": 2000}]
+assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
+                     {"hla_code": "B*07:05", "is_frequent": True}]
+recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 1500, "cutoff": 2000},
+                        {"hla_code": "B*07:05", "mfi": 1000, "cutoff": 2000}]
 ```
-We just send `None` value in this situation.
+This example corresponds to the last described case (with no crossmatch).
+The summary HLA code will be `B*07:04` with summary MFI `1500`.
 
 2. The recipient doesn't have any **frequent** **positive** crossmatched antibodies against donor's assumed HLA types:
 ```python
@@ -773,3 +787,14 @@ assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
 recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000}]
 ```
 In this simple case the summary HLA code will be `B*07:02` with summary MFI value `3000`.
+
+8. The recipient has no antibodies that match with the donor's assumed hla types:
+```python
+assumed_hla_types = [{"hla_code": "A*01:01N", "is_frequent": True}]
+recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000}]
+```
+
+In this case, HLA code `A*01:01N` cannot be matched with the antibody (not even in low resultion, as this special code
+has the low resolution undefined).
+Consequently, the corresponding list of matched antibodies to choose the summary antibody from is empty.
+The summary HLA code would therefore be `A*01:01N` with summary MFI set to `Null`.
