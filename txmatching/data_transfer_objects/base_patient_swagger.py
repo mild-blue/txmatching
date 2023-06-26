@@ -179,7 +179,11 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 }
             ],
             'summary': {
-                'hla_code': 'A1',
+                'hla_code': {
+                    'broad': 'A1',
+                    'high_res': None,
+                    'split': 'A1'
+                },
                 'mfi': 3000,
                 'match_type': 'SPLIT',
                 'issues': ['Antibodies against this HLA Type might not be DSA, for more '
@@ -238,7 +242,11 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 }
             ],
             'summary': {
-                'code': 'B7',
+                'hla_code': {
+                    'broad': 'B7',
+                    'high_res': None,
+                    'split': 'B7'
+                },
                 'mfi': 2000,
                 'match_type': 'SPLIT',
                 'issues': []
@@ -320,7 +328,11 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 }
             ],
             'summary': {
-                'hla_code': 'DR15',
+                'hla_code': {
+                    'broad': 'DR2',
+                    'high_res': None,
+                    'split': 'DR15'
+                },
                 'mfi': 3000,
                 'match_type': 'SPLIT',
                 'issues': ['Antibodies against this HLA Type might not be DSA, for more '
@@ -385,7 +397,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                         'second_raw_code': None,
                         'type': 'NORMAL'
                     },
-                    'match_type': 'HIGH_RES'
+                    'match_type': 'SPLIT'
                 }
             ],
             'assumed_hla_types': [
@@ -393,19 +405,23 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'hla_type': {
                         'code': {
                             'broad': 'DPA2',
-                            'high_res': 'DPA1*02:01',
+                            'high_res': None,
                             'split': 'DPA2'
                         },
-                        'display_code': 'DPA1*02:01',
-                        'raw_code': 'DPA1*02:01'
+                        'display_code': 'DPA2',
+                        'raw_code': 'DPA2'
                     },
-                    'is_frequent': False
+                    'is_frequent': True
                 }
             ],
             'summary': {
-                'hla_code': 'DPA1*02:01',
+                'hla_code': {
+                    'broad': 'DPA2',
+                    'high_res': None,
+                    'split': 'DPA2'
+                },
                 'mfi': 3000,
-                'match_type': 'HIGH_RES',
+                'match_type': 'SPLIT',
                 'issues': []
             }
         },

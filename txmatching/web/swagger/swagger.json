@@ -3189,7 +3189,11 @@
                                 }
                             ],
                             "summary": {
-                                "hla_code": "A1",
+                                "hla_code": {
+                                    "broad": "A1",
+                                    "high_res": null,
+                                    "split": "A1"
+                                },
                                 "mfi": 3000,
                                 "match_type": "SPLIT",
                                 "issues": [
@@ -3249,7 +3253,11 @@
                                 }
                             ],
                             "summary": {
-                                "code": "B7",
+                                "hla_code": {
+                                    "broad": "B7",
+                                    "high_res": null,
+                                    "split": "B7"
+                                },
                                 "mfi": 2000,
                                 "match_type": "SPLIT",
                                 "issues": []
@@ -3331,7 +3339,11 @@
                                 }
                             ],
                             "summary": {
-                                "hla_code": "DR15",
+                                "hla_code": {
+                                    "broad": "DR2",
+                                    "high_res": null,
+                                    "split": "DR15"
+                                },
                                 "mfi": 3000,
                                 "match_type": "SPLIT",
                                 "issues": [
@@ -3397,7 +3409,7 @@
                                         "second_raw_code": null,
                                         "type": "NORMAL"
                                     },
-                                    "match_type": "HIGH_RES"
+                                    "match_type": "SPLIT"
                                 }
                             ],
                             "assumed_hla_types": [
@@ -3405,19 +3417,23 @@
                                     "hla_type": {
                                         "code": {
                                             "broad": "DPA2",
-                                            "high_res": "DPA1*02:01",
+                                            "high_res": null,
                                             "split": "DPA2"
                                         },
-                                        "display_code": "DPA1*02:01",
-                                        "raw_code": "DPA1*02:01"
+                                        "display_code": "DPA2",
+                                        "raw_code": "DPA2"
                                     },
-                                    "is_frequent": false
+                                    "is_frequent": true
                                 }
                             ],
                             "summary": {
-                                "hla_code": "DPA1*02:01",
+                                "hla_code": {
+                                    "broad": "DPA2",
+                                    "high_res": null,
+                                    "split": "DPA2"
+                                },
                                 "mfi": 3000,
-                                "match_type": "HIGH_RES",
+                                "match_type": "SPLIT",
                                 "issues": []
                             }
                         },
