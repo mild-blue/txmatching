@@ -33,7 +33,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "A2",
@@ -66,7 +66,7 @@
           "is_frequent": false
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [],
@@ -84,7 +84,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [],
@@ -102,7 +102,7 @@
           "is_frequent": false
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [],
@@ -120,7 +120,7 @@
           "is_frequent": false
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [],
@@ -138,7 +138,7 @@
           "is_frequent": false
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [
@@ -1313,7 +1313,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DP1",
@@ -3535,7 +3535,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DP1",
@@ -3617,7 +3617,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DQA1",
@@ -3650,7 +3650,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [
@@ -3705,7 +3705,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DPA1",
@@ -3775,7 +3775,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DPA1",
@@ -3808,7 +3808,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [
@@ -3951,7 +3951,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DQ1",
@@ -4001,7 +4001,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DR4",
@@ -4034,7 +4034,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": null
+      "summary": null
     },
     {
       "antibody_matches": [
@@ -4069,7 +4069,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": {
+      "summary": {
         "hla_antibody": {
           "code": {
             "broad": "DR53",
@@ -4102,7 +4102,7 @@
           "is_frequent": true
         }
       ],
-      "summary_antibody": null
+      "summary": null
     }
   ],
   "parsing_issues": [
