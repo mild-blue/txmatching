@@ -622,7 +622,10 @@ each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a 
 whereas `A*01:02:01:01` is quite common, but both are shortened to the same form: `A*01:02`.
 
 Furthermore, for a brief summarization of this match, we select HLA code and MFI
-that best represents the presence or absence of a crossmatch:
+that best represents the presence or absence of a crossmatch.
+
+Further logic of calculating **the summary HLA code and the summary MFI** is used only for codes that have a match type 
+the same as the summary match type. We consider all the rest codes as less important for the summary section.
 
 #### How to choose summary HLA code?
 For summary, we would like to take into account just frequent codes among all assumed HLA types.
@@ -645,6 +648,9 @@ So the summarization code will be `A2`, because `A*02:01` has the highest MFI am
 Again we take into account only frequent codes among the assumed HLA types. 
 We will consider the summary MFI as the arithmetic mean MFI values above cutoff of the corresponding antibodies. 
 In case there are not any MFI values above cutoff for the frequent HLA code, we use `null` value for the summary MFI.
+(Do not forget that in the absolute majority of cases, the assumed HLA types list always has at least one frequent code 
+due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent 
+codes in the assumed HLA types can be only in cases when SPLIT code does not exist or is unknown to our database).
 For example,
 ```python
 assumed_hla_types = [{"hla_code": "A*01:01", "is_frequent": True},
@@ -675,9 +681,6 @@ then the summary match type would be `HIGH RES` as the most important of these.
 
 #### More examples for crossmatch summarization. Crossmatch issues during the summary count.
 
-Further logic of calculating **the summary HLA code and the summary MFI** is used only for codes that have a match type 
-the same as the summary match type. We consider all the rest codes as less important for the summary section.
-
 0. The recipient doesn't have any crossmatched antibodies against donor's assumed hla types:
 ```python
 assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
@@ -703,7 +706,7 @@ recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
                         {"hla_code": "A*02:01", "mfi": 2100, "cutoff": 2000},
                         {"hla_code": "A*02:02", "mfi": 100, "cutoff": 2000}]
 ```
-In this case the summary HLA code is `A1`, because it has the highest MFI among antibodies (viz `A*01:01, mfi 3000`).
+In this case the summary HLA code is `A1`, because it has the highest MFI among antibodies (see `A*01:01, mfi 3000`).
 The MFI value `= (3000 + 2100) / 2 = 2550` (antibody `A*02:02` wasn't included, because it has MFI below cutoff).
 
 3. The donor has several frequent HIGH RES codes that have **the same SPLIT** level in the assumed HLA types list:
@@ -728,9 +731,9 @@ recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
                         {"hla_code": "B*08:02", "mfi": 2500, "cutoff": 2000},
                         {"hla_code": "B*08:01", "mfi": 1990, "cutoff": 2000}]
 ```
-So the summary HLA code is `B1`, because it has the highest MFI among antibodies (viz `B*07:02, mfi 3000`).
+So the summary HLA code is `B1`, because it has the highest MFI among antibodies (see `B*07:02, mfi 3000`).
 The MFI value `= (3000 + 2500) / 2 = 2750` (antibody `B*08:01` wasn't included, because it has MFI below cutoff).
-In this case not all corresponding antibodies have MFI above cutoff (viz `B*08:01`), so we show
+In this case not all corresponding antibodies have MFI above cutoff (see `B*08:01`), so we show
 crossmatch issue `Antibodies against this HLA Type might not be DSA, for more see detailed section`.
 
 In case if all antibodies have MFI above cutoff:
@@ -742,7 +745,7 @@ recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
                         {"hla_code": "B*08:02", "mfi": 2500, "cutoff": 2000},
                         {"hla_code": "B*08:01", "mfi": 2100, "cutoff": 2000}]
 ```
-The MFI value = `= (3000 + 2500 + 2100) / 3 = 2533` and we send crossmatch issue
+The summary HLA code is still `B1`, but the MFI value `= (3000 + 2500 + 2100) / 3 = 2533` and we send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
 5. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list, 
