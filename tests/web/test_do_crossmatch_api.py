@@ -1001,7 +1001,6 @@ class TestDoCrossmatchApi(DbTests):
                            for antibody_match in res.json['hla_to_antibody']]
             self.assertEqual(res_summary, [None])
 
-    # TODO: fix big data test
     def test_on_big_data(self):
         with open(BIG_DATA_INPUT_JSON_PATH, 'r') as file:
             json = jsonlib.load(file)
@@ -1011,5 +1010,7 @@ class TestDoCrossmatchApi(DbTests):
             res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            # TODO: mb nefunguje
-            self.assertCountEqual(res.json, expected_json)
+            for res_match_for_hla_type, expected_match_for_hla_type \
+                    in zip(res.json['hla_to_antibody'], expected_json['hla_to_antibody']):
+                self.assertCountEqual(res_match_for_hla_type, expected_match_for_hla_type)
+            self.assertCountEqual(res.json['parsing_issues'], expected_json['parsing_issues'])
