@@ -891,7 +891,7 @@ class TestDoCrossmatchApi(DbTests):
                            for antibody_match in res.json['hla_to_antibody']]
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA2', high_res=None, split='DPA2'),
-                mfi=3333,
+                mfi=5000,
                 match_type=AntibodyMatchTypes.SPLIT,
                 issues=[]
             )
@@ -923,7 +923,7 @@ class TestDoCrossmatchApi(DbTests):
                            for antibody_match in res.json['hla_to_antibody']]
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
-                mfi=2750,
+                mfi=3000,
                 match_type=AntibodyMatchTypes.HIGH_RES,
                 issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
             )
@@ -955,7 +955,7 @@ class TestDoCrossmatchApi(DbTests):
                            for antibody_match in res.json['hla_to_antibody']]
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
-                mfi=2533,
+                mfi=3000,
                 match_type=AntibodyMatchTypes.HIGH_RES,
                 issues=[CadaverousCrossmatchIssueDetail.AMBIGUITY_IN_HLA_TYPIZATION]
             )

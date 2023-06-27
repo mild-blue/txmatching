@@ -45,7 +45,7 @@ class CadaverousCrossmatchIssueDetail(str, Enum):
 
 @dataclass
 class CrossmatchSummary:
-    hla_code: HLACode | List[HLACode]  # typically there is only one HLACode, but sometimes several
+    hla_code: HLACode
     mfi: Optional[int]
     match_type: AntibodyMatchTypes
     issues: Optional[List[CadaverousCrossmatchIssueDetail]]
@@ -90,13 +90,8 @@ class AntibodyMatchForHLAType:
 
     def _calculate_crossmatch_summary(self):
         if not self.antibody_matches:
-            # TODO return None: https://github.com/mild-blue/txmatching/issues/1232
+            # TODO do not return None: https://github.com/mild-blue/txmatching/issues/1232
             return None
-
-        # get summary match type
-        antibodies_matched_types = [antibody_match.match_type for antibody_match
-                                    in self.antibody_matches]
-        summary_match_type = max(antibodies_matched_types)
 
         frequent_codes = [
             hla_type.hla_type.code
@@ -111,45 +106,53 @@ class AntibodyMatchForHLAType:
         if not matches_with_frequent_codes:
             # there are not any antibody matches with frequent codes,
             # so the crossmatch is very unlikely
-            # TODO return None: https://github.com/mild-blue/txmatching/issues/1232
-            hla_codes = list({hla_type.hla_type.code.to_low_res_hla_code()
-                              for hla_type in self.assumed_hla_types})
+            summary_match = max(self.antibody_matches,
+                                key=lambda m: m.hla_antibody.mfi)
             return CrossmatchSummary(
-                hla_code=hla_codes[0] if len(hla_codes) == 1 else hla_codes,
+                hla_code=summary_match.hla_antibody.code.to_low_res_hla_code(),
                 mfi=None,
-                match_type=summary_match_type,
+                match_type=summary_match.match_type,
                 issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
             )
 
-        # get crossmatch issues
-        crossmatch_issues = self._calculate_crossmatch_issues(frequent_codes,
-                                                              matches_with_frequent_codes)
-
+        # get summary match type
+        antibodies_matched_types = [antibody_match.match_type for antibody_match
+                                    in matches_with_frequent_codes]
+        summary_match_type = max(antibodies_matched_types)
         # Further we will only consider antibodies with match_type == summary_match_type
-        antibody_matches_with_summary_match_type = list(filter(
+        matches_with_frequent_codes_and_summary_type = list(filter(
             lambda m: m.match_type == summary_match_type,
-            self.antibody_matches))
-        frequent_matches_for_summary = list(filter(
-            lambda m: m.match_type == summary_match_type,
-            matches_with_frequent_codes))
-        assert frequent_codes and frequent_matches_for_summary and antibody_matches_with_summary_match_type, \
+            matches_with_frequent_codes
+        ))
+        assert matches_with_frequent_codes_and_summary_type, \
             "For now, we assume that these lists have at least one element. " \
             "If not, then this is a logic error in the code."
 
+        # get crossmatch issues
+        crossmatch_issues = self._calculate_crossmatch_issues(
+            frequent_codes, matches_with_frequent_codes_and_summary_type)
+
         # get summary HLA code
         summary_hla_code = max(
-            frequent_matches_for_summary,
+            matches_with_frequent_codes_and_summary_type,
             key=lambda match: match.hla_antibody.mfi).hla_antibody.code.to_low_res_hla_code() \
             if len(frequent_codes) > 1 \
             else frequent_codes[0]
 
         # get summary MFI value
-        antibodies_matched_mfis = \
-            [antibody_match.hla_antibody.mfi for antibody_match
-             in frequent_matches_for_summary] if HLACode.are_codes_in_high_res(frequent_codes) \
-            else [antibody_match.hla_antibody.mfi for antibody_match
-                  in antibody_matches_with_summary_match_type]
-        summary_mfi = int(sum(antibodies_matched_mfis) / len(antibodies_matched_mfis))
+        antibodies_matched_mfis_for_summary_code: List[int] = []
+        matches_to_iterate = matches_with_frequent_codes_and_summary_type if \
+            HLACode.are_codes_in_high_res(frequent_codes) else self.antibody_matches
+        for antibody_match in matches_to_iterate:
+            if antibody_match.hla_antibody.code.get_low_res_code() \
+                != summary_hla_code.get_low_res_code() \
+               and (antibody_match.hla_antibody.second_code is None
+                    or antibody_match.hla_antibody.second_code.get_low_res_code()
+                    != summary_hla_code.get_low_res_code()):
+                continue
+            antibodies_matched_mfis_for_summary_code.append(antibody_match.hla_antibody.mfi)
+        summary_mfi = int(sum(antibodies_matched_mfis_for_summary_code) / len(
+            antibodies_matched_mfis_for_summary_code))
 
         return CrossmatchSummary(
             hla_code=summary_hla_code,
