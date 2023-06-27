@@ -15,6 +15,7 @@ from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
 
 
 class TestSwaggerEndpoints(DbTests):
+    # TODO: fix this harmful test https://github.com/mild-blue/txmatching/issues/1240
     def test_server_not_logged_in(self):
         special_status_codes_for_paths = {
             'get': {
