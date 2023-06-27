@@ -1,0 +1,10 @@
+GET {{url}}/v1/service/version
+
+###
+
+
+POST {{url}}/v1/crossmatch/do-crossmatch
+Content-Type: application/json
+
+< ../tests/resources/crossmatch_api_big_data_input.json
+###
