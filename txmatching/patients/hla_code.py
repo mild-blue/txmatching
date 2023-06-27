@@ -46,8 +46,8 @@ class HLACode:
 
     @classmethod
     def do_codes_have_different_low_res(cls, hla_codes) -> bool:
-        low_res_raw_codes = [hla_code.get_low_res_code()
-                             for hla_code in hla_codes]
+        low_res_raw_codes = {hla_code.get_low_res_code()
+                             for hla_code in hla_codes}
         return len(low_res_raw_codes) > 1
 
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
