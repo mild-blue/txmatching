@@ -37,8 +37,8 @@ CrossmatchSummaryJson = crossmatch_api.model(
         'mfi': fields.Integer(reqired=False),
         'match_type': fields.String(required=True, enum=[match_type.name for match_type
                                                          in AntibodyMatchTypes]),
-        'issues': fields.String(required=False, enum=[issue.value for issue
-                                                      in CadaverousCrossmatchIssueDetail])
+        'issues': fields.List(required=False, cls_or_instance=fields.String(
+            required=False, enum=[issue.value for issue in CadaverousCrossmatchIssueDetail]))
     }
 )
 

@@ -937,16 +937,18 @@ definitions:
             hla_code:
                 $ref: '#/definitions/HlaCode'
             issues:
-                enum:
-                - There is most likely no crossmatch, but there is a small chance
-                    that a crossmatch could occur. Therefore, this case requires further
-                    investigation.
-                - Antibodies against this HLA Type might not be DSA, for more see
-                    detailed section.
-                example: There is most likely no crossmatch, but there is a small
-                    chance that a crossmatch could occur. Therefore, this case requires
-                    further investigation.
-                type: string
+                items:
+                    enum:
+                    - There is most likely no crossmatch, but there is a small chance
+                        that a crossmatch could occur. Therefore, this case requires
+                        further investigation.
+                    - Antibodies against this HLA Type might not be DSA, for more
+                        see detailed section.
+                    example: There is most likely no crossmatch, but there is a small
+                        chance that a crossmatch could occur. Therefore, this case
+                        requires further investigation.
+                    type: string
+                type: array
             match_type:
                 enum:
                 - SPLIT
