@@ -768,11 +768,22 @@ class TestDoCrossmatchApi(DbTests):
         self.assertEqual(asdict(expected_summary),
                          res.json['hla_to_antibody'][0]['summary'])
 
-        # there are no matched antibodies to both antigen DPA1*02:01 and antigen DQA1*01:08
+        # there are no matched antibodies to both antigen DPA1*02:01 and antigen DQA1*01:08,
+        # summary should be found among negative antibodies. As this test example is not complete,
+        # there are no corresponding negative antibodies and so the HLA type code is used as
+        # the summary HLA code here. It is not expected to have no matched antibodies
+        # in this case, but we test the correct summary nevertheless.
         for antibody_match_without_crossmatched_antibodies in res.json['hla_to_antibody'][1:]:
             self.assertCountEqual([], antibody_match_without_crossmatched_antibodies['antibody_matches'])
-            # so the summary is None
-            self.assertIsNone(antibody_match_without_crossmatched_antibodies['summary'])
+            expected_summary = CrossmatchSummary(
+                hla_code=antibody_match_without_crossmatched_antibodies['assumed_hla_types'][0],
+                mfi=None,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+            )
+            self.assertCountEqual(
+                asdict(expected_summary),
+                antibody_match_without_crossmatched_antibodies['summary'])
 
         # CASE: The donor has several frequent HIGH RES codes that have the same
         #       SPLIT level in the assumed HLA types list (vol. 2):
