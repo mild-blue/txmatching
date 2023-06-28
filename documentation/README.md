@@ -624,8 +624,9 @@ whereas `A*01:02:01:01` is quite common, but both are shortened to the same form
 Furthermore, for a brief summarization of this match, we select HLA code and MFI
 that best represents the presence or absence of a crossmatch.
 
-Further logic of calculating **the summary HLA code and the summary MFI** is used only for codes that have a match type 
-the same as the summary match type. We consider all the rest codes as less important for the summary section.
+For summary HLA code, we consider only the the matches with frequent HLA codes (up to some edge cases described later 
+in this text). From those matches, we filter out those with highest severity (based on match type). 
+Rest of the codes are less important and not considered for the summary.
 
 #### How to calculate summary match type?
 In the summary, we only show the most important crossmatch level that has occurred in the assumed HLA types. 
@@ -676,20 +677,32 @@ recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
                         {"hla_code": "A*02:01", "mfi": 4000, "cutoff": 2000},
                         {"hla_code": "A*01:03", "mfi": 5000, "cutoff": 2000}]
 ```
-The summary MFI in this case will be `3500`, because we just calculated the arithmetic mean MFI values for frequent
+The summary MFI in this case will be `4000`, because we just calculated the arithmetic mean MFI values for frequent
 codes that have the summary HLA code at low res level `A*02:01`: `(4000) / 1 = 4000`. Also, we will send crossmatch issue 
 `Ambiguity in HLA typization, for more see detailed section`.
 
 #### More examples for crossmatch summarization. Crossmatch issues during the summary count.
 
-0. The recipient doesn't have any crossmatched antibodies against donor's assumed hla types:
+1. The recipient doesn't have any crossmatched antibodies against donor's assumed hla types:
 ```python
 assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
 recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 1000, "cutoff": 2000}]
 ```
-We just send `null` value in this situation.
+We just send `None` value in this situation.
 
-1. The donor has the only one SPLIT HLA code in the assumed HLA types list:
+2. The recipient doesn't have any **frequent** **positive** crossmatched antibodies against donor's assumed HLA types:
+```python
+assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
+                     {"hla_code": "B*07:04", "is_frequent": False}]
+recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 1000, "cutoff": 2000},
+                        {"hla_code": "B*07:04", "mfi": 3000, "cutoff": 2000}]
+```
+In this case, there is only a positive crossmatch for `B*07:04`, but such a match is very unlikely because
+this HLA is rare in the population, so we send crossmatch issue 
+`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. 
+Therefore, this case requires further investigation`. Also, we send `B7` as summary code and `None` as MFI value.
+
+3. The donor has the only one SPLIT HLA code in the assumed HLA types list:
 ```python
 assumed_hla_types = [{"hla_code": "A1", "is_frequent": True}]
 recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
@@ -699,7 +712,7 @@ recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
 So summary HLA code will be `A1` with summary MFI `= (3000 + 5000) / 2 = 4000` 
 (antibody `A*01:02` wasn't included, because it has MFI below cutoff)
 
-2. The donor has several SPLIT HLA codes in the assumed HLA types list:
+4. The donor has several SPLIT HLA codes in the assumed HLA types list:
 ```python
 assumed_hla_types = [{"hla_code": "A1", "is_frequent": True},
                      {"hla_code": "A2", "is_frequent": True}]
@@ -711,7 +724,7 @@ In this case the summary HLA code is `A1`, because it has the highest MFI among 
 The MFI value `= (3000) / 1 = 3000` (antibody `A*02:01` wasn't included, because it has different SPLIT code than 
 summary HLA code. `A*02:02` also has MFI below cutoff, so it wasn't included too).
 
-3. The donor has several frequent HIGH RES codes that have **the same SPLIT** level in the assumed HLA types list:
+5. The donor has several frequent HIGH RES codes that have **the same SPLIT** level in the assumed HLA types list:
 ```python
 assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
                      {"hla_code": "B*07:04", "is_frequent": True},
@@ -720,11 +733,11 @@ recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
                         {"hla_code": "B*07:04", "mfi": 4000, "cutoff": 2000},
                         {"hla_code": "B*07:05", "mfi": 100, "cutoff": 2000}]
 ```
-So we just take their SPLIT `B1` as summary HLA code. The summary MFI is calculated via `= (3000 + 4000) / 2 = 3500`
+So we just take their SPLIT `B7` as summary HLA code. The summary MFI is calculated via `= (3000 + 4000) / 2 = 3500`
 (antibody `B*07:05` wasn't included, because it has MFI below cutoff). Also, we send a describing crossmatch issue
 `Antibodies against this HLA Type might not be DSA, for more see detailed section` about this situation.
 
-4. The donor has several frequent HIGH RES codes that have **different SPLIT** levels in the assumed HLA types list:
+6. The donor has several frequent HIGH RES codes that have **different SPLIT** levels in the assumed HLA types list:
 ```python
 assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
                      {"hla_code": "B*08:01", "is_frequent": True},
@@ -751,7 +764,7 @@ recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
 The summary HLA code is still `B7` with the MFI value `= (3000) / 1 = 3000`, but we send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
-5. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list, 
+7. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list, 
 and at the same time it has MFI **ABOVE** cutoff (otherwise see 0.):
 ```python
 assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
