@@ -44,7 +44,11 @@ class CadaverousCrossmatchIssueDetail(str, Enum):
                                   'see detailed section.'  # DSA = Donor-specific antibody
     AMBIGUITY_IN_HLA_TYPIZATION = 'Antibodies against this HLA Type might not be DSA, for more ' \
                                   'see detailed section.'
-
+    NEGATIVE_ANTIBODY_IN_SUMMARY = 'There are no frequent antibodies crossmatched against this HLA type, ' \
+                                   'the HLA code in summary corresponds to an antibody with mfi below cutoff and ' \
+                                   'is therefore not displayed in the list of matched antibodies.'
+    NO_MATCHING_ANTIBODY = 'No matching antibody was found against this HLA type, HLA code displayed in summary ' \
+                           'taken from the HLA type.'
 
 @dataclass
 class CrossmatchSummary:
@@ -109,6 +113,8 @@ class AntibodyMatchForHLAType:
         if not matches_with_frequent_codes:
             # there are not any antibody matches with frequent codes,
             # so the crossmatch is very unlikely
+
+            # TODO do we want to search for highest matching negative antibody here?
             summary_match = max(self.antibody_matches,
                                 key=lambda m: m.hla_antibody.mfi)
             return CrossmatchSummary(
