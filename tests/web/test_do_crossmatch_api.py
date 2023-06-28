@@ -1001,6 +1001,34 @@ class TestDoCrossmatchApi(DbTests):
                            for antibody_match in res.json['hla_to_antibody']]
             self.assertEqual(res_summary, [None])
 
+        # CASE: donor - HIGH RES vs. recipient - SPLIT
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'A*01:01', 'is_frequent': True},
+                                            {'hla_code': 'A*02:01', 'is_frequent': True},
+                                            {'hla_code': 'A*02:02', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 3000,
+                                      'name': 'A2',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 100,
+                                      'name': 'A*01:01',
+                                      'cutoff': 2000}]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='A2', high_res=None, split='A2'),
+                mfi=3000,
+                match_type=AntibodyMatchTypes.SPLIT,
+                issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
     def test_on_big_data(self):
         with open(BIG_DATA_INPUT_JSON_PATH, 'r') as file:
             json = jsonlib.load(file)

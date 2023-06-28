@@ -136,21 +136,19 @@ class AntibodyMatchForHLAType:
         summary_hla_code = max(
             matches_with_frequent_codes_and_summary_type,
             key=lambda match: match.hla_antibody.mfi).hla_antibody.code.to_low_res_hla_code() \
-            if len(frequent_codes) > 1 \
-            else frequent_codes[0]
+            if len(matches_with_frequent_codes_and_summary_type) > 1 \
+            else matches_with_frequent_codes_and_summary_type[0].hla_antibody.code
 
         # get summary MFI value
-        antibodies_matched_mfis_for_summary_code: List[int] = []
-        matches_to_iterate = matches_with_frequent_codes_and_summary_type if \
-            HLACode.are_codes_in_high_res(frequent_codes) else self.antibody_matches
-        for antibody_match in matches_to_iterate:
-            if antibody_match.hla_antibody.code.get_low_res_code() \
-                != summary_hla_code.get_low_res_code() \
-               and (antibody_match.hla_antibody.second_code is None
-                    or antibody_match.hla_antibody.second_code.get_low_res_code()
-                    != summary_hla_code.get_low_res_code()):
-                continue
-            antibodies_matched_mfis_for_summary_code.append(antibody_match.hla_antibody.mfi)
+        antibodies_matched_mfis_for_summary_code = [
+            antibody_match.hla_antibody.mfi
+            for antibody_match in matches_with_frequent_codes_and_summary_type
+            if antibody_match.hla_antibody.code.get_low_res_code()
+               == summary_hla_code.get_low_res_code()
+               or (antibody_match.hla_antibody.second_code is not None and
+                   antibody_match.hla_antibody.second_code.get_low_res_code()
+                   == summary_hla_code.get_low_res_code())
+        ]
         summary_mfi = int(sum(antibodies_matched_mfis_for_summary_code) / len(
             antibodies_matched_mfis_for_summary_code))
 
