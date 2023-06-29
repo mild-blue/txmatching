@@ -178,21 +178,16 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': {
-                'hla_antibody': {
-                    'code': {
-                        'broad': 'A1',
-                        'high_res': None,
-                        'split': 'A1'
-                    },
-                    'cutoff': 2000,
-                    'mfi': 3000,
-                    'raw_code': 'A1',
-                    'second_code': None,
-                    'second_raw_code': None,
-                    'type': 'NORMAL'
+            'summary': {
+                'hla_code': {
+                    'broad': 'A1',
+                    'high_res': None,
+                    'split': 'A1'
                 },
-                'match_type': 'SPLIT'
+                'mfi': 3000,
+                'match_type': 'SPLIT',
+                'issues': ['Antibodies against this HLA Type might not be DSA, for more '
+                           'see detailed section.']
             }
         },
         {
@@ -211,7 +206,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         },
         {
             'antibody_matches': [
@@ -246,21 +241,15 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': {
-                'hla_antibody': {
-                    'code': {
-                        'broad': 'B7',
-                        'high_res': None,
-                        'split': 'B7'
-                    },
-                    'cutoff': 2000,
-                    'mfi': 2000,
-                    'raw_code': 'B7',
-                    'second_code': None,
-                    'second_raw_code': None,
-                    'type': 'NORMAL'
+            'summary': {
+                'hla_code': {
+                    'broad': 'B7',
+                    'high_res': None,
+                    'split': 'B7'
                 },
-                'match_type': 'SPLIT'
+                'mfi': 2000,
+                'match_type': 'SPLIT',
+                'issues': []
             }
         },
         {
@@ -279,7 +268,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         },
         {
             'antibody_matches': [
@@ -338,21 +327,16 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': {
-                'hla_antibody': {
-                    'code': {
-                        'broad': 'DR2',
-                        'high_res': None,
-                        'split': 'DR15'
-                    },
-                    'cutoff': 2000,
-                    'mfi': 3000,
-                    'raw_code': 'DR15',
-                    'second_code': None,
-                    'second_raw_code': None,
-                    'type': 'NORMAL'
+            'summary': {
+                'hla_code': {
+                    'broad': 'DR2',
+                    'high_res': None,
+                    'split': 'DR15'
                 },
-                'match_type': 'SPLIT'
+                'mfi': 3000,
+                'match_type': 'SPLIT',
+                'issues': ['Antibodies against this HLA Type might not be DSA, for more '
+                           'see detailed section.']
             }
         },
         {
@@ -395,7 +379,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         },
         {
             'antibody_matches': [
@@ -413,7 +397,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                         'second_raw_code': None,
                         'type': 'NORMAL'
                     },
-                    'match_type': 'HIGH_RES'
+                    'match_type': 'SPLIT'
                 }
             ],
             'assumed_hla_types': [
@@ -421,30 +405,24 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'hla_type': {
                         'code': {
                             'broad': 'DPA2',
-                            'high_res': 'DPA1*02:01',
+                            'high_res': None,
                             'split': 'DPA2'
                         },
-                        'display_code': 'DPA1*02:01',
-                        'raw_code': 'DPA1*02:01'
+                        'display_code': 'DPA2',
+                        'raw_code': 'DPA2'
                     },
-                    'is_frequent': False
+                    'is_frequent': True
                 }
             ],
-            'summary_antibody': {
-                'hla_antibody': {
-                    'code': {
-                        'broad': 'DPA2',
-                        'high_res': 'DPA1*02:01',
-                        'split': 'DPA2'
-                    },
-                    'cutoff': 2000,
-                    'mfi': 3000,
-                    'raw_code': 'DPA1*02:01',
-                    'second_code': None,
-                    'second_raw_code': None,
-                    'type': 'NORMAL'
+            'summary': {
+                'hla_code': {
+                    'broad': 'DPA2',
+                    'high_res': None,
+                    'split': 'DPA2'
                 },
-                'match_type': 'HIGH_RES'
+                'mfi': 3000,
+                'match_type': 'SPLIT',
+                'issues': []
             }
         },
         {
@@ -463,7 +441,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         },
         {
             'antibody_matches': [],
@@ -481,7 +459,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         },
         {
             'antibody_matches': [],
@@ -499,7 +477,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary_antibody': None
+            'summary': None
         }
     ]
 
@@ -508,11 +486,6 @@ HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE = [
         'hla_code_or_group': 'A*01:06',
         'message': ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE.value,
         'parsing_issue_detail': ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE.value
-    },
-    {
-        'hla_code_or_group': 'DPA1*02:01',
-        'message': ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value,
-        'parsing_issue_detail': ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value
     }
 ]
 

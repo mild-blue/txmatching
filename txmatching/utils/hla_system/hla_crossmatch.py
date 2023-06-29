@@ -1,4 +1,6 @@
+import logging
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Callable, List, Optional, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
@@ -12,6 +14,8 @@ from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel, HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
+
+logger = logging.getLogger(__name__)
 
 MATCHING_TYPE_ORDER = [AntibodyMatchTypes.HIGH_RES, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT,
                        AntibodyMatchTypes.HIGH_RES_WITH_BROAD, AntibodyMatchTypes.SPLIT, AntibodyMatchTypes.BROAD,
@@ -30,6 +34,26 @@ class AntibodyMatchForHLAGroup:
     antibody_matches: List[AntibodyMatch]
 
 
+class CadaverousCrossmatchIssueDetail(str, Enum):
+    RARE_ALLELE_POSITIVE_CROSSMATCH = 'There is most likely no crossmatch, but there is a small chance that a ' \
+                                      'crossmatch could occur. Therefore, this case requires further investigation.' \
+                                      'In summary we send SPLIT resolution of an infrequent code with the highest ' \
+                                      'MFI value among antibodies that have rare positive ' \
+                                      'crossmatch.'
+    ANTIBODIES_MIGHT_NOT_BE_DSA = 'Antibodies against this HLA Type might not be DSA, for more ' \
+                                  'see detailed section.'  # DSA = Donor-specific antibody
+    AMBIGUITY_IN_HLA_TYPIZATION = 'Antibodies against this HLA Type might not be DSA, for more ' \
+                                  'see detailed section.'
+
+
+@dataclass
+class CrossmatchSummary:
+    hla_code: HLACode
+    mfi: Optional[int]
+    match_type: AntibodyMatchTypes
+    issues: Optional[List[CadaverousCrossmatchIssueDetail]]
+
+
 @dataclass
 class AntibodyMatchForHLAType:
     # If we have List[HLAType], which biologically carries the meaning of only one HLA Type
@@ -40,7 +64,7 @@ class AntibodyMatchForHLAType:
     # - must not have several codes in low res, i.e. we do not allow situation ['A1', 'A1']
     assumed_hla_types: List[HLATypeWithFrequency]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
-    summary_antibody: Optional[AntibodyMatch] = field(init=False)  # antibody with the largest MFI value
+    summary: Optional[CrossmatchSummary] = field(init=False)  # antibody with the largest MFI value
 
     def __init__(self, assumed_hla_types: List[HLATypeWithFrequency],
                  antibody_matches: List[AntibodyMatch] = None):
@@ -48,11 +72,7 @@ class AntibodyMatchForHLAType:
             raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
         self.assumed_hla_types = assumed_hla_types
         self.antibody_matches = antibody_matches or []
-        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(self.assumed_hla_types,
-                                                                                        self.antibody_matches)
-        self.summary_antibody = max(antibody_matches_with_frequent_codes,
-                                    key=lambda
-                                        match: match.hla_antibody.mfi) if antibody_matches_with_frequent_codes else None
+        self.summary = self._calculate_crossmatch_summary()
 
     @classmethod
     def from_crossmatched_antibodies(cls, assumed_hla_types: List[HLATypeWithFrequency],
@@ -70,6 +90,93 @@ class AntibodyMatchForHLAType:
             raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
         antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
         return cls(assumed_hla_types, antibody_matches)
+
+    def _calculate_crossmatch_summary(self):
+        if not self.antibody_matches:
+            # TODO do not return None: https://github.com/mild-blue/txmatching/issues/1232
+            return None
+
+        frequent_codes = [
+            hla_type.hla_type.code
+            for hla_type in self.assumed_hla_types
+            if hla_type.is_frequent
+        ]
+        matches_with_frequent_codes = list(filter(
+            lambda m: m.hla_antibody.code in frequent_codes or
+                      m.hla_antibody.second_code in frequent_codes,
+            self.antibody_matches
+        ))
+        if not matches_with_frequent_codes:
+            # there are not any antibody matches with frequent codes,
+            # so the crossmatch is very unlikely
+            summary_match = max(self.antibody_matches,
+                                key=lambda m: m.hla_antibody.mfi)
+            return CrossmatchSummary(
+                hla_code=summary_match.hla_antibody.code.to_low_res_hla_code(),
+                mfi=summary_match.hla_antibody.mfi,
+                match_type=summary_match.match_type,
+                issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
+            )
+
+        # get summary match type
+        antibodies_matched_types = [antibody_match.match_type for antibody_match
+                                    in matches_with_frequent_codes]
+        summary_match_type = max(antibodies_matched_types)
+        # Further we will only consider antibodies with match_type == summary_match_type
+        matches_with_frequent_codes_and_summary_type = list(filter(
+            lambda m: m.match_type == summary_match_type,
+            matches_with_frequent_codes
+        ))
+        assert matches_with_frequent_codes_and_summary_type, \
+            "For now, we assume that these lists have at least one element. " \
+            "If not, then this is a logic error in the code."
+
+        # get crossmatch issues
+        crossmatch_issues = self._calculate_crossmatch_issues(
+            frequent_codes, matches_with_frequent_codes_and_summary_type)
+
+        # get summary HLA code
+        summary_hla_code = max(
+            matches_with_frequent_codes_and_summary_type,
+            key=lambda match: match.hla_antibody.mfi).hla_antibody.code.to_low_res_hla_code() \
+            if len(matches_with_frequent_codes_and_summary_type) > 1 \
+            else matches_with_frequent_codes_and_summary_type[0].hla_antibody.code
+
+        # get summary MFI value
+        antibodies_matched_mfis_for_summary_code = [
+            antibody_match.hla_antibody.mfi
+            for antibody_match in matches_with_frequent_codes_and_summary_type
+            if antibody_match.hla_antibody.code.get_low_res_code()
+               == summary_hla_code.get_low_res_code()
+               or (antibody_match.hla_antibody.second_code is not None and
+                   antibody_match.hla_antibody.second_code.get_low_res_code()
+                   == summary_hla_code.get_low_res_code())
+        ]
+        summary_mfi = int(sum(antibodies_matched_mfis_for_summary_code) / len(
+            antibodies_matched_mfis_for_summary_code))
+
+        return CrossmatchSummary(
+            hla_code=summary_hla_code,
+            mfi=summary_mfi,
+            match_type=summary_match_type,
+            issues=crossmatch_issues
+        )
+
+    @staticmethod
+    def _calculate_crossmatch_issues(frequent_codes: List[HLACode],
+                                     matches_with_frequent_codes: List[AntibodyMatch]) \
+            -> List[CadaverousCrossmatchIssueDetail]:
+        if not len(frequent_codes) > 1 or not HLACode.are_codes_in_high_res(frequent_codes):
+            return []
+        if not HLACode.do_codes_have_different_low_res(frequent_codes):
+            return [CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+        else:
+            if len(frequent_codes) == len(matches_with_frequent_codes):
+                # all codes above cutoff
+                return [CadaverousCrossmatchIssueDetail.AMBIGUITY_IN_HLA_TYPIZATION]
+            else:
+                # some codes below cutoff
+                return [CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
 
     @classmethod
     def _find_common_matches(cls, assumed_hla_types: List[HLATypeWithFrequency],
@@ -94,21 +201,6 @@ class AntibodyMatchForHLAType:
 
     def __eq__(self, other):
         return hash(self) == hash(other)
-
-
-def get_antibody_matches_with_frequent_codes(assumed_hla_types: List[HLATypeWithFrequency],
-                                             antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
-    frequent_codes = [
-        hla_type.hla_type.code
-        for hla_type in assumed_hla_types
-        if hla_type.is_frequent
-    ]
-    return [
-        antibody_match
-        for antibody_match in antibody_matches
-        if antibody_match.hla_antibody.code in frequent_codes
-           or antibody_match.hla_antibody.second_code in frequent_codes
-    ]
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
