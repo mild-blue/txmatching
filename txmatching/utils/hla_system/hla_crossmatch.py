@@ -36,7 +36,10 @@ class AntibodyMatchForHLAGroup:
 
 class CadaverousCrossmatchIssueDetail(str, Enum):
     RARE_ALLELE_POSITIVE_CROSSMATCH = 'There is most likely no crossmatch, but there is a small chance that a ' \
-                                      'crossmatch could occur. Therefore, this case requires further investigation.'
+                                      'crossmatch could occur. Therefore, this case requires further investigation.' \
+                                      'In summary we send infrequent SPLIT code with the highest ' \
+                                      'MFI value among antibodies that have rare positive ' \
+                                      'crossmatch.'
     ANTIBODIES_MIGHT_NOT_BE_DSA = 'Antibodies against this HLA Type might not be DSA, for more ' \
                                   'see detailed section.'  # DSA = Donor-specific antibody
     AMBIGUITY_IN_HLA_TYPIZATION = 'Antibodies against this HLA Type might not be DSA, for more ' \
