@@ -78,8 +78,7 @@ class AntibodyMatchForHLAType:
             raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
         self.assumed_hla_types = assumed_hla_types
         self.antibody_matches = antibody_matches or []
-        all_antibodies = all_antibodies or []
-        self.summary = self._calculate_crossmatch_summary(all_antibodies=all_antibodies)
+        self.summary = self._calculate_crossmatch_summary(all_antibodies=all_antibodies or [])
 
     @classmethod
     def from_crossmatched_antibodies(cls, assumed_hla_types: List[HLATypeWithFrequency],
@@ -134,6 +133,11 @@ class AntibodyMatchForHLAType:
                     issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
                 )
             else:
+                # This is a special case that can occur with codes such as `A*01:01N`. Such codes picked to be in
+                # assumed hla types even without supporting antibody (consequently, there is not even a negative match
+                # to be found for them here).
+                # We also implicitly expect here that the assumed_hla_types is of length 1 in this case, if it is
+                # larger, we only display the first code.
                 return CrossmatchSummary(
                     hla_code=self.assumed_hla_types[0].hla_type.code,
                     mfi=None,
