@@ -99,6 +99,7 @@ class AntibodyMatchForHLAType:
         antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
         return cls(assumed_hla_types, antibody_matches, all_antibodies)
 
+    # pylint: disable=too-many-locals
     def _calculate_crossmatch_summary(self, all_antibodies: List[AntibodiesPerGroup]):
         frequent_codes = [
             hla_type.hla_type.code
