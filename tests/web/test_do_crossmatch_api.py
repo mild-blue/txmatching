@@ -1069,7 +1069,7 @@ class TestDoCrossmatchApi(DbTests):
 
         # CASE: The recipient has no antibodies that match with the donor's assumed hla types:
         json = {
-            'potential_donor_hla_typing': [[{'hla_code': 'A*01:01N', 'is_frequent': True}]],
+            'potential_donor_hla_typing': [[{'hla_code': 'A*01:01N', 'is_frequent': False}]],
             'recipient_antibodies': [{'mfi': 1000,
                                       'name': 'A*01:01',
                                       'cutoff': 3000}]
