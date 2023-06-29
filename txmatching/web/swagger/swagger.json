@@ -3545,7 +3545,9 @@
                         "example": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.",
                         "enum": [
                             "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.",
-                            "Antibodies against this HLA Type might not be DSA, for more see detailed section."
+                            "Antibodies against this HLA Type might not be DSA, for more see detailed section.",
+                            "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.",
+                            "No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type."
                         ]
                     }
                 }

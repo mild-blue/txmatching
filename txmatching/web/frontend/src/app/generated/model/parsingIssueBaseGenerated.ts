@@ -22,7 +22,6 @@ export enum ParsingIssueBaseGeneratedParsingIssueDetailEnum {
     HighResWithLetter = 'HIGH_RES_WITH_LETTER',
     HighResWithAssumedSplitCode = 'HIGH_RES_WITH_ASSUMED_SPLIT_CODE',
     CreatedTheoreticalAntibody = 'CREATED_THEORETICAL_ANTIBODY',
-    RareAllelePositiveCrossmatch = 'RARE_ALLELE_POSITIVE_CROSSMATCH',
     MultipleSplitsOrBroadsFound = 'MULTIPLE_SPLITS_OR_BROADS_FOUND',
     IrrelevantCode = 'IRRELEVANT_CODE',
     UnexpectedSplitResCode = 'UNEXPECTED_SPLIT_RES_CODE',
