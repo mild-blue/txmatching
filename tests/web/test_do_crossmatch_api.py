@@ -768,11 +768,22 @@ class TestDoCrossmatchApi(DbTests):
         self.assertEqual(asdict(expected_summary),
                          res.json['hla_to_antibody'][0]['summary'])
 
-        # there are no matched antibodies to both antigen DPA1*02:01 and antigen DQA1*01:08
+        # there are no matched antibodies to both antigen DPA1*02:01 and antigen DQA1*01:08,
+        # summary should be found among negative antibodies. As this test example is not complete,
+        # there are no corresponding negative antibodies and so the HLA type code is used as
+        # the summary HLA code here. It is not expected to have no matched antibodies
+        # in this case, but we test the correct summary nevertheless.
         for antibody_match_without_crossmatched_antibodies in res.json['hla_to_antibody'][1:]:
             self.assertCountEqual([], antibody_match_without_crossmatched_antibodies['antibody_matches'])
-            # so the summary is None
-            self.assertIsNone(antibody_match_without_crossmatched_antibodies['summary'])
+            expected_summary = CrossmatchSummary(
+                hla_code=antibody_match_without_crossmatched_antibodies['assumed_hla_types'][0],
+                mfi=None,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+            )
+            self.assertCountEqual(
+                asdict(expected_summary),
+                antibody_match_without_crossmatched_antibodies['summary'])
 
         # CASE: The donor has several frequent HIGH RES codes that have the same
         #       SPLIT level in the assumed HLA types list (vol. 2):
@@ -997,7 +1008,87 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual(200, res.status_code)
             res_summary = [antibody_match['summary']
                            for antibody_match in res.json['hla_to_antibody']]
-            self.assertEqual(res_summary, [None])
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
+                mfi=1000,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+            
+        # CASE: The recipient doesn't have any crossmatched antibodies against donor's assumed hla types (1):
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'B*07:04', 'is_frequent': True},
+                                            {'hla_code': 'B*07:05', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 1500, 
+                                      'name': 'B*07:04',
+                                      'cutoff': 2000},
+                                     {'mfi': 1000,
+                                      'name': 'B*07:05',
+                                      'cutoff': 2000}]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='B7', high_res=None, split='B7'),
+                mfi=1500,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
+        # CASE: The recipient doesn't have any crossmatched antibodies against donor's assumed hla types (2):
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'B7', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 1500,
+                                      'name': 'B*07:04',
+                                      'cutoff': 2000},
+                                     {'mfi': 1000,
+                                      'name': 'B*07:05',
+                                      'cutoff': 2000}]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='B7', high_res=None, split='B7'),
+                mfi=1500,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
+        # CASE: The recipient has no antibodies that match with the donor's assumed hla types:
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'A*01:01N', 'is_frequent': False}]],
+            'recipient_antibodies': [{'mfi': 1000,
+                                      'name': 'A*01:01',
+                                      'cutoff': 3000}]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad=None, high_res='A*01:01N', split=None),
+                mfi=None,
+                match_type=AntibodyMatchTypes.NONE,
+                issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
 
         # CASE: donor - HIGH RES vs. recipient - SPLIT
         json = {

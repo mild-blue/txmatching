@@ -84,7 +84,8 @@ class DoCrossmatch(Resource):
         antibody_matches_for_hla_type = [
             AntibodyMatchForHLAType.from_crossmatched_antibodies(
                 assumed_hla_types=assumed_hla_type,
-                crossmatched_antibodies=crossmatched_antibodies_per_group)
+                crossmatched_antibodies=crossmatched_antibodies_per_group,
+                all_antibodies=hla_antibodies.hla_antibodies_per_groups)
             for assumed_hla_type in assumed_hla_typing]
 
         return response_ok(CrossmatchDTOOut(

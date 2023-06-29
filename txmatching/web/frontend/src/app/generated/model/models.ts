@@ -15,6 +15,7 @@ export * from './countryCodeGenerated';
 export * from './countryGenerated';
 export * from './crossmatchInputGenerated';
 export * from './crossmatchOutputGenerated';
+export * from './crossmatchSummaryGenerated';
 export * from './cycleOrChainGenerated';
 export * from './defaultTxmEventGenerated';
 export * from './detailedScoreForGroupGenerated';
