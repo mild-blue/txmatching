@@ -824,16 +824,14 @@ class TestDoCrossmatchApi(DbTests):
             self.assertEqual(200, res.status_code)
             res_summaries = [antibody_match['summary']
                              for antibody_match in res.json['hla_to_antibody']]
-            self.assertTrue(len(res_summary) == 1)
-            res_summary = res_summaries[0]
             # When a crossmatch occurs with only infrequent codes, we send issue unlikely crossmatch
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
-                mfi=None,
+                mfi=2100,
                 match_type=AntibodyMatchTypes.HIGH_RES,
                 issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
             )
-            self.assertCountEqual(res_summary, asdict(expected_summary))
+            self.assertEqual(res_summaries, [asdict(expected_summary)])
 
         # CASE: The donor has the only one SPLIT HLA code in the assumed HLA types list:
         json = {

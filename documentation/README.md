@@ -664,7 +664,9 @@ So the summarization code will be `A2`, because `A*02:01` has the highest MFI am
 #### How to calculate summary MFI?
 Again we take into account only frequent codes among the assumed HLA types. 
 We will consider the summary MFI as the arithmetic mean MFI values above cutoff of the corresponding antibodies. 
-In case there are not any MFI values above cutoff for the frequent HLA code, we use `null` value for the summary MFI.
+In case there are not any MFI values above cutoff for the frequent HLA code, we use the highest MFI value among infrequent 
+antibodies which are unlikely to crossmatch as the summary MFI. Also, we send describing issue:
+`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.`
 (Do not forget that in the absolute majority of cases, the assumed HLA types list always has at least one frequent code 
 due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent 
 codes in the assumed HLA types can be only in cases when SPLIT code does not exist or is unknown to our database).

@@ -110,7 +110,7 @@ class AntibodyMatchForHLAType:
                                 key=lambda m: m.hla_antibody.mfi)
             return CrossmatchSummary(
                 hla_code=summary_match.hla_antibody.code.to_low_res_hla_code(),
-                mfi=None,
+                mfi=summary_match.hla_antibody.mfi,
                 match_type=summary_match.match_type,
                 issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
             )
