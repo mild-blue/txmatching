@@ -43,8 +43,8 @@ class CadaverousCrossmatchIssueDetail(str, Enum):
                                       'crossmatch.'
     ANTIBODIES_MIGHT_NOT_BE_DSA = 'Antibodies against this HLA Type might not be DSA, for more ' \
                                   'see detailed section.'  # DSA = Donor-specific antibody
-    AMBIGUITY_IN_HLA_TYPIZATION = 'Antibodies against this HLA Type might not be DSA, for more ' \
-                                  'see detailed section.'
+    AMBIGUITY_IN_HLA_TYPIZATION = 'Ambiguous HLA typization, multiple crossmatched frequent HLA codes with ' \
+                                  'different SPLIT level.'
     NEGATIVE_ANTIBODY_IN_SUMMARY = 'There are no frequent antibodies crossmatched against this HLA type, ' \
                                    'the HLA code in summary corresponds to an antibody with mfi below cutoff and ' \
                                    'is therefore not displayed in the list of matched antibodies.'
