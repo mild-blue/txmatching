@@ -3195,7 +3195,6 @@
                                     "split": "A1"
                                 },
                                 "mfi": 3000,
-                                "match_type": "SPLIT",
                                 "issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
@@ -3259,7 +3258,6 @@
                                     "split": "B7"
                                 },
                                 "mfi": 2000,
-                                "match_type": "SPLIT",
                                 "issues": []
                             }
                         },
@@ -3345,7 +3343,6 @@
                                     "split": "DR15"
                                 },
                                 "mfi": 3000,
-                                "match_type": "SPLIT",
                                 "issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
@@ -3433,7 +3430,6 @@
                                     "split": "DPA2"
                                 },
                                 "mfi": 3000,
-                                "match_type": "SPLIT",
                                 "issues": []
                             }
                         },
@@ -3514,8 +3510,7 @@
         },
         "CrossmatchSummary": {
             "required": [
-                "hla_code",
-                "match_type"
+                "hla_code"
             ],
             "properties": {
                 "hla_code": {
@@ -3523,20 +3518,6 @@
                 },
                 "mfi": {
                     "type": "integer"
-                },
-                "match_type": {
-                    "type": "string",
-                    "example": "SPLIT",
-                    "enum": [
-                        "SPLIT",
-                        "BROAD",
-                        "HIGH_RES",
-                        "NONE",
-                        "UNDECIDABLE",
-                        "HIGH_RES_WITH_SPLIT",
-                        "HIGH_RES_WITH_BROAD",
-                        "THEORETICAL"
-                    ]
                 },
                 "issues": {
                     "type": "array",
@@ -3546,8 +3527,14 @@
                         "enum": [
                             "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.",
                             "Antibodies against this HLA Type might not be DSA, for more see detailed section.",
+                            "Ambiguous HLA typization, multiple crossmatched frequent HLA codes with different SPLIT level.",
                             "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.",
-                            "No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type."
+                            "No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.",
+                            "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.",
+                            "Recipient was not tested for donor's HLA type, but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.",
+                            "SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.",
+                            "There is no exact match, but some of the HIGH RES antibodies corresponding tothe summary HLA code on SPLIT or BROAD level are positive.",
+                            "There is a match in SPLIT or BROAD resolution."
                         ]
                     }
                 }
