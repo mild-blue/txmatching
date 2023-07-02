@@ -942,12 +942,26 @@ definitions:
                         that have rare positive crossmatch.
                     - Antibodies against this HLA Type might not be DSA, for more
                         see detailed section.
+                    - Ambiguous HLA typization, multiple crossmatched frequent HLA
+                        codes with different SPLIT level.
                     - There are no frequent antibodies crossmatched against this HLA
                         type, the HLA code in summary corresponds to an antibody with
                         mfi below cutoff and is therefore not displayed in the list
                         of matched antibodies.
                     - No matching antibody was found against this HLA type, HLA code
                         displayed in summary taken from the HLA type.
+                    - There is a single positively crossmatched HIGH RES HLA type
+                        - HIGH RES antibody pair.
+                    - Recipient was not tested for donor's HLA type, but all HIGH
+                        RES antibodies corresponding to the summary HLA code on SPLIT
+                        level are positively crossmatched.
+                    - SPLIT HLA code displayed in summary, but there are multiple
+                        positive crossmatches of HIGH RES HLA type - HIGH RES antibody
+                        pairs.
+                    - There is no exact match, but some of the HIGH RES antibodies
+                        corresponding tothe summary HLA code on SPLIT or BROAD level
+                        are positive.
+                    - There is a match in SPLIT or BROAD resolution.
                     example: There is most likely no crossmatch, but there is a small
                         chance that a crossmatch could occur. Therefore, this case
                         requires further investigation.In summary we send SPLIT resolution
