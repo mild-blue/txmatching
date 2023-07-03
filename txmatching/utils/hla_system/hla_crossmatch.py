@@ -58,6 +58,9 @@ class CadaverousCrossmatchIssueDetail(str, Enum):
     HIGH_RES_WITH_SPLIT_BROAD_MATCH = 'There is no exact match, but some of the HIGH RES antibodies corresponding to' \
                                       'the summary HLA code on SPLIT or BROAD level are positive.'
     SPLIT_BROAD_MATCH = 'There is a match in SPLIT or BROAD resolution.'
+    THEORETICAL_MATCH = 'There is a match with theoretical antibody.'
+    NONE_MATCH = 'There is a match of type NONE, this is most probably caused by only one of the antibodies from ' \
+                 'double antibody finding a match.'
 
 
 @dataclass
@@ -216,21 +219,19 @@ class AntibodyMatchForHLAType:
             -> List[CadaverousCrossmatchIssueDetail]:
         crossmatch_issues: List[CadaverousCrossmatchIssueDetail] = []
 
-        # Match type info
+        # Match type info (all matches are already filtered to have the same match type, we can use single match
+        # to infer it)
         match_type = matches_with_frequent_codes_and_summary_type[0].match_type
-        if match_type == AntibodyMatchTypes.NONE \
-                or match_type == AntibodyMatchTypes.THEORETICAL \
-                or match_type == AntibodyMatchTypes.UNDECIDABLE:
-            pass
-
+        if match_type == AntibodyMatchTypes.NONE:
+            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.NONE_MATCH)
+        elif match_type == AntibodyMatchTypes.THEORETICAL:
+            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.THEORETICAL_MATCH)
         elif match_type == AntibodyMatchTypes.BROAD \
                 or match_type == AntibodyMatchTypes.SPLIT:
             crossmatch_issues.append(CadaverousCrossmatchIssueDetail.SPLIT_BROAD_MATCH)
-
         elif match_type == AntibodyMatchTypes.HIGH_RES_WITH_BROAD \
                 or match_type == AntibodyMatchTypes.HIGH_RES_WITH_SPLIT:
             crossmatch_issues.append(CadaverousCrossmatchIssueDetail.HIGH_RES_WITH_SPLIT_BROAD_MATCH)
-
         elif match_type == AntibodyMatchTypes.HIGH_RES:
             if HLACode.are_codes_in_high_res(frequent_codes):
                 if len(matches_with_frequent_codes_and_summary_type) > 1:
@@ -243,6 +244,9 @@ class AntibodyMatchForHLAType:
                 # Everything is in split, HIGH_RES match could not have been achieved by high_res-high_res
                 # corresspondence.
                 crossmatch_issues.append(CadaverousCrossmatchIssueDetail.HIGH_RES_MATCH_ON_SPLIT_LEVEL)
+        elif match_type == AntibodyMatchTypes.UNDECIDABLE:
+            raise AssertionError(f"Unexpected match type: {match_type}. Such type should not occur at this point.")
+
         else:
             raise AssertionError("Unknown antibody match type. This should never happen.")
 

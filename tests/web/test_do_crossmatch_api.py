@@ -872,7 +872,42 @@ class TestDoCrossmatchApi(DbTests):
             )
             self.assertEqual(res_summaries, [asdict(expected_summary)])
 
-        # CASE: The donor has the only one SPLIT HLA code in the assumed HLA types list:
+        # CASE: The donor has only one SPLIT HLA code in the assumed HLA types list (if all potential HLA types
+        # are infrequent, they are parsed as single SPLIT HLA type):
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': False},
+                                            {'hla_code': 'DPA1*01:06', 'is_frequent': False},
+                                            {'hla_code': 'DPA1*01:04', 'is_frequent': False}]],
+            'recipient_antibodies': [{'mfi': 5000,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2000,
+                                      'name': 'DPA1*01:06',
+                                      'cutoff': 2000},
+                                     {'mfi': 3000,
+                                      'name': 'DPA1*01:04',
+                                      'cutoff': 2000}]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
+                mfi=3333,
+                issues=[CadaverousCrossmatchIssueDetail.SPLIT_BROAD_MATCH]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
+        # CASE: The donor has only one SPLIT HLA code in the assumed HLA types list (if all potential HLA types
+        # are infrequent, they are parsed as single SPLIT HLA type). The recipient is type A parsed (all antibodies
+        # he is tested for are in high res and there are at least 20 of them). Assumed HLA type in this case is DPA1,
+        # and all the antibodies that are DPA1 on SPLIT level are positive, this is therefore considered to be
+        # HIGH_RES match. For better legibility, we use HIGH_RES_MATCH_ON_SPLIT_LEVEL message in crossmatch apiAd instead:
         json = {
             'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': False},
                                             {'hla_code': 'DPA1*01:06', 'is_frequent': False},
