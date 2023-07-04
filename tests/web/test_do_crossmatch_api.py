@@ -43,10 +43,12 @@ class TestDoCrossmatchApi(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
+            self.assertTrue(res.json['hla_to_antibody'][0]['is_positive_crossmatch'])
             self.assertEqual([{'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
                                                 'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02', 'second_code': None,
                                                 'second_raw_code': None, 'type': 'NORMAL'}, 'match_type': 'HIGH_RES'}],
                              res.json['hla_to_antibody'][0]['antibody_matches'])
+            self.assertFalse(res.json['hla_to_antibody'][1]['is_positive_crossmatch'])
             self.assertEqual([], res.json['hla_to_antibody'][1]['antibody_matches'])
 
             self.assertEqual(
