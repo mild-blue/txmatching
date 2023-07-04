@@ -644,6 +644,23 @@ Priority is arranged in the following way:
 For example, if some antibodies crossmatched at the `HIGH RES` level, others at the `SPLIT` level, 
 then the summary match type would be `HIGH RES` as the most important of these.
 
+As the eight possible match types above do not always describe the situation exactly, we do not display it in the summary.
+Instead, we send a message describing the crossmatch type together with some possible issues in the `details_and_issues`
+property of the summary.
+We do this mainly to distinguish two types of HIGH_RES match that can occur.
+
+If the HIGH_RES match occurs due to a single HIGH RES antibody matching to single HIGH RES antigen, we send a message:
+`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
+, if there are multiple antibody - antigen pairs, we send a different message informing about this: `SPLIT HLA code 
+displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.`
+
+HIGH_RES match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
+some more conditions, described as case 2. and 3. in the `HIGH_RES` match description above in this documentation).
+In this case we send a message saying: `There is no exact match, but some of the HIGH RES antibodies corresponding to 
+the summary HLA code on SPLIT or BROAD level are positive.`
+
+The rest of match types are described with corresponding messages in a straightforward manner. 
+
 #### How to choose summary HLA code?
 For summary, we would like to take into account just frequent codes among all assumed HLA types.
 When this code is the only one, then everything is quite simple, we consider this code as a summary,

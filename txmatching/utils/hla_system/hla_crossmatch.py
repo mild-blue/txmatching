@@ -35,7 +35,7 @@ class AntibodyMatchForHLAGroup:
     antibody_matches: List[AntibodyMatch]
 
 
-class CadaverousCrossmatchIssueDetail(str, Enum):
+class CadaverousCrossmatchDetailsIssues(str, Enum):
     RARE_ALLELE_POSITIVE_CROSSMATCH = 'There is most likely no crossmatch, but there is a small chance that a ' \
                                       'crossmatch could occur. Therefore, this case requires further investigation.' \
                                       'In summary we send SPLIT resolution of an infrequent code with the highest ' \
@@ -67,7 +67,7 @@ class CadaverousCrossmatchIssueDetail(str, Enum):
 class CrossmatchSummary:
     hla_code: HLACode
     mfi: Optional[int]
-    issues: Optional[List[CadaverousCrossmatchIssueDetail]]
+    details_and_issues: Optional[List[CadaverousCrossmatchDetailsIssues]]
 
 
 @dataclass
@@ -110,6 +110,7 @@ class AntibodyMatchForHLAType:
         antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
         return cls(assumed_hla_types, antibody_matches, all_antibodies)
 
+    # pylint: disable=too-many-locals
     def _calculate_crossmatch_summary(self, all_antibodies: List[AntibodiesPerGroup]):
         frequent_codes = [
             hla_type.hla_type.code
@@ -140,7 +141,7 @@ class AntibodyMatchForHLAType:
                 return CrossmatchSummary(
                     hla_code=summary_match.hla_antibody.code.to_low_res_hla_code(),
                     mfi=summary_match.hla_antibody.mfi,
-                    issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+                    details_and_issues=[CadaverousCrossmatchDetailsIssues.NEGATIVE_ANTIBODY_IN_SUMMARY]
                 )
             else:
                 # This is a special case that can occur with codes such as `A*01:01N`. Such codes picked to be in
@@ -151,7 +152,7 @@ class AntibodyMatchForHLAType:
                 return CrossmatchSummary(
                     hla_code=self.assumed_hla_types[0].hla_type.code,
                     mfi=None,
-                    issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+                    details_and_issues=[CadaverousCrossmatchDetailsIssues.NO_MATCHING_ANTIBODY]
                 )
 
         matches_with_frequent_codes = list(filter(
@@ -167,7 +168,7 @@ class AntibodyMatchForHLAType:
             return CrossmatchSummary(
                 hla_code=summary_match.hla_antibody.code.to_low_res_hla_code(),
                 mfi=summary_match.hla_antibody.mfi,
-                issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.RARE_ALLELE_POSITIVE_CROSSMATCH]
             )
 
         # get summary match type
@@ -183,8 +184,8 @@ class AntibodyMatchForHLAType:
             "For now, we assume that these lists have at least one element. " \
             "If not, then this is a logic error in the code."
 
-        # get crossmatch issues
-        crossmatch_issues = self._calculate_crossmatch_issues(
+        # get crossmatch type details and issues
+        crossmatch_details_and_issues = self._calculate_crossmatch_details_and_issues(
             frequent_codes, matches_with_frequent_codes_and_summary_type)
 
         # get summary HLA code
@@ -210,61 +211,57 @@ class AntibodyMatchForHLAType:
         return CrossmatchSummary(
             hla_code=summary_hla_code,
             mfi=summary_mfi,
-            issues=crossmatch_issues
+            details_and_issues=crossmatch_details_and_issues
         )
 
+    # pylint: disable=too-many-branches
     @staticmethod
-    def _calculate_crossmatch_issues(frequent_codes: List[HLACode],
-                                     matches_with_frequent_codes_and_summary_type: List[AntibodyMatch]) \
-            -> List[CadaverousCrossmatchIssueDetail]:
-        crossmatch_issues: List[CadaverousCrossmatchIssueDetail] = []
-
+    def _calculate_crossmatch_details_and_issues(frequent_codes: List[HLACode],
+                                                 matches_with_frequent_codes_and_summary_type: List[AntibodyMatch]) \
+            -> List[CadaverousCrossmatchDetailsIssues]:
         # Match type info (all matches are already filtered to have the same match type, we can use single match
         # to infer it)
+
         match_type = matches_with_frequent_codes_and_summary_type[0].match_type
         if match_type == AntibodyMatchTypes.NONE:
-            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.NONE_MATCH)
+            crossmatch_detail = CadaverousCrossmatchDetailsIssues.NONE_MATCH
         elif match_type == AntibodyMatchTypes.THEORETICAL:
-            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.THEORETICAL_MATCH)
-        elif match_type == AntibodyMatchTypes.BROAD \
-                or match_type == AntibodyMatchTypes.SPLIT:
-            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.SPLIT_BROAD_MATCH)
-        elif match_type == AntibodyMatchTypes.HIGH_RES_WITH_BROAD \
-                or match_type == AntibodyMatchTypes.HIGH_RES_WITH_SPLIT:
-            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.HIGH_RES_WITH_SPLIT_BROAD_MATCH)
+            crossmatch_detail = CadaverousCrossmatchDetailsIssues.THEORETICAL_MATCH
+        elif match_type in (AntibodyMatchTypes.BROAD, AntibodyMatchTypes.SPLIT):
+            crossmatch_detail = CadaverousCrossmatchDetailsIssues.SPLIT_BROAD_MATCH
+        elif match_type in (AntibodyMatchTypes.HIGH_RES_WITH_BROAD, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT):
+            crossmatch_detail = CadaverousCrossmatchDetailsIssues.HIGH_RES_WITH_SPLIT_BROAD_MATCH
         elif match_type == AntibodyMatchTypes.HIGH_RES:
             if HLACode.are_codes_in_high_res(frequent_codes):
                 if len(matches_with_frequent_codes_and_summary_type) > 1:
-                    crossmatch_issues.append(CadaverousCrossmatchIssueDetail.MULTIPLE_HIGH_RES_MATCH)
+                    crossmatch_detail = CadaverousCrossmatchDetailsIssues.MULTIPLE_HIGH_RES_MATCH
                 else:
                     # len(matches_with_frequent_codes_and_summary_type) == 1 ->
                     # -> true high res (single antibody-hla code pair)
-                    crossmatch_issues.append(CadaverousCrossmatchIssueDetail.HIGH_RES_MATCH)
+                    crossmatch_detail = CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH
             else:
                 # Everything is in split, HIGH_RES match could not have been achieved by high_res-high_res
                 # corresspondence.
-                crossmatch_issues.append(CadaverousCrossmatchIssueDetail.HIGH_RES_MATCH_ON_SPLIT_LEVEL)
+                crossmatch_detail = CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH_ON_SPLIT_LEVEL
         elif match_type == AntibodyMatchTypes.UNDECIDABLE:
-            raise AssertionError(f"Unexpected match type: {match_type}. Such type should not occur at this point.")
-
-        else:
-            raise AssertionError("Unknown antibody match type. This should never happen.")
+            raise AssertionError(f"Unexpected match type: {match_type}. Such type is unknown or "
+                                 f"should not occur at this point.")
 
         # Issues
+        crossmatch_issues: List[CadaverousCrossmatchDetailsIssues] = []
         if not len(frequent_codes) > 1 or not HLACode.are_codes_in_high_res(frequent_codes):
-            return crossmatch_issues
-        if not HLACode.do_codes_have_different_low_res(frequent_codes):
-            crossmatch_issues.append(CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA)
-            return crossmatch_issues
+            pass
+        elif not HLACode.do_codes_have_different_low_res(frequent_codes):
+            crossmatch_issues.append(CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA)
         else:
             if len(frequent_codes) == len(matches_with_frequent_codes_and_summary_type):
                 # all codes above cutoff
-                crossmatch_issues.append(CadaverousCrossmatchIssueDetail.AMBIGUITY_IN_HLA_TYPIZATION)
-                return crossmatch_issues
+                crossmatch_issues.append(CadaverousCrossmatchDetailsIssues.AMBIGUITY_IN_HLA_TYPIZATION)
             else:
                 # some codes below cutoff
-                crossmatch_issues.append(CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA)
-                return crossmatch_issues
+                crossmatch_issues.append(CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA)
+
+        return [crossmatch_detail] + crossmatch_issues
 
     @classmethod
     def _find_common_matches(cls, assumed_hla_types: List[HLATypeWithFrequency],

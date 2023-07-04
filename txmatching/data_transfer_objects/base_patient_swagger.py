@@ -185,8 +185,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'split': 'A1'
                 },
                 'mfi': 3000,
-                'issues': ['Antibodies against this HLA Type might not be DSA, for more '
-                           'see detailed section.']
+                'details_and_issues': ['Antibodies against this HLA Type might not be DSA, for more '
+                                       'see detailed section.']
             }
         },
         {
@@ -247,7 +247,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'split': 'B7'
                 },
                 'mfi': 2000,
-                'issues': []
+                'details_and_issues': []
             }
         },
         {
@@ -332,8 +332,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'split': 'DR15'
                 },
                 'mfi': 3000,
-                'issues': ['Antibodies against this HLA Type might not be DSA, for more '
-                           'see detailed section.']
+                'details_and_issues': ['Antibodies against this HLA Type might not be DSA, for more '
+                                       'see detailed section.']
             }
         },
         {
@@ -418,7 +418,7 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'split': 'DPA2'
                 },
                 'mfi': 3000,
-                'issues': []
+                'details_and_issues': []
             }
         },
         {

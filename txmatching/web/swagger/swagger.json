@@ -3195,7 +3195,7 @@
                                     "split": "A1"
                                 },
                                 "mfi": 3000,
-                                "issues": [
+                                "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
                             }
@@ -3258,7 +3258,7 @@
                                     "split": "B7"
                                 },
                                 "mfi": 2000,
-                                "issues": []
+                                "details_and_issues": []
                             }
                         },
                         {
@@ -3343,7 +3343,7 @@
                                     "split": "DR15"
                                 },
                                 "mfi": 3000,
-                                "issues": [
+                                "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
                             }
@@ -3430,7 +3430,7 @@
                                     "split": "DPA2"
                                 },
                                 "mfi": 3000,
-                                "issues": []
+                                "details_and_issues": []
                             }
                         },
                         {
@@ -3519,7 +3519,7 @@
                 "mfi": {
                     "type": "integer"
                 },
-                "issues": {
+                "details_and_issues": {
                     "type": "array",
                     "items": {
                         "type": "string",
@@ -3534,7 +3534,9 @@
                             "Recipient was not tested for donor's HLA type, but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.",
                             "SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.",
                             "There is no exact match, but some of the HIGH RES antibodies corresponding tothe summary HLA code on SPLIT or BROAD level are positive.",
-                            "There is a match in SPLIT or BROAD resolution."
+                            "There is a match in SPLIT or BROAD resolution.",
+                            "There is a match with theoretical antibody.",
+                            "There is a match of type NONE, this is most probably caused by only one of the antibodies from double antibody finding a match."
                         ]
                     }
                 }
