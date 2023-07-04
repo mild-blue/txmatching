@@ -617,7 +617,7 @@ positive crossmatch with these antigens, but in the case of cadaverous donors,
 we evaluate this crossmatch as **negative**.
 
 ### Crossmatch description in summary
-For each assumed hla type, we return a boolean `is_crossmatch` simply saing if there are any antibodies positively
+For each assumed hla type, we return a boolean `is_positive_crossmatch` simply saing if there are any antibodies positively
 crossmatched with it.
 The crossmatch situation is described in more detail in `summary` which contains `hla_code` (see 
 [How to choose summary HLA code?](#how-to-choose-summary-hla-code)), 'mfi' (see 

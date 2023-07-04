@@ -83,7 +83,7 @@ definitions:
                 items:
                     $ref: '#/definitions/AssumedHLAType'
                 type: array
-            is_crossmatch:
+            is_positive_crossmatch:
                 type: boolean
             summary:
                 allOf:
@@ -91,7 +91,7 @@ definitions:
                 readOnly: true
         required:
         - assumed_hla_types
-        - is_crossmatch
+        - is_positive_crossmatch
         type: object
     AntigenMatch:
         properties:
@@ -714,7 +714,7 @@ definitions:
                             display_code: A*01:19
                             raw_code: A*01:19
                         is_frequent: true
-                    is_crossmatch: true
+                    is_positive_crossmatch: true
                     summary:
                         details_and_issues:
                         - Antibodies against this HLA Type might not be DSA, for more
@@ -734,7 +734,7 @@ definitions:
                             display_code: A2
                             raw_code: A2
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 -   antibody_matches:
                     -   hla_antibody:
@@ -758,7 +758,7 @@ definitions:
                             display_code: B7
                             raw_code: B7
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary:
                         details_and_issues: []
                         hla_code:
@@ -776,7 +776,7 @@ definitions:
                             display_code: B35
                             raw_code: B35
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 -   antibody_matches:
                     -   hla_antibody:
@@ -816,7 +816,7 @@ definitions:
                             display_code: DRB1*15:07
                             raw_code: DRB1*15:07
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary:
                         details_and_issues:
                         - Antibodies against this HLA Type might not be DSA, for more
@@ -852,7 +852,7 @@ definitions:
                             display_code: DRB1*11:52
                             raw_code: DRB1*11:52
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 -   antibody_matches:
                     -   hla_antibody:
@@ -876,7 +876,7 @@ definitions:
                             display_code: DPA2
                             raw_code: DPA2
                         is_frequent: true
-                    is_crossmatch: true
+                    is_positive_crossmatch: true
                     summary:
                         details_and_issues: []
                         hla_code:
@@ -894,7 +894,7 @@ definitions:
                             display_code: DP1054
                             raw_code: DP1054
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -906,7 +906,7 @@ definitions:
                             display_code: DQA1
                             raw_code: DQA1
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -918,7 +918,7 @@ definitions:
                             display_code: DQ6
                             raw_code: DQ6
                         is_frequent: true
-                    is_crossmatch: false
+                    is_positive_crossmatch: false
                     summary: null
                 items:
                     $ref: '#/definitions/AntibodyMatchForHLAType'
@@ -963,9 +963,10 @@ definitions:
                         displayed in summary taken from the HLA type.
                     - There is a single positively crossmatched HIGH RES HLA type
                         - HIGH RES antibody pair.
-                    - Recipient was not tested for donor's HLA type, but all HIGH
-                        RES antibodies corresponding to the summary HLA code on SPLIT
-                        level are positively crossmatched.
+                    - Recipient was not tested for donor's HIGH RES HLA type (or donor's
+                        HLA type is in SPLIT resolution), but all HIGH RES antibodies
+                        corresponding to the summary HLA code on SPLIT level are positively
+                        crossmatched.
                     - SPLIT HLA code displayed in summary, but there are multiple
                         positive crossmatches of HIGH RES HLA type - HIGH RES antibody
                         pairs.
