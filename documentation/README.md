@@ -628,7 +628,7 @@ If the `HIGH_RES` match occurs due to a single HIGH RES antibody matching to sin
 displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.`
 
 `HIGH_RES` match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
-some more conditions, described as case 2. and 3. in the [HIGH_RES match description](#highres)).
+some more conditions, described as case 2. and 3. in the [HIGH_RES match description](#high_res)).
 In this case we send a message saying: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type 
 is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively
 crossmatched.`
