@@ -3,11 +3,11 @@ from dataclasses import asdict
 from pathlib import Path
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from tests.test_utilities.type_A_antibodies import type_A_antibodies
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLATypeWithFrequencyRaw
-from txmatching.utils.enums import AntibodyMatchTypes
 from txmatching.utils.hla_system.hla_crossmatch import CrossmatchSummary, \
-    CadaverousCrossmatchIssueDetail
+    CadaverousCrossmatchDetailsIssues
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type_with_frequency
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
@@ -664,12 +664,12 @@ class TestDoCrossmatchApi(DbTests):
             res_assumed_hla_typing = [antibody_match['assumed_hla_types']
                                       for antibody_match in res.json['hla_to_antibody']]
             res_crossmatch_issues = [issue for antibody_match in res.json['hla_to_antibody']
-                                     for issue in antibody_match['summary']['issues']]
+                                     for issue in antibody_match['summary']['details_and_issues']]
             expected_assumed_hla_typing = [
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:03', True))),
                  asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:06', True)))]
             ]
-            self.assertFalse(CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH
+            self.assertFalse(CadaverousCrossmatchDetailsIssues.RARE_ALLELE_POSITIVE_CROSSMATCH
                              in res_crossmatch_issues)
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_typing,
@@ -696,13 +696,13 @@ class TestDoCrossmatchApi(DbTests):
 
             res_assumed_hla_types = res.json['hla_to_antibody'][0]['assumed_hla_types']
             res_crossmatch_issues = [issue for antibody_match in res.json['hla_to_antibody']
-                                     for issue in antibody_match['summary']['issues']]
+                                     for issue in antibody_match['summary']['details_and_issues']]
             # Here, the code is evaluated as infrequent because the potential typing comprises a mix of
             # frequent and infrequent codes, and a crossmatch occurred only with the infrequent one.
             expected_assumed_hla_types = \
                 [asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:04', False))),
                  asdict(create_hla_type_with_frequency(HLATypeWithFrequencyRaw('DPA1*01:03', True)))]
-            self.assertTrue(CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH
+            self.assertTrue(CadaverousCrossmatchDetailsIssues.RARE_ALLELE_POSITIVE_CROSSMATCH
                             in res_crossmatch_issues)
             self.assertTrue(len(res_assumed_hla_typing) == len(json['potential_donor_hla_typing']))
             self.assertCountEqual(expected_assumed_hla_types,
@@ -762,8 +762,8 @@ class TestDoCrossmatchApi(DbTests):
         expected_summary = CrossmatchSummary(
             hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
             mfi=2075,
-            match_type=AntibodyMatchTypes.HIGH_RES,
-            issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+            details_and_issues=[CadaverousCrossmatchDetailsIssues.MULTIPLE_HIGH_RES_MATCH,
+                                CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA]
         )
         self.assertEqual(asdict(expected_summary),
                          res.json['hla_to_antibody'][0]['summary'])
@@ -778,8 +778,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=antibody_match_without_crossmatched_antibodies['assumed_hla_types'][0],
                 mfi=None,
-                match_type=AntibodyMatchTypes.NONE,
-                issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.NO_MATCHING_ANTIBODY]
             )
             self.assertCountEqual(
                 asdict(expected_summary),
@@ -810,8 +809,38 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
                 mfi=2150,
-                match_type=AntibodyMatchTypes.HIGH_RES,
-                issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.MULTIPLE_HIGH_RES_MATCH,
+                                    CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
+        # CASE: The donor has several frequent HIGH RES codes that have the same
+        #       SPLIT level in the assumed HLA types list, but only one positive crossmatch (vol. 3):
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': True},
+                                            {'hla_code': 'DPA1*01:06', 'is_frequent': True},
+                                            {'hla_code': 'DPA1*01:04', 'is_frequent': False}]],
+            'recipient_antibodies': [{'mfi': 2200,
+                                      'name': 'DPA1*01:03',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 100,
+                                      'name': 'DPA1*01:06',
+                                      'cutoff': 2000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='DPA1', high_res='DPA1*01:03', split='DPA1'),
+                mfi=2200,
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH,
+                                    CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -839,25 +868,25 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
                 mfi=2100,
-                match_type=AntibodyMatchTypes.HIGH_RES,
-                issues=[CadaverousCrossmatchIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.RARE_ALLELE_POSITIVE_CROSSMATCH]
             )
             self.assertEqual(res_summaries, [asdict(expected_summary)])
 
-        # CASE: The donor has the only one SPLIT HLA code in the assumed HLA types list:
+        # CASE: The donor has only one SPLIT HLA code in the assumed HLA types list (if all potential HLA types
+        # are infrequent, they are parsed as single SPLIT HLA type):
         json = {
             'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': False},
                                             {'hla_code': 'DPA1*01:06', 'is_frequent': False},
                                             {'hla_code': 'DPA1*01:04', 'is_frequent': False}]],
             'recipient_antibodies': [{'mfi': 5000,
-                                      'name': 'DPA1*01:04',
+                                      'name': 'DPA1*01:03',
                                       'cutoff': 2000
                                       },
                                      {'mfi': 2000,
-                                      'name': 'DPA1*01:03',
+                                      'name': 'DPA1*01:06',
                                       'cutoff': 2000},
                                      {'mfi': 3000,
-                                      'name': 'DPA1*01:06',
+                                      'name': 'DPA1*01:04',
                                       'cutoff': 2000}]
         }
 
@@ -870,8 +899,38 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
                 mfi=3333,
-                match_type=AntibodyMatchTypes.SPLIT,
-                issues=[]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.SPLIT_BROAD_MATCH]
+            )
+            self.assertEqual(res_summary, [asdict(expected_summary)])
+
+        # CASE: The donor has only one SPLIT HLA code in the assumed HLA types list (if all potential HLA types
+        # are infrequent, they are parsed as single SPLIT HLA type). The recipient is type A parsed (all antibodies
+        # he is tested for are in high res and there are at least 20 of them). Assumed HLA type in this case is DPA1,
+        # and all the antibodies that are DPA1 on SPLIT level are positive, this is therefore considered to be
+        # HIGH_RES match. For better legibility, we use HIGH_RES_MATCH_ON_SPLIT_LEVEL message in crossmatch apiAd instead:
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DPA1*01:03', 'is_frequent': False},
+                                            {'hla_code': 'DPA1*01:06', 'is_frequent': False},
+                                            {'hla_code': 'DPA1*01:04', 'is_frequent': False}]],
+            'recipient_antibodies': [{'mfi': 5000,
+                                      'name': 'DPA1*01:05',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 2000,
+                                      'name': 'DPA1*01:02',
+                                      'cutoff': 2000}] + type_A_antibodies
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            res_summary = [antibody_match['summary']
+                           for antibody_match in res.json['hla_to_antibody']]
+            expected_summary = CrossmatchSummary(
+                hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
+                mfi=3500,
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH_ON_SPLIT_LEVEL]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -889,7 +948,7 @@ class TestDoCrossmatchApi(DbTests):
                                       'cutoff': 2000},
                                      {'mfi': 3000,
                                       'name': 'DPA1*01:06',
-                                      'cutoff': 2000}]
+                                      'cutoff': 2000}] + type_A_antibodies
         }
 
         with self.app.test_client() as client:
@@ -901,8 +960,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA2', high_res=None, split='DPA2'),
                 mfi=5000,
-                match_type=AntibodyMatchTypes.SPLIT,
-                issues=[]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH_ON_SPLIT_LEVEL]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -933,8 +991,8 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
                 mfi=3000,
-                match_type=AntibodyMatchTypes.HIGH_RES,
-                issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.MULTIPLE_HIGH_RES_MATCH,
+                                    CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -965,8 +1023,8 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
                 mfi=3000,
-                match_type=AntibodyMatchTypes.HIGH_RES,
-                issues=[CadaverousCrossmatchIssueDetail.AMBIGUITY_IN_HLA_TYPIZATION]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.MULTIPLE_HIGH_RES_MATCH,
+                                    CadaverousCrossmatchDetailsIssues.AMBIGUITY_IN_HLA_TYPIZATION]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -988,8 +1046,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res='DPA1*01:03', split='DPA1'),
                 mfi=2000,
-                match_type=AntibodyMatchTypes.HIGH_RES,
-                issues=[]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -1011,8 +1068,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='DPA1', high_res=None, split='DPA1'),
                 mfi=1000,
-                match_type=AntibodyMatchTypes.NONE,
-                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.NEGATIVE_ANTIBODY_IN_SUMMARY]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
             
@@ -1037,8 +1093,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
                 mfi=1500,
-                match_type=AntibodyMatchTypes.NONE,
-                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.NEGATIVE_ANTIBODY_IN_SUMMARY]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -1062,8 +1117,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='B7', high_res=None, split='B7'),
                 mfi=1500,
-                match_type=AntibodyMatchTypes.NONE,
-                issues=[CadaverousCrossmatchIssueDetail.NEGATIVE_ANTIBODY_IN_SUMMARY]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.NEGATIVE_ANTIBODY_IN_SUMMARY]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -1084,8 +1138,7 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad=None, high_res='A*01:01N', split=None),
                 mfi=None,
-                match_type=AntibodyMatchTypes.NONE,
-                issues=[CadaverousCrossmatchIssueDetail.NO_MATCHING_ANTIBODY]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.NO_MATCHING_ANTIBODY]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 
@@ -1113,8 +1166,8 @@ class TestDoCrossmatchApi(DbTests):
             expected_summary = CrossmatchSummary(
                 hla_code=HLACode(broad='A2', high_res=None, split='A2'),
                 mfi=3000,
-                match_type=AntibodyMatchTypes.SPLIT,
-                issues=[CadaverousCrossmatchIssueDetail.ANTIBODIES_MIGHT_NOT_BE_DSA]
+                details_and_issues=[CadaverousCrossmatchDetailsIssues.SPLIT_BROAD_MATCH,
+                                    CadaverousCrossmatchDetailsIssues.ANTIBODIES_MIGHT_NOT_BE_DSA]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
 

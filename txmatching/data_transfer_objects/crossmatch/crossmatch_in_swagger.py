@@ -10,8 +10,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     AntibodyMatchJson
-from txmatching.utils.enums import AntibodyMatchTypes
-from txmatching.utils.hla_system.hla_crossmatch import CadaverousCrossmatchIssueDetail
+from txmatching.utils.hla_system.hla_crossmatch import CadaverousCrossmatchDetailsIssues
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
 HLACode = crossmatch_api.clone('HlaCode', HLACode)
@@ -35,10 +34,8 @@ CrossmatchSummaryJson = crossmatch_api.model(
     {
         'hla_code': fields.Nested(HLACode, required=True),
         'mfi': fields.Integer(reqired=False),
-        'match_type': fields.String(required=True, enum=[match_type.name for match_type
-                                                         in AntibodyMatchTypes]),
-        'issues': fields.List(required=False, cls_or_instance=fields.String(
-            required=False, enum=[issue.value for issue in CadaverousCrossmatchIssueDetail]))
+        'details_and_issues': fields.List(required=False, cls_or_instance=fields.String(
+            required=False, enum=[issue.value for issue in CadaverousCrossmatchDetailsIssues]))
     }
 )
 

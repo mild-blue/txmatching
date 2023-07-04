@@ -13,26 +13,23 @@ import { HlaCodeGenerated } from './hlaCodeGenerated';
 
 
 export interface CrossmatchSummaryGenerated { 
+    details_and_issues?: Array<CrossmatchSummaryGeneratedDetailsAndIssuesEnum>;
     hla_code: HlaCodeGenerated;
-    issues?: Array<CrossmatchSummaryGeneratedIssuesEnum>;
-    match_type: CrossmatchSummaryGeneratedMatchTypeEnum;
     mfi?: number;
 }
-export enum CrossmatchSummaryGeneratedIssuesEnum {
+export enum CrossmatchSummaryGeneratedDetailsAndIssuesEnum {
     ThereIsMostLikelyNoCrossmatchButThereIsASmallChanceThatACrossmatchCouldOccurThereforeThisCaseRequiresFurtherInvestigationInSummaryWeSendSplitResolutionOfAnInfrequentCodeWithTheHighestMfiValueAmongAntibodiesThatHaveRarePositiveCrossmatch = 'There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.',
     AntibodiesAgainstThisHlaTypeMightNotBeDsaForMoreSeeDetailedSection = 'Antibodies against this HLA Type might not be DSA, for more see detailed section.',
+    AmbiguousHlaTypizationMultipleCrossmatchedFrequentHlaCodesWithDifferentSplitLevel = 'Ambiguous HLA typization, multiple crossmatched frequent HLA codes with different SPLIT level.',
     ThereAreNoFrequentAntibodiesCrossmatchedAgainstThisHlaTypeTheHlaCodeInSummaryCorrespondsToAnAntibodyWithMfiBelowCutoffAndIsThereforeNotDisplayedInTheListOfMatchedAntibodies = 'There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.',
-    NoMatchingAntibodyWasFoundAgainstThisHlaTypeHlaCodeDisplayedInSummaryTakenFromTheHlaType = 'No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.'
-};
-export enum CrossmatchSummaryGeneratedMatchTypeEnum {
-    Split = 'SPLIT',
-    Broad = 'BROAD',
-    HighRes = 'HIGH_RES',
-    None = 'NONE',
-    Undecidable = 'UNDECIDABLE',
-    HighResWithSplit = 'HIGH_RES_WITH_SPLIT',
-    HighResWithBroad = 'HIGH_RES_WITH_BROAD',
-    Theoretical = 'THEORETICAL'
+    NoMatchingAntibodyWasFoundAgainstThisHlaTypeHlaCodeDisplayedInSummaryTakenFromTheHlaType = 'No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.',
+    ThereIsASinglePositivelyCrossmatchedHighResHlaTypeHighResAntibodyPair = 'There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.',
+    RecipientWasNotTestedForDonorsHlaTypeButAllHighResAntibodiesCorrespondingToTheSummaryHlaCodeOnSplitLevelArePositivelyCrossmatched = 'Recipient was not tested for donor\'s HLA type, but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.',
+    SplitHlaCodeDisplayedInSummaryButThereAreMultiplePositiveCrossmatchesOfHighResHlaTypeHighResAntibodyPairs = 'SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.',
+    ThereIsNoExactMatchButSomeOfTheHighResAntibodiesCorrespondingTotheSummaryHlaCodeOnSplitOrBroadLevelArePositive = 'There is no exact match, but some of the HIGH RES antibodies corresponding tothe summary HLA code on SPLIT or BROAD level are positive.',
+    ThereIsAMatchInSplitOrBroadResolution = 'There is a match in SPLIT or BROAD resolution.',
+    ThereIsAMatchWithTheoreticalAntibody = 'There is a match with theoretical antibody.',
+    ThereIsAMatchOfTypeNoneThisIsMostProbablyCausedByOnlyOneOfTheAntibodiesFromDoubleAntibodyFindingAMatch = 'There is a match of type NONE, this is most probably caused by only one of the antibodies from double antibody finding a match.'
 };
 
 

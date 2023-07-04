@@ -712,14 +712,13 @@ definitions:
                             raw_code: A*01:19
                         is_frequent: true
                     summary:
+                        details_and_issues:
+                        - Antibodies against this HLA Type might not be DSA, for more
+                            see detailed section.
                         hla_code:
                             broad: A1
                             high_res: null
                             split: A1
-                        issues:
-                        - Antibodies against this HLA Type might not be DSA, for more
-                            see detailed section.
-                        match_type: SPLIT
                         mfi: 3000
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -755,12 +754,11 @@ definitions:
                             raw_code: B7
                         is_frequent: true
                     summary:
+                        details_and_issues: []
                         hla_code:
                             broad: B7
                             high_res: null
                             split: B7
-                        issues: []
-                        match_type: SPLIT
                         mfi: 2000
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -812,14 +810,13 @@ definitions:
                             raw_code: DRB1*15:07
                         is_frequent: true
                     summary:
+                        details_and_issues:
+                        - Antibodies against this HLA Type might not be DSA, for more
+                            see detailed section.
                         hla_code:
                             broad: DR2
                             high_res: null
                             split: DR15
-                        issues:
-                        - Antibodies against this HLA Type might not be DSA, for more
-                            see detailed section.
-                        match_type: SPLIT
                         mfi: 3000
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -871,12 +868,11 @@ definitions:
                             raw_code: DPA2
                         is_frequent: true
                     summary:
+                        details_and_issues: []
                         hla_code:
                             broad: DPA2
                             high_res: null
                             split: DPA2
-                        issues: []
-                        match_type: SPLIT
                         mfi: 3000
                 -   antibody_matches: []
                     assumed_hla_types:
@@ -934,9 +930,7 @@ definitions:
         type: object
     CrossmatchSummary:
         properties:
-            hla_code:
-                $ref: '#/definitions/HlaCode'
-            issues:
+            details_and_issues:
                 items:
                     enum:
                     - There is most likely no crossmatch, but there is a small chance
@@ -946,12 +940,30 @@ definitions:
                         that have rare positive crossmatch.
                     - Antibodies against this HLA Type might not be DSA, for more
                         see detailed section.
+                    - Ambiguous HLA typization, multiple crossmatched frequent HLA
+                        codes with different SPLIT level.
                     - There are no frequent antibodies crossmatched against this HLA
                         type, the HLA code in summary corresponds to an antibody with
                         mfi below cutoff and is therefore not displayed in the list
                         of matched antibodies.
                     - No matching antibody was found against this HLA type, HLA code
                         displayed in summary taken from the HLA type.
+                    - There is a single positively crossmatched HIGH RES HLA type
+                        - HIGH RES antibody pair.
+                    - Recipient was not tested for donor's HLA type, but all HIGH
+                        RES antibodies corresponding to the summary HLA code on SPLIT
+                        level are positively crossmatched.
+                    - SPLIT HLA code displayed in summary, but there are multiple
+                        positive crossmatches of HIGH RES HLA type - HIGH RES antibody
+                        pairs.
+                    - There is no exact match, but some of the HIGH RES antibodies
+                        corresponding tothe summary HLA code on SPLIT or BROAD level
+                        are positive.
+                    - There is a match in SPLIT or BROAD resolution.
+                    - There is a match with theoretical antibody.
+                    - There is a match of type NONE, this is most probably caused
+                        by only one of the antibodies from double antibody finding
+                        a match.
                     example: There is most likely no crossmatch, but there is a small
                         chance that a crossmatch could occur. Therefore, this case
                         requires further investigation.In summary we send SPLIT resolution
@@ -959,23 +971,12 @@ definitions:
                         that have rare positive crossmatch.
                     type: string
                 type: array
-            match_type:
-                enum:
-                - SPLIT
-                - BROAD
-                - HIGH_RES
-                - NONE
-                - UNDECIDABLE
-                - HIGH_RES_WITH_SPLIT
-                - HIGH_RES_WITH_BROAD
-                - THEORETICAL
-                example: SPLIT
-                type: string
+            hla_code:
+                $ref: '#/definitions/HlaCode'
             mfi:
                 type: integer
         required:
         - hla_code
-        - match_type
         type: object
     CycleOrChain:
         properties:
