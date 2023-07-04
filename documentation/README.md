@@ -266,7 +266,7 @@ information.
 Below we describe all the different crossmatch levels. For each level, we
 describe a crossmatch for one specific antigen of the donor.
 
-#### HIGH RES
+#### HIGH_RES
 
 1. donor antigen is in high resolution and the recipient has an antibody against
    the exact antigen.
@@ -616,6 +616,63 @@ In a normal situation with living patients, a virtual crossmatch on TXM will fin
 positive crossmatch with these antigens, but in the case of cadaverous donors, 
 we evaluate this crossmatch as **negative**.
 
+### Crossmatch type description in summary
+To describe the crossmatch type, instead of showing the user the crossmatch level as in txm
+(see [Virtual crossmatch in TXM](#virtual-crossmatch-in-txm)), we send a message
+describing the crossmatch type together with some possible issues in the `details_and_issues` property of the summary.
+
+We do this mainly to distinguish two types of `HIGH_RES` match that can occur:
+If the `HIGH_RES` match occurs due to a single HIGH RES antibody matching to single HIGH RES antigen, we send a message:
+`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
+, if there are multiple antibody - antigen pairs, we send a different message informing about this: `SPLIT HLA code
+displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.`
+
+`HIGH_RES` match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
+some more conditions, described as case 2. and 3. in the [HIGH_RES match description](#highres)).
+In this case we send a message saying: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type 
+is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively
+crossmatched.`
+
+The rest of match types are described with corresponding messages in a straightforward manner.
+
+We illustrate this on some examples:
+
+1. 
+```python
+assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
+                     {"hla_code": "B*07:05", "is_frequent": True}]
+recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 2500, "cutoff": 2000},
+                        {"hla_code": "B*07:06", "mfi": 2500, "cutoff": 2000}]
+```
+
+There is a single match between HIGH RES hla type and HIGH RES antibody, we return message:
+`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
+
+2.
+```python
+assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
+                     {"hla_code": "B*07:05", "is_frequent": True}]
+recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 2500, "cutoff": 2000},
+                        {"hla_code": "B*07:05", "mfi": 2500, "cutoff": 2000}]
+```
+
+As there are multiple matches between HIGH RES hla type and HIGH RES antibody, we return message:
+`SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES 
+antibody pairs.`
+
+3.
+```python
+assumed_hla_types = [{"hla_code": "B*07:03", "is_frequent": False},
+                     {"hla_code": "B*07:04", "is_frequent": False},
+                     {"hla_code": "B*07:05", "is_frequent": False}]
+recipient_antibodies = [{"hla_code": "B*07:06", "mfi": 2500, "cutoff": 2000},
+                        {"hla_code": "B*07:07", "mfi": 2500, "cutoff": 2000}]
+```
+
+In summary, we send a message: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type
+is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively
+crossmatched.`
+
 ### Allele frequencies in a population
 There is one more aspect that we want to take into account:
 each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a very rare allele, 
@@ -628,11 +685,12 @@ For summary HLA code, we consider only the the matches with frequent HLA codes (
 in this text). From those matches, we filter out those with highest severity (based on match type). 
 Rest of the codes are less important and not considered for the summary.
 
-#### How to calculate summary match type?
-In the summary, we only show the most important crossmatch level that has occurred in the assumed HLA types. 
+#### How to calculate the most important match type?
+In the summary, we only consider the most important crossmatch level that has occurred with the assumed HLA types. 
 Priority is arranged in the following way:
+
 ```text
-1. HIGH RES 
+1. HIGH_RES
 2. HIGH_RES_WITH_SPLIT
 3. HIGH_RES_WITH_BROAD
 4. SPLIT
@@ -641,25 +699,8 @@ Priority is arranged in the following way:
 7. UNDECIDABLE
 8. NONE
 ```
-For example, if some antibodies crossmatched at the `HIGH RES` level, others at the `SPLIT` level, 
-then the summary match type would be `HIGH RES` as the most important of these.
-
-As the eight possible match types above do not always describe the situation exactly, we do not display it in the summary.
-Instead, we send a message describing the crossmatch type together with some possible issues in the `details_and_issues`
-property of the summary.
-We do this mainly to distinguish two types of HIGH_RES match that can occur.
-
-If the HIGH_RES match occurs due to a single HIGH RES antibody matching to single HIGH RES antigen, we send a message:
-`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
-, if there are multiple antibody - antigen pairs, we send a different message informing about this: `SPLIT HLA code 
-displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.`
-
-HIGH_RES match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
-some more conditions, described as case 2. and 3. in the `HIGH_RES` match description above in this documentation).
-In this case we send a message saying: `There is no exact match, but some of the HIGH RES antibodies corresponding to 
-the summary HLA code on SPLIT or BROAD level are positive.`
-
-The rest of match types are described with corresponding messages in a straightforward manner. 
+For example, if some antibodies crossmatched at the `HIGH_RES` level, others at the `SPLIT` level, 
+then for the summary we would only consider the `HIGH_RES` matches as the most important of these.
 
 #### How to choose summary HLA code?
 For summary, we would like to take into account just frequent codes among all assumed HLA types.
@@ -683,7 +724,8 @@ Again we take into account only frequent codes among the assumed HLA types.
 We will consider the summary MFI as the arithmetic mean MFI values above cutoff of the corresponding antibodies. 
 In case there are no MFI values above cutoff for the frequent HLA code, we use the highest MFI value among infrequent 
 antibodies which are unlikely to crossmatch as the summary MFI. Also, we send describing issue:
-`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.`
+`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, 
+this case requires further investigation.`
 (Do not forget that in the absolute majority of cases, the assumed HLA types list always has at least one frequent code 
 due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent 
 codes in the assumed HLA types can be only in cases when SPLIT code does not exist or is unknown to our database).
