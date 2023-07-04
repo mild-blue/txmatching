@@ -79,6 +79,7 @@ class AntibodyMatchForHLAType:
     # - must not be empty
     # - must have a uniform HLA code in low res, i.e we do not allow situation ['A*01:01', 'A*02:01']
     # - must not have several codes in low res, i.e. we do not allow situation ['A1', 'A1']
+    is_crossmatch: bool
     assumed_hla_types: List[HLATypeWithFrequency]
     antibody_matches: List[AntibodyMatch] = field(default_factory=list)
     summary: Optional[CrossmatchSummary] = field(init=False)  # antibody with the largest MFI value
@@ -88,8 +89,10 @@ class AntibodyMatchForHLAType:
                  all_antibodies: List[AntibodiesPerGroup] = None):
         if not assumed_hla_types:
             raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
+
         self.assumed_hla_types = assumed_hla_types
         self.antibody_matches = antibody_matches or []
+        self.is_crossmatch = self.check_if_crossmatch()
         self.summary = self._calculate_crossmatch_summary(all_antibodies=all_antibodies or [])
 
     @classmethod
@@ -110,6 +113,14 @@ class AntibodyMatchForHLAType:
             raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
         antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
         return cls(assumed_hla_types, antibody_matches, all_antibodies)
+
+    def check_if_crossmatch(self):
+        if len(self.antibody_matches) == 0:
+            return False
+        for match in self.antibody_matches:
+            if match.match_type in (AntibodyMatchTypes.UNDECIDABLE, AntibodyMatchTypes.NONE):
+                return False
+        return True
 
     # pylint: disable=too-many-locals
     def _calculate_crossmatch_summary(self, all_antibodies: List[AntibodiesPerGroup]):

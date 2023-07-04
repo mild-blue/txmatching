@@ -187,7 +187,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 'mfi': 3000,
                 'details_and_issues': ['Antibodies against this HLA Type might not be DSA, for more '
                                        'see detailed section.']
-            }
+            },
+            'is_crossmatch': True
         },
         {
             'antibody_matches': [],
@@ -205,7 +206,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [
@@ -248,7 +250,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 },
                 'mfi': 2000,
                 'details_and_issues': []
-            }
+            },
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [],
@@ -266,7 +269,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [
@@ -334,7 +338,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 'mfi': 3000,
                 'details_and_issues': ['Antibodies against this HLA Type might not be DSA, for more '
                                        'see detailed section.']
-            }
+            },
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [],
@@ -376,7 +381,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [
@@ -419,7 +425,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                 },
                 'mfi': 3000,
                 'details_and_issues': []
-            }
+            },
+            'is_crossmatch': True
         },
         {
             'antibody_matches': [],
@@ -437,7 +444,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [],
@@ -455,7 +463,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         },
         {
             'antibody_matches': [],
@@ -473,7 +482,8 @@ HLA_TO_ANTIBODY_EXAMPLE = [
                     'is_frequent': True
                 }
             ],
-            'summary': None
+            'summary': None,
+            'is_crossmatch': False
         }
     ]
 

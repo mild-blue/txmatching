@@ -2323,7 +2323,8 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "assumed_hla_types"
+                "assumed_hla_types",
+                "is_crossmatch"
             ],
             "properties": {
                 "assumed_hla_types": {
@@ -2345,6 +2346,9 @@
                             "$ref": "#/definitions/CrossmatchSummary"
                         }
                     ]
+                },
+                "is_crossmatch": {
+                    "type": "boolean"
                 }
             },
             "type": "object"
@@ -3198,7 +3202,8 @@
                                 "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
-                            }
+                            },
+                            "is_crossmatch": true
                         },
                         {
                             "antibody_matches": [],
@@ -3216,7 +3221,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3259,7 +3265,8 @@
                                 },
                                 "mfi": 2000,
                                 "details_and_issues": []
-                            }
+                            },
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3277,7 +3284,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3346,7 +3354,8 @@
                                 "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
-                            }
+                            },
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3388,7 +3397,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3431,7 +3441,8 @@
                                 },
                                 "mfi": 3000,
                                 "details_and_issues": []
-                            }
+                            },
+                            "is_crossmatch": true
                         },
                         {
                             "antibody_matches": [],
@@ -3449,7 +3460,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3467,7 +3479,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3485,7 +3498,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_crossmatch": false
                         }
                     ],
                     "items": {
