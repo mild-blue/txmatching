@@ -92,7 +92,7 @@ class AntibodyMatchForHLAType:
 
         self.assumed_hla_types = assumed_hla_types
         self.antibody_matches = antibody_matches or []
-        self.is_positive_crossmatch = self.check_if_positive_crossmatch()
+        self.is_positive_crossmatch = self.check_is_positive_crossmatch()
         self.summary = self._calculate_crossmatch_summary(all_antibodies=all_antibodies or [])
 
     @classmethod
@@ -114,7 +114,7 @@ class AntibodyMatchForHLAType:
         antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
         return cls(assumed_hla_types, antibody_matches, all_antibodies)
 
-    def check_if_positive_crossmatch(self):
+    def check_is_positive_crossmatch(self) -> bool:
         if len(self.antibody_matches) == 0:
             return False
         for match in self.antibody_matches:
