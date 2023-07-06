@@ -17,6 +17,7 @@ import { CrossmatchSummaryGenerated } from './crossmatchSummaryGenerated';
 export interface AntibodyMatchForHLATypeGenerated { 
     antibody_matches?: Array<AntibodyMatchGenerated>;
     assumed_hla_types: Array<AssumedHLATypeGenerated>;
+    is_positive_crossmatch: boolean;
     summary?: CrossmatchSummaryGenerated;
 }
 

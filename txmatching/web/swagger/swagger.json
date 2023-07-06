@@ -2323,7 +2323,8 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "assumed_hla_types"
+                "assumed_hla_types",
+                "is_positive_crossmatch"
             ],
             "properties": {
                 "assumed_hla_types": {
@@ -2345,6 +2346,9 @@
                             "$ref": "#/definitions/CrossmatchSummary"
                         }
                     ]
+                },
+                "is_positive_crossmatch": {
+                    "type": "boolean"
                 }
             },
             "type": "object"
@@ -3198,7 +3202,8 @@
                                 "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
-                            }
+                            },
+                            "is_positive_crossmatch": true
                         },
                         {
                             "antibody_matches": [],
@@ -3216,7 +3221,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3259,7 +3265,8 @@
                                 },
                                 "mfi": 2000,
                                 "details_and_issues": []
-                            }
+                            },
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3277,7 +3284,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3346,7 +3354,8 @@
                                 "details_and_issues": [
                                     "Antibodies against this HLA Type might not be DSA, for more see detailed section."
                                 ]
-                            }
+                            },
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3388,7 +3397,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [
@@ -3431,7 +3441,8 @@
                                 },
                                 "mfi": 3000,
                                 "details_and_issues": []
-                            }
+                            },
+                            "is_positive_crossmatch": true
                         },
                         {
                             "antibody_matches": [],
@@ -3449,7 +3460,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3467,7 +3479,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         },
                         {
                             "antibody_matches": [],
@@ -3485,7 +3498,8 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null
+                            "summary": null,
+                            "is_positive_crossmatch": false
                         }
                     ],
                     "items": {
@@ -3531,7 +3545,7 @@
                             "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.",
                             "No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.",
                             "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.",
-                            "Recipient was not tested for donor's HLA type, but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.",
+                            "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.",
                             "SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.",
                             "There is no exact match, but some of the HIGH RES antibodies corresponding tothe summary HLA code on SPLIT or BROAD level are positive.",
                             "There is a match in SPLIT or BROAD resolution.",

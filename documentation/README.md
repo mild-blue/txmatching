@@ -616,7 +616,13 @@ In a normal situation with living patients, a virtual crossmatch on TXM will fin
 positive crossmatch with these antigens, but in the case of cadaverous donors, 
 we evaluate this crossmatch as **negative**.
 
-### Crossmatch type description in summary
+### Crossmatch description in summary
+For each assumed hla type, we return a boolean `is_positive_crossmatch` simply saing if there are any antibodies positively
+crossmatched with it.
+The crossmatch situation is described in more detail in `summary` which contains `hla_code` (see 
+[How to choose summary HLA code?](#how-to-choose-summary-hla-code)), 'mfi' (see 
+[How to calculate summary MFI?](#how-to-calculate-summary-mfi)) and `details_and_issues` (see below).
+
 To describe the crossmatch type, instead of showing the user the crossmatch level as in txm
 (see [Virtual crossmatch in TXM](#virtual-crossmatch-in-txm)), we send a message
 describing the crossmatch type together with some possible issues in the `details_and_issues` property of the summary.
