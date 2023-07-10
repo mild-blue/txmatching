@@ -923,6 +923,8 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatchForHLAType'
                 type: array
+            is_positive_crossmatch:
+                type: boolean
             parsing_issues:
                 example:
                 -   hla_code_or_group: A*01:06
@@ -939,6 +941,7 @@ definitions:
                 type: array
         required:
         - hla_to_antibody
+        - is_positive_crossmatch
         - parsing_issues
         type: object
     CrossmatchSummary:

@@ -90,7 +90,9 @@ class DoCrossmatch(Resource):
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
-            parsing_issues=antibodies_parsing_issues + typing_parsing_issues
+            parsing_issues=antibodies_parsing_issues + typing_parsing_issues,
+            is_positive_crossmatch=any((hla_to_antibody.is_positive_crossmatch
+                                        for hla_to_antibody in antibody_matches_for_hla_type))
         ))
 
 

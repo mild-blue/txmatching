@@ -75,6 +75,7 @@ CrossmatchJsonOut = crossmatch_api.model(
                                        example=HLA_TO_ANTIBODY_EXAMPLE),
         'parsing_issues': fields.List(required=True,
                                       cls_or_instance=fields.Nested(ParsingIssueBaseJson),
-                                      example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE)
+                                      example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE),
+        'is_positive_crossmatch': fields.Boolean(required=True)
     }
 )

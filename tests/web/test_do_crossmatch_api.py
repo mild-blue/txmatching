@@ -43,6 +43,8 @@ class TestDoCrossmatchApi(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
+            self.assertTrue(res.json['is_positive_crossmatch'])
+
             self.assertTrue(res.json['hla_to_antibody'][0]['is_positive_crossmatch'])
             self.assertEqual([{'hla_antibody': {'code': {'broad': 'A2', 'high_res': 'A*02:02', 'split': 'A2'},
                                                 'cutoff': 1000, 'mfi': 2350, 'raw_code': 'A*02:02', 'second_code': None,
@@ -58,6 +60,29 @@ class TestDoCrossmatchApi(DbTests):
                              res.json['parsing_issues'][1]['parsing_issue_detail'])
             self.assertEqual(ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                              res.json['parsing_issues'][2]['parsing_issue_detail'])
+
+
+        # case: no positive crossmatch
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'A*02:02', 'is_frequent': True}],
+                                           [{'hla_code': 'A*01:01', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 500,
+                                      'name': 'A*02:02',
+                                      'cutoff': 2000
+                                      },
+                                     {'mfi': 500,
+                                      'name': 'A*01:01',
+                                      'cutoff': 1000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertFalse(res.json['is_positive_crossmatch'])
+
 
     def test_do_crossmatch_api_with_ultra_high_res(self):
         json = {
