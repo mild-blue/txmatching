@@ -3117,6 +3117,7 @@
         "CrossmatchOutput": {
             "required": [
                 "hla_to_antibody",
+                "is_positive_crossmatch",
                 "parsing_issues"
             ],
             "properties": {
@@ -3518,6 +3519,9 @@
                     "items": {
                         "$ref": "#/definitions/ParsingIssueBase"
                     }
+                },
+                "is_positive_crossmatch": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

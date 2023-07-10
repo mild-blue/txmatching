@@ -19,3 +19,4 @@ class CrossmatchDTOIn:
 class CrossmatchDTOOut:
     hla_to_antibody: List[AntibodyMatchForHLAType]
     parsing_issues: List[ParsingIssueBase]
+    is_positive_crossmatch: bool

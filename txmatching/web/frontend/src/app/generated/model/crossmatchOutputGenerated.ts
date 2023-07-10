@@ -15,6 +15,7 @@ import { AntibodyMatchForHLATypeGenerated } from './antibodyMatchForHLATypeGener
 
 export interface CrossmatchOutputGenerated { 
     hla_to_antibody: Array<AntibodyMatchForHLATypeGenerated>;
+    is_positive_crossmatch: boolean;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
 }
 
