@@ -3193,18 +3193,19 @@
                                     "is_frequent": true
                                 }
                             ],
+                            "is_positive_crossmatch": true,
                             "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH",
+                                    "ANTIBODIES_MIGHT_NOT_BE_DSA"
+                                ],
                                 "hla_code": {
                                     "broad": "A1",
                                     "high_res": null,
                                     "split": "A1"
                                 },
-                                "mfi": 3000,
-                                "details_and_issues": [
-                                    "Antibodies against this HLA Type might not be DSA, for more see detailed section."
-                                ]
-                            },
-                            "is_positive_crossmatch": true
+                                "mfi": 3000
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3222,8 +3223,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "A2",
+                                    "high_res": null,
+                                    "split": "A2"
+                                },
+                                "mfi": null
+                            }
                         },
                         {
                             "antibody_matches": [
@@ -3258,16 +3269,18 @@
                                     "is_frequent": true
                                 }
                             ],
+                            "is_positive_crossmatch": true,
                             "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH"
+                                ],
                                 "hla_code": {
                                     "broad": "B7",
                                     "high_res": null,
                                     "split": "B7"
                                 },
-                                "mfi": 2000,
-                                "details_and_issues": []
-                            },
-                            "is_positive_crossmatch": false
+                                "mfi": 2000
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3285,8 +3298,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "B35",
+                                    "high_res": null,
+                                    "split": "B35"
+                                },
+                                "mfi": null
+                            }
                         },
                         {
                             "antibody_matches": [
@@ -3345,18 +3368,19 @@
                                     "is_frequent": true
                                 }
                             ],
+                            "is_positive_crossmatch": true,
                             "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH",
+                                    "ANTIBODIES_MIGHT_NOT_BE_DSA"
+                                ],
                                 "hla_code": {
                                     "broad": "DR2",
                                     "high_res": null,
                                     "split": "DR15"
                                 },
-                                "mfi": 3000,
-                                "details_and_issues": [
-                                    "Antibodies against this HLA Type might not be DSA, for more see detailed section."
-                                ]
-                            },
-                            "is_positive_crossmatch": false
+                                "mfi": 3000
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3398,8 +3422,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DR5",
+                                    "high_res": null,
+                                    "split": "DR11"
+                                },
+                                "mfi": 1400
+                            }
                         },
                         {
                             "antibody_matches": [
@@ -3434,16 +3468,18 @@
                                     "is_frequent": true
                                 }
                             ],
+                            "is_positive_crossmatch": true,
                             "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH"
+                                ],
                                 "hla_code": {
                                     "broad": "DPA2",
-                                    "high_res": null,
+                                    "high_res": "DPA1*02:01",
                                     "split": "DPA2"
                                 },
-                                "mfi": 3000,
-                                "details_and_issues": []
-                            },
-                            "is_positive_crossmatch": true
+                                "mfi": 3000
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3461,8 +3497,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DP1054",
+                                    "high_res": null,
+                                    "split": "DP1054"
+                                },
+                                "mfi": null
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3480,8 +3526,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DQA1",
+                                    "high_res": null,
+                                    "split": "DQA1"
+                                },
+                                "mfi": null
+                            }
                         },
                         {
                             "antibody_matches": [],
@@ -3499,8 +3555,18 @@
                                     "is_frequent": true
                                 }
                             ],
-                            "summary": null,
-                            "is_positive_crossmatch": false
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DQ1",
+                                    "high_res": null,
+                                    "split": "DQ6"
+                                },
+                                "mfi": null
+                            }
                         }
                     ],
                     "items": {
@@ -3541,20 +3607,20 @@
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "example": "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.",
+                        "example": "RARE_ALLELE_POSITIVE_CROSSMATCH",
                         "enum": [
-                            "There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this case requires further investigation.In summary we send SPLIT resolution of an infrequent code with the highest MFI value among antibodies that have rare positive crossmatch.",
-                            "Antibodies against this HLA Type might not be DSA, for more see detailed section.",
-                            "Ambiguous HLA typization, multiple crossmatched frequent HLA codes with different SPLIT level.",
-                            "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.",
-                            "No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.",
-                            "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.",
-                            "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.",
-                            "SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.",
-                            "There is no exact match, but some of the HIGH RES antibodies corresponding tothe summary HLA code on SPLIT or BROAD level are positive.",
-                            "There is a match in SPLIT or BROAD resolution.",
-                            "There is a match with theoretical antibody.",
-                            "There is a match of type NONE, this is most probably caused by only one of the antibodies from double antibody finding a match."
+                            "RARE_ALLELE_POSITIVE_CROSSMATCH",
+                            "ANTIBODIES_MIGHT_NOT_BE_DSA",
+                            "AMBIGUITY_IN_HLA_TYPIZATION",
+                            "NEGATIVE_ANTIBODY_IN_SUMMARY",
+                            "NO_MATCHING_ANTIBODY",
+                            "HIGH_RES_MATCH",
+                            "HIGH_RES_MATCH_ON_SPLIT_LEVEL",
+                            "MULTIPLE_HIGH_RES_MATCH",
+                            "HIGH_RES_WITH_SPLIT_BROAD_MATCH",
+                            "SPLIT_BROAD_MATCH",
+                            "THEORETICAL_MATCH",
+                            "NONE_MATCH"
                         ]
                     }
                 }

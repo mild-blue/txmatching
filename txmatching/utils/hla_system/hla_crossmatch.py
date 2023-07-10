@@ -36,32 +36,48 @@ class AntibodyMatchForHLAGroup:
 
 
 class CadaverousCrossmatchDetailsIssues(str, Enum):
-    RARE_ALLELE_POSITIVE_CROSSMATCH = 'There is most likely no crossmatch, but there is a small chance that a ' \
-                                      'crossmatch could occur. Therefore, this case requires further investigation.' \
-                                      'In summary we send SPLIT resolution of an infrequent code with the highest ' \
-                                      'MFI value among antibodies that have rare positive ' \
-                                      'crossmatch.'
-    ANTIBODIES_MIGHT_NOT_BE_DSA = 'Antibodies against this HLA Type might not be DSA, for more ' \
-                                  'see detailed section.'  # DSA = Donor-specific antibody
-    AMBIGUITY_IN_HLA_TYPIZATION = 'Ambiguous HLA typization, multiple crossmatched frequent HLA codes with ' \
-                                  'different SPLIT level.'
-    NEGATIVE_ANTIBODY_IN_SUMMARY = 'There are no frequent antibodies crossmatched against this HLA type, ' \
-                                   'the HLA code in summary corresponds to an antibody with mfi below cutoff and ' \
-                                   'is therefore not displayed in the list of matched antibodies.'
-    NO_MATCHING_ANTIBODY = 'No matching antibody was found against this HLA type, HLA code displayed in summary ' \
-                           'taken from the HLA type.'
-    HIGH_RES_MATCH = 'There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.'
-    HIGH_RES_MATCH_ON_SPLIT_LEVEL = "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is " \
-                                    "in SPLIT resolution), but all HIGH RES antibodies corresponding to the " \
-                                    "summary HLA code on SPLIT level are positively crossmatched."
-    MULTIPLE_HIGH_RES_MATCH = 'SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of ' \
-                              'HIGH RES HLA type - HIGH RES antibody pairs.'
-    HIGH_RES_WITH_SPLIT_BROAD_MATCH = 'There is no exact match, but some of the HIGH RES antibodies corresponding to' \
-                                      'the summary HLA code on SPLIT or BROAD level are positive.'
-    SPLIT_BROAD_MATCH = 'There is a match in SPLIT or BROAD resolution.'
-    THEORETICAL_MATCH = 'There is a match with theoretical antibody.'
-    NONE_MATCH = 'There is a match of type NONE, this is most probably caused by only one of the antibodies from ' \
-                 'double antibody finding a match.'
+    # There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, this
+    # case requires further investigation. In summary we send SPLIT resolution of an infrequent code with the highest
+    # MFI value among antibodies that have rare positive crossmatch.
+    RARE_ALLELE_POSITIVE_CROSSMATCH = 'RARE_ALLELE_POSITIVE_CROSSMATCH'
+
+    # Antibodies against this HLA Type might not be DSA, for more see detailed section. (DSA = Donor-specific antibody)
+    ANTIBODIES_MIGHT_NOT_BE_DSA = 'ANTIBODIES_MIGHT_NOT_BE_DSA'
+
+    # Ambiguous HLA typization, multiple crossmatched frequent HLA codes with different SPLIT level.
+    AMBIGUITY_IN_HLA_TYPIZATION = 'AMBIGUITY_IN_HLA_TYPIZATION'
+
+    # There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an
+    # antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.
+    NEGATIVE_ANTIBODY_IN_SUMMARY = 'NEGATIVE_ANTIBODY_IN_SUMMARY'
+
+    # No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type.
+    NO_MATCHING_ANTIBODY = 'NO_MATCHING_ANTIBODY'
+
+    # There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.
+    HIGH_RES_MATCH = 'HIGH_RES_MATCH'
+
+    # Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all
+    # HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched.
+    HIGH_RES_MATCH_ON_SPLIT_LEVEL = 'HIGH_RES_MATCH_ON_SPLIT_LEVEL'
+
+    # SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES
+    # antibody pairs.
+    MULTIPLE_HIGH_RES_MATCH = 'MULTIPLE_HIGH_RES_MATCH'
+
+    # There is no exact match, but some of the HIGH RES antibodies corresponding to the summary HLA code on SPLIT or
+    # BROAD level are positive.
+    HIGH_RES_WITH_SPLIT_BROAD_MATCH = 'HIGH_RES_WITH_SPLIT_BROAD_MATCH'
+
+    # There is a match in SPLIT or BROAD resolution.
+    SPLIT_BROAD_MATCH = 'SPLIT_BROAD_MATCH'
+
+    # There is a match with theoretical antibody.
+    THEORETICAL_MATCH = 'THEORETICAL_MATCH'
+
+    #  There is a match of type NONE, this is most probably caused by only one of the antibodies from double antibody
+    #  finding a match.
+    NONE_MATCH = 'NONE_MATCH'
 
 
 @dataclass
