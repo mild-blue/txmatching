@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": "675785"
+  "otp": "816570"
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
@@ -31,7 +31,7 @@ Authorization: Bearer {{auth_token}}
 
 
 {
-  "name": "TEST-BEL-TXM-2022-01"
+  "name": "42-TXM-2023-07"
 }
 
 > {% client.global.set("txm_event_id", response.body["id"]); %}

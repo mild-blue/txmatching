@@ -1,5 +1,4 @@
 GET {{url}}/v1/service/version
-Content-Type: application/json
 
 ###
 
@@ -23,7 +22,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 # Here if you want to provide data in the file use the code below
-< /path/to/data.json
+< /home/honza/Downloads/wien_export.json
 # or i you want to provide the json directly use it as below
 //{
 //  "country": "AUT",
