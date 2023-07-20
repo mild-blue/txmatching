@@ -58,7 +58,7 @@ def calculate_highly_sensitized_recipients(txm_event_name):
     txm_event = get_txm_event_complete(txm_event_db_id)
     config_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
 
-    for recipient in txm_event.all_recipients[:3]:
+    for recipient in txm_event.all_recipients[:2]:
 
         unacceptable_antibodies = []
         for antibodies_group in recipient.hla_antibodies.hla_antibodies_per_groups:
@@ -68,8 +68,10 @@ def calculate_highly_sensitized_recipients(txm_event_name):
                         antibody.mfi > antibody.cutoff:
                     unacceptable_antibodies.append(antibody.code.display_code)
 
+        print(f'{recipient.medical_id=}')
         print(f'{unacceptable_antibodies=}')
         comput_vpra(unacceptable_antibodies)
+        print()
 
 
 def comput_vpra(unacceptable_antibodies):
@@ -91,16 +93,12 @@ def comput_vpra(unacceptable_antibodies):
 
     response = requests.post(url, data=body, headers=headers)
     soup = BeautifulSoup(response.content, 'lxml')
-    print('frequency:')
     print(soup.find('frequency'))
 
-    print('matches:')
     print(soup.find('matches'))
 
-    print('panelsize:')
     print(soup.find('panelsize'))
 
-    print('errormessage:')
     print(soup.find('errormessage'))
 
 def compute_report():
