@@ -72,9 +72,9 @@ if __name__ == '__main__':
         df = pd.DataFrame(columns=['txm_event_name', 'n_pairs', 'n_aboi_pairs', 'n_hlai_pairs',
                                    'n_aboi_and_hlai_pairs', 'n_aboi_or_hlai_pairs'])
 
-        for txm_event_name in txm_events_names:
+        for name in txm_events_names:
             df.loc[len(df)] = \
-                [txm_event_name] + get_n_incompatible_pairs(txm_event_name)
+                [name] + get_n_incompatible_pairs(name)
 
     # Sum over all events
     sum_all_events = df.sum()
