@@ -128,14 +128,15 @@ def calculate_highly_sensitized_recipients(txm_event):
                                 # DQB
                                 unacceptable_antibodies.append(antibody.code.display_code)
 
+                            print(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-1]}')
+
                         # All other loci are used with the same nomencalture we use
                         else:
                             unacceptable_antibodies.append(antibody.code.display_code)
 
             # print(f'{recipient.medical_id=}')
             # print(f'{unacceptable_antibodies=}')
-            breakpoint()
-            # vpras.append(comput_vpra(unacceptable_antibodies))
+            vpras.append(comput_vpra(unacceptable_antibodies))
             # print()
 
     n_highly_sensitized = (np.array(vpras) > HIGHLY_SENSITIZED_TH).sum()
@@ -179,23 +180,23 @@ def compute_report(txm_events_names):
 
 if __name__ == '__main__':
     # Specify txm events to compute the number of incompatible pairs for:
-    # txm_events = ['36-TXM-2022-01',
-    #               '2020-10-CZE-ISR-AUT',
-    #               '2021-01-CZE-ISR-AUT',
-    #               '2020-07-CZE-ISR-AUT',
-    #               '37-TXM-2022-04',
-    #               '38-TXM-2022-07',
-    #               '33-TXM-2021-04-v2',
-    #               '33-TXM-2021-04',
-    #               '39-TXM-2022-10',
-    #               '34-TXM-2021-07',
-    #               '35-TXM-2021-10',
-    #               '40-TXM-2023-01',
-    #               '41-TXM-2023-04',
-    #               '42-TXM-2023-07']
+    txm_events = ['36-TXM-2022-01',
+                  '2020-10-CZE-ISR-AUT',
+                  '2021-01-CZE-ISR-AUT',
+                  '2020-07-CZE-ISR-AUT',
+                  '37-TXM-2022-04',
+                  '38-TXM-2022-07',
+                  '33-TXM-2021-04-v2',
+                  '33-TXM-2021-04',
+                  '39-TXM-2022-10',
+                  '34-TXM-2021-07',
+                  '35-TXM-2021-10',
+                  '40-TXM-2023-01',
+                  '41-TXM-2023-04',
+                  '42-TXM-2023-07']
 
     # txm_events = ['high_res_example_data', 'mock_data_CZE_CAN_IND']
-    txm_events = ['mock_data_CZE_CAN_IND']
+    # txm_events = ['mock_data_CZE_CAN_IND']
     app = create_app()
     with app.app_context():
         compute_report(txm_events)
