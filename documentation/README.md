@@ -384,9 +384,9 @@ We parse each antibody one by one and detect several situations:
 
 ```text
 Example:
-DP*[01:01;02:02] MFI 100, cutoff 2000
-DP*[01:01;03:03] MFI 200, cutoff 2000
-DP*[03:03;02:02] MFI 3000, cutoff 2000
+DP*[01:01;02:02], MFI 100, cutoff 2000
+DP*[01:01;03:03], MFI 200, cutoff 2000
+DP*[03:03;02:02], MFI 3000, cutoff 2000
 ```
 
 In this case, the chain `DPA1*01:01` is negative because there is no
@@ -410,10 +410,10 @@ as `DPA1*01:01`.
 
 ```text
 Example:
-DP*[03:03;02:02] MFI 3000, cutoff 2000
-DP*[01:01;03:03] MFI 200, cutoff 2000
-DP*[03:03;01:01] MFI 2100, cutoff 2000
-DP*[04:01;03:03] MFI 3000, cutoff 2000
+DP*[03:03;02:02], MFI 3000, cutoff 2000
+DP*[01:01;03:03], MFI 200, cutoff 2000
+DP*[03:03;01:01], MFI 2100, cutoff 2000
+DP*[04:01;03:03], MFI 3000, cutoff 2000
 ```
 
 In this case, the antibody `DP*[03:03;02:02]` has both chains positive because
@@ -435,12 +435,12 @@ chain `DPB1*03:03` in the antibody `DP*[01:01;03:03]`.
 
 ```text
 Example:
-DP*[03:03;02:02] MFI 3000, cutoff 2000
-DP*[01:01;02:02] MFI 100, cutoff 2000
-DP*[04:01;01:05] MFI 3000, cutoff 2000
-DP*[03:01;01:05] MFI 2500, cutoff 2000
-DP*[01:01;01:05] MFI 200, cutoff 2000
-DP*[03:01;06:02] MFI 100, cutoff 2000
+DP*[03:03;02:02], MFI 3000, cutoff 2000
+DP*[01:01;02:02], MFI 100, cutoff 2000
+DP*[04:01;01:05], MFI 3000, cutoff 2000
+DP*[03:01;01:05], MFI 2500, cutoff 2000
+DP*[01:01;01:05], MFI 200, cutoff 2000
+DP*[03:01;06:02], MFI 100, cutoff 2000
 ```
 
 In this case, the antibody `DP*[03:03;02:02]` has an only positive chain,
@@ -452,7 +452,7 @@ As a result, we parse the positive chain `DPA1*03:03` with its average MFI among
 all antibodies with this chain:
 
 ```text
-DPA1*03:03 MFI 3000 (average MFI), cutoff 2000
+DPA1*03:03, MFI 3000 (average MFI), cutoff 2000
 ```
 
 This mixed chain `DPB1*02:02`, which has positive
@@ -460,7 +460,7 @@ representation just in this antibody `DP*[01:03;02:02]` (there aren't any other
 antibodies where this chain has positive MFI), is parsed as
 
 ```text
-DPB1*02:02 MFI 100 (average negative MFI), cutoff 2000
+DPB1*02:02, MFI 100 (average negative MFI), cutoff 2000
 ```
 We suppose that the positive MFI is caused by the second chain, 
 so we do not consider this positive value for the mixed `DPB1*02:02` chain.
@@ -476,10 +476,10 @@ we expect to parse the mixed chain through other antibodies.
 
 ```text
 Example:
-DP*[03:03;02:02] MFI 3000, cutoff 2000
-DP*[01:01;02:02] MFI 100, cutoff 2000
-DP*[03:03;04:01] MFI 200, cutoff 2000
-DP*[03:03;05:02] MFI 2200, cutoff 2000
+DP*[03:03;02:02], MFI 3000, cutoff 2000
+DP*[01:01;02:02], MFI 100, cutoff 2000
+DP*[03:03;04:01], MFI 200, cutoff 2000
+DP*[03:03;05:02], MFI 2200, cutoff 2000
 ```
 
 In this case, the antibody `DP*[03:03;02:02]` has both chains as mixed because
@@ -489,14 +489,14 @@ its chains,
 As a result, we parse this double antibody in its entirety as follows:
 
 ```text
-DP*[03:03;02:02] MFI 3000, cutoff 2000
+DP*[03:03;02:02], MFI 3000, cutoff 2000
 ```
 
 We also parse its two theoretical chains separately as follows:
 
 ```text
-DPA1*03:03 MFI 2600 (average positive MFI), cutoff 2000
-DPB1*02:02 MFI 3000 (average positive MFI), cutoff 2000
+DPA1*03:03 MFI, 2600 (average positive MFI), cutoff 2000
+DPB1*02:02 MFI, 3000 (average positive MFI), cutoff 2000
 ```
 
 We always notify the user if theoretical antibodies are presented.
@@ -533,48 +533,33 @@ However, if there is only one code in the list, we leave it unchanged.
 
 For example, donor has such potential hla typing
 
-```
-[
-  [
-    {
-      hla_code: "A*01:01", is_frequent: True
-    },
-    {
-      hla_code: "A*01:02", is_frequent: True
-    }
-  ],
-  [
-    {
-      hla_code: "A*02:01", is_frequent: True
-    }
-  ],
-  [
-    {
-      hla_code: "B*01:01", is_frequent: False 
-    },
-    {
-      hla_code: "B*01:03", is_frequent: True
-    }
-  ]
-  ...
-]
+```text
+A*01:01, frequent
+A*01:02, frequent
+-
+A*02:01, frequent
+-
+B*01:01, infrequent
+B*01:03, frequent
+...
 ```
 
 and recipient has some antibodies
 ```text
-["A*01:01", "A*02:03"]
+A*01:01
+A*02:03
 ```
 
 In this case the first `A1` potential HLA type is evaluated just as
 ```text
-[{hla_code: "A*01:01", is_frequent: True}]
+A*01:01, frequent
 ```
 because crossmatch occurs just with `A1*01:01` antibody.
 
 Further note that in the case of `B1` potential HLA type, the crossmatch did not occur with any of the antibodies, 
 so this potential HLA type transforms to the assumed HLA type with only one SPLIT:
 ```text
-[{hla_code: "B1", is_frequent: True}]
+B1, frequent
 ```
 
 In the last case, with only one HLA code, `A*02:01`, in the potential HLA type, it will remain unchanged.
@@ -588,24 +573,18 @@ these theoretical antibodies have a negative crossmatch.
 
 For example, donor has such potential hla typing:
 
-```
-[
-  [
-    {hla_code: "DQA1*01:01", "is_frequent": True}
-  ],
-  [
-    {hla_code: "DQB1*02:02", is_frequent: True}
-  ]
-  ...
-],
+```text
+DQA1*01:01, frequent
+DQB1*02:02, frequent
+...
 ```
 
 And recipient has some antibodies:
 ```text
-[{'mfi': 100, 'name': 'DQ[01:01,02:02]', 'cutoff': 2000},
-{'mfi': 3000, 'name': 'DQ[01:01, 03:03]', 'cutoff': 2000},
-{'mfi': 100, 'name': 'DQ[01:02, 03:03]', 'cutoff': 2000},
-{'mfi': 100, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000}]
+DQ[01:01,02:02], MFI 100, cutoff 2000
+DQ[01:01,03:03], MFI 3000, cutoff 2000
+DQ[01:02,03:03], MFI 100, cutoff 2000
+DQ[01:01,04:04], MFI 100, cutoff 2000
 ```
 
 Note that both chains of the first antibody `DQ[01:01,02:02]` in the list correspond to two
@@ -644,22 +623,28 @@ The rest of match types are described with corresponding messages in a straightf
 We illustrate this on some examples:
 
 1. 
-```python
-assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
-                     {"hla_code": "B*07:05", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 2500, "cutoff": 2000},
-                        {"hla_code": "B*07:06", "mfi": 2500, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:04, frequent
+    B*07:05, frequent
+    
+Recipient's antibodies:
+    B*07:04, MFI 2500, cutoff 2000
+    B*07:06, MFI 2500, cutoff 2000
 ```
 
 There is a single match between HIGH RES hla type and HIGH RES antibody, we return message:
 `There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
 
 2.
-```python
-assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
-                     {"hla_code": "B*07:05", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 2500, "cutoff": 2000},
-                        {"hla_code": "B*07:05", "mfi": 2500, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:04, frequent
+    B*07:05, frequent
+
+Recipient's antibodies:
+    B*07:04, MFI 2500, cutoff 2000
+    B*07:05, MFI 2500, cutoff 2000
 ```
 
 As there are multiple matches between HIGH RES hla type and HIGH RES antibody, we return message:
@@ -667,13 +652,18 @@ As there are multiple matches between HIGH RES hla type and HIGH RES antibody, w
 antibody pairs.`
 
 3.
-```python
-assumed_hla_types = [{"hla_code": "B*07:03", "is_frequent": False},
-                     {"hla_code": "B*07:04", "is_frequent": False},
-                     {"hla_code": "B*07:05", "is_frequent": False}]
-recipient_antibodies = [{"hla_code": "B*07:06", "mfi": 2500, "cutoff": 2000},
-                        {"hla_code": "B*07:07", "mfi": 2500, "cutoff": 2000}]
+
+```text
+Assumed HLA types:
+    B*07:03, infrequent
+    B*07:04, infrequent
+    B*07:05, infrequent
+
+Recipient's antibodies:
+    B*07:06, MFI 2500, cutoff 2000
+    B*07:07, MFI 2500, cutoff 2000
 ```
+
 
 In summary, we send a message: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type
 is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively
@@ -715,13 +705,16 @@ but there are situations when there are several frequent codes in the list. In t
 codes if it is common, if there are several such splits, then we will take the one that corresponds to the antibody 
 with the highest MFI.
 For example:
-```python
-assumed_hla_types = [{"hla_code": "A*01:01", "is_frequent": True},
-                     {"hla_code": "A*02:01", "is_frequent": True},
-                     {"hla_code": "A*01:03", "is_frequent": False}]
-antibody_matches = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
-                    {"hla_code": "A*02:01", "mfi": 4000, "cutoff": 2000},
-                    {"hla_code": "A*01:03", "mfi": 5000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    A*01:01, frequent
+    A*02:01, frequent
+    A*01:03, infrequent
+    
+Recipient's antibodies:
+    A*01:01, MFI 3000, cutoff 2000
+    A*02:01, MFI 4000, cutoff 2000
+    A*01:03, MFI 5000, cutoff 2000
 ```
 So the summarization code will be `A2`, because `A*02:01` has the highest MFI among frequent codes `A*01:01` and `A*02:01`.
 
@@ -736,13 +729,16 @@ this case requires further investigation.`
 due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent 
 codes in the assumed HLA types can be only in cases when SPLIT code does not exist or is unknown to our database).
 For example,
-```python
-assumed_hla_types = [{"hla_code": "A*01:01", "is_frequent": True},
-                     {"hla_code": "A*02:01", "is_frequent": True},
-                     {"hla_code": "A*01:03", "is_frequent": False}]
-recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "A*02:01", "mfi": 4000, "cutoff": 2000},
-                        {"hla_code": "A*01:03", "mfi": 5000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    A*01:01, frequent
+    A*02:01, frequent
+    A*01:03, infrequent
+    
+Recipient's antibodies:
+    A*01:01, MFI 3000, cutoff 2000
+    A*02:01, MFI 4000, cutoff 2000
+    A*01:03, MFI 5000, cutoff 2000
 ```
 The summary MFI in this case will be `4000`, because we just calculated the arithmetic mean MFI values for frequent
 codes that have the summary HLA code at low res level `A*02:01`: `(4000) / 1 = 4000`. Also, we will send crossmatch issue 
@@ -762,11 +758,14 @@ In this case, we display the assumed HLA type as the HLA code in the summary wit
 #### More examples for crossmatch summarization. Crossmatch issues during the summary count.
 
 1. The recipient has no positively crossmatched antibodies against donor's assumed hla types:
-```python
-assumed_hla_types = [{"hla_code": "B*07:04", "is_frequent": True},
-                     {"hla_code": "B*07:05", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:04", "mfi": 1500, "cutoff": 2000},
-                        {"hla_code": "B*07:05", "mfi": 1000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:04, frequent
+    B*07:05, frequent
+
+Recipient's antibodies:
+    B*07:04, MFI 1500, cutoff 2000
+    B*07:05, MFI 1000, cutoff 2000
 ```
 This example corresponds to the last described case (with no positive crossmatch).
 The summary HLA code will be `B*07:04` with summary MFI `1500`.
@@ -776,11 +775,14 @@ corresponds to an antibody with mfi below cutoff and is therefore not displayed 
 is sent to describe this.
 
 2. The recipient doesn't have any **frequent** **positive** crossmatched antibodies against donor's assumed HLA types:
-```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
-                     {"hla_code": "B*07:04", "is_frequent": False}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 1000, "cutoff": 2000},
-                        {"hla_code": "B*07:04", "mfi": 3000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:02, frequent
+    B*07:04, infrequent
+
+Recipient's antibodies:
+    B*07:02, MFI 1000, cutoff 2000
+    B*07:04, MFI 3000, cutoff 2000
 ```
 In this case, there is only a positive crossmatch for `B*07:04`, but such a match is very unlikely because
 this HLA is rare in the population, so we send crossmatch issue 
@@ -788,48 +790,60 @@ this HLA is rare in the population, so we send crossmatch issue
 Therefore, this case requires further investigation`. Also, we send `B7` as summary code and `None` as MFI value.
 
 3. The donor has the only one SPLIT HLA code in the assumed HLA types list:
-```python
-assumed_hla_types = [{"hla_code": "A1", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "A*01:02", "mfi": 100, "cutoff": 2000},
-                        {"hla_code": "A*01:03", "mfi": 5000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    A1, frequent
+
+Recipient's antibodies:
+    A*01:01, MFI 3000, cutoff 2000
+    A*01:02, MFI 100, cutoff 2000
+    A*01:03, MFI 5000, cutoff 2000
 ```
 So summary HLA code will be `A1` with summary MFI `= (3000 + 5000) / 2 = 4000` 
 (antibody `A*01:02` wasn't included, because it has MFI below cutoff)
 
 4. The donor has several SPLIT HLA codes in the assumed HLA types list:
-```python
-assumed_hla_types = [{"hla_code": "A1", "is_frequent": True},
-                     {"hla_code": "A2", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "A*02:01", "mfi": 2100, "cutoff": 2000},
-                        {"hla_code": "A*02:02", "mfi": 100, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    A1, frequent
+    A2, frequent
+
+Recipient's antibodies:
+    A*01:01, MFI 3000, cutoff 2000
+    A*02:01, MFI 2100, cutoff 2000
+    A*02:02, MFI 100, cutoff 2000
 ```
 In this case the summary HLA code is `A1`, because it has the highest MFI among antibodies (see `A*01:01, mfi 3000`).
 The MFI value `= (3000) / 1 = 3000` (antibody `A*02:01` wasn't included, because it has different SPLIT code than 
 summary HLA code. `A*02:02` also has MFI below cutoff, so it wasn't included too).
 
 5. The donor has several frequent HIGH RES codes that have **the same SPLIT** level in the assumed HLA types list:
-```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
-                     {"hla_code": "B*07:04", "is_frequent": True},
-                     {"hla_code": "B*07:05", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "B*07:04", "mfi": 4000, "cutoff": 2000},
-                        {"hla_code": "B*07:05", "mfi": 100, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:02, frequent
+    B*07:04, frequent
+    B*07:05, frequent
+
+Recipient's antibodies:
+    B*07:02, MFI 3000, cutoff 2000
+    B*07:04, MFI 4000, cutoff 2000
+    B*07:05, MFI 100, cutoff 2000
 ```
 So we just take their SPLIT `B7` as summary HLA code. The summary MFI is calculated via `= (3000 + 4000) / 2 = 3500`
 (antibody `B*07:05` wasn't included, because it has MFI below cutoff). Also, we send a describing crossmatch issue
 `Antibodies against this HLA Type might not be DSA, for more see detailed section` about this situation.
 
 6. The donor has several frequent HIGH RES codes that have **different SPLIT** levels in the assumed HLA types list:
-```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
-                     {"hla_code": "B*08:01", "is_frequent": True},
-                     {"hla_code": "B*08:02", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "B*08:02", "mfi": 2500, "cutoff": 2000},
-                        {"hla_code": "B*08:01", "mfi": 1990, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:02, frequent
+    B*08:01, frequent
+    B*08:02, frequent
+
+Recipient's antibodies:
+    B*07:02, MFI 3000, cutoff 2000
+    B*08:01, MFI 1990, cutoff 2000
+    B*08:02, MFI 2500, cutoff 2000
 ```
 So the summary HLA code is `B7`, because it has the highest MFI among antibodies (see `B*07:02, mfi 3000`).
 The MFI value `= (3000) / 1 = 3000` (antibody `B*08:02` wasn't included, because it has different SPLIT code than 
@@ -838,29 +852,38 @@ In this case not all corresponding antibodies have MFI above cutoff (see `B*08:0
 crossmatch issue `Antibodies against this HLA Type might not be DSA, for more see detailed section`.
 
 In case if all antibodies have MFI above cutoff:
-```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True},
-                     {"hla_code": "B*08:01", "is_frequent": True},
-                     {"hla_code": "B*08:02", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000},
-                        {"hla_code": "B*08:02", "mfi": 2500, "cutoff": 2000},
-                        {"hla_code": "B*08:01", "mfi": 2100, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:02, frequent
+    B*08:01, frequent
+    B*08:02, frequent
+
+Recipient's antibodies:
+    B*07:02, MFI 3000, cutoff 2000
+    B*08:01, MFI 2100, cutoff 2000
+    B*08:02, MFI 2500, cutoff 2000
 ```
 The summary HLA code is still `B7` with the MFI value `= (3000) / 1 = 3000`, but we send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
 7. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list, 
 and at the same time it has MFI **ABOVE** cutoff (otherwise see 0.):
-```python
-assumed_hla_types = [{"hla_code": "B*07:02", "is_frequent": True}]
-recipient_antibodies = [{"hla_code": "B*07:02", "mfi": 3000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    B*07:02, frequent
+
+Recipient's antibodies:
+    B*07:02, MFI 3000, cutoff 2000
 ```
 In this simple case the summary HLA code will be `B*07:02` with summary MFI value `3000`.
 
 8. The recipient has no antibodies that match with the donor's assumed HLA types:
-```python
-assumed_hla_types = [{"hla_code": "A*01:01N", "is_frequent": False}]
-recipient_antibodies = [{"hla_code": "A*01:01", "mfi": 3000, "cutoff": 2000}]
+```text
+Assumed HLA types:
+    A*01:01N, infrequent
+
+Recipient's antibodies:
+    A*01:01, MFI 3000, cutoff 2000
 ```
 
 In this case, HLA code `A*01:01N` cannot be matched with the antibody (not even in low resultion, as this special code
