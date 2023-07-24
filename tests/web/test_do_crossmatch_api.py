@@ -6,7 +6,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.test_utilities.type_A_antibodies import type_A_antibodies
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLATypeWithFrequencyRaw
-from txmatching.utils.hla_system.hla_crossmatch import CrossmatchSummary, \
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import CrossmatchSummary, \
     CadaverousCrossmatchDetailsIssues
 from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type_with_frequency
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \

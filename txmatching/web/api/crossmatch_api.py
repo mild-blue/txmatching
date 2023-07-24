@@ -4,8 +4,7 @@ from typing import List, Tuple, Union
 from flask_restx import Resource
 
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (
-    AntibodyMatchForHLAType, CrossmatchDTOIn, CrossmatchDTOOut)
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (CrossmatchDTOIn, CrossmatchDTOOut)
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import (
     CrossmatchJsonIn, CrossmatchJsonOut)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
@@ -16,6 +15,7 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATypeWithFrequency,
                                            HLATypeWithFrequencyRaw)
 from txmatching.utils.enums import HLAAntibodyType
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import AntibodyMatchForHLAType
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup,
     get_crossmatched_antibodies_per_group)
