@@ -163,6 +163,32 @@ class AntibodyMatchTypes(str, Enum):
                                                                                     self.SPLIT]
         )
 
+    @classmethod
+    def _get_order(cls):
+        # Define the desired order of the AntibodyMatchTypes
+        return [
+            'NONE',
+            'UNDECIDABLE',
+            'THEORETICAL',
+            'BROAD',
+            'SPLIT',
+            'HIGH_RES_WITH_BROAD',
+            'HIGH_RES_WITH_SPLIT',
+            'HIGH_RES'
+        ]
+
+    def __lt__(self, other):
+        if not isinstance(other, AntibodyMatchTypes):
+            return NotImplemented
+        order = self.__class__._get_order()
+        return order.index(self.name) < order.index(other.name)
+
+    def __gt__(self, other):
+        if not isinstance(other, AntibodyMatchTypes):
+            return NotImplemented
+        order = self.__class__._get_order()
+        return order.index(self.name) > order.index(other.name)
+
 
 class MatchType(str, Enum):
     SPLIT = 'SPLIT'

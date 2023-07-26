@@ -4,8 +4,7 @@ from typing import List, Tuple, Union
 from flask_restx import Resource
 
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (
-    AntibodyMatchForHLAType, CrossmatchDTOIn, CrossmatchDTOOut)
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (CrossmatchDTOIn, CrossmatchDTOOut)
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import (
     CrossmatchJsonIn, CrossmatchJsonOut)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
@@ -16,8 +15,9 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATypeWithFrequency,
                                            HLATypeWithFrequencyRaw)
 from txmatching.utils.enums import HLAAntibodyType
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import AntibodyMatchForHLAType
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatchForHLAGroup, get_antibody_matches_with_frequent_codes,
+    AntibodyMatchForHLAGroup,
     get_crossmatched_antibodies_per_group)
 from txmatching.utils.hla_system.hla_preparation_utils import (
     create_antibody, create_hla_type_with_frequency, create_hla_typing)
@@ -27,8 +27,6 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_raw_code_with_details,
     parse_hla_typing_raw_and_return_parsing_issue_list,
     preprocess_hla_antibodies_raw)
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
-    ParsingIssueDetail
 from txmatching.web.web_utils.namespaces import crossmatch_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -86,14 +84,15 @@ class DoCrossmatch(Resource):
         antibody_matches_for_hla_type = [
             AntibodyMatchForHLAType.from_crossmatched_antibodies(
                 assumed_hla_types=assumed_hla_type,
-                crossmatched_antibodies=crossmatched_antibodies_per_group)
+                crossmatched_antibodies=crossmatched_antibodies_per_group,
+                all_antibodies=hla_antibodies.hla_antibodies_per_groups)
             for assumed_hla_type in assumed_hla_typing]
-
-        low_frequency_parsing_issues = _get_parsing_issues_for_unlikely_crossmatches(antibody_matches_for_hla_type)
 
         return response_ok(CrossmatchDTOOut(
             hla_to_antibody=antibody_matches_for_hla_type,
-            parsing_issues=antibodies_parsing_issues + typing_parsing_issues + low_frequency_parsing_issues
+            parsing_issues=antibodies_parsing_issues + typing_parsing_issues,
+            is_positive_crossmatch=any((hla_to_antibody.is_positive_crossmatch
+                                        for hla_to_antibody in antibody_matches_for_hla_type))
         ))
 
 
@@ -102,24 +101,6 @@ def _are_all_codes_infrequent(hla_type_list: Union[List[HLATypeWithFrequencyRaw]
         if hla_type.is_frequent:
             return False
     return True
-
-
-def _get_parsing_issues_for_unlikely_crossmatches(antibody_matches_for_hla_type: List[AntibodyMatchForHLAType]) -> \
-        List[ParsingIssueBase]:
-    parsing_issues = []
-    for antibody_match in antibody_matches_for_hla_type:
-        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(
-            antibody_match.assumed_hla_types, antibody_match.antibody_matches)
-        if len(antibody_match.antibody_matches) > 0 and \
-                len(antibody_matches_with_frequent_codes) == 0:
-            hla_codes = ', '.join([hla_code.hla_type.display_code
-                                   for hla_code in antibody_match.assumed_hla_types])
-            parsing_issues.append(ParsingIssueBase(
-                hla_code_or_group=hla_codes,
-                parsing_issue_detail=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH,
-                message=ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH.value))
-
-    return parsing_issues
 
 
 def _get_hla_antibodies_and_parsing_issues(antibodies_raw_list: List[HLAAntibodyRaw]) \

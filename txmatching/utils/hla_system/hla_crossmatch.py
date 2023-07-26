@@ -1,17 +1,20 @@
-from dataclasses import dataclass, field
-from typing import Callable, List, Optional, Set
+import logging
+from dataclasses import dataclass
+from typing import Callable, List, Set
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a, is_all_antibodies_in_high_res)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
-                                           HLAPerGroup, HLAType,
-                                           HLATypeWithFrequency, HLATyping)
+from txmatching.patients.hla_model import (HLAAntibodies,
+                                           HLAAntibody, HLAPerGroup,
+                                           HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel, HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
     MULTIPLE_SERO_CODES_LIST
+
+logger = logging.getLogger(__name__)
 
 MATCHING_TYPE_ORDER = [AntibodyMatchTypes.HIGH_RES, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT,
                        AntibodyMatchTypes.HIGH_RES_WITH_BROAD, AntibodyMatchTypes.SPLIT, AntibodyMatchTypes.BROAD,
@@ -28,87 +31,6 @@ class AntibodyMatch:
 class AntibodyMatchForHLAGroup:
     hla_group: HLAGroup
     antibody_matches: List[AntibodyMatch]
-
-
-@dataclass
-class AntibodyMatchForHLAType:
-    # If we have List[HLAType], which biologically carries the meaning of only one HLA Type
-    # (we simply cannot choose which one is the right one),
-    # then we call that object assumed_hla_type, and it has the following properties:
-    # - must not be empty
-    # - must have a uniform HLA code in low res, i.e we do not allow situation ['A*01:01', 'A*02:01']
-    # - must not have several codes in low res, i.e. we do not allow situation ['A1', 'A1']
-    assumed_hla_types: List[HLATypeWithFrequency]
-    antibody_matches: List[AntibodyMatch] = field(default_factory=list)
-    summary_antibody: Optional[AntibodyMatch] = field(init=False)  # antibody with the largest MFI value
-
-    def __init__(self, assumed_hla_types: List[HLATypeWithFrequency],
-                 antibody_matches: List[AntibodyMatch] = None):
-        if not assumed_hla_types:
-            raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
-        self.assumed_hla_types = assumed_hla_types
-        self.antibody_matches = antibody_matches or []
-        antibody_matches_with_frequent_codes = get_antibody_matches_with_frequent_codes(self.assumed_hla_types,
-                                                                                        self.antibody_matches)
-        self.summary_antibody = max(antibody_matches_with_frequent_codes,
-                                    key=lambda
-                                        match: match.hla_antibody.mfi) if antibody_matches_with_frequent_codes else None
-
-    @classmethod
-    def from_crossmatched_antibodies(cls, assumed_hla_types: List[HLATypeWithFrequency],
-                                     crossmatched_antibodies: List[AntibodyMatchForHLAGroup]):
-        """
-        Generates an instance of the AntibodyMatchForHLAType according to the assumed HLA type
-        and possible pre-calculated crossmatched antibodies.
-        :param assumed_hla_types: special representation of the classic HLAType (see comment
-                                 at the begging of the dataclass AntibodyMatchForHLAType)
-        :param crossmatched_antibodies: antibodies that we know are likely to have a crossmatch
-                                        but are categorized into HLA groups.
-        :return: instance of this class.
-        """
-        if not assumed_hla_types:
-            raise AttributeError('AntibodyMatchForHLAType needs at least one assumed hla_type.')
-        antibody_matches = cls._find_common_matches(assumed_hla_types, crossmatched_antibodies)
-        return cls(assumed_hla_types, antibody_matches)
-
-    @classmethod
-    def _find_common_matches(cls, assumed_hla_types: List[HLATypeWithFrequency],
-                             crossmatched_antibodies: List[AntibodyMatchForHLAGroup]) \
-            -> Optional[List[AntibodyMatch]]:
-        return [antibody_group_match for match_per_group in crossmatched_antibodies
-                for antibody_group_match in match_per_group.antibody_matches
-                if cls._are_assumed_hla_types_corresponds_antibody(assumed_hla_types,
-                                                                   antibody_group_match.hla_antibody)]
-
-    @classmethod
-    def _are_assumed_hla_types_corresponds_antibody(cls, assumed_hla_types: List[HLATypeWithFrequency],
-                                                    hla_antibody: HLAAntibody) -> bool:
-        for assumed_hla_type in assumed_hla_types:
-            if assumed_hla_type.hla_type.code == hla_antibody.code or \
-                    (hla_antibody.second_code and assumed_hla_type.hla_type.code == hla_antibody.second_code):
-                return True
-        return False
-
-    def __hash__(self):
-        return hash((tuple(self.assumed_hla_types), tuple(self.antibody_matches)))
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
-
-
-def get_antibody_matches_with_frequent_codes(assumed_hla_types: List[HLATypeWithFrequency],
-                                             antibody_matches: List[AntibodyMatch]) -> List[AntibodyMatch]:
-    frequent_codes = [
-        hla_type.hla_type.code
-        for hla_type in assumed_hla_types
-        if hla_type.is_frequent
-    ]
-    return [
-        antibody_match
-        for antibody_match in antibody_matches
-        if antibody_match.hla_antibody.code in frequent_codes
-           or antibody_match.hla_antibody.second_code in frequent_codes
-    ]
 
 
 def get_crossmatched_antibodies_per_group(donor_hla_typing: HLATyping,
@@ -314,7 +236,8 @@ def _do_crossmatch_for_hlas_recipient_was_not_tested_for(hla_per_group: HLAPerGr
     for hla_type in hla_per_group.hla_types:
         if use_high_resolution and hla_type.code.high_res is not None and not _recipient_was_tested_for_donor_antigen(
                 all_antibodies, hla_type.code):
-            # select antibodies that match from the list of antibodies that are to check and to be added to positive matches
+            # select antibodies that match from the list of antibodies that are to check and to be added to positive
+            # matches
             tested_antibodies_that_match = [antibody for antibody in antibodies_to_check
                                             if hla_type.code.split == antibody.code.split
                                             if hla_type.code.split is not None and
@@ -491,7 +414,8 @@ def _add_undecidable_crossmatch_type(antibodies: List[HLAAntibody],
 def _add_theoretical_crossmatch_type(positive_matches: Set[AntibodyMatch]):
     matches_to_remove = set()
     for match in positive_matches:
-        if match.hla_antibody.type == HLAAntibodyType.THEORETICAL and match.match_type != AntibodyMatchTypes.UNDECIDABLE:
+        if match.hla_antibody.type == HLAAntibodyType.THEORETICAL \
+                and match.match_type != AntibodyMatchTypes.UNDECIDABLE:
             matches_to_remove.add(match)
     for match in matches_to_remove:
         positive_matches.remove(match)

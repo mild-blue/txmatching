@@ -14,8 +14,6 @@ class ParsingIssueDetail(str, Enum):
                                        'Please check that the conversion is correct.'
     CREATED_THEORETICAL_ANTIBODY = 'Theoretical antibody was created, because double antibody had mixed MFI values ' \
                                    'for both chains.'
-    RARE_ALLELE_POSITIVE_CROSSMATCH = 'There is most likely no crossmatch, but there is a small chance that a ' \
-        'crossmatch could occur. Therefore, this case requires further investigation.'
 
     # returning no value (hla code)
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
@@ -66,7 +64,6 @@ WARNING_PROCESSING_RESULTS = {
     ParsingIssueDetail.HIGH_RES_WITH_ASSUMED_SPLIT_CODE,
     ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
     ParsingIssueDetail.DUPLICATE_ANTIBODY_SINGLE_CHAIN,
-    ParsingIssueDetail.RARE_ALLELE_POSITIVE_CROSSMATCH
 }
 
 ERROR_PROCESSING_RESULTS = {

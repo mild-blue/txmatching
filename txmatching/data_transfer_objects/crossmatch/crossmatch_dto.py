@@ -6,7 +6,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
 from txmatching.patients.hla_model import HLATypeWithFrequencyRaw
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAType
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import AntibodyMatchForHLAType
 
 
 @dataclass
@@ -19,3 +19,4 @@ class CrossmatchDTOIn:
 class CrossmatchDTOOut:
     hla_to_antibody: List[AntibodyMatchForHLAType]
     parsing_issues: List[ParsingIssueBase]
+    is_positive_crossmatch: bool

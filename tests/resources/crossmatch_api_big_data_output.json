@@ -1,4120 +1,837 @@
 {
-  "hla_to_antibody": [
-    {
-      "antibody_matches": [
+    "hla_to_antibody": [
         {
-          "hla_antibody": {
-            "code": {
-              "broad": "A2",
-              "high_res": "A*02:01",
-              "split": "A2"
-            },
-            "cutoff": 2000,
-            "mfi": 20464,
-            "raw_code": "A*02:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "A2",
+                            "high_res": "A*02:01",
+                            "split": "A2"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 20464,
+                        "raw_code": "A*02:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "A2",
+                            "high_res": "A*02:01",
+                            "split": "A2"
+                        },
+                        "display_code": "A*02:01",
+                        "raw_code": "A*02:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                ],
+                "hla_code": {
+                    "broad": "A2",
+                    "high_res": "A*02:01",
+                    "split": "A2"
+                },
+                "mfi": 20464
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "A10",
+                            "high_res": null,
+                            "split": "A26"
+                        },
+                        "display_code": "A26",
+                        "raw_code": "A26"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "A10",
+                    "high_res": null,
+                    "split": "A26"
+                },
+                "mfi": 123
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "B35",
+                            "high_res": "B*35:01",
+                            "split": "B35"
+                        },
+                        "display_code": "B*35:01",
+                        "raw_code": "B*35:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "B35",
+                    "high_res": null,
+                    "split": "B35"
+                },
+                "mfi": 133
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "B12",
+                            "high_res": null,
+                            "split": "B44"
+                        },
+                        "display_code": "B44",
+                        "raw_code": "B44"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "B12",
+                    "high_res": null,
+                    "split": "B44"
+                },
+                "mfi": 166
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "CW2",
+                            "high_res": null,
+                            "split": "CW2"
+                        },
+                        "display_code": "CW2",
+                        "raw_code": "CW2"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "CW2",
+                    "high_res": null,
+                    "split": "CW2"
+                },
+                "mfi": 415
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "CW4",
+                            "high_res": null,
+                            "split": "CW4"
+                        },
+                        "display_code": "CW4",
+                        "raw_code": "CW4"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "CW4",
+                    "high_res": null,
+                    "split": "CW4"
+                },
+                "mfi": 361
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DP2",
+                            "high_res": null,
+                            "split": "DP2"
+                        },
+                        "display_code": "DP2",
+                        "raw_code": "DP2"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DP2",
+                    "high_res": null,
+                    "split": "DP2"
+                },
+                "mfi": 161
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DP4",
+                            "high_res": null,
+                            "split": "DP4"
+                        },
+                        "display_code": "DP4",
+                        "raw_code": "DP4"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DP4",
+                    "high_res": null,
+                    "split": "DP4"
+                },
+                "mfi": 214
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:01",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 15249,
+                        "raw_code": "DQA1*01:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:02",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 12986,
+                        "raw_code": "DQA1*01:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:03",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17289,
+                        "raw_code": "DQA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": null,
+                            "split": "DQA1"
+                        },
+                        "display_code": "DQA1",
+                        "raw_code": "DQA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched."
+                ],
+                "hla_code": {
+                    "broad": "DQA1",
+                    "high_res": null,
+                    "split": "DQA1"
+                },
+                "mfi": 15174
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQA3",
+                            "high_res": "DQA1*03:01",
+                            "split": "DQA3"
+                        },
+                        "display_code": "DQA1*03:01",
+                        "raw_code": "DQA1*03:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DQA3",
+                    "high_res": null,
+                    "split": "DQA3"
+                },
+                "mfi": 753
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 4181,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "THEORETICAL"
+                    },
+                    "match_type": "THEORETICAL"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2589,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": {
+                            "broad": "DP11",
+                            "high_res": "DPB1*11:01",
+                            "split": "DP11"
+                        },
+                        "second_raw_code": "DPB1*11:01",
+                        "type": "NORMAL"
+                    },
+                    "match_type": "NONE"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": null,
+                            "split": "DPA1"
+                        },
+                        "display_code": "DPA1",
+                        "raw_code": "DPA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There is a match with theoretical antibody."
+                ],
+                "hla_code": {
+                    "broad": "DPA1",
+                    "high_res": "DPA1*01:03",
+                    "split": "DPA1"
+                },
+                "mfi": 4181
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 4181,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "THEORETICAL"
+                    },
+                    "match_type": "THEORETICAL"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2589,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": {
+                            "broad": "DP11",
+                            "high_res": "DPB1*11:01",
+                            "split": "DP11"
+                        },
+                        "second_raw_code": "DPB1*11:01",
+                        "type": "NORMAL"
+                    },
+                    "match_type": "NONE"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": null,
+                            "split": "DPA1"
+                        },
+                        "display_code": "DPA1",
+                        "raw_code": "DPA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There is a match with theoretical antibody."
+                ],
+                "hla_code": {
+                    "broad": "DPA1",
+                    "high_res": "DPA1*01:03",
+                    "split": "DPA1"
+                },
+                "mfi": 4181
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ3",
+                            "high_res": "DQB1*03:02",
+                            "split": "DQ8"
+                        },
+                        "display_code": "DQB1*03:02",
+                        "raw_code": "DQB1*03:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DQ3",
+                    "high_res": null,
+                    "split": "DQ8"
+                },
+                "mfi": 1038
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*05:01",
+                            "split": "DQ5"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17975,
+                        "raw_code": "DQB1*05:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*05:02",
+                            "split": "DQ5"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 8859,
+                        "raw_code": "DQB1*05:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:01",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 16537,
+                        "raw_code": "DQB1*06:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:02",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 12934,
+                        "raw_code": "DQB1*06:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:03",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 18042,
+                        "raw_code": "DQB1*06:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:04",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 11851,
+                        "raw_code": "DQB1*06:04",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:09",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17889,
+                        "raw_code": "DQB1*06:09",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": null,
+                            "split": null
+                        },
+                        "display_code": "DQ1",
+                        "raw_code": "DQ1"
+                    },
+                    "is_frequent": true
+                },
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": null,
+                            "split": "DQ5"
+                        },
+                        "display_code": "DQ5",
+                        "raw_code": "DQ5"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched."
+                ],
+                "hla_code": {
+                    "broad": "DQ1",
+                    "high_res": null,
+                    "split": "DQ6"
+                },
+                "mfi": 15450
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DR4",
+                            "high_res": "DRB1*04:02",
+                            "split": "DR4"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2381,
+                        "raw_code": "DRB1*04:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR4",
+                            "high_res": "DRB1*04:02",
+                            "split": "DR4"
+                        },
+                        "display_code": "DRB1*04:02",
+                        "raw_code": "DRB1*04:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                ],
+                "hla_code": {
+                    "broad": "DR4",
+                    "high_res": "DRB1*04:02",
+                    "split": "DR4"
+                },
+                "mfi": 2381
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR6",
+                            "high_res": "DRB1*14:54",
+                            "split": "DR14"
+                        },
+                        "display_code": "DRB1*14:54",
+                        "raw_code": "DRB1*14:54"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DR6",
+                    "high_res": null,
+                    "split": "DR14"
+                },
+                "mfi": 242
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DR53",
+                            "high_res": "DRB4*01:03",
+                            "split": "DR53"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 5166,
+                        "raw_code": "DRB4*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR53",
+                            "high_res": "DRB4*01:03",
+                            "split": "DR53"
+                        },
+                        "display_code": "DRB4*01:03",
+                        "raw_code": "DRB4*01:03"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                ],
+                "hla_code": {
+                    "broad": "DR53",
+                    "high_res": "DRB4*01:03",
+                    "split": "DR53"
+                },
+                "mfi": 5166
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR52",
+                            "high_res": "DRB3*02:02",
+                            "split": "DR52"
+                        },
+                        "display_code": "DRB3*02:02",
+                        "raw_code": "DRB3*02:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                ],
+                "hla_code": {
+                    "broad": "DR52",
+                    "high_res": null,
+                    "split": "DR52"
+                },
+                "mfi": 255
+            }
         }
-      ],
-      "assumed_hla_types": [
+    ],
+    "parsing_issues": [
         {
-          "hla_type": {
-            "code": {
-              "broad": "A2",
-              "high_res": "A*02:01",
-              "split": "A2"
-            },
-            "display_code": "A*02:01",
-            "raw_code": "A*02:01"
-          },
-          "is_frequent": true
+            "hla_code_or_group": "DPA1*02:02, DPB1*13:01",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[02:02,11:01] mfi: 1993, DP[02:02,10:01] mfi: 2770, DP[02:02,05:01] mfi: 2028. Other antibodies with beta: DP[03:01,13:01] mfi: 2184, DP[02:01,13:01] mfi: 1711.",
+            "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
+        },
+        {
+            "hla_code_or_group": "DPA1*01:03, DPB1*11:01",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[01:03,28:01] mfi: 111, DP[01:03,23:01] mfi: 212, DP[01:03,19:01] mfi: 3226, DP[01:03,06:01] mfi: 4689, DP[01:03,04:02] mfi: 214, DP[01:03,04:01] mfi: 123, DP[01:03,03:01] mfi: 5810, DP[01:03,02:01] mfi: 161, DP[01:03,01:01] mfi: 4593. Other antibodies with beta: DP[02:02,11:01] mfi: 1993.",
+            "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
         }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "A2",
-            "high_res": "A*02:01",
-            "split": "A2"
-          },
-          "cutoff": 2000,
-          "mfi": 20464,
-          "raw_code": "A*02:01",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "A10",
-              "high_res": "A*26:01",
-              "split": "A26"
-            },
-            "display_code": "A*26:01",
-            "raw_code": "A*26:01"
-          },
-          "is_frequent": false
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "B35",
-              "high_res": "B*35:01",
-              "split": "B35"
-            },
-            "display_code": "B*35:01",
-            "raw_code": "B*35:01"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "B12",
-              "high_res": "B*44:02",
-              "split": "B44"
-            },
-            "display_code": "B*44:02",
-            "raw_code": "B*44:02"
-          },
-          "is_frequent": false
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "CW2",
-              "high_res": "C*02:02",
-              "split": "CW2"
-            },
-            "display_code": "C*02:02",
-            "raw_code": "C*02:02"
-          },
-          "is_frequent": false
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "CW4",
-              "high_res": "C*04:01",
-              "split": "CW4"
-            },
-            "display_code": "C*04:01",
-            "raw_code": "C*04:01"
-          },
-          "is_frequent": false
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DP1",
-              "high_res": "DPB1*01:01",
-              "split": "DP1"
-            },
-            "cutoff": 2000,
-            "mfi": 4550,
-            "raw_code": "DPB1*01:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP191",
-              "high_res": null,
-              "split": "DP191"
-            },
-            "display_code": "DP191",
-            "raw_code": "DP191"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP359",
-              "high_res": null,
-              "split": "DP359"
-            },
-            "display_code": "DP359",
-            "raw_code": "DP359"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP622",
-              "high_res": null,
-              "split": "DP622"
-            },
-            "display_code": "DP622",
-            "raw_code": "DP622"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP469",
-              "high_res": null,
-              "split": "DP469"
-            },
-            "display_code": "DP469",
-            "raw_code": "DP469"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1077",
-              "high_res": null,
-              "split": "DP1077"
-            },
-            "display_code": "DP1077",
-            "raw_code": "DP1077"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP146",
-              "high_res": null,
-              "split": "DP146"
-            },
-            "display_code": "DP146",
-            "raw_code": "DP146"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP501",
-              "high_res": null,
-              "split": "DP501"
-            },
-            "display_code": "DP501",
-            "raw_code": "DP501"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP640",
-              "high_res": null,
-              "split": "DP640"
-            },
-            "display_code": "DP640",
-            "raw_code": "DP640"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1051",
-              "high_res": null,
-              "split": "DP1051"
-            },
-            "display_code": "DP1051",
-            "raw_code": "DP1051"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP367",
-              "high_res": null,
-              "split": "DP367"
-            },
-            "display_code": "DP367",
-            "raw_code": "DP367"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP155",
-              "high_res": null,
-              "split": "DP155"
-            },
-            "display_code": "DP155",
-            "raw_code": "DP155"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1059",
-              "high_res": null,
-              "split": "DP1059"
-            },
-            "display_code": "DP1059",
-            "raw_code": "DP1059"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP432",
-              "high_res": null,
-              "split": "DP432"
-            },
-            "display_code": "DP432",
-            "raw_code": "DP432"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP751",
-              "high_res": null,
-              "split": "DP751"
-            },
-            "display_code": "DP751",
-            "raw_code": "DP751"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP660",
-              "high_res": null,
-              "split": "DP660"
-            },
-            "display_code": "DP660",
-            "raw_code": "DP660"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1028",
-              "high_res": null,
-              "split": "DP1028"
-            },
-            "display_code": "DP1028",
-            "raw_code": "DP1028"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP678",
-              "high_res": null,
-              "split": "DP678"
-            },
-            "display_code": "DP678",
-            "raw_code": "DP678"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP433",
-              "high_res": null,
-              "split": "DP433"
-            },
-            "display_code": "DP433",
-            "raw_code": "DP433"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP604",
-              "high_res": null,
-              "split": "DP604"
-            },
-            "display_code": "DP604",
-            "raw_code": "DP604"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP845",
-              "high_res": null,
-              "split": "DP845"
-            },
-            "display_code": "DP845",
-            "raw_code": "DP845"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP339",
-              "high_res": null,
-              "split": "DP339"
-            },
-            "display_code": "DP339",
-            "raw_code": "DP339"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP381",
-              "high_res": null,
-              "split": "DP381"
-            },
-            "display_code": "DP381",
-            "raw_code": "DP381"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP955",
-              "high_res": null,
-              "split": "DP955"
-            },
-            "display_code": "DP955",
-            "raw_code": "DP955"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1082",
-              "high_res": null,
-              "split": "DP1082"
-            },
-            "display_code": "DP1082",
-            "raw_code": "DP1082"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP528",
-              "high_res": null,
-              "split": "DP528"
-            },
-            "display_code": "DP528",
-            "raw_code": "DP528"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP656",
-              "high_res": null,
-              "split": "DP656"
-            },
-            "display_code": "DP656",
-            "raw_code": "DP656"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP827",
-              "high_res": null,
-              "split": "DP827"
-            },
-            "display_code": "DP827",
-            "raw_code": "DP827"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP770",
-              "high_res": null,
-              "split": "DP770"
-            },
-            "display_code": "DP770",
-            "raw_code": "DP770"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP297",
-              "high_res": null,
-              "split": "DP297"
-            },
-            "display_code": "DP297",
-            "raw_code": "DP297"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP196",
-              "high_res": null,
-              "split": "DP196"
-            },
-            "display_code": "DP196",
-            "raw_code": "DP196"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP836",
-              "high_res": null,
-              "split": "DP836"
-            },
-            "display_code": "DP836",
-            "raw_code": "DP836"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP780",
-              "high_res": null,
-              "split": "DP780"
-            },
-            "display_code": "DP780",
-            "raw_code": "DP780"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP884",
-              "high_res": null,
-              "split": "DP884"
-            },
-            "display_code": "DP884",
-            "raw_code": "DP884"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP889",
-              "high_res": null,
-              "split": "DP889"
-            },
-            "display_code": "DP889",
-            "raw_code": "DP889"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1055",
-              "high_res": null,
-              "split": "DP1055"
-            },
-            "display_code": "DP1055",
-            "raw_code": "DP1055"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1094",
-              "high_res": null,
-              "split": "DP1094"
-            },
-            "display_code": "DP1094",
-            "raw_code": "DP1094"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP799",
-              "high_res": null,
-              "split": "DP799"
-            },
-            "display_code": "DP799",
-            "raw_code": "DP799"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP579",
-              "high_res": null,
-              "split": "DP579"
-            },
-            "display_code": "DP579",
-            "raw_code": "DP579"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP861",
-              "high_res": null,
-              "split": "DP861"
-            },
-            "display_code": "DP861",
-            "raw_code": "DP861"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP685",
-              "high_res": null,
-              "split": "DP685"
-            },
-            "display_code": "DP685",
-            "raw_code": "DP685"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP217",
-              "high_res": null,
-              "split": "DP217"
-            },
-            "display_code": "DP217",
-            "raw_code": "DP217"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP510",
-              "high_res": null,
-              "split": "DP510"
-            },
-            "display_code": "DP510",
-            "raw_code": "DP510"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP681",
-              "high_res": null,
-              "split": "DP681"
-            },
-            "display_code": "DP681",
-            "raw_code": "DP681"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP639",
-              "high_res": null,
-              "split": "DP639"
-            },
-            "display_code": "DP639",
-            "raw_code": "DP639"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP964",
-              "high_res": null,
-              "split": "DP964"
-            },
-            "display_code": "DP964",
-            "raw_code": "DP964"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP239",
-              "high_res": null,
-              "split": "DP239"
-            },
-            "display_code": "DP239",
-            "raw_code": "DP239"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP419",
-              "high_res": null,
-              "split": "DP419"
-            },
-            "display_code": "DP419",
-            "raw_code": "DP419"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP655",
-              "high_res": null,
-              "split": "DP655"
-            },
-            "display_code": "DP655",
-            "raw_code": "DP655"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1",
-              "high_res": null,
-              "split": "DP1"
-            },
-            "display_code": "DP1",
-            "raw_code": "DP1"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP771",
-              "high_res": null,
-              "split": "DP771"
-            },
-            "display_code": "DP771",
-            "raw_code": "DP771"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP967",
-              "high_res": null,
-              "split": "DP967"
-            },
-            "display_code": "DP967",
-            "raw_code": "DP967"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP261",
-              "high_res": null,
-              "split": "DP261"
-            },
-            "display_code": "DP261",
-            "raw_code": "DP261"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1056",
-              "high_res": null,
-              "split": "DP1056"
-            },
-            "display_code": "DP1056",
-            "raw_code": "DP1056"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP444",
-              "high_res": null,
-              "split": "DP444"
-            },
-            "display_code": "DP444",
-            "raw_code": "DP444"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP617",
-              "high_res": null,
-              "split": "DP617"
-            },
-            "display_code": "DP617",
-            "raw_code": "DP617"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP151",
-              "high_res": null,
-              "split": "DP151"
-            },
-            "display_code": "DP151",
-            "raw_code": "DP151"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP258",
-              "high_res": null,
-              "split": "DP258"
-            },
-            "display_code": "DP258",
-            "raw_code": "DP258"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP489",
-              "high_res": null,
-              "split": "DP489"
-            },
-            "display_code": "DP489",
-            "raw_code": "DP489"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1115",
-              "high_res": null,
-              "split": "DP1115"
-            },
-            "display_code": "DP1115",
-            "raw_code": "DP1115"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP211",
-              "high_res": null,
-              "split": "DP211"
-            },
-            "display_code": "DP211",
-            "raw_code": "DP211"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP819",
-              "high_res": null,
-              "split": "DP819"
-            },
-            "display_code": "DP819",
-            "raw_code": "DP819"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP781",
-              "high_res": null,
-              "split": "DP781"
-            },
-            "display_code": "DP781",
-            "raw_code": "DP781"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP2",
-              "high_res": null,
-              "split": "DP2"
-            },
-            "display_code": "DP2",
-            "raw_code": "DP2"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP186",
-              "high_res": null,
-              "split": "DP186"
-            },
-            "display_code": "DP186",
-            "raw_code": "DP186"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP723",
-              "high_res": null,
-              "split": "DP723"
-            },
-            "display_code": "DP723",
-            "raw_code": "DP723"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP145",
-              "high_res": null,
-              "split": "DP145"
-            },
-            "display_code": "DP145",
-            "raw_code": "DP145"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP557",
-              "high_res": null,
-              "split": "DP557"
-            },
-            "display_code": "DP557",
-            "raw_code": "DP557"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1102",
-              "high_res": null,
-              "split": "DP1102"
-            },
-            "display_code": "DP1102",
-            "raw_code": "DP1102"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP692",
-              "high_res": null,
-              "split": "DP692"
-            },
-            "display_code": "DP692",
-            "raw_code": "DP692"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP963",
-              "high_res": null,
-              "split": "DP963"
-            },
-            "display_code": "DP963",
-            "raw_code": "DP963"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP366",
-              "high_res": null,
-              "split": "DP366"
-            },
-            "display_code": "DP366",
-            "raw_code": "DP366"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP602",
-              "high_res": null,
-              "split": "DP602"
-            },
-            "display_code": "DP602",
-            "raw_code": "DP602"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP537",
-              "high_res": null,
-              "split": "DP537"
-            },
-            "display_code": "DP537",
-            "raw_code": "DP537"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP502",
-              "high_res": null,
-              "split": "DP502"
-            },
-            "display_code": "DP502",
-            "raw_code": "DP502"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1053",
-              "high_res": null,
-              "split": "DP1053"
-            },
-            "display_code": "DP1053",
-            "raw_code": "DP1053"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP123",
-              "high_res": null,
-              "split": "DP123"
-            },
-            "display_code": "DP123",
-            "raw_code": "DP123"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP237",
-              "high_res": null,
-              "split": "DP237"
-            },
-            "display_code": "DP237",
-            "raw_code": "DP237"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP680",
-              "high_res": null,
-              "split": "DP680"
-            },
-            "display_code": "DP680",
-            "raw_code": "DP680"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP141",
-              "high_res": null,
-              "split": "DP141"
-            },
-            "display_code": "DP141",
-            "raw_code": "DP141"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1089",
-              "high_res": null,
-              "split": "DP1089"
-            },
-            "display_code": "DP1089",
-            "raw_code": "DP1089"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP783",
-              "high_res": null,
-              "split": "DP783"
-            },
-            "display_code": "DP783",
-            "raw_code": "DP783"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1107",
-              "high_res": null,
-              "split": "DP1107"
-            },
-            "display_code": "DP1107",
-            "raw_code": "DP1107"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP890",
-              "high_res": null,
-              "split": "DP890"
-            },
-            "display_code": "DP890",
-            "raw_code": "DP890"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP41",
-              "high_res": null,
-              "split": "DP41"
-            },
-            "display_code": "DP41",
-            "raw_code": "DP41"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP273",
-              "high_res": null,
-              "split": "DP273"
-            },
-            "display_code": "DP273",
-            "raw_code": "DP273"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP163",
-              "high_res": null,
-              "split": "DP163"
-            },
-            "display_code": "DP163",
-            "raw_code": "DP163"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP582",
-              "high_res": null,
-              "split": "DP582"
-            },
-            "display_code": "DP582",
-            "raw_code": "DP582"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP310",
-              "high_res": null,
-              "split": "DP310"
-            },
-            "display_code": "DP310",
-            "raw_code": "DP310"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP628",
-              "high_res": null,
-              "split": "DP628"
-            },
-            "display_code": "DP628",
-            "raw_code": "DP628"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP857",
-              "high_res": null,
-              "split": "DP857"
-            },
-            "display_code": "DP857",
-            "raw_code": "DP857"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP457",
-              "high_res": null,
-              "split": "DP457"
-            },
-            "display_code": "DP457",
-            "raw_code": "DP457"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1036",
-              "high_res": null,
-              "split": "DP1036"
-            },
-            "display_code": "DP1036",
-            "raw_code": "DP1036"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP511",
-              "high_res": null,
-              "split": "DP511"
-            },
-            "display_code": "DP511",
-            "raw_code": "DP511"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP975",
-              "high_res": null,
-              "split": "DP975"
-            },
-            "display_code": "DP975",
-            "raw_code": "DP975"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP187",
-              "high_res": null,
-              "split": "DP187"
-            },
-            "display_code": "DP187",
-            "raw_code": "DP187"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP637",
-              "high_res": null,
-              "split": "DP637"
-            },
-            "display_code": "DP637",
-            "raw_code": "DP637"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DP1",
-            "high_res": "DPB1*01:01",
-            "split": "DP1"
-          },
-          "cutoff": 2000,
-          "mfi": 4550,
-          "raw_code": "DPB1*01:01",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DP1",
-              "high_res": "DPB1*01:01",
-              "split": "DP1"
-            },
-            "cutoff": 2000,
-            "mfi": 4550,
-            "raw_code": "DPB1*01:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP932",
-              "high_res": null,
-              "split": "DP932"
-            },
-            "display_code": "DP932",
-            "raw_code": "DP932"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP677",
-              "high_res": null,
-              "split": "DP677"
-            },
-            "display_code": "DP677",
-            "raw_code": "DP677"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP583",
-              "high_res": null,
-              "split": "DP583"
-            },
-            "display_code": "DP583",
-            "raw_code": "DP583"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP486",
-              "high_res": null,
-              "split": "DP486"
-            },
-            "display_code": "DP486",
-            "raw_code": "DP486"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP240",
-              "high_res": null,
-              "split": "DP240"
-            },
-            "display_code": "DP240",
-            "raw_code": "DP240"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP997",
-              "high_res": null,
-              "split": "DP997"
-            },
-            "display_code": "DP997",
-            "raw_code": "DP997"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1060",
-              "high_res": null,
-              "split": "DP1060"
-            },
-            "display_code": "DP1060",
-            "raw_code": "DP1060"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP773",
-              "high_res": null,
-              "split": "DP773"
-            },
-            "display_code": "DP773",
-            "raw_code": "DP773"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP231",
-              "high_res": null,
-              "split": "DP231"
-            },
-            "display_code": "DP231",
-            "raw_code": "DP231"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP757",
-              "high_res": null,
-              "split": "DP757"
-            },
-            "display_code": "DP757",
-            "raw_code": "DP757"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP180",
-              "high_res": null,
-              "split": "DP180"
-            },
-            "display_code": "DP180",
-            "raw_code": "DP180"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP895",
-              "high_res": null,
-              "split": "DP895"
-            },
-            "display_code": "DP895",
-            "raw_code": "DP895"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP522",
-              "high_res": null,
-              "split": "DP522"
-            },
-            "display_code": "DP522",
-            "raw_code": "DP522"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP272",
-              "high_res": null,
-              "split": "DP272"
-            },
-            "display_code": "DP272",
-            "raw_code": "DP272"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP523",
-              "high_res": null,
-              "split": "DP523"
-            },
-            "display_code": "DP523",
-            "raw_code": "DP523"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP375",
-              "high_res": null,
-              "split": "DP375"
-            },
-            "display_code": "DP375",
-            "raw_code": "DP375"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP534",
-              "high_res": null,
-              "split": "DP534"
-            },
-            "display_code": "DP534",
-            "raw_code": "DP534"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1091",
-              "high_res": null,
-              "split": "DP1091"
-            },
-            "display_code": "DP1091",
-            "raw_code": "DP1091"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP121",
-              "high_res": null,
-              "split": "DP121"
-            },
-            "display_code": "DP121",
-            "raw_code": "DP121"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP149",
-              "high_res": null,
-              "split": "DP149"
-            },
-            "display_code": "DP149",
-            "raw_code": "DP149"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1108",
-              "high_res": null,
-              "split": "DP1108"
-            },
-            "display_code": "DP1108",
-            "raw_code": "DP1108"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1048",
-              "high_res": null,
-              "split": "DP1048"
-            },
-            "display_code": "DP1048",
-            "raw_code": "DP1048"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP755",
-              "high_res": null,
-              "split": "DP755"
-            },
-            "display_code": "DP755",
-            "raw_code": "DP755"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP666",
-              "high_res": null,
-              "split": "DP666"
-            },
-            "display_code": "DP666",
-            "raw_code": "DP666"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1011",
-              "high_res": null,
-              "split": "DP1011"
-            },
-            "display_code": "DP1011",
-            "raw_code": "DP1011"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP529",
-              "high_res": null,
-              "split": "DP529"
-            },
-            "display_code": "DP529",
-            "raw_code": "DP529"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP658",
-              "high_res": null,
-              "split": "DP658"
-            },
-            "display_code": "DP658",
-            "raw_code": "DP658"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP978",
-              "high_res": null,
-              "split": "DP978"
-            },
-            "display_code": "DP978",
-            "raw_code": "DP978"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP320",
-              "high_res": null,
-              "split": "DP320"
-            },
-            "display_code": "DP320",
-            "raw_code": "DP320"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP434",
-              "high_res": null,
-              "split": "DP434"
-            },
-            "display_code": "DP434",
-            "raw_code": "DP434"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP966",
-              "high_res": null,
-              "split": "DP966"
-            },
-            "display_code": "DP966",
-            "raw_code": "DP966"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP813",
-              "high_res": null,
-              "split": "DP813"
-            },
-            "display_code": "DP813",
-            "raw_code": "DP813"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1002",
-              "high_res": null,
-              "split": "DP1002"
-            },
-            "display_code": "DP1002",
-            "raw_code": "DP1002"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP428",
-              "high_res": null,
-              "split": "DP428"
-            },
-            "display_code": "DP428",
-            "raw_code": "DP428"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP262",
-              "high_res": null,
-              "split": "DP262"
-            },
-            "display_code": "DP262",
-            "raw_code": "DP262"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP334",
-              "high_res": null,
-              "split": "DP334"
-            },
-            "display_code": "DP334",
-            "raw_code": "DP334"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1086",
-              "high_res": null,
-              "split": "DP1086"
-            },
-            "display_code": "DP1086",
-            "raw_code": "DP1086"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP177",
-              "high_res": null,
-              "split": "DP177"
-            },
-            "display_code": "DP177",
-            "raw_code": "DP177"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP276",
-              "high_res": null,
-              "split": "DP276"
-            },
-            "display_code": "DP276",
-            "raw_code": "DP276"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP174",
-              "high_res": null,
-              "split": "DP174"
-            },
-            "display_code": "DP174",
-            "raw_code": "DP174"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP232",
-              "high_res": null,
-              "split": "DP232"
-            },
-            "display_code": "DP232",
-            "raw_code": "DP232"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP859",
-              "high_res": null,
-              "split": "DP859"
-            },
-            "display_code": "DP859",
-            "raw_code": "DP859"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP465",
-              "high_res": null,
-              "split": "DP465"
-            },
-            "display_code": "DP465",
-            "raw_code": "DP465"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1023",
-              "high_res": null,
-              "split": "DP1023"
-            },
-            "display_code": "DP1023",
-            "raw_code": "DP1023"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP282",
-              "high_res": null,
-              "split": "DP282"
-            },
-            "display_code": "DP282",
-            "raw_code": "DP282"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP988",
-              "high_res": null,
-              "split": "DP988"
-            },
-            "display_code": "DP988",
-            "raw_code": "DP988"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP193",
-              "high_res": null,
-              "split": "DP193"
-            },
-            "display_code": "DP193",
-            "raw_code": "DP193"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP575",
-              "high_res": null,
-              "split": "DP575"
-            },
-            "display_code": "DP575",
-            "raw_code": "DP575"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP806",
-              "high_res": null,
-              "split": "DP806"
-            },
-            "display_code": "DP806",
-            "raw_code": "DP806"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP335",
-              "high_res": null,
-              "split": "DP335"
-            },
-            "display_code": "DP335",
-            "raw_code": "DP335"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP837",
-              "high_res": null,
-              "split": "DP837"
-            },
-            "display_code": "DP837",
-            "raw_code": "DP837"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP553",
-              "high_res": null,
-              "split": "DP553"
-            },
-            "display_code": "DP553",
-            "raw_code": "DP553"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP795",
-              "high_res": null,
-              "split": "DP795"
-            },
-            "display_code": "DP795",
-            "raw_code": "DP795"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP283",
-              "high_res": null,
-              "split": "DP283"
-            },
-            "display_code": "DP283",
-            "raw_code": "DP283"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP255",
-              "high_res": null,
-              "split": "DP255"
-            },
-            "display_code": "DP255",
-            "raw_code": "DP255"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP181",
-              "high_res": null,
-              "split": "DP181"
-            },
-            "display_code": "DP181",
-            "raw_code": "DP181"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP396",
-              "high_res": null,
-              "split": "DP396"
-            },
-            "display_code": "DP396",
-            "raw_code": "DP396"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP578",
-              "high_res": null,
-              "split": "DP578"
-            },
-            "display_code": "DP578",
-            "raw_code": "DP578"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP618",
-              "high_res": null,
-              "split": "DP618"
-            },
-            "display_code": "DP618",
-            "raw_code": "DP618"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP683",
-              "high_res": null,
-              "split": "DP683"
-            },
-            "display_code": "DP683",
-            "raw_code": "DP683"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP254",
-              "high_res": null,
-              "split": "DP254"
-            },
-            "display_code": "DP254",
-            "raw_code": "DP254"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP812",
-              "high_res": null,
-              "split": "DP812"
-            },
-            "display_code": "DP812",
-            "raw_code": "DP812"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP803",
-              "high_res": null,
-              "split": "DP803"
-            },
-            "display_code": "DP803",
-            "raw_code": "DP803"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP643",
-              "high_res": null,
-              "split": "DP643"
-            },
-            "display_code": "DP643",
-            "raw_code": "DP643"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1001",
-              "high_res": null,
-              "split": "DP1001"
-            },
-            "display_code": "DP1001",
-            "raw_code": "DP1001"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1064",
-              "high_res": null,
-              "split": "DP1064"
-            },
-            "display_code": "DP1064",
-            "raw_code": "DP1064"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP882",
-              "high_res": null,
-              "split": "DP882"
-            },
-            "display_code": "DP882",
-            "raw_code": "DP882"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP686",
-              "high_res": null,
-              "split": "DP686"
-            },
-            "display_code": "DP686",
-            "raw_code": "DP686"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP559",
-              "high_res": null,
-              "split": "DP559"
-            },
-            "display_code": "DP559",
-            "raw_code": "DP559"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP992",
-              "high_res": null,
-              "split": "DP992"
-            },
-            "display_code": "DP992",
-            "raw_code": "DP992"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP194",
-              "high_res": null,
-              "split": "DP194"
-            },
-            "display_code": "DP194",
-            "raw_code": "DP194"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP487",
-              "high_res": null,
-              "split": "DP487"
-            },
-            "display_code": "DP487",
-            "raw_code": "DP487"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP336",
-              "high_res": null,
-              "split": "DP336"
-            },
-            "display_code": "DP336",
-            "raw_code": "DP336"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP485",
-              "high_res": null,
-              "split": "DP485"
-            },
-            "display_code": "DP485",
-            "raw_code": "DP485"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP569",
-              "high_res": null,
-              "split": "DP569"
-            },
-            "display_code": "DP569",
-            "raw_code": "DP569"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP852",
-              "high_res": null,
-              "split": "DP852"
-            },
-            "display_code": "DP852",
-            "raw_code": "DP852"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP176",
-              "high_res": null,
-              "split": "DP176"
-            },
-            "display_code": "DP176",
-            "raw_code": "DP176"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP828",
-              "high_res": null,
-              "split": "DP828"
-            },
-            "display_code": "DP828",
-            "raw_code": "DP828"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP670",
-              "high_res": null,
-              "split": "DP670"
-            },
-            "display_code": "DP670",
-            "raw_code": "DP670"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP840",
-              "high_res": null,
-              "split": "DP840"
-            },
-            "display_code": "DP840",
-            "raw_code": "DP840"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP939",
-              "high_res": null,
-              "split": "DP939"
-            },
-            "display_code": "DP939",
-            "raw_code": "DP939"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP169",
-              "high_res": null,
-              "split": "DP169"
-            },
-            "display_code": "DP169",
-            "raw_code": "DP169"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1",
-              "high_res": null,
-              "split": "DP1"
-            },
-            "display_code": "DP1",
-            "raw_code": "DP1"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP758",
-              "high_res": null,
-              "split": "DP758"
-            },
-            "display_code": "DP758",
-            "raw_code": "DP758"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1040",
-              "high_res": null,
-              "split": "DP1040"
-            },
-            "display_code": "DP1040",
-            "raw_code": "DP1040"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP804",
-              "high_res": null,
-              "split": "DP804"
-            },
-            "display_code": "DP804",
-            "raw_code": "DP804"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP687",
-              "high_res": null,
-              "split": "DP687"
-            },
-            "display_code": "DP687",
-            "raw_code": "DP687"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP453",
-              "high_res": null,
-              "split": "DP453"
-            },
-            "display_code": "DP453",
-            "raw_code": "DP453"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP497",
-              "high_res": null,
-              "split": "DP497"
-            },
-            "display_code": "DP497",
-            "raw_code": "DP497"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP614",
-              "high_res": null,
-              "split": "DP614"
-            },
-            "display_code": "DP614",
-            "raw_code": "DP614"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP742",
-              "high_res": null,
-              "split": "DP742"
-            },
-            "display_code": "DP742",
-            "raw_code": "DP742"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP788",
-              "high_res": null,
-              "split": "DP788"
-            },
-            "display_code": "DP788",
-            "raw_code": "DP788"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP750",
-              "high_res": null,
-              "split": "DP750"
-            },
-            "display_code": "DP750",
-            "raw_code": "DP750"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1097",
-              "high_res": null,
-              "split": "DP1097"
-            },
-            "display_code": "DP1097",
-            "raw_code": "DP1097"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP228",
-              "high_res": null,
-              "split": "DP228"
-            },
-            "display_code": "DP228",
-            "raw_code": "DP228"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP376",
-              "high_res": null,
-              "split": "DP376"
-            },
-            "display_code": "DP376",
-            "raw_code": "DP376"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1074",
-              "high_res": null,
-              "split": "DP1074"
-            },
-            "display_code": "DP1074",
-            "raw_code": "DP1074"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP341",
-              "high_res": null,
-              "split": "DP341"
-            },
-            "display_code": "DP341",
-            "raw_code": "DP341"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP360",
-              "high_res": null,
-              "split": "DP360"
-            },
-            "display_code": "DP360",
-            "raw_code": "DP360"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP521",
-              "high_res": null,
-              "split": "DP521"
-            },
-            "display_code": "DP521",
-            "raw_code": "DP521"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP761",
-              "high_res": null,
-              "split": "DP761"
-            },
-            "display_code": "DP761",
-            "raw_code": "DP761"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP175",
-              "high_res": null,
-              "split": "DP175"
-            },
-            "display_code": "DP175",
-            "raw_code": "DP175"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP556",
-              "high_res": null,
-              "split": "DP556"
-            },
-            "display_code": "DP556",
-            "raw_code": "DP556"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP415",
-              "high_res": null,
-              "split": "DP415"
-            },
-            "display_code": "DP415",
-            "raw_code": "DP415"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP323",
-              "high_res": null,
-              "split": "DP323"
-            },
-            "display_code": "DP323",
-            "raw_code": "DP323"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP915",
-              "high_res": null,
-              "split": "DP915"
-            },
-            "display_code": "DP915",
-            "raw_code": "DP915"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP275",
-              "high_res": null,
-              "split": "DP275"
-            },
-            "display_code": "DP275",
-            "raw_code": "DP275"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP224",
-              "high_res": null,
-              "split": "DP224"
-            },
-            "display_code": "DP224",
-            "raw_code": "DP224"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP699",
-              "high_res": null,
-              "split": "DP699"
-            },
-            "display_code": "DP699",
-            "raw_code": "DP699"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP593",
-              "high_res": null,
-              "split": "DP593"
-            },
-            "display_code": "DP593",
-            "raw_code": "DP593"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP607",
-              "high_res": null,
-              "split": "DP607"
-            },
-            "display_code": "DP607",
-            "raw_code": "DP607"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1004",
-              "high_res": null,
-              "split": "DP1004"
-            },
-            "display_code": "DP1004",
-            "raw_code": "DP1004"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP4",
-              "high_res": null,
-              "split": "DP4"
-            },
-            "display_code": "DP4",
-            "raw_code": "DP4"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP772",
-              "high_res": null,
-              "split": "DP772"
-            },
-            "display_code": "DP772",
-            "raw_code": "DP772"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP767",
-              "high_res": null,
-              "split": "DP767"
-            },
-            "display_code": "DP767",
-            "raw_code": "DP767"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP765",
-              "high_res": null,
-              "split": "DP765"
-            },
-            "display_code": "DP765",
-            "raw_code": "DP765"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP128",
-              "high_res": null,
-              "split": "DP128"
-            },
-            "display_code": "DP128",
-            "raw_code": "DP128"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP99",
-              "high_res": null,
-              "split": "DP99"
-            },
-            "display_code": "DP99",
-            "raw_code": "DP99"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP842",
-              "high_res": null,
-              "split": "DP842"
-            },
-            "display_code": "DP842",
-            "raw_code": "DP842"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP820",
-              "high_res": null,
-              "split": "DP820"
-            },
-            "display_code": "DP820",
-            "raw_code": "DP820"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP475",
-              "high_res": null,
-              "split": "DP475"
-            },
-            "display_code": "DP475",
-            "raw_code": "DP475"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP253",
-              "high_res": null,
-              "split": "DP253"
-            },
-            "display_code": "DP253",
-            "raw_code": "DP253"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP426",
-              "high_res": null,
-              "split": "DP426"
-            },
-            "display_code": "DP426",
-            "raw_code": "DP426"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP769",
-              "high_res": null,
-              "split": "DP769"
-            },
-            "display_code": "DP769",
-            "raw_code": "DP769"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP814",
-              "high_res": null,
-              "split": "DP814"
-            },
-            "display_code": "DP814",
-            "raw_code": "DP814"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP464",
-              "high_res": null,
-              "split": "DP464"
-            },
-            "display_code": "DP464",
-            "raw_code": "DP464"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP454",
-              "high_res": null,
-              "split": "DP454"
-            },
-            "display_code": "DP454",
-            "raw_code": "DP454"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP679",
-              "high_res": null,
-              "split": "DP679"
-            },
-            "display_code": "DP679",
-            "raw_code": "DP679"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP850",
-              "high_res": null,
-              "split": "DP850"
-            },
-            "display_code": "DP850",
-            "raw_code": "DP850"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP476",
-              "high_res": null,
-              "split": "DP476"
-            },
-            "display_code": "DP476",
-            "raw_code": "DP476"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP554",
-              "high_res": null,
-              "split": "DP554"
-            },
-            "display_code": "DP554",
-            "raw_code": "DP554"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP957",
-              "high_res": null,
-              "split": "DP957"
-            },
-            "display_code": "DP957",
-            "raw_code": "DP957"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP195",
-              "high_res": null,
-              "split": "DP195"
-            },
-            "display_code": "DP195",
-            "raw_code": "DP195"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP811",
-              "high_res": null,
-              "split": "DP811"
-            },
-            "display_code": "DP811",
-            "raw_code": "DP811"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP178",
-              "high_res": null,
-              "split": "DP178"
-            },
-            "display_code": "DP178",
-            "raw_code": "DP178"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP921",
-              "high_res": null,
-              "split": "DP921"
-            },
-            "display_code": "DP921",
-            "raw_code": "DP921"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP993",
-              "high_res": null,
-              "split": "DP993"
-            },
-            "display_code": "DP993",
-            "raw_code": "DP993"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP753",
-              "high_res": null,
-              "split": "DP753"
-            },
-            "display_code": "DP753",
-            "raw_code": "DP753"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP356",
-              "high_res": null,
-              "split": "DP356"
-            },
-            "display_code": "DP356",
-            "raw_code": "DP356"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP808",
-              "high_res": null,
-              "split": "DP808"
-            },
-            "display_code": "DP808",
-            "raw_code": "DP808"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP784",
-              "high_res": null,
-              "split": "DP784"
-            },
-            "display_code": "DP784",
-            "raw_code": "DP784"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP192",
-              "high_res": null,
-              "split": "DP192"
-            },
-            "display_code": "DP192",
-            "raw_code": "DP192"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP880",
-              "high_res": null,
-              "split": "DP880"
-            },
-            "display_code": "DP880",
-            "raw_code": "DP880"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP372",
-              "high_res": null,
-              "split": "DP372"
-            },
-            "display_code": "DP372",
-            "raw_code": "DP372"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP500",
-              "high_res": null,
-              "split": "DP500"
-            },
-            "display_code": "DP500",
-            "raw_code": "DP500"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP722",
-              "high_res": null,
-              "split": "DP722"
-            },
-            "display_code": "DP722",
-            "raw_code": "DP722"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP280",
-              "high_res": null,
-              "split": "DP280"
-            },
-            "display_code": "DP280",
-            "raw_code": "DP280"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1042",
-              "high_res": null,
-              "split": "DP1042"
-            },
-            "display_code": "DP1042",
-            "raw_code": "DP1042"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP824",
-              "high_res": null,
-              "split": "DP824"
-            },
-            "display_code": "DP824",
-            "raw_code": "DP824"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP281",
-              "high_res": null,
-              "split": "DP281"
-            },
-            "display_code": "DP281",
-            "raw_code": "DP281"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP134",
-              "high_res": null,
-              "split": "DP134"
-            },
-            "display_code": "DP134",
-            "raw_code": "DP134"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP378",
-              "high_res": null,
-              "split": "DP378"
-            },
-            "display_code": "DP378",
-            "raw_code": "DP378"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP989",
-              "high_res": null,
-              "split": "DP989"
-            },
-            "display_code": "DP989",
-            "raw_code": "DP989"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1003",
-              "high_res": null,
-              "split": "DP1003"
-            },
-            "display_code": "DP1003",
-            "raw_code": "DP1003"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP418",
-              "high_res": null,
-              "split": "DP418"
-            },
-            "display_code": "DP418",
-            "raw_code": "DP418"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP425",
-              "high_res": null,
-              "split": "DP425"
-            },
-            "display_code": "DP425",
-            "raw_code": "DP425"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP592",
-              "high_res": null,
-              "split": "DP592"
-            },
-            "display_code": "DP592",
-            "raw_code": "DP592"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP849",
-              "high_res": null,
-              "split": "DP849"
-            },
-            "display_code": "DP849",
-            "raw_code": "DP849"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP479",
-              "high_res": null,
-              "split": "DP479"
-            },
-            "display_code": "DP479",
-            "raw_code": "DP479"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP225",
-              "high_res": null,
-              "split": "DP225"
-            },
-            "display_code": "DP225",
-            "raw_code": "DP225"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP520",
-              "high_res": null,
-              "split": "DP520"
-            },
-            "display_code": "DP520",
-            "raw_code": "DP520"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP212",
-              "high_res": null,
-              "split": "DP212"
-            },
-            "display_code": "DP212",
-            "raw_code": "DP212"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP694",
-              "high_res": null,
-              "split": "DP694"
-            },
-            "display_code": "DP694",
-            "raw_code": "DP694"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP826",
-              "high_res": null,
-              "split": "DP826"
-            },
-            "display_code": "DP826",
-            "raw_code": "DP826"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP397",
-              "high_res": null,
-              "split": "DP397"
-            },
-            "display_code": "DP397",
-            "raw_code": "DP397"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1016",
-              "high_res": null,
-              "split": "DP1016"
-            },
-            "display_code": "DP1016",
-            "raw_code": "DP1016"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP739",
-              "high_res": null,
-              "split": "DP739"
-            },
-            "display_code": "DP739",
-            "raw_code": "DP739"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1010",
-              "high_res": null,
-              "split": "DP1010"
-            },
-            "display_code": "DP1010",
-            "raw_code": "DP1010"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1062",
-              "high_res": null,
-              "split": "DP1062"
-            },
-            "display_code": "DP1062",
-            "raw_code": "DP1062"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1100",
-              "high_res": null,
-              "split": "DP1100"
-            },
-            "display_code": "DP1100",
-            "raw_code": "DP1100"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP213",
-              "high_res": null,
-              "split": "DP213"
-            },
-            "display_code": "DP213",
-            "raw_code": "DP213"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP682",
-              "high_res": null,
-              "split": "DP682"
-            },
-            "display_code": "DP682",
-            "raw_code": "DP682"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP459",
-              "high_res": null,
-              "split": "DP459"
-            },
-            "display_code": "DP459",
-            "raw_code": "DP459"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP524",
-              "high_res": null,
-              "split": "DP524"
-            },
-            "display_code": "DP524",
-            "raw_code": "DP524"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP747",
-              "high_res": null,
-              "split": "DP747"
-            },
-            "display_code": "DP747",
-            "raw_code": "DP747"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP591",
-              "high_res": null,
-              "split": "DP591"
-            },
-            "display_code": "DP591",
-            "raw_code": "DP591"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP298",
-              "high_res": null,
-              "split": "DP298"
-            },
-            "display_code": "DP298",
-            "raw_code": "DP298"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP926",
-              "high_res": null,
-              "split": "DP926"
-            },
-            "display_code": "DP926",
-            "raw_code": "DP926"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP625",
-              "high_res": null,
-              "split": "DP625"
-            },
-            "display_code": "DP625",
-            "raw_code": "DP625"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP615",
-              "high_res": null,
-              "split": "DP615"
-            },
-            "display_code": "DP615",
-            "raw_code": "DP615"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP1033",
-              "high_res": null,
-              "split": "DP1033"
-            },
-            "display_code": "DP1033",
-            "raw_code": "DP1033"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DP642",
-              "high_res": null,
-              "split": "DP642"
-            },
-            "display_code": "DP642",
-            "raw_code": "DP642"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DP1",
-            "high_res": "DPB1*01:01",
-            "split": "DP1"
-          },
-          "cutoff": 2000,
-          "mfi": 4550,
-          "raw_code": "DPB1*01:01",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQA1",
-              "high_res": "DQA1*01:01",
-              "split": "DQA1"
-            },
-            "cutoff": 2000,
-            "mfi": 15249,
-            "raw_code": "DQA1*01:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQA1",
-              "high_res": "DQA1*01:02",
-              "split": "DQA1"
-            },
-            "cutoff": 2000,
-            "mfi": 12986,
-            "raw_code": "DQA1*01:02",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQA1",
-              "high_res": "DQA1*01:03",
-              "split": "DQA1"
-            },
-            "cutoff": 2000,
-            "mfi": 17289,
-            "raw_code": "DQA1*01:03",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DQA1",
-              "high_res": null,
-              "split": "DQA1"
-            },
-            "display_code": "DQA1",
-            "raw_code": "DQA1"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DQA1",
-            "high_res": "DQA1*01:03",
-            "split": "DQA1"
-          },
-          "cutoff": 2000,
-          "mfi": 17289,
-          "raw_code": "DQA1*01:03",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DQA3",
-              "high_res": "DQA1*03:01",
-              "split": "DQA3"
-            },
-            "display_code": "DQA1*03:01",
-            "raw_code": "DQA1*03:01"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": "DPA1*01:03",
-              "split": "DPA1"
-            },
-            "cutoff": 2000,
-            "mfi": 4181,
-            "raw_code": "DPA1*01:03",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "THEORETICAL"
-          },
-          "match_type": "THEORETICAL"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": "DPA1*01:03",
-              "split": "DPA1"
-            },
-            "cutoff": 2000,
-            "mfi": 2589,
-            "raw_code": "DPA1*01:03",
-            "second_code": {
-              "broad": "DP11",
-              "high_res": "DPB1*11:01",
-              "split": "DP11"
-            },
-            "second_raw_code": "DPB1*11:01",
-            "type": "NORMAL"
-          },
-          "match_type": "NONE"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": null,
-              "split": "DPA1"
-            },
-            "display_code": "DPA1",
-            "raw_code": "DPA1"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DPA1",
-            "high_res": "DPA1*01:03",
-            "split": "DPA1"
-          },
-          "cutoff": 2000,
-          "mfi": 4181,
-          "raw_code": "DPA1*01:03",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "THEORETICAL"
-        },
-        "match_type": "THEORETICAL"
-      }
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": "DPA1*01:03",
-              "split": "DPA1"
-            },
-            "cutoff": 2000,
-            "mfi": 4181,
-            "raw_code": "DPA1*01:03",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "THEORETICAL"
-          },
-          "match_type": "THEORETICAL"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": "DPA1*01:03",
-              "split": "DPA1"
-            },
-            "cutoff": 2000,
-            "mfi": 2589,
-            "raw_code": "DPA1*01:03",
-            "second_code": {
-              "broad": "DP11",
-              "high_res": "DPB1*11:01",
-              "split": "DP11"
-            },
-            "second_raw_code": "DPB1*11:01",
-            "type": "NORMAL"
-          },
-          "match_type": "NONE"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DPA1",
-              "high_res": null,
-              "split": "DPA1"
-            },
-            "display_code": "DPA1",
-            "raw_code": "DPA1"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DPA1",
-            "high_res": "DPA1*01:03",
-            "split": "DPA1"
-          },
-          "cutoff": 2000,
-          "mfi": 4181,
-          "raw_code": "DPA1*01:03",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "THEORETICAL"
-        },
-        "match_type": "THEORETICAL"
-      }
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DQ3",
-              "high_res": "DQB1*03:02",
-              "split": "DQ8"
-            },
-            "display_code": "DQB1*03:02",
-            "raw_code": "DQB1*03:02"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*05:01",
-              "split": "DQ5"
-            },
-            "cutoff": 2000,
-            "mfi": 17975,
-            "raw_code": "DQB1*05:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*05:02",
-              "split": "DQ5"
-            },
-            "cutoff": 2000,
-            "mfi": 8859,
-            "raw_code": "DQB1*05:02",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*06:01",
-              "split": "DQ6"
-            },
-            "cutoff": 2000,
-            "mfi": 16537,
-            "raw_code": "DQB1*06:01",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*06:02",
-              "split": "DQ6"
-            },
-            "cutoff": 2000,
-            "mfi": 12934,
-            "raw_code": "DQB1*06:02",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*06:03",
-              "split": "DQ6"
-            },
-            "cutoff": 2000,
-            "mfi": 18042,
-            "raw_code": "DQB1*06:03",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*06:04",
-              "split": "DQ6"
-            },
-            "cutoff": 2000,
-            "mfi": 11851,
-            "raw_code": "DQB1*06:04",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        },
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": "DQB1*06:09",
-              "split": "DQ6"
-            },
-            "cutoff": 2000,
-            "mfi": 17889,
-            "raw_code": "DQB1*06:09",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": null,
-              "split": "DQ5"
-            },
-            "display_code": "DQ5",
-            "raw_code": "DQ5"
-          },
-          "is_frequent": true
-        },
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DQ1",
-              "high_res": null,
-              "split": null
-            },
-            "display_code": "DQ1",
-            "raw_code": "DQ1"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DQ1",
-            "high_res": "DQB1*06:03",
-            "split": "DQ6"
-          },
-          "cutoff": 2000,
-          "mfi": 18042,
-          "raw_code": "DQB1*06:03",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DR4",
-              "high_res": "DRB1*04:02",
-              "split": "DR4"
-            },
-            "cutoff": 2000,
-            "mfi": 2381,
-            "raw_code": "DRB1*04:02",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DR4",
-              "high_res": "DRB1*04:02",
-              "split": "DR4"
-            },
-            "display_code": "DRB1*04:02",
-            "raw_code": "DRB1*04:02"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DR4",
-            "high_res": "DRB1*04:02",
-            "split": "DR4"
-          },
-          "cutoff": 2000,
-          "mfi": 2381,
-          "raw_code": "DRB1*04:02",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DR6",
-              "high_res": "DRB1*14:54",
-              "split": "DR14"
-            },
-            "display_code": "DRB1*14:54",
-            "raw_code": "DRB1*14:54"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": null
-    },
-    {
-      "antibody_matches": [
-        {
-          "hla_antibody": {
-            "code": {
-              "broad": "DR53",
-              "high_res": "DRB4*01:03",
-              "split": "DR53"
-            },
-            "cutoff": 2000,
-            "mfi": 5166,
-            "raw_code": "DRB4*01:03",
-            "second_code": null,
-            "second_raw_code": null,
-            "type": "NORMAL"
-          },
-          "match_type": "HIGH_RES"
-        }
-      ],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DR53",
-              "high_res": "DRB4*01:03",
-              "split": "DR53"
-            },
-            "display_code": "DRB4*01:03",
-            "raw_code": "DRB4*01:03"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": {
-        "hla_antibody": {
-          "code": {
-            "broad": "DR53",
-            "high_res": "DRB4*01:03",
-            "split": "DR53"
-          },
-          "cutoff": 2000,
-          "mfi": 5166,
-          "raw_code": "DRB4*01:03",
-          "second_code": null,
-          "second_raw_code": null,
-          "type": "NORMAL"
-        },
-        "match_type": "HIGH_RES"
-      }
-    },
-    {
-      "antibody_matches": [],
-      "assumed_hla_types": [
-        {
-          "hla_type": {
-            "code": {
-              "broad": "DR52",
-              "high_res": "DRB3*02:02",
-              "split": "DR52"
-            },
-            "display_code": "DRB3*02:02",
-            "raw_code": "DRB3*02:02"
-          },
-          "is_frequent": true
-        }
-      ],
-      "summary_antibody": null
-    }
-  ],
-  "parsing_issues": [
-    {
-      "hla_code_or_group": "DPA1*01:03, DPB1*11:01",
-      "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[01:03,28:01] mfi: 111, DP[01:03,23:01] mfi: 212, DP[01:03,19:01] mfi: 3226, DP[01:03,06:01] mfi: 4689, DP[01:03,04:02] mfi: 214, DP[01:03,04:01] mfi: 123, DP[01:03,03:01] mfi: 5810, DP[01:03,02:01] mfi: 161, DP[01:03,01:01] mfi: 4593. Other antibodies with beta: DP[02:02,11:01] mfi: 1993.",
-      "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
-    },
-    {
-      "hla_code_or_group": "DPA1*02:02, DPB1*13:01",
-      "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[02:02,11:01] mfi: 1993, DP[02:02,10:01] mfi: 2770, DP[02:02,05:01] mfi: 2028. Other antibodies with beta: DP[03:01,13:01] mfi: 2184, DP[02:01,13:01] mfi: 1711.",
-      "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
-    }
-  ]
+    ]
 }
