@@ -112,23 +112,36 @@ def calculate_highly_sensitized_recipients(txm_event):
 
                             if dq_dp_chain == DQDPChain.BETA_DP:
                                 hla_number = antibody.code.broad[2:]
+
                                 if len(hla_number) == 1:
                                     unacceptable_antibodies.append(('DP-0' + hla_number))
-                                else:
+                                elif len(hla_number) == 2:
                                     unacceptable_antibodies.append(('DP-' + hla_number))
+                                else:
+                                    raise AssertionError
+
+                                if unacceptable_antibodies[-1] == 'DP-02':
+                                    unacceptable_antibodies[-1] = 'DP-0201'
+                                    unacceptable_antibodies.append('DP-0202')
+
+                                if unacceptable_antibodies[-1] == 'DP-04':
+                                    unacceptable_antibodies[-1] = 'DP-0401'
+                                    unacceptable_antibodies.append('DP-0402')
 
                             elif dq_dp_chain in [DQDPChain.ALPHA_DP, DQDPChain.ALPHA_DQ]:
                                 hla_number = antibody.code.broad[2:]
                                 if len(hla_number) == 1:
                                     unacceptable_antibodies.append((dq_dp_chain + '-0' + hla_number))
-                                else:
+                                elif len(hla_number) == 2:
                                     unacceptable_antibodies.append((dq_dp_chain + '-' + hla_number))
+                                else:
+                                    raise AssertionError
 
                             else:
                                 # DQB
                                 unacceptable_antibodies.append(antibody.code.display_code)
 
-                            print(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-1]}')
+                            print(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-2:]}')
 
                         # All other loci are used with the same nomencalture we use
                         else:
@@ -165,11 +178,6 @@ def compute_report(txm_events_names):
         df.loc[len(df)] = \
             [txm_event_name, n_pairs, n_aboi_pairs, n_hlai_pairs, n_aboi_and_hlai_pairs, n_aboi_or_hlai_pairs,
              n_highly_sensitized, n_very_highly_sensitized]
-
-    # Sum over all events
-    sum_all_events = df.sum()
-    sum_all_events.txm_event_name = 'all_events'
-    df.loc[len(df)] = sum_all_events
 
     df.to_csv('aboi_hlai_vpra_report.csv', index=False)
 
