@@ -82,11 +82,8 @@ def comput_vpra(unacceptable_antibodies):
     soup = BeautifulSoup(response.content, 'lxml')
     # print(soup.find('frequency'))
     vpra = float(soup.find('frequency').get_text())
-
     # print(soup.find('matches'))
-
     # print(soup.find('panelsize'))
-
     # print(soup.find('errormessage'))
 
     return vpra
@@ -150,7 +147,6 @@ def calculate_highly_sensitized_recipients(txm_event):
             # print(f'{recipient.medical_id=}')
             # print(f'{unacceptable_antibodies=}')
             vpras.append(comput_vpra(unacceptable_antibodies))
-            # print()
 
     n_highly_sensitized = (np.array(vpras) > HIGHLY_SENSITIZED_TH).sum()
     n_very_highly_sensitized = (np.array(vpras) > VERY_HIGHLY_SENSITIZED_TH).sum()
@@ -203,8 +199,6 @@ if __name__ == '__main__':
                   '41-TXM-2023-04',
                   '42-TXM-2023-07']
 
-    # txm_events = ['high_res_example_data', 'mock_data_CZE_CAN_IND']
-    # txm_events = ['mock_data_CZE_CAN_IND']
     app = create_app()
     with app.app_context():
         compute_report(txm_events)
