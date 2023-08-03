@@ -26,6 +26,7 @@ class TestSwaggerEndpoints(DbTests):
             'post': {
                 f'{API_VERSION[1:]}/optimizer': [200],
                 f'{API_VERSION[1:]}/{CROSSMATCH_NAMESPACE}/do-crossmatch': [200],
+                f'{API_VERSION[1:]}/{CROSSMATCH_NAMESPACE}/calculate-cpra': [200]
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403]

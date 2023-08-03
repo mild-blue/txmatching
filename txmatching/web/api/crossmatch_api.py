@@ -3,10 +3,13 @@ from typing import List, Tuple, Union
 
 from flask_restx import Resource
 
+from txmatching.patients.hla_functions import get_unacceptable_antibodies, compute_cpra
+
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (CrossmatchDTOIn, CrossmatchDTOOut)
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (CrossmatchDTOIn, CrossmatchDTOOut,
+                                                                        CPRACalculationDTOIn, CPRACalculationDTOOut)
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import (
-    CrossmatchJsonIn, CrossmatchJsonOut)
+    CrossmatchJsonIn, CrossmatchJsonOut, CalculateCPRAJsonIn, CalculateCPRAJsonOut)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
@@ -94,6 +97,29 @@ class DoCrossmatch(Resource):
             is_positive_crossmatch=any((hla_to_antibody.is_positive_crossmatch
                                         for hla_to_antibody in antibody_matches_for_hla_type))
         ))
+
+
+@crossmatch_api.route('/calculate-cpra', methods=['POST'])
+class CalculateCPRA(Resource):
+    @crossmatch_api.doc(security='bearer',
+                        description='Calculate CPRA for recipient with http://ETRL.ORG/')
+    @crossmatch_api.request_body(CalculateCPRAJsonIn)
+    @crossmatch_api.response_ok(CalculateCPRAJsonOut)
+    @crossmatch_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
+    def post(self):
+        cpra_calculation_dto = request_body(CPRACalculationDTOIn)
+
+        # parse antibodies
+        antibodies_raw_list = [create_antibody(antibody.name,
+                                               antibody.mfi,
+                                               antibody.cutoff)
+                               for antibody in cpra_calculation_dto.hla_antibodies]
+        parsed_antibodies, parsing_issues = _get_hla_antibodies_and_parsing_issues(antibodies_raw_list)
+
+        unacceptable_antibodies = get_unacceptable_antibodies(parsed_antibodies)
+
+        return response_ok(CPRACalculationDTOOut(
+            parsed_antibodies, parsing_issues, compute_cpra(unacceptable_antibodies)))
 
 
 def _are_all_codes_infrequent(hla_type_list: Union[List[HLATypeWithFrequencyRaw], List[HLATypeWithFrequency]]) -> bool:

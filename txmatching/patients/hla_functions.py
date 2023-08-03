@@ -1,17 +1,25 @@
 import itertools
 import logging
 import re
+import os
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
+import requests
+
+from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
+
+from txmatching.auth.exceptions import ETRLRequestException, ETRLErrorResponse
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
-                                           HLAAntibodyType, HLAPerGroup,
-                                           HLAType)
+                                           HLAPerGroup, HLAType)
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.utils.enums import HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup, HLAAntibodyType, \
+    DQDPChain
+from txmatching.utils.hla_system.compatibility_index import _which_dq_dp_chain
 from txmatching.utils.hla_system.hla_transformations.mfi_functions import (
     create_mfi_dictionary, get_average_mfi,
     get_mfi_from_multiple_hla_codes_single_chain, get_negative_average_mfi,
@@ -376,6 +384,107 @@ def analyze_if_high_res_antibodies_are_type_a(
         return HighResAntibodiesAnalysis(False,
                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
     return HighResAntibodiesAnalysis(True, None)
+
+
+# pylint: disable=line-too-long
+def compute_cpra(unacceptable_antibodies):  # CPRA = VPRA
+    etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
+    if not etrl_login or not etrl_password:
+        raise ValueError("http://ETRL.ORG/ login or password not found. "
+                         "Fill the ETRL_LOGIN and the ETRL_PASSWORD into .env file.")
+
+    url = 'https://www.etrl.org/calculator4.0/calculator4.0.asmx'
+    headers = {'content-type': 'text/xml'}
+    body = \
+        f"""<?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <VirtualPRA xmlns="http://ETRL.ORG/">
+                        <sUserName>{etrl_login}</sUserName>
+                        <sPassWord>{etrl_password}</sPassWord>
+                        <sUnacceptables>{', '.join(unacceptable_antibodies)}</sUnacceptables>
+                    </VirtualPRA>
+                </soap:Body>
+            </soap:Envelope>
+            """
+
+    try:
+        response = requests.post(url, data=body, headers=headers, timeout=15)
+        response.raise_for_status()
+    except RequestException as ex:
+        raise ETRLRequestException(str(ex)) from ex
+
+    soup = BeautifulSoup(response.content, 'xml')
+
+    error_msg = soup.find('ErrorMessage').get_text()
+    if error_msg:
+        raise ETRLErrorResponse(error_msg)
+
+    cpra = float(soup.find('Frequency').get_text())
+    # print(soup.find('matches'))
+    # print(soup.find('panelsize'))
+
+    return cpra
+
+
+def get_unacceptable_antibodies(hla_antibodies):
+    """
+    We define an unacceptable antigen as a donor antigen that is considered an absolute
+    contraindication for transplantation to a particular patient.
+    Such an antigen constitutes a level of immunological risk considered to be appreciably
+    greater than the potential benefit to be derived from the transplant.
+
+    source: https://journals.lww.com/co-transplantation/Fulltext/2008/08000/Defining_unacceptable_HLA_antigens.14.aspx
+    """
+    unacceptable_antibodies = []
+    for antibodies_group in hla_antibodies.hla_antibodies_per_groups:
+        for antibody in antibodies_group.hla_antibody_list:
+            if antibody.type != HLAAntibodyType.NORMAL or \
+                    antibody.second_code is not None or \
+                    antibody.mfi <= antibody.cutoff:
+                # antibody isn't unacceptable
+                continue
+
+            if antibodies_group.hla_group not in [HLAGroup.DP, HLAGroup.DQ] or \
+                    antibody.code.is_in_high_res():
+                # used with the same nomenclature we use
+                unacceptable_antibodies.append(antibody.code.display_code)
+            else:
+                # solve different nomenclature of DPA, DPB, DQA, DQB
+                dq_dp_chain = _which_dq_dp_chain(antibody)
+
+                if dq_dp_chain == DQDPChain.BETA_DP:
+                    hla_number = antibody.code.broad[2:]
+
+                    if len(hla_number) == 1:
+                        unacceptable_antibodies.append(('DP-0' + hla_number))
+                    elif len(hla_number) == 2:
+                        unacceptable_antibodies.append(('DP-' + hla_number))
+                    else:
+                        raise AssertionError
+
+                    if unacceptable_antibodies[-1] == 'DP-02':
+                        unacceptable_antibodies[-1] = 'DP-0201'
+                        unacceptable_antibodies.append('DP-0202')
+
+                    if unacceptable_antibodies[-1] == 'DP-04':
+                        unacceptable_antibodies[-1] = 'DP-0401'
+                        unacceptable_antibodies.append('DP-0402')
+                elif dq_dp_chain in [DQDPChain.ALPHA_DP, DQDPChain.ALPHA_DQ]:
+                    hla_number = antibody.code.broad[2:]
+                    if len(hla_number) == 1:
+                        unacceptable_antibodies.append((dq_dp_chain + '-0' + hla_number))
+                    elif len(hla_number) == 2:
+                        unacceptable_antibodies.append((dq_dp_chain + '-' + hla_number))
+                    else:
+                        raise AssertionError
+                else:
+                    # DQB
+                    unacceptable_antibodies.append(antibody.code.display_code)
+
+                logger.debug(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-2:]}')
+
+    return unacceptable_antibodies
 
 
 def _create_alpha_chain_antibody(double_antibody: HLAAntibody,
