@@ -125,6 +125,75 @@ definitions:
         - AB
         - '0'
         type: string
+    CalculateCPRAInput:
+        properties:
+            hla_antibodies:
+                description: Detected HLA antibodies of the patient.
+                example: &id001
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: A1
+                -   cutoff: 2000
+                    mfi: 1400
+                    name: A32
+                -   cutoff: 2000
+                    mfi: 2000
+                    name: B7
+                -   cutoff: 2000
+                    mfi: 1000
+                    name: B51
+                -   cutoff: 2000
+                    mfi: 1400
+                    name: DR11
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: DR15
+                -   cutoff: 2000
+                    mfi: 2010
+                    name: A*02:03
+                -   cutoff: 2000
+                    mfi: 1500
+                    name: A*11:01:35
+                -   cutoff: 2000
+                    mfi: 1000
+                    name: DRB4*01:01
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: DP[02:01,02:01]
+                -   cutoff: 2000
+                    mfi: 2500
+                    name: DQ[02:01,02:01]
+                items:
+                    $ref: '#/definitions/HLAAntibodyIn'
+                type: array
+        required:
+        - hla_antibodies
+        type: object
+    CalculateCPRAOutput:
+        properties:
+            cpra:
+                type: number
+            parsed_antibodies:
+                $ref: '#/definitions/HlaAntibodies'
+            parsing_issues:
+                example: &id002
+                -   hla_code_or_group: A*01:06
+                    message: The information about the serological equivalent of the
+                        allele is only assumed in our datasource so the conversion
+                        is not 100% reliable. Please check that the conversion is
+                        correct.
+                    parsing_issue_detail: The information about the serological equivalent
+                        of the allele is only assumed in our datasource so the conversion
+                        is not 100% reliable. Please check that the conversion is
+                        correct.
+                items:
+                    $ref: '#/definitions/ParsingIssueBase'
+                type: array
+        required:
+        - cpra
+        - parsed_antibodies
+        - parsing_issues
+        type: object
     CalculatedMatchings:
         properties:
             calculated_matchings:
@@ -623,40 +692,7 @@ definitions:
                     if available. If high resolution is provided it is assumed that
                     all tested antibodies were provided. If not it is assumed that
                     either all or just positive ones were.
-                example:
-                -   cutoff: 2000
-                    mfi: 3000
-                    name: A1
-                -   cutoff: 2000
-                    mfi: 1400
-                    name: A32
-                -   cutoff: 2000
-                    mfi: 2000
-                    name: B7
-                -   cutoff: 2000
-                    mfi: 1000
-                    name: B51
-                -   cutoff: 2000
-                    mfi: 1400
-                    name: DR11
-                -   cutoff: 2000
-                    mfi: 3000
-                    name: DR15
-                -   cutoff: 2000
-                    mfi: 2010
-                    name: A*02:03
-                -   cutoff: 2000
-                    mfi: 1500
-                    name: A*11:01:35
-                -   cutoff: 2000
-                    mfi: 1000
-                    name: DRB4*01:01
-                -   cutoff: 2000
-                    mfi: 3000
-                    name: DP[02:01,02:01]
-                -   cutoff: 2000
-                    mfi: 2500
-                    name: DQ[02:01,02:01]
+                example: *id001
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
@@ -970,16 +1006,7 @@ definitions:
             is_positive_crossmatch:
                 type: boolean
             parsing_issues:
-                example:
-                -   hla_code_or_group: A*01:06
-                    message: The information about the serological equivalent of the
-                        allele is only assumed in our datasource so the conversion
-                        is not 100% reliable. Please check that the conversion is
-                        correct.
-                    parsing_issue_detail: The information about the serological equivalent
-                        of the allele is only assumed in our datasource so the conversion
-                        is not 100% reliable. Please check that the conversion is
-                        correct.
+                example: *id002
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
@@ -1093,10 +1120,10 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id017
+                example: &id019
                 -   antibody_matches:
                     -   hla_antibody:
-                            code: &id002
+                            code: &id004
                                 broad: A9
                                 high_res: null
                                 split: null
@@ -1106,7 +1133,7 @@ definitions:
                             type: NORMAL
                         match_type: NONE
                     -   hla_antibody:
-                            code: &id001
+                            code: &id003
                                 broad: A1
                                 high_res: null
                                 split: null
@@ -1124,18 +1151,18 @@ definitions:
                             raw_code: A23
                         match_type: BROAD
                     -   hla_type:
-                            code: *id001
+                            code: *id003
                             raw_code: A1
                         match_type: SPLIT
                     group_compatibility_index: 2.0
                     hla_group: A
                     recipient_matches:
                     -   hla_type:
-                            code: *id002
+                            code: *id004
                             raw_code: A9
                         match_type: BROAD
                     -   hla_type:
-                            code: *id001
+                            code: *id003
                             raw_code: A1
                         match_type: SPLIT
                 -   antibody_matches: []
@@ -1153,7 +1180,7 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
-            etag: &id004
+            etag: &id006
                 description: Number of updates of a patient
                 example: 1
                 type: integer
@@ -1188,15 +1215,15 @@ definitions:
         type: object
     DonorInput:
         properties:
-            blood_group: &id003
+            blood_group: &id005
                 $ref: '#/definitions/BloodGroupEnum'
             donor_type:
                 $ref: '#/definitions/DonorType'
-            height: &id005
+            height: &id007
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id012
+            hla_typing: &id014
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
                 - A1
@@ -1213,19 +1240,19 @@ definitions:
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id013
+            internal_medical_id: &id015
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id011
+            medical_id: &id013
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: D1037
                 type: string
-            note: &id006
+            note: &id008
                 default: ''
                 example: donor note
                 type: string
@@ -1234,13 +1261,13 @@ definitions:
                     and non-directed donors.
                 example: R1037
                 type: string
-            sex: &id007
+            sex: &id009
                 $ref: '#/definitions/SexEnum'
-            weight: &id008
+            weight: &id010
                 description: Weight of the patient in kilograms.
                 example: 78.4
                 type: number
-            year_of_birth: &id009
+            year_of_birth: &id011
                 description: Year of birth of the patient.
                 example: 1945
                 type: integer
@@ -1841,13 +1868,13 @@ definitions:
         type: object
     PatientModelToUpdate:
         properties:
-            blood_group: *id003
-            db_id: &id010
+            blood_group: *id005
+            db_id: &id012
                 description: Database id of the patient
                 example: 1
                 type: integer
-            etag: *id004
-            height: *id005
+            etag: *id006
+            height: *id007
             hla_typing:
                 allOf:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
@@ -1858,10 +1885,10 @@ definitions:
                     -   raw_code: A*01:02
                     -   raw_code: B7
                     -   raw_code: DR11
-            note: *id006
-            sex: *id007
-            weight: *id008
-            year_of_birth: *id009
+            note: *id008
+            sex: *id009
+            weight: *id010
+            year_of_birth: *id011
         required:
         - blood_group
         - db_id
@@ -1962,14 +1989,14 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            db_id: *id010
-            etag: *id004
+            db_id: *id012
+            etag: *id006
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id011
+            medical_id: *id013
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_issues:
@@ -2022,7 +2049,7 @@ definitions:
         type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id014
+            acceptable_blood_groups: &id016
                 description: Acceptable blood groups for the patient. Leave empty
                     to use compatible blood groups.
                 example:
@@ -2031,8 +2058,8 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
-            blood_group: *id003
-            height: *id005
+            blood_group: *id005
+            height: *id007
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution
                     if available. If high resolution is provided it is assumed that
@@ -2041,23 +2068,23 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id012
-            internal_medical_id: *id013
-            medical_id: *id011
-            note: *id006
-            previous_transplants: &id015
+            hla_typing: *id014
+            internal_medical_id: *id015
+            medical_id: *id013
+            note: *id008
+            previous_transplants: &id017
                 description: Number of previous kidney transplants.
                 example: 0
                 type: integer
-            sex: *id007
-            waiting_since: &id016
+            sex: *id009
+            waiting_since: &id018
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
                 format: date
                 type: string
-            weight: *id008
-            year_of_birth: *id009
+            weight: *id010
+            year_of_birth: *id011
         required:
         - blood_group
         - hla_antibodies
@@ -2068,7 +2095,7 @@ definitions:
         allOf:
         -   $ref: '#/definitions/PatientModelToUpdate'
         -   properties:
-                acceptable_blood_groups: *id014
+                acceptable_blood_groups: *id016
                 cutoff:
                     type: integer
                 hla_antibodies:
@@ -2080,7 +2107,7 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
-                previous_transplants: *id015
+                previous_transplants: *id017
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -2088,7 +2115,7 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
-                waiting_since: *id016
+                waiting_since: *id018
             type: object
     RecipientRequirements:
         properties:
@@ -2205,7 +2232,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id017
+                example: *id019
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -2491,6 +2518,42 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/crossmatch/calculate-cpra:
+        post:
+            description: Calculate CPRA for recipient with http://ETRL.ORG/
+            operationId: post_calculate_cpra
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/CalculateCPRAInput'
+            responses:
+                '200':
+                    description: Success
+                    schema:
+                        $ref: '#/definitions/CalculateCPRAOutput'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - crossmatch
     /v1/crossmatch/do-crossmatch:
         post:
             description: Perform crossmatch test between donor HLA typing and recipient
