@@ -16,7 +16,7 @@ from txmatching.auth.exceptions import (
     NonUniquePatient, NotFoundException, OverridingException,
     SolverAlreadyRunningException, TooComplicatedDataForAllSolutionsSolver,
     UnauthorizedException, UserUpdateException, WrongTokenUsedException,
-    TXMNotImplementedFeatureException)
+    TXMNotImplementedFeatureException, CPRACalculationBaseException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -217,6 +217,16 @@ def _user_auth_handlers(api: Api):
         """
         _log_warning(error)
         return {'error': 'Operational error', 'message': str(error)}, 503
+
+    @api.errorhandler(CPRACalculationBaseException)
+    @_namespace_error_response(code=500, description="Error during CPRA calculation "
+                                                     "using http://ETRL.ORG/")
+    def handle_cpra_calculation_error(error: CPRACalculationBaseException):
+        """
+        Error during CPRA calculation using http://ETRL.ORG/
+        """
+        _log_exception(error)
+        return {'error': str(error.__class__.__name__), 'message': str(error)}, 500
 
 
 def _namespace_error_response(code: int, description: str):
