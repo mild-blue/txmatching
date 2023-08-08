@@ -58,18 +58,18 @@ def calculate_n_incompatible_pairs(txm_event):
 
 
 def calculate_highly_sensitized_recipients(txm_event):
-    vpras = []
-    print('Computing vpras')
+    cpras = []
+    print('Computing cPRAs')
     for recipient in tqdm(txm_event.all_recipients):
         if recipient.db_id in txm_event.active_and_valid_recipients_dict:
             unacceptable_antibodies = get_unacceptable_antibodies(recipient.hla_antibodies)
             # print(f'{recipient.medical_id=}')
             # print(f'{unacceptable_antibodies=}')
-            vpras.append(compute_cpra(unacceptable_antibodies))  # vpra = cpra
+            cpras.append(compute_cpra(unacceptable_antibodies))
 
-    n_highly_sensitized = (np.array(vpras) > HIGHLY_SENSITIZED_TH).sum()
-    n_very_highly_sensitized = (np.array(vpras) > VERY_HIGHLY_SENSITIZED_TH).sum()
-    return n_highly_sensitized, n_very_highly_sensitized, vpras
+    n_highly_sensitized = (np.array(cpras) > HIGHLY_SENSITIZED_TH).sum()
+    n_very_highly_sensitized = (np.array(cpras) > VERY_HIGHLY_SENSITIZED_TH).sum()
+    return n_highly_sensitized, n_very_highly_sensitized, cpras
 
 
 def compute_report(txm_events_names):

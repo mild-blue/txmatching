@@ -387,7 +387,12 @@ def analyze_if_high_res_antibodies_are_type_a(
 
 
 # pylint: disable=line-too-long
-def compute_cpra(unacceptable_antibodies):  # CPRA = VPRA
+def compute_cpra(unacceptable_antibodies):
+    """
+    Compute cPRA for unacceptable antibodies with http://ETRL.ORG/.
+    We compute cPRA even if the http://ETRL.ORG/ endpoint has VPRA in it,
+    but according to the consultation with Matěj Röder, these terms are equivalent for us.
+    """
     etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
     if not etrl_login or not etrl_password:
         raise ValueError("http://ETRL.ORG/ login or password not found. "
@@ -442,7 +447,9 @@ def get_unacceptable_antibodies(hla_antibodies):
             if antibody.type != HLAAntibodyType.NORMAL or \
                     antibody.second_code is not None or \
                     antibody.mfi <= antibody.cutoff:
-                # antibody isn't unacceptable
+                # We don't accept double antibodies here, because tool http://ETRL.ORG/
+                # for CPRA (VPRA) computation doesn't support them.
+                # So we agreed with IKEM to ignore such antibodies
                 continue
 
             if antibodies_group.hla_group not in [HLAGroup.DP, HLAGroup.DQ] or \
