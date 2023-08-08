@@ -61,6 +61,9 @@ jobs:
 
       - name: Execute tests
         shell: bash -l {0}
+        env:
+          ETRL_LOGIN: ${{ secrets.ETRL_LOGIN }}
+          ETRL_PASSWORD: ${{ secrets.ETRL_PASSWORD }}
         run: |
           conda activate txmatching
           cd tests
