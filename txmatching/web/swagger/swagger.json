@@ -2,6 +2,62 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
+        "/v1/crossmatch/calculate-cpra": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/CalculateCPRAOutput"
+                        }
+                    }
+                },
+                "description": "Calculate CPRA for recipient with http://ETRL.ORG/",
+                "operationId": "post_calculate_cpra",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CalculateCPRAInput"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "crossmatch"
+                ]
+            }
+        },
         "/v1/crossmatch/do-crossmatch": {
             "post": {
                 "responses": {
@@ -2397,6 +2453,107 @@
                 "0"
             ],
             "type": "string"
+        },
+        "CalculateCPRAInput": {
+            "required": [
+                "hla_antibodies"
+            ],
+            "properties": {
+                "hla_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient.",
+                    "example": [
+                        {
+                            "name": "A1",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A32",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B7",
+                            "mfi": 2000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B51",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR11",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR15",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*02:03",
+                            "mfi": 2010,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*11:01:35",
+                            "mfi": 1500,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DRB4*01:01",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DP[02:01,02:01]",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DQ[02:01,02:01]",
+                            "mfi": 2500,
+                            "cutoff": 2000
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "CalculateCPRAOutput": {
+            "required": [
+                "cpra",
+                "parsed_antibodies",
+                "parsing_issues"
+            ],
+            "properties": {
+                "parsed_antibodies": {
+                    "$ref": "#/definitions/HlaAntibodies"
+                },
+                "parsing_issues": {
+                    "type": "array",
+                    "example": [
+                        {
+                            "hla_code_or_group": "A*01:06",
+                            "message": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct.",
+                            "parsing_issue_detail": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct."
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueBase"
+                    }
+                },
+                "cpra": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
         },
         "CalculatedMatchings": {
             "required": [

@@ -161,6 +161,24 @@ class TXMNotImplementedFeatureException(BaseTxmException):
     """
 
 
+class CPRACalculationBaseException(Exception):
+    """
+    Base class for CPRA calculation with http://ETRL.ORG/ related exceptions.
+    """
+
+
+class ETRLRequestException(CPRACalculationBaseException):
+    """
+    The request from the http://ETRL.ORG/ was not successful.
+    """
+
+
+class ETRLErrorResponse(CPRACalculationBaseException):
+    """
+    There is an error in the response from the http://ETRL.ORG/.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

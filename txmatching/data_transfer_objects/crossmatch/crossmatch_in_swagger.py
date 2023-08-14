@@ -6,7 +6,8 @@ from txmatching.data_transfer_objects.base_patient_swagger import (ANTIBODIES_SP
                                                                    HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
                                                                    HLA_TYPING_DESCRIPTION)
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
-                                                              HLACode, HLAType)
+                                                              HLACode, HLAType,
+                                                              HLAAntibodies)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
@@ -17,6 +18,8 @@ from txmatching.web.web_utils.namespaces import crossmatch_api
 HLACode = crossmatch_api.clone('HlaCode', HLACode)
 
 HLAAntibody = crossmatch_api.clone('HlaAntibody', HLAAntibody)
+
+HLAAntibodies = crossmatch_api.clone('HlaAntibodies', HLAAntibodies)
 
 AntibodyMatchJson = crossmatch_api.clone('AntibodyMatch', AntibodyMatchJson)
 
@@ -78,5 +81,27 @@ CrossmatchJsonOut = crossmatch_api.model(
                                       cls_or_instance=fields.Nested(ParsingIssueBaseJson),
                                       example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE),
         'is_positive_crossmatch': fields.Boolean(required=True)
+    }
+)
+
+CalculateCPRAJsonIn = crossmatch_api.model(
+    'CalculateCPRAInput',
+    {
+        'hla_antibodies': fields.List(required=True,
+                                      description='Detected HLA antibodies of the patient.',
+                                      cls_or_instance=fields.Nested(
+                                                HLAAntibodyJsonIn),
+                                      example=ANTIBODIES_SPECIAL_EXAMPLE)
+    }
+)
+
+CalculateCPRAJsonOut = crossmatch_api.model(
+    'CalculateCPRAOutput',
+    {
+        'parsed_antibodies': fields.Nested(required=True, model=HLAAntibodies),
+        'parsing_issues': fields.List(required=True,
+                                      cls_or_instance=fields.Nested(ParsingIssueBaseJson),
+                                      example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE),
+        'cpra': fields.Float(required=True)
     }
 )
