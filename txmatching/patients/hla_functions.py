@@ -250,10 +250,12 @@ def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
         antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
         antibody.second_code == double_antibody.second_code and not antibody == double_antibody])
 
-    detailed_message = " Other antibodies with alpha: " + alpha_chain_occurences + \
-        ". Other antibodies with beta: " + beta_chain_occurences + "."
+    detailed_message = " The antibody " + create_raw_code_for_double_antibody(double_antibody) + \
+                       " has positive mfi: " + str(double_antibody.mfi) + ". Other antibodies with alpha: " + \
+                       alpha_chain_occurences + ". Other antibodies with beta: " + beta_chain_occurences + "."
+
     return ParsingIssueBase(
-        hla_code_or_group=double_antibody.raw_code + ', ' + double_antibody.second_raw_code,
+        hla_code_or_group=create_raw_code_for_double_antibody(double_antibody),
         parsing_issue_detail=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
         message=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY.value + detailed_message
     )
