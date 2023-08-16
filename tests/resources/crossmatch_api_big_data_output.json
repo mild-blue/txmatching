@@ -36,7 +36,7 @@
             "is_positive_crossmatch": true,
             "summary": {
                 "details_and_issues": [
-                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                    "HIGH_RES_MATCH"
                 ],
                 "hla_code": {
                     "broad": "A2",
@@ -65,7 +65,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "A10",
@@ -94,7 +94,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "B35",
@@ -123,7 +123,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "B12",
@@ -152,7 +152,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "CW2",
@@ -181,7 +181,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "CW4",
@@ -210,7 +210,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DP2",
@@ -239,7 +239,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DP4",
@@ -317,7 +317,7 @@
             "is_positive_crossmatch": true,
             "summary": {
                 "details_and_issues": [
-                    "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched."
+                    "HIGH_RES_MATCH_ON_SPLIT_LEVEL"
                 ],
                 "hla_code": {
                     "broad": "DQA1",
@@ -346,7 +346,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DQA3",
@@ -412,7 +412,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There is a match with theoretical antibody."
+                    "THEORETICAL_MATCH"
                 ],
                 "hla_code": {
                     "broad": "DPA1",
@@ -478,7 +478,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There is a match with theoretical antibody."
+                    "THEORETICAL_MATCH"
                 ],
                 "hla_code": {
                     "broad": "DPA1",
@@ -507,7 +507,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DQ3",
@@ -638,10 +638,10 @@
                         "code": {
                             "broad": "DQ1",
                             "high_res": null,
-                            "split": null
+                            "split": "DQ5"
                         },
-                        "display_code": "DQ1",
-                        "raw_code": "DQ1"
+                        "display_code": "DQ5",
+                        "raw_code": "DQ5"
                     },
                     "is_frequent": true
                 },
@@ -650,10 +650,10 @@
                         "code": {
                             "broad": "DQ1",
                             "high_res": null,
-                            "split": "DQ5"
+                            "split": null
                         },
-                        "display_code": "DQ5",
-                        "raw_code": "DQ5"
+                        "display_code": "DQ1",
+                        "raw_code": "DQ1"
                     },
                     "is_frequent": true
                 }
@@ -661,7 +661,7 @@
             "is_positive_crossmatch": true,
             "summary": {
                 "details_and_issues": [
-                    "Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively crossmatched."
+                    "HIGH_RES_MATCH_ON_SPLIT_LEVEL"
                 ],
                 "hla_code": {
                     "broad": "DQ1",
@@ -707,7 +707,7 @@
             "is_positive_crossmatch": true,
             "summary": {
                 "details_and_issues": [
-                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                    "HIGH_RES_MATCH"
                 ],
                 "hla_code": {
                     "broad": "DR4",
@@ -736,7 +736,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DR6",
@@ -782,7 +782,7 @@
             "is_positive_crossmatch": true,
             "summary": {
                 "details_and_issues": [
-                    "There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair."
+                    "HIGH_RES_MATCH"
                 ],
                 "hla_code": {
                     "broad": "DR53",
@@ -811,7 +811,7 @@
             "is_positive_crossmatch": false,
             "summary": {
                 "details_and_issues": [
-                    "There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies."
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
                 ],
                 "hla_code": {
                     "broad": "DR52",
@@ -822,15 +822,16 @@
             }
         }
     ],
+    "is_positive_crossmatch": true,
     "parsing_issues": [
         {
-            "hla_code_or_group": "DPA1*02:02, DPB1*13:01",
-            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[02:02,11:01] mfi: 1993, DP[02:02,10:01] mfi: 2770, DP[02:02,05:01] mfi: 2028. Other antibodies with beta: DP[03:01,13:01] mfi: 2184, DP[02:01,13:01] mfi: 1711.",
+            "hla_code_or_group": "DP[01:03,11:01]",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. The antibody DP[01:03,11:01] has positive mfi: 2589. Other antibodies with alpha: DP[01:03,28:01] mfi: 111, DP[01:03,23:01] mfi: 212, DP[01:03,19:01] mfi: 3226, DP[01:03,06:01] mfi: 4689, DP[01:03,04:02] mfi: 214, DP[01:03,04:01] mfi: 123, DP[01:03,03:01] mfi: 5810, DP[01:03,02:01] mfi: 161, DP[01:03,01:01] mfi: 4593. Other antibodies with beta: DP[02:02,11:01] mfi: 1993.",
             "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
         },
         {
-            "hla_code_or_group": "DPA1*01:03, DPB1*11:01",
-            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. Other antibodies with alpha: DP[01:03,28:01] mfi: 111, DP[01:03,23:01] mfi: 212, DP[01:03,19:01] mfi: 3226, DP[01:03,06:01] mfi: 4689, DP[01:03,04:02] mfi: 214, DP[01:03,04:01] mfi: 123, DP[01:03,03:01] mfi: 5810, DP[01:03,02:01] mfi: 161, DP[01:03,01:01] mfi: 4593. Other antibodies with beta: DP[02:02,11:01] mfi: 1993.",
+            "hla_code_or_group": "DP[02:02,13:01]",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. The antibody DP[02:02,13:01] has positive mfi: 2295. Other antibodies with alpha: DP[02:02,11:01] mfi: 1993, DP[02:02,10:01] mfi: 2770, DP[02:02,05:01] mfi: 2028. Other antibodies with beta: DP[03:01,13:01] mfi: 2184, DP[02:01,13:01] mfi: 1711.",
             "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
         }
     ]
