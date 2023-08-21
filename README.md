@@ -64,7 +64,7 @@ cd /tmp
 Also, you may need to install `libssl1.1.1` because newer versions
 of Ubuntu (e.g. 22.04 LTS) use a newer version of libssl, which is not compatible with wkhtmltopdf.
 
-``` 
+```
 wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
 wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 sudo dpkg -i libssl-dev_1.1.1f-1ubuntu2.16_amd64.deb
@@ -82,7 +82,7 @@ sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 You need to have docker installed. And you need to have activated environment from the previous step.
 
 After that simply run `make setup-small-non-empty-db` or `make setup-non-empty-db` for larger one.
-If you want to remove the majority of patients with errors that often do not occur in real data, 
+If you want to remove the majority of patients with errors that often do not occur in real data,
 then use the script [remove_inconsistent_patients.sql](local_testing_utilities/remove_inconsistent_patients.sql)
 
 This runs postgres database in docker that has already some data inside.
@@ -161,11 +161,11 @@ We log every user action with API endpoints, but you can disable this
 in the .env file by setting `SHOW_USERS_ACTIONS` to `false` (by default is `true`).</br>
 There is an ability to activate logging for SQL queries
 (set the `LOG_QUERIES` environment variable to `true`, by default is `false`).</br>
-Please pay special attention to the confidential information of our users when 
-creating or modifying endpoints. Currently, we have some automation that 
-hides sensitive user data if an incoming argument key has the pattern 'password' 
-in its name and the corresponding value is changed to '********'. 
-This is not a perfect protection, so you may 
+Please pay special attention to the confidential information of our users when
+creating or modifying endpoints. Currently, we have some automation that
+hides sensitive user data if an incoming argument key has the pattern 'password'
+in its name and the corresponding value is changed to '********'.
+This is not a perfect protection, so you may
 [improve it](txmatching/web/web_utils/logging_config.py) if it is needed.
 #### 3. Logger configuration
 Logger configuration is located in the `logging_config.py`.
@@ -177,12 +177,12 @@ It's really useful to log this way during production,
 because we can easily filter all logs in real time.</br>
 P.S. Timezone in the logs is UTC+00:00.
 #### 4. Working with logs in production and staging.
-Thanks to storing logs in JSON format on production and staging, 
+Thanks to storing logs in JSON format on production and staging,
 you can easily work with them using [jq](https://stedolan.github.io/jq/tutorial/).
 1. Connect to the staging or production machine according to the instructions
 in [project-configuration](https://github.com/mild-blue/project-configuration).
 2. Get logs from backend docker container with jq. There are some cases, which can be useful:
-   1. Get all information 
+   1. Get all information
    ```
    docker logs be -f --tail 10 2>&1 | jq '.'
    ```

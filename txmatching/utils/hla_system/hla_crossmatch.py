@@ -6,9 +6,8 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     analyze_if_high_res_antibodies_are_type_a, is_all_antibodies_in_high_res)
-from txmatching.patients.hla_model import (HLAAntibodies,
-                                           HLAAntibody, HLAPerGroup,
-                                           HLAType, HLATyping)
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
+                                           HLAPerGroup, HLAType, HLATyping)
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel, HLAGroup)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \

@@ -1,9 +1,10 @@
 import dataclasses
 import json
-import pandas as pd
 import re
 from datetime import date
 from typing import List
+
+import pandas as pd
 
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
@@ -25,7 +26,7 @@ DEFAULT_MFI = 2000
 DEFAULT_CUTOFF = 1500
 
 ITALIAN_DATA_FOLDER = get_absolute_path('tests/resources/italian_data/')
-TXM_EVENT_NAME = "ITALIAN_DATA"
+TXM_EVENT_NAME = 'ITALIAN_DATA'
 
 
 # acceptable_blood_groups = {'0': [BloodGroup.ZERO],
@@ -77,19 +78,19 @@ def parse_italian_data() -> PatientUploadDTOIn:
 
         donors.append(
             DonorUploadDTO(
-                medical_id=str(row[0]) + "_DONOR",
+                medical_id=str(row[0]) + '_DONOR',
                 blood_group=BloodGroup(donor_blood_group),
                 hla_typing=_parse_hla(donor_antigens_str[row[0]]),
                 donor_type=DonorType.DONOR,  # todo
                 # TODO: toto treba prerobit, skaredo zatial poriesene
                 year_of_birth=date.today().year - int(row[3]),
-                related_recipient_medical_id=str(row[0]) + "_RECIPIENT"  # todo
+                related_recipient_medical_id=str(row[0]) + '_RECIPIENT'  # todo
             )
         )
         recipients.append(
             RecipientUploadDTO(
                 acceptable_blood_groups=acceptable_blood_groups,
-                medical_id=str(row[0]) + "_RECIPIENT",
+                medical_id=str(row[0]) + '_RECIPIENT',
                 blood_group=BloodGroup(recipient_blood_group),
                 hla_typing=_parse_hla(recipient_antigens_str[row[0]]),
                 # TODO: toto treba prerobit, skaredo zatial poriesene
@@ -125,15 +126,15 @@ def _parse_hla(hla_codes_str: str) -> List[str]:
                 numeric_index = index
                 break
         hla_type = code[0:numeric_index]
-        if hla_type == "CW":
-            hla_type = "C"
-        if code.endswith("00"):
+        if hla_type == 'CW':
+            hla_type = 'C'
+        if code.endswith('00'):
             code_to_return = hla_type + str(int(code[numeric_index:numeric_index+2]))
         else:
-            if hla_type == "DP" or hla_type == "DQ" or hla_type == "DR":
-                code_to_return = hla_type + "B1*" + code[numeric_index:numeric_index+2] + ":" + code[numeric_index+2:]
+            if hla_type == 'DP' or hla_type == 'DQ' or hla_type == 'DR':
+                code_to_return = hla_type + 'B1*' + code[numeric_index:numeric_index+2] + ':' + code[numeric_index+2:]
             else:
-                code_to_return = hla_type + "*" + code[numeric_index:numeric_index+2] + ":" + code[numeric_index+2:]
+                code_to_return = hla_type + '*' + code[numeric_index:numeric_index+2] + ':' + code[numeric_index+2:]
 
         hla_codes_to_return.append(code_to_return)
     return hla_codes_to_return

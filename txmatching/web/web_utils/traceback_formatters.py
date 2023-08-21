@@ -1,8 +1,7 @@
 import inspect
 import logging
-
 from dataclasses import dataclass
-from types import TracebackType, FrameType
+from types import FrameType, TracebackType
 from typing import Dict, List, Optional, Type
 
 logger = logging.getLogger(__name__)
@@ -46,9 +45,9 @@ def exc_info_to_dict(exc_info: ExceptionInfo):
             'traceback': traceback
     }
     if not tb_frames_parsing_result.have_all_frames_been_parsed:
-        exc_info_dict |= {'traceback_parsing_warning': "There are too many frames in the traceback object. "
-                                                       "You only see the first ones available. "
-                                                       "The rest are not displayed in the logs"}
+        exc_info_dict |= {'traceback_parsing_warning': 'There are too many frames in the traceback object. '
+                                                       'You only see the first ones available. '
+                                                       'The rest are not displayed in the logs'}
 
     return exc_info_dict
 

@@ -1,11 +1,11 @@
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
-    create_antibody
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_antibody, create_hla_typing)
 
 _RAW_CODES = [
     'A1',

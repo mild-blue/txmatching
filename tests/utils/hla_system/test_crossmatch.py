@@ -4,8 +4,6 @@ import unittest
 from typing import Callable, List
 
 from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
-    create_antibodies, create_antibody, create_antibody_parsed
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodyRaw
@@ -16,6 +14,9 @@ from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_antibody, create_antibody_parsed,
+    create_hla_type, create_hla_typing)
 
 logger = logging.getLogger(__name__)
 

@@ -9,15 +9,17 @@ from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.user.user_auth_check import \
     require_user_edit_config_access
-from txmatching.configuration.config_parameters import ConfigurationId, ConfigParameters
+from txmatching.configuration.config_parameters import (ConfigParameters,
+                                                        ConfigurationId)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
-    ConfigurationIdJson, ConfigIdPathParamDefinition, ConfigurationJson)
+    ConfigIdPathParamDefinition, ConfigurationIdJson, ConfigurationJson)
 from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,
                                                          SuccessDTOOut)
 from txmatching.data_transfer_objects.shared_swagger import (IdentifierJsonIn,
                                                              SuccessJsonOut)
 from txmatching.database.services.config_service import (
-    get_configuration_parameters_from_db_id_or_default, get_config_for_parameters_or_save, set_config_as_default)
+    get_config_for_parameters_or_save,
+    get_configuration_parameters_from_db_id_or_default, set_config_as_default)
 from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import configuration_api

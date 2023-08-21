@@ -9,14 +9,14 @@ from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
     AuthenticationException, CannotFindShortEnoughRoundsOrPathsInILPSolver,
-    CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
-    GuardException, InvalidArgumentException, InvalidAuthCallException,
-    InvalidEmailException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, InvalidTokenException,
-    NonUniquePatient, NotFoundException, OverridingException,
-    SolverAlreadyRunningException, TooComplicatedDataForAllSolutionsSolver,
-    UnauthorizedException, UserUpdateException, WrongTokenUsedException,
-    TXMNotImplementedFeatureException, CPRACalculationBaseException)
+    CouldNotSendOtpUsingSmsServiceException, CPRACalculationBaseException,
+    CredentialsMismatchException, GuardException, InvalidArgumentException,
+    InvalidAuthCallException, InvalidEmailException,
+    InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
+    InvalidTokenException, NonUniquePatient, NotFoundException,
+    OverridingException, SolverAlreadyRunningException,
+    TooComplicatedDataForAllSolutionsSolver, TXMNotImplementedFeatureException,
+    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -219,8 +219,8 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Operational error', 'message': str(error)}, 503
 
     @api.errorhandler(CPRACalculationBaseException)
-    @_namespace_error_response(code=500, description="Error during CPRA calculation "
-                                                     "using http://ETRL.ORG/")
+    @_namespace_error_response(code=500, description='Error during CPRA calculation '
+                                                     'using http://ETRL.ORG/')
     def handle_cpra_calculation_error(error: CPRACalculationBaseException):
         """
         Error during CPRA calculation using http://ETRL.ORG/

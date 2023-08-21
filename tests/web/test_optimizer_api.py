@@ -25,45 +25,45 @@ class TestOptimizerApi(DbTests):
     def test_optimizer_api_works(self):
         with self.app.test_client() as client:
             json_data = {
-                "compatibility_graph": [
+                'compatibility_graph': [
                     {
-                        "donor_id": 1,
-                        "recipient_id": 2,
-                        "weights": {HLA_SCORE: 17,
-                                    "donor_age_difference": 1}
+                        'donor_id': 1,
+                        'recipient_id': 2,
+                        'weights': {HLA_SCORE: 17,
+                                    'donor_age_difference': 1}
                     },
                     {
-                        "donor_id": 3,
-                        "recipient_id": 4,
-                        "weights": {HLA_SCORE: 10,
-                                    "donor_age_difference": 17}
+                        'donor_id': 3,
+                        'recipient_id': 4,
+                        'weights': {HLA_SCORE: 10,
+                                    'donor_age_difference': 17}
                     }
                 ],
-                "pairs": [
+                'pairs': [
                     {
-                        "donor_id": 1,
-                        "recipient_id": 4
+                        'donor_id': 1,
+                        'recipient_id': 4
                     },
                     {
-                        "donor_id": 2,
-                        "recipient_id": 2
+                        'donor_id': 2,
+                        'recipient_id': 2
                     },
                     {
-                        "donor_id": 3
+                        'donor_id': 3
                     }
                 ],
-                "configuration": {
-                    "limitations": {
-                        "max_cycle_length": 3,
-                        "max_chain_length": 4,
-                        "custom_algorithm_settings": {
-                            "max_number_of_iterations": 200
+                'configuration': {
+                    'limitations': {
+                        'max_cycle_length': 3,
+                        'max_chain_length': 4,
+                        'custom_algorithm_settings': {
+                            'max_number_of_iterations': 200
                         }
                     },
-                    "scoring": [
+                    'scoring': [
                         [
                             {
-                                "transplant_count": 1
+                                'transplant_count': 1
                             }
                         ],
                         [
@@ -71,7 +71,7 @@ class TestOptimizerApi(DbTests):
                                 HLA_SCORE: 3
                             },
                             {
-                                "donor_age_difference": 10
+                                'donor_age_difference': 10
                             }
                         ]
                     ]
@@ -84,7 +84,7 @@ class TestOptimizerApi(DbTests):
         self.assertEqual(1, res.json['statistics']['number_of_found_cycles_and_chains'])
         self.assertEqual(2, res.json['statistics']['number_of_found_transplants'])
 
-        total_score = sum([dic["weights"][HLA_SCORE] for dic in json_data["compatibility_graph"]])
+        total_score = sum([dic['weights'][HLA_SCORE] for dic in json_data['compatibility_graph']])
         self.assertEqual(total_score, res.json['cycles_and_chains'][0]['scores'][0])
         self.assertGreaterEqual(total_score, 0)
 
@@ -107,7 +107,7 @@ class TestOptimizerApi(DbTests):
             # compute the solution
             res = client.post(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}', headers=self.auth_headers, json=temp_res.json)
 
-        total_score = sum([dic["scores"][0] for dic in res.json["cycles_and_chains"]])
+        total_score = sum([dic['scores'][0] for dic in res.json['cycles_and_chains']])
         self.assertEqual(solutions[0].score, total_score)
         self.assertGreaterEqual(total_score, 0)
 
@@ -134,7 +134,7 @@ class TestOptimizerApi(DbTests):
             res = client.post(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}',
                               headers=self.auth_headers, json=temp_res.json)
 
-        total_score = sum([dic["scores"][0] for dic in res.json["cycles_and_chains"]])
+        total_score = sum([dic['scores'][0] for dic in res.json['cycles_and_chains']])
         self.assertEqual(solutions[0].score, total_score)
 
     def test_optimizer_export_api_works(self):
@@ -163,7 +163,7 @@ class TestOptimizerApi(DbTests):
 
 
 def _comp_graph_dataclass_list_to_dict_list(dataclass_list: List[CompatibilityGraphEntry]):
-    return [{"donor_id": entry.donor_id,
-             "recipient_id": entry.recipient_id,
-             "weights": {HLA_SCORE: entry.weights[HLA_SCORE]}}
+    return [{'donor_id': entry.donor_id,
+             'recipient_id': entry.recipient_id,
+             'weights': {HLA_SCORE: entry.weights[HLA_SCORE]}}
             for entry in dataclass_list]

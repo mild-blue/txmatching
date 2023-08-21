@@ -2,8 +2,8 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
-from txmatching.utils.enums import (HLA_GROUPS,
-                                    AntibodyMatchTypes, HLAAntibodyType, HLAGroup, MatchType)
+from txmatching.utils.enums import (HLA_GROUPS, AntibodyMatchTypes,
+                                    HLAAntibodyType, HLAGroup, MatchType)
 from txmatching.web.web_utils.namespaces import matching_api
 
 _CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}

@@ -4,9 +4,11 @@ from enum import Enum
 from typing import List, Optional
 
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody, HLATypeWithFrequency)
+from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
+                                           HLATypeWithFrequency)
 from txmatching.utils.enums import AntibodyMatchTypes
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch, AntibodyMatchForHLAGroup
+from txmatching.utils.hla_system.hla_crossmatch import (
+    AntibodyMatch, AntibodyMatchForHLAGroup)
 
 logger = logging.getLogger(__name__)
 
@@ -190,8 +192,8 @@ class AntibodyMatchForHLAType:
             matches_with_frequent_codes
         ))
         assert matches_with_frequent_codes_and_summary_type, \
-            "For now, we assume that these lists have at least one element. " \
-            "If not, then this is a logic error in the code."
+            'For now, we assume that these lists have at least one element. ' \
+            'If not, then this is a logic error in the code.'
 
         # get crossmatch type details and issues
         crossmatch_details_and_issues = self._calculate_crossmatch_details_and_issues(
@@ -251,8 +253,8 @@ class AntibodyMatchForHLAType:
                     # corresspondence.
                     crossmatch_detail_and_issues.append(CadaverousCrossmatchDetailsIssues.HIGH_RES_MATCH_ON_SPLIT_LEVEL)
             case _:
-                raise AssertionError(f"Unexpected match type: {match_type}. Such type is unknown or "
-                                     f"should not occur at this point.")
+                raise AssertionError(f'Unexpected match type: {match_type}. Such type is unknown or '
+                                     f'should not occur at this point.')
 
         # Issues
         if not len(frequent_codes) > 1 or not HLACode.are_codes_in_high_res(frequent_codes):

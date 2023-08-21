@@ -5,12 +5,16 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from txmatching.database.services.config_service import get_configuration_parameters_from_db_id_or_default
-from txmatching.database.services.txm_event_service import get_txm_event_complete, get_txm_event_db_id_by_name
+from txmatching.database.services.config_service import \
+    get_configuration_parameters_from_db_id_or_default
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_complete, get_txm_event_db_id_by_name)
+from txmatching.patients.hla_functions import (compute_cpra,
+                                               get_unacceptable_antibodies)
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.country_enum import Country
-from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch
-from txmatching.patients.hla_functions import get_unacceptable_antibodies, compute_cpra
+from txmatching.utils.hla_system.hla_crossmatch import \
+    is_positive_hla_crossmatch
 from txmatching.web import create_app
 
 HIGHLY_SENSITIZED_TH = 90.0
@@ -96,7 +100,7 @@ def compute_report(txm_events_names):
 
     df.to_csv('aboi_hlai_vpra_report.csv', index=False)
 
-    with open('vpras.csv', "w", newline="") as f:
+    with open('vpras.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(list_of_vpras)
 

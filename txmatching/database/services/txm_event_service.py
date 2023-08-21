@@ -21,9 +21,8 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     UploadedDataModel,
                                                     UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent, TxmEventBase
-from txmatching.utils.enums import StrictnessType
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import TxmEventState
+from txmatching.utils.enums import StrictnessType, TxmEventState
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)
@@ -246,4 +245,4 @@ def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOu
 
 def raise_error_if_txm_event_does_not_exist(txm_event_id: int):
     if TxmEventModel.query.get(txm_event_id) is None:
-        raise ValueError(f"Txm event with id {txm_event_id} does not exist")
+        raise ValueError(f'Txm event with id {txm_event_id} does not exist')

@@ -5,5 +5,5 @@
 
 ALTER TABLE parsing_issue ADD COLUMN confirmed_at TIMESTAMPTZ default NULL;
 ALTER TABLE parsing_issue ADD COLUMN confirmed_by BIGINT default NULL;
-ALTER TABLE parsing_issue 
+ALTER TABLE parsing_issue
     ADD CONSTRAINT fk_parsing_issue_confirmed_by FOREIGN KEY (confirmed_by) REFERENCES app_user(id) ON DELETE SET NULL;

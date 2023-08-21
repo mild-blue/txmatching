@@ -1,6 +1,7 @@
 import unittest
 
-from txmatching.web.web_utils.logging_config import _hide_sensitive_values_in_request_arguments
+from txmatching.web.web_utils.logging_config import \
+    _hide_sensitive_values_in_request_arguments
 
 
 class TestHideSensitiveValuesInRequestArguments(unittest.TestCase):

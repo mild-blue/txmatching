@@ -1,7 +1,7 @@
 import unittest
 
-from txmatching.configuration.app_configuration.application_configuration import \
-    ApplicationColourScheme, ApplicationEnvironment
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationColourScheme, ApplicationEnvironment)
 
 
 class TestEnums(unittest.TestCase):

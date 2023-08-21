@@ -1,8 +1,9 @@
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import (HLACrossmatchLevel, Scorer, Sex, Solver,
-                                    StrictnessType, TxmEventState, HLAAntibodyType)
+from txmatching.utils.enums import (HLAAntibodyType, HLACrossmatchLevel,
+                                    Scorer, Sex, Solver, StrictnessType,
+                                    TxmEventState)
 from txmatching.web.web_utils.namespaces import enums_api
 
 CountryCodeJson = enums_api.schema_model('CountryCode', {

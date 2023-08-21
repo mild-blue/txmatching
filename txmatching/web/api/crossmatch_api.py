@@ -3,25 +3,27 @@ from typing import List, Tuple, Union
 
 from flask_restx import Resource
 
-from txmatching.patients.hla_functions import get_unacceptable_antibodies, compute_cpra
-
 from txmatching.auth.exceptions import TXMNotImplementedFeatureException
-from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (CrossmatchDTOIn, CrossmatchDTOOut,
-                                                                        CPRACalculationDTOIn, CPRACalculationDTOOut)
+from txmatching.data_transfer_objects.crossmatch.crossmatch_dto import (
+    CPRACalculationDTOIn, CPRACalculationDTOOut, CrossmatchDTOIn,
+    CrossmatchDTOOut)
 from txmatching.data_transfer_objects.crossmatch.crossmatch_in_swagger import (
-    CrossmatchJsonIn, CrossmatchJsonOut, CalculateCPRAJsonIn, CalculateCPRAJsonOut)
+    CalculateCPRAJsonIn, CalculateCPRAJsonOut, CrossmatchJsonIn,
+    CrossmatchJsonOut)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
+from txmatching.patients.hla_functions import (compute_cpra,
+                                               get_unacceptable_antibodies)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATypeWithFrequency,
                                            HLATypeWithFrequencyRaw)
 from txmatching.utils.enums import HLAAntibodyType
-from txmatching.utils.hla_system.hla_cadaverous_crossmatch import AntibodyMatchForHLAType
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import \
+    AntibodyMatchForHLAType
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatchForHLAGroup,
-    get_crossmatched_antibodies_per_group)
+    AntibodyMatchForHLAGroup, get_crossmatched_antibodies_per_group)
 from txmatching.utils.hla_system.hla_preparation_utils import (
     create_antibody, create_hla_type_with_frequency, create_hla_typing)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (

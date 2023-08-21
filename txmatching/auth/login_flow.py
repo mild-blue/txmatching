@@ -5,14 +5,19 @@ from flask import request
 from txmatching.auth.auth_failed_slowdown import auth_failed_slow_down
 from txmatching.auth.crypto.jwt_crypto import encode_auth_token
 from txmatching.auth.crypto.password_crypto import password_matches_hash
-from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest, DecodedBearerToken
-from txmatching.auth.exceptions import CredentialsMismatchException, require_auth_condition
+from txmatching.auth.data_types import (BearerTokenRequest, DecodedBearerToken,
+                                        TokenType, UserRole)
+from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        require_auth_condition)
 from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth import service_login_flow
-from txmatching.auth.user.user_auth import user_login_flow, refresh_user_token, user_otp_login, generate_and_send_otp
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
-    ApplicationConfiguration
-from txmatching.database.services.app_user_management import get_app_user_by_email, get_app_user_by_id
+from txmatching.auth.user.user_auth import (generate_and_send_otp,
+                                            refresh_user_token,
+                                            user_login_flow, user_otp_login)
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationConfiguration, get_application_configuration)
+from txmatching.database.services.app_user_management import (
+    get_app_user_by_email, get_app_user_by_id)
 
 logger = logging.getLogger(__name__)
 

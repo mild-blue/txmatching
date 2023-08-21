@@ -11,7 +11,8 @@ from pathlib import Path
 
 from flask import has_request_context, request
 
-from txmatching.web.web_utils.traceback_formatters import exc_info_to_dict, ExceptionInfo
+from txmatching.web.web_utils.traceback_formatters import (ExceptionInfo,
+                                                           exc_info_to_dict)
 
 logging.getLogger('werkzeug').setLevel('WARNING')  # switch off unnecessary logs from werkzeug
 
@@ -29,12 +30,12 @@ def record_factory(*args, **kwargs):
     record.path = request.path if has_request_context() and hasattr(request, 'path') else ''
     record.status_code = request.response_status_code if has_request_context() and \
                                                     hasattr(request, 'response_status_code') else ''
-    record.user_email = request.user_email if has_request_context() and hasattr(request, "user_email") else ''
-    record.user_id = request.user_id if has_request_context() and hasattr(request, "user_id") else ''
+    record.user_email = request.user_email if has_request_context() and hasattr(request, 'user_email') else ''
+    record.user_id = request.user_id if has_request_context() and hasattr(request, 'user_id') else ''
     record.sql_queries_amount = request.sql_queries_amount if \
-        has_request_context() and hasattr(request, "sql_queries_amount") else ''
+        has_request_context() and hasattr(request, 'sql_queries_amount') else ''
     record.sql_duration = request.sql_duration if \
-        has_request_context() and hasattr(request, "sql_duration") else ''
+        has_request_context() and hasattr(request, 'sql_duration') else ''
     record.values = request.args | request.form if has_request_context() and \
                                 hasattr(request, 'args') and hasattr(request, 'form') else {}
 

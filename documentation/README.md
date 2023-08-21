@@ -196,8 +196,8 @@ details see section Configuring Cutoff).
 
 This case can handle also an antibody in the form of DP*[01:01;02:02]. It uses
 an algorithm that parses the specific antibodies against alpha and beta chains.
-After parsing, most double antibodies are decomposed into separate chains and 
-analyzed as normal single antibodies. The remaining double antibodies for a positive 
+After parsing, most double antibodies are decomposed into separate chains and
+analyzed as normal single antibodies. The remaining double antibodies for a positive
 crossmatch must have a positive crossmatch for each of their chains.
 In case there is some unclear case it raises a warning and requires an
 immunologist to check the correctness of the algorithm result.
@@ -366,15 +366,15 @@ cell surface antigens.
 
 We offer a public API for CPRA calculation using the [ETRL VPRA Calculator](https://www.etrl.org/vPRA.aspx)
 (based on consultation with IKEM, CPRA and VPRA are the same terms for us).
-The procedure is straightforward: you need to input antibodies along with their MFI values in the same format as in TXM. 
-Subsequently, we will parse the antibodies using the algorithm 
-described [below](#square-bracket-antibody-parsing-algorithm) and provide parsed antibodies along with parsing issues, 
+The procedure is straightforward: you need to input antibodies along with their MFI values in the same format as in TXM.
+Subsequently, we will parse the antibodies using the algorithm
+described [below](#square-bracket-antibody-parsing-algorithm) and provide parsed antibodies along with parsing issues,
 just as you're accustomed to.
 
-The most important aspect is that we will send to the [ETRL server](https://www.etrl.org/calculator4.0/calculator4.0.asmx) 
-parsed antibodies with MFI above the cutoff as 
-["unacceptable antibodies"](https://journals.lww.com/co-transplantation/Fulltext/2008/08000/Defining_unacceptable_HLA_antigens.14.aspx) 
-once we convert them into the [required format](https://etrl.eurotransplant.org/resources/hla-tables/) they use. 
+The most important aspect is that we will send to the [ETRL server](https://www.etrl.org/calculator4.0/calculator4.0.asmx)
+parsed antibodies with MFI above the cutoff as
+["unacceptable antibodies"](https://journals.lww.com/co-transplantation/Fulltext/2008/08000/Defining_unacceptable_HLA_antigens.14.aspx)
+once we convert them into the [required format](https://etrl.eurotransplant.org/resources/hla-tables/) they use.
 Afterward, we will show the received CPRA in the output.
 
 **It should be noted that by prior agreement with IKEM, we won't consider**:
@@ -481,14 +481,14 @@ antibodies where this chain has positive MFI), is parsed as
 ```text
 DPB1*02:02, MFI 100 (average negative MFI), cutoff 2000
 ```
-We suppose that the positive MFI is caused by the second chain, 
+We suppose that the positive MFI is caused by the second chain,
 so we do not consider this positive value for the mixed `DPB1*02:02` chain.
 
 Pay attention that a similar mixed chain, `DPB1*01:05`,
 but for the antibody `DP*[04:01;01:05]`, is not parsed through this antibody but
 through the `DP*[03:01;01:05]` antibody, as explained in the next section.
-In summary, if we encounter this positive and mixed chain case where the mixed 
-chain has several positive representations among all the antibodies, 
+In summary, if we encounter this positive and mixed chain case where the mixed
+chain has several positive representations among all the antibodies,
 we expect to parse the mixed chain through other antibodies.
 
 #### 4. Both chains are mixed
@@ -575,7 +575,7 @@ A*01:01, frequent
 ```
 because crossmatch occurs just with `A1*01:01` antibody.
 
-Further note that in the case of `B1` potential HLA type, the crossmatch did not occur with any of the antibodies, 
+Further note that in the case of `B1` potential HLA type, the crossmatch did not occur with any of the antibodies,
 so this potential HLA type transforms to the assumed HLA type with only one SPLIT:
 ```text
 B1, frequent
@@ -586,8 +586,8 @@ In the last case, with only one HLA code, `A*02:01`, in the potential HLA type, 
 ### Special crossmatch with theoretical antibodies
 
 One more distinguishing feature of this API compared to the classical TXM virtual crossmatch
-is the fact that if we have a double antibody that has both chains among the donor's antigens 
-and splits into two separate theoretical antibodies, 
+is the fact that if we have a double antibody that has both chains among the donor's antigens
+and splits into two separate theoretical antibodies,
 these theoretical antibodies have a negative crossmatch.
 
 For example, donor has such potential hla typing:
@@ -608,17 +608,17 @@ DQ[01:01,04:04], MFI 100, cutoff 2000
 
 Note that both chains of the first antibody `DQ[01:01,02:02]` in the list correspond to two
 potential HLA typing codes `DQA1*01:01`, respectively `DQB1*02:02`.
-Moreover, these antibody chains will be parsed by our algorithm 
-(which you can also read about in this document) as two separate theoretical antibodies. 
-In a normal situation with living patients, a virtual crossmatch on TXM will find a 
-positive crossmatch with these antigens, but in the case of cadaverous donors, 
+Moreover, these antibody chains will be parsed by our algorithm
+(which you can also read about in this document) as two separate theoretical antibodies.
+In a normal situation with living patients, a virtual crossmatch on TXM will find a
+positive crossmatch with these antigens, but in the case of cadaverous donors,
 we evaluate this crossmatch as **negative**.
 
 ### Crossmatch description in summary
 For each assumed hla type, we return a boolean `is_positive_crossmatch` simply saing if there are any antibodies positively
 crossmatched with it.
-The crossmatch situation is described in more detail in `summary` which contains `hla_code` (see 
-[How to choose summary HLA code?](#how-to-choose-summary-hla-code)), 'mfi' (see 
+The crossmatch situation is described in more detail in `summary` which contains `hla_code` (see
+[How to choose summary HLA code?](#how-to-choose-summary-hla-code)), 'mfi' (see
 [How to calculate summary MFI?](#how-to-calculate-summary-mfi)) and `details_and_issues` (see below).
 
 To describe the crossmatch type, instead of showing the user the crossmatch level as in txm
@@ -633,7 +633,7 @@ displayed in summary, but there are multiple positive crossmatches of HIGH RES H
 
 `HIGH_RES` match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
 some more conditions, described as case 2. and 3. in the [HIGH_RES match description](#high_res)).
-In this case we send a message saying: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type 
+In this case we send a message saying: `Recipient was not tested for donor's HIGH RES HLA type (or donor's HLA type
 is in SPLIT resolution), but all HIGH RES antibodies corresponding to the summary HLA code on SPLIT level are positively
 crossmatched.`
 
@@ -641,12 +641,12 @@ The rest of match types are described with corresponding messages in a straightf
 
 We illustrate this on some examples:
 
-1. 
+1.
 ```text
 Assumed HLA types:
     B*07:04, frequent
     B*07:05, frequent
-    
+
 Recipient's antibodies:
     B*07:04, MFI 2500, cutoff 2000
     B*07:06, MFI 2500, cutoff 2000
@@ -667,7 +667,7 @@ Recipient's antibodies:
 ```
 
 As there are multiple matches between HIGH RES hla type and HIGH RES antibody, we return message:
-`SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES 
+`SPLIT HLA code displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES
 antibody pairs.`
 
 3.
@@ -690,18 +690,18 @@ crossmatched.`
 
 ### Allele frequencies in a population
 There is one more aspect that we want to take into account:
-each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a very rare allele, 
+each allele occurs with varying frequencies. For instance, `A*01:02:03:05` is a very rare allele,
 whereas `A*01:02:01:01` is quite common, but both are shortened to the same form: `A*01:02`.
 
 Furthermore, for a brief summarization of this match, we select HLA code and MFI
 that best represents the presence or absence of a crossmatch.
 
-For summary HLA code, we consider only the the matches with frequent HLA codes (up to some edge cases described later 
-in this text). From those matches, we filter out those with highest severity (based on match type). 
+For summary HLA code, we consider only the the matches with frequent HLA codes (up to some edge cases described later
+in this text). From those matches, we filter out those with highest severity (based on match type).
 Rest of the codes are less important and not considered for the summary.
 
 #### How to calculate the most important match type?
-In the summary, we only consider the most important crossmatch level that has occurred with the assumed HLA types. 
+In the summary, we only consider the most important crossmatch level that has occurred with the assumed HLA types.
 Priority is arranged in the following way:
 
 ```text
@@ -714,14 +714,14 @@ Priority is arranged in the following way:
 7. UNDECIDABLE
 8. NONE
 ```
-For example, if some antibodies crossmatched at the `HIGH_RES` level, others at the `SPLIT` level, 
+For example, if some antibodies crossmatched at the `HIGH_RES` level, others at the `SPLIT` level,
 then for the summary we would only consider the `HIGH_RES` matches as the most important of these.
 
 #### How to choose summary HLA code?
 For summary, we would like to take into account just frequent codes among all assumed HLA types.
 When this code is the only one, then everything is quite simple, we consider this code as a summary,
-but there are situations when there are several frequent codes in the list. In this case, we will take a split of these 
-codes if it is common, if there are several such splits, then we will take the one that corresponds to the antibody 
+but there are situations when there are several frequent codes in the list. In this case, we will take a split of these
+codes if it is common, if there are several such splits, then we will take the one that corresponds to the antibody
 with the highest MFI.
 For example:
 ```text
@@ -729,7 +729,7 @@ Assumed HLA types:
     A*01:01, frequent
     A*02:01, frequent
     A*01:03, infrequent
-    
+
 Recipient's antibodies:
     A*01:01, MFI 3000, cutoff 2000
     A*02:01, MFI 4000, cutoff 2000
@@ -738,14 +738,14 @@ Recipient's antibodies:
 So the summarization code will be `A2`, because `A*02:01` has the highest MFI among frequent codes `A*01:01` and `A*02:01`.
 
 #### How to calculate summary MFI?
-Again we take into account only frequent codes among the assumed HLA types. 
-We will consider the summary MFI as the arithmetic mean MFI values above cutoff of the corresponding antibodies. 
-In case there are no MFI values above cutoff for the frequent HLA code, we use the highest MFI value among infrequent 
+Again we take into account only frequent codes among the assumed HLA types.
+We will consider the summary MFI as the arithmetic mean MFI values above cutoff of the corresponding antibodies.
+In case there are no MFI values above cutoff for the frequent HLA code, we use the highest MFI value among infrequent
 antibodies which are unlikely to crossmatch as the summary MFI. Also, we send describing issue:
-`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore, 
+`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. Therefore,
 this case requires further investigation.`
-(Do not forget that in the absolute majority of cases, the assumed HLA types list always has at least one frequent code 
-due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent 
+(Do not forget that in the absolute majority of cases, the assumed HLA types list always has at least one frequent code
+due to the fact that we convert the list of extremely rare codes to the SPLIT level. Therefore, the absence of frequent
 codes in the assumed HLA types can be only in cases when SPLIT code does not exist or is unknown to our database).
 For example,
 ```text
@@ -753,19 +753,19 @@ Assumed HLA types:
     A*01:01, frequent
     A*02:01, frequent
     A*01:03, infrequent
-    
+
 Recipient's antibodies:
     A*01:01, MFI 3000, cutoff 2000
     A*02:01, MFI 4000, cutoff 2000
     A*01:03, MFI 5000, cutoff 2000
 ```
 The summary MFI in this case will be `4000`, because we just calculated the arithmetic mean MFI values for frequent
-codes that have the summary HLA code at low res level `A*02:01`: `(4000) / 1 = 4000`. Also, we will send crossmatch issue 
+codes that have the summary HLA code at low res level `A*02:01`: `(4000) / 1 = 4000`. Also, we will send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
 #### Summary in case of no positive crossmatch
 The description above assumes that there are some antibodies crossmatched with the frequent assumed HLA types.
-It can, however, happen that there are no such antibodies (all the antibodies that supported the determination of 
+It can, however, happen that there are no such antibodies (all the antibodies that supported the determination of
 assumed hla typing have mfi values below cutoff).
 In such case, we simply look for the antibody with highest mfi value among the antibodies that match with some of the
 frequent assumed hla types and display this antibody in the summary.
@@ -788,7 +788,7 @@ Recipient's antibodies:
 ```
 This example corresponds to the last described case (with no positive crossmatch).
 The summary HLA code will be `B*07:04` with summary MFI `1500`.
-A crossmatch issue: 
+A crossmatch issue:
 `There are no frequent antibodies crossmatched against this HLA type, the HLA code in summary
 corresponds to an antibody with mfi below cutoff and is therefore not displayed in the list of matched antibodies.`
 is sent to describe this.
@@ -804,8 +804,8 @@ Recipient's antibodies:
     B*07:04, MFI 3000, cutoff 2000
 ```
 In this case, there is only a positive crossmatch for `B*07:04`, but such a match is very unlikely because
-this HLA is rare in the population, so we send crossmatch issue 
-`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur. 
+this HLA is rare in the population, so we send crossmatch issue
+`There is most likely no crossmatch, but there is a small chance that a crossmatch could occur.
 Therefore, this case requires further investigation`. Also, we send `B7` as summary code and `None` as MFI value.
 
 3. The donor has the only one SPLIT HLA code in the assumed HLA types list:
@@ -818,7 +818,7 @@ Recipient's antibodies:
     A*01:02, MFI 100, cutoff 2000
     A*01:03, MFI 5000, cutoff 2000
 ```
-So summary HLA code will be `A1` with summary MFI `= (3000 + 5000) / 2 = 4000` 
+So summary HLA code will be `A1` with summary MFI `= (3000 + 5000) / 2 = 4000`
 (antibody `A*01:02` wasn't included, because it has MFI below cutoff)
 
 4. The donor has several SPLIT HLA codes in the assumed HLA types list:
@@ -833,7 +833,7 @@ Recipient's antibodies:
     A*02:02, MFI 100, cutoff 2000
 ```
 In this case the summary HLA code is `A1`, because it has the highest MFI among antibodies (see `A*01:01, mfi 3000`).
-The MFI value `= (3000) / 1 = 3000` (antibody `A*02:01` wasn't included, because it has different SPLIT code than 
+The MFI value `= (3000) / 1 = 3000` (antibody `A*02:01` wasn't included, because it has different SPLIT code than
 summary HLA code. `A*02:02` also has MFI below cutoff, so it wasn't included too).
 
 5. The donor has several frequent HIGH RES codes that have **the same SPLIT** level in the assumed HLA types list:
@@ -865,7 +865,7 @@ Recipient's antibodies:
     B*08:02, MFI 2500, cutoff 2000
 ```
 So the summary HLA code is `B7`, because it has the highest MFI among antibodies (see `B*07:02, mfi 3000`).
-The MFI value `= (3000) / 1 = 3000` (antibody `B*08:02` wasn't included, because it has different SPLIT code than 
+The MFI value `= (3000) / 1 = 3000` (antibody `B*08:02` wasn't included, because it has different SPLIT code than
 summary HLA code. `B*08:01` also has MFI below cutoff, so it wasn't included too).
 In this case not all corresponding antibodies have MFI above cutoff (see `B*08:01`), so we show
 crossmatch issue `Antibodies against this HLA Type might not be DSA, for more see detailed section`.
@@ -885,7 +885,7 @@ Recipient's antibodies:
 The summary HLA code is still `B7` with the MFI value `= (3000) / 1 = 3000`, but we send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
-7. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list, 
+7. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list,
 and at the same time it has MFI **ABOVE** cutoff (otherwise see 0.):
 ```text
 Assumed HLA types:

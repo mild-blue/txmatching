@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.enums_swagger import HLAAntibodyTypeJson
-from txmatching.utils.enums import HLA_GROUPS, HLAGroup, HLAAntibodyType
+from txmatching.utils.enums import HLA_GROUPS, HLAAntibodyType, HLAGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [

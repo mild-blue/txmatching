@@ -3,13 +3,13 @@ from typing import List, Tuple
 from unittest import TestCase
 from unittest.mock import patch
 
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies, \
-    create_antibody
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import (
     Donor, Recipient, TxmEvent,
     calculate_cpra_and_get_compatible_donors_for_recipient)
 from txmatching.utils.enums import HLACrossmatchLevel
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_antibody, create_hla_typing)
 
 
 class TestCPRACalculation(TestCase):
