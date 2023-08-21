@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-from txmatching.utils.enums import (HLA_GROUPS_PROPERTIES, HLAGroup)
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 
 
 @dataclass

@@ -3,7 +3,6 @@ import dacite
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -16,7 +15,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, get_all_patients_persistent_hash, get_patients_persistent_hash,
+    delete_donor_recipient_pair, get_all_patients_persistent_hash,
+    get_patients_persistent_hash,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
@@ -28,6 +28,7 @@ from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex, StrictnessType, TxmEventState
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type
 from txmatching.utils.logged_user import get_current_user_id
 
 TXM_EVENT_NAME = 'test'

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-
 from typing import List
 
 from txmatching.utils.enums import HLAGroup

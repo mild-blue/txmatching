@@ -112,14 +112,14 @@ class CannotFindShortEnoughRoundsOrPathsInILPSolver(BaseTxmException):
     """
 
     default_message = """
-    There are too many possible solutions for the provided set of patients and the algorithm cannot find the optimal 
-    solution with the provided configuration. Try changing the configuration, ideally in the following order: increase 
-    the number of dynamic constraints, increase the max length of cycle/sequence, increase the max number of countries 
+    There are too many possible solutions for the provided set of patients and the algorithm cannot find the optimal
+    solution with the provided configuration. Try changing the configuration, ideally in the following order: increase
+    the number of dynamic constraints, increase the max length of cycle/sequence, increase the max number of countries
     in round.
 
     If you need help, contact administrators at info@mild.blue or +420 723 927 536.
 
-    This is happening because the algorithm is still under development. We are working intensively to ensure that this 
+    This is happening because the algorithm is still under development. We are working intensively to ensure that this
     is not necessary in the future.
     """
     def __init__(self, message: str = default_message):

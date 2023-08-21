@@ -3,7 +3,8 @@ from datetime import timedelta
 from unittest import TestCase
 from uuid import uuid4
 
-from txmatching.auth.auth_management import _get_reset_token, _verify_reset_token
+from txmatching.auth.auth_management import (_get_reset_token,
+                                             _verify_reset_token)
 from txmatching.auth.exceptions import InvalidTokenException
 
 

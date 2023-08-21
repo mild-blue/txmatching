@@ -5,9 +5,11 @@ from local_testing_utilities.generate_patients import (
     store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
-from tests.solvers.prepare_txm_event_with_many_solutions import prepare_txm_event_with_too_many_solutions
+from tests.solvers.prepare_txm_event_with_many_solutions import \
+    prepare_txm_event_with_too_many_solutions
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.auth.exceptions import CannotFindShortEnoughRoundsOrPathsInILPSolver
+from txmatching.auth.exceptions import \
+    CannotFindShortEnoughRoundsOrPathsInILPSolver
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import (

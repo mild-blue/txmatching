@@ -6,9 +6,10 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.test_utilities.type_A_antibodies import type_A_antibodies
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLATypeWithFrequencyRaw
-from txmatching.utils.hla_system.hla_cadaverous_crossmatch import CrossmatchSummary, \
-    CadaverousCrossmatchDetailsIssues
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_type_with_frequency
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import (
+    CadaverousCrossmatchDetailsIssues, CrossmatchSummary)
+from txmatching.utils.hla_system.hla_preparation_utils import \
+    create_hla_type_with_frequency
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, CROSSMATCH_NAMESPACE
@@ -1098,12 +1099,12 @@ class TestDoCrossmatchApi(DbTests):
                 details_and_issues=[CadaverousCrossmatchDetailsIssues.NEGATIVE_ANTIBODY_IN_SUMMARY]
             )
             self.assertEqual(res_summary, [asdict(expected_summary)])
-            
+
         # CASE: The recipient doesn't have any crossmatched antibodies against donor's assumed hla types (1):
         json = {
             'potential_donor_hla_typing': [[{'hla_code': 'B*07:04', 'is_frequent': True},
                                             {'hla_code': 'B*07:05', 'is_frequent': True}]],
-            'recipient_antibodies': [{'mfi': 1500, 
+            'recipient_antibodies': [{'mfi': 1500,
                                       'name': 'B*07:04',
                                       'cutoff': 2000},
                                      {'mfi': 1000,

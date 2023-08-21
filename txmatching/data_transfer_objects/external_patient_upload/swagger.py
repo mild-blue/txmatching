@@ -2,7 +2,8 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient)
-from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson, StrictnessTypeEnumJson
+from txmatching.data_transfer_objects.enums_swagger import (
+    CountryCodeJson, StrictnessTypeEnumJson)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssuePublicJson
 from txmatching.web.web_utils.namespaces import public_api

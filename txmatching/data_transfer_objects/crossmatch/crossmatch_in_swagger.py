@@ -1,18 +1,18 @@
 from flask_restx import fields
 
-from txmatching.data_transfer_objects.base_patient_swagger import (ANTIBODIES_SPECIAL_EXAMPLE,
-                                                                   ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE, HLAAntibodyJsonIn,
-                                                                   HLA_TO_ANTIBODY_EXAMPLE,
-                                                                   HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
-                                                                   HLA_TYPING_DESCRIPTION)
-from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
-                                                              HLACode, HLAType,
-                                                              HLAAntibodies)
+from txmatching.data_transfer_objects.base_patient_swagger import (
+    ANTIBODIES_SPECIAL_EXAMPLE, ANTIGENS_AS_LISTS_SPECIAL_EXAMPLE,
+    HLA_TO_ANTIBODY_EXAMPLE, HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE,
+    HLA_TYPING_DESCRIPTION, HLAAntibodyJsonIn)
+from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibodies,
+                                                              HLAAntibody,
+                                                              HLACode, HLAType)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueBaseJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     AntibodyMatchJson
-from txmatching.utils.hla_system.hla_cadaverous_crossmatch import CadaverousCrossmatchDetailsIssues
+from txmatching.utils.hla_system.hla_cadaverous_crossmatch import \
+    CadaverousCrossmatchDetailsIssues
 from txmatching.web.web_utils.namespaces import crossmatch_api
 
 HLACode = crossmatch_api.clone('HlaCode', HLACode)

@@ -6,6 +6,8 @@ export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
 export * from './assumedHLATypeGenerated';
 export * from './bloodGroupEnumGenerated';
+export * from './calculateCPRAInputGenerated';
+export * from './calculateCPRAOutputGenerated';
 export * from './calculatedMatchingsGenerated';
 export * from './compatibilityGraphEntryGenerated';
 export * from './configurationGenerated';

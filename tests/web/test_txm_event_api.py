@@ -5,7 +5,8 @@ from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmEventCopyPatientsDTOIn, TxmEventDTOIn, TxmEventUpdateDTOIn)
 from txmatching.database.db import db
-from txmatching.database.services.txm_event_service import get_txm_event_base, get_txm_event_complete
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_base, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
@@ -14,6 +15,7 @@ from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import StrictnessType, TxmEventState
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
+
 
 class TestMatchingApi(DbTests):
 

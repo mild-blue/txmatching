@@ -3,7 +3,6 @@ import logging
 from tests.patients.test_patient_parameters import (
     create_recipient_parameters_wrong, donor_parameters_Joe,
     recipient_parameters_Jack)
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.scorers.high_res_hla_additive_scorer import \
     HighResScorerCIConfiguration
@@ -12,6 +11,8 @@ from txmatching.scorers.split_hla_additive_scorer import \
 from txmatching.utils.enums import MatchType
 from txmatching.utils.hla_system.compatibility_index import (
     HLAMatch, compatibility_index, get_detailed_compatibility_index)
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_hla_type, create_hla_typing)
 
 logger = logging.getLogger(__name__)
 A_INDEX = 0
@@ -123,4 +124,3 @@ class TestCompatibilityIndex(DbTests):
     def test_compatibility_index_dqdp_highres_with_letter(self):
         hla_typing = create_hla_typing(['DPA1*01:03:01:18Q'])
         self.assertEqual(compatibility_index(hla_typing, hla_typing), 0.0)
-        

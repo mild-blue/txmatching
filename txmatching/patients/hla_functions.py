@@ -1,30 +1,29 @@
 import itertools
 import logging
-import re
 import os
+import re
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
 import requests
-
 from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
 
-from txmatching.auth.exceptions import ETRLRequestException, ETRLErrorResponse
+from txmatching.auth.exceptions import ETRLErrorResponse, ETRLRequestException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup, HLAAntibodyType, \
-    DQDPChain
+from txmatching.utils.enums import (HLA_GROUPS, HLA_GROUPS_PROPERTIES,
+                                    DQDPChain, HLAAntibodyType, HLAGroup)
 from txmatching.utils.hla_system.compatibility_index import _which_dq_dp_chain
 from txmatching.utils.hla_system.hla_transformations.mfi_functions import (
     create_mfi_dictionary, get_average_mfi,
     get_mfi_from_multiple_hla_codes_single_chain, get_negative_average_mfi,
-    get_positive_average_mfi, is_negative_mfi_present, is_only_one_positive_mfi_present,
-    is_positive_mfi_present)
+    get_positive_average_mfi, is_negative_mfi_present,
+    is_only_one_positive_mfi_present, is_positive_mfi_present)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
@@ -242,17 +241,17 @@ def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
                                                   antibody_list_double_code: List[HLAAntibody]) -> ParsingIssueBase:
     # extract other occurences of alpha chain
     alpha_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
-        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody) + ' mfi: ' + str(antibody.mfi) for antibody in antibody_list_double_code if
         antibody.code == double_antibody.code and not antibody == double_antibody])
 
     # extract other occurences of beta chain
     beta_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
-        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody) + ' mfi: ' + str(antibody.mfi) for antibody in antibody_list_double_code if
         antibody.second_code == double_antibody.second_code and not antibody == double_antibody])
 
-    detailed_message = " The antibody " + create_raw_code_for_double_antibody(double_antibody) + \
-                       " has positive mfi: " + str(double_antibody.mfi) + ". Other antibodies with alpha: " + \
-                       alpha_chain_occurences + ". Other antibodies with beta: " + beta_chain_occurences + "."
+    detailed_message = ' The antibody ' + create_raw_code_for_double_antibody(double_antibody) + \
+                       ' has positive mfi: ' + str(double_antibody.mfi) + '. Other antibodies with alpha: ' + \
+                       alpha_chain_occurences + '. Other antibodies with beta: ' + beta_chain_occurences + '.'
 
     return ParsingIssueBase(
         hla_code_or_group=create_raw_code_for_double_antibody(double_antibody),
@@ -397,8 +396,8 @@ def compute_cpra(unacceptable_antibodies):
     """
     etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
     if not etrl_login or not etrl_password:
-        raise ValueError("http://ETRL.ORG/ login or password not found. "
-                         "Fill the ETRL_LOGIN and the ETRL_PASSWORD into .env file.")
+        raise ValueError('http://ETRL.ORG/ login or password not found. '
+                         'Fill the ETRL_LOGIN and the ETRL_PASSWORD into .env file.')
 
     url = 'https://www.etrl.org/calculator4.0/calculator4.0.asmx'
     headers = {'content-type': 'text/xml'}

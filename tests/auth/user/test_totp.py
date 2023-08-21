@@ -2,7 +2,8 @@ from unittest import TestCase
 
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import InvalidAuthCallException
-from txmatching.auth.user.totp import generate_totp_seed, generate_otp_for_user, verify_otp_for_user
+from txmatching.auth.user.totp import (generate_otp_for_user,
+                                       generate_totp_seed, verify_otp_for_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 

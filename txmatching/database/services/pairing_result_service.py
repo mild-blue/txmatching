@@ -12,7 +12,8 @@ from txmatching.database.services.config_service import \
     configuration_from_config_model
 from txmatching.database.services.patient_service import \
     get_patients_persistent_hash
-from txmatching.database.services.scorer_service import compatibility_graph_to_dict
+from txmatching.database.services.scorer_service import \
+    compatibility_graph_to_dict
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \

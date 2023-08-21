@@ -37,27 +37,27 @@ OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
 PairJson = optimizer_api.model('Pair', {
     'donor_id': fields.Integer(required=True, example=1),
     'recipient_id': fields.Integer(reqired=False, example=4),
-    'category': fields.String(required=False, example="Spain")
+    'category': fields.String(required=False, example='Spain')
 })
 
 LimitationsJson = optimizer_api.model('Limitations', {
     'max_cycle_length': fields.Integer(reqired=False, example=3),
     'max_chain_length': fields.Integer(reqired=False, example=4),
-    'custom_algorithm_settings': DictItem(attribute="calling_args", example={"max_number_of_iterations": 200})
+    'custom_algorithm_settings': DictItem(attribute='calling_args', example={'max_number_of_iterations': 200})
 })
 
 OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
     'limitations': fields.Nested(LimitationsJson, reqired=False),
     'scoring': fields.List(required=False, cls_or_instance=fields.List(requred=True, cls_or_instance=DictItem(
-        attribute="calling_args")), example=[[{"transplant_count": 1}],
-                                             [{HLA_SCORE: 3}, {"donor_age_difference": 20}]])
+        attribute='calling_args')), example=[[{'transplant_count': 1}],
+                                             [{HLA_SCORE: 3}, {'donor_age_difference': 20}]])
 })
 
-CompGraphEntry = optimizer_api.model("CompatibilityGraphEntry", {
-    "donor_id": fields.Integer(required=True, example=1),
-    "recipient_id": fields.Integer(required=True, example=2),
-    "weights": DictItem(attribute="calling_args", example={HLA_SCORE: 17,
-                                                           "donor_age_difference": 1
+CompGraphEntry = optimizer_api.model('CompatibilityGraphEntry', {
+    'donor_id': fields.Integer(required=True, example=1),
+    'recipient_id': fields.Integer(required=True, example=2),
+    'weights': DictItem(attribute='calling_args', example={HLA_SCORE: 17,
+                                                           'donor_age_difference': 1
                                                            })
 })
 

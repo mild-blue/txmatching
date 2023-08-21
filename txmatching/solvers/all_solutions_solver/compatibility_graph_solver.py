@@ -6,8 +6,8 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_utils import (
     Path, PathWithScore, find_all_cycles, find_all_sequences,
-    find_paths_with_same_donors, get_donor_to_compatible_donor_graph,
-    get_compatible_donor_idxs_per_donor_idx, get_pairs_from_clique,
+    find_paths_with_same_donors, get_compatible_donor_idxs_per_donor_idx,
+    get_donor_to_compatible_donor_graph, get_pairs_from_clique,
     keep_only_highest_scoring_paths)
 from txmatching.solvers.all_solutions_solver.optimise_paths import \
     optimise_paths

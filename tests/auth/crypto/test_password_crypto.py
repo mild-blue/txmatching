@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from txmatching.auth.crypto.password_crypto import password_matches_hash, encode_password
+from txmatching.auth.crypto.password_crypto import (encode_password,
+                                                    password_matches_hash)
 
 
 class TestPasswordCrypto(TestCase):

@@ -2,7 +2,6 @@ from typing import List
 
 from tests.patients.test_patient_parameters import (jack_hla_typing,
                                                     joe_hla_typing)
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_antibodies
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
@@ -12,6 +11,8 @@ from txmatching.scorers.high_res_other_hla_types_additive_scorer import \
 from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_hla_typing)
 
 
 class TestHlaScorer(DbTests):
