@@ -15,18 +15,9 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
     WARNING_PROCESSING_RESULTS
 
 
-def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int,
-                            txm_event_id: int) -> ParsingIssue:
-    parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
-
-    if parsing_issue is None or parsing_issue.txm_event_id != txm_event_id:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event_id}')
-
-    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
-
+def confirm_a_parsing_issue(user_id: int, parsing_issue: ParsingIssueModel) -> ParsingIssue:
     if parsing_issue.confirmed_by is not None:
-        raise OverridingException(f'Parsing issue {parsing_issue_id} is aready confirmed')
+        raise OverridingException(f'Parsing issue {parsing_issue.id} is aready confirmed')
 
     parsing_issue.confirmed_by = user_id
     parsing_issue.confirmed_at = datetime.now()
@@ -35,23 +26,26 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int,
     return parsing_issue_model_to_parsing_issue(parsing_issue)
 
 
-def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> ParsingIssue:
-    parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
-
-    if parsing_issue is None or parsing_issue.txm_event_id != txm_event_id:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event_id}')
-
-    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
-
+def unconfirm_a_parsing_issue(parsing_issue: ParsingIssueModel) -> ParsingIssue:
     if parsing_issue.confirmed_by is None:
-        raise OverridingException(f'Parsing issue {parsing_issue_id} is aready confirmed')
+        raise OverridingException(f'Parsing issue {parsing_issue.id} is aready confirmed')
 
     parsing_issue.confirmed_by = None
     parsing_issue.confirmed_at = None
 
     db.session.commit()
     return parsing_issue_model_to_parsing_issue(parsing_issue)
+
+
+def get_parsing_issue_and_check_it_relates_to_txm_event(parsing_issue_id: int, txm_event_id: int) -> ParsingIssueModel:
+    parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
+    if parsing_issue is None:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found')
+    if parsing_issue.txm_event_id != txm_event_id:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue.id} not found in txm event {txm_event_id}')
+    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue.id} is not a warning')
+    return parsing_issue
 
 
 def parsing_issues_bases_to_models(
