@@ -127,6 +127,9 @@ definitions:
         type: string
     CalculateCPRAInput:
         properties:
+            datetime:
+                format: date-time
+                type: string
             hla_antibodies:
                 description: Detected HLA antibodies of the patient.
                 example: &id001
@@ -166,6 +169,10 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
+            patient_id:
+                type: string
+            sample_id:
+                type: string
         required:
         - hla_antibodies
         type: object
@@ -173,6 +180,9 @@ definitions:
         properties:
             cpra:
                 type: number
+            datetime:
+                format: date-time
+                type: string
             parsed_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             parsing_issues:
@@ -189,6 +199,10 @@ definitions:
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
+            patient_id:
+                type: string
+            sample_id:
+                type: string
         required:
         - cpra
         - parsed_antibodies
@@ -619,6 +633,13 @@ definitions:
         type: string
     CrossmatchInput:
         properties:
+            datetime:
+                format: date-time
+                type: string
+            donor_code:
+                type: string
+            donor_sample_id:
+                type: string
             potential_donor_hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
@@ -696,12 +717,23 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
+            recipient_id:
+                type: string
+            recipient_sample_id:
+                type: string
         required:
         - potential_donor_hla_typing
         - recipient_antibodies
         type: object
     CrossmatchOutput:
         properties:
+            datetime:
+                format: date-time
+                type: string
+            donor_code:
+                type: string
+            donor_sample_id:
+                type: string
             hla_to_antibody:
                 example:
                 -   antibody_matches:
@@ -1010,6 +1042,10 @@ definitions:
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
+            recipient_id:
+                type: string
+            recipient_sample_id:
+                type: string
         required:
         - hla_to_antibody
         - is_positive_crossmatch

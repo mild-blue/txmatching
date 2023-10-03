@@ -13,12 +13,22 @@ from txmatching.utils.hla_system.hla_cadaverous_crossmatch import \
 
 @dataclass
 class CrossmatchDTOIn:
+    recipient_id: str
+    recipient_sample_id: str
+    donor_code: str
+    donor_sample_id: str
+    datetime: str
     potential_donor_hla_typing: List[List[HLATypeWithFrequencyRaw]]
     recipient_antibodies: List[HLAAntibodiesUploadDTO]
 
 
 @dataclass
 class CrossmatchDTOOut:
+    recipient_id: str
+    recipient_sample_id: str
+    donor_code: str
+    donor_sample_id: str
+    datetime: str
     hla_to_antibody: List[AntibodyMatchForHLAType]
     parsing_issues: List[ParsingIssueBase]
     is_positive_crossmatch: bool
@@ -26,11 +36,17 @@ class CrossmatchDTOOut:
 
 @dataclass
 class CPRACalculationDTOIn:
+    patient_id: str
+    sample_id: str
+    datetime: str
     hla_antibodies: List[HLAAntibodiesUploadDTO]
 
 
 @dataclass
 class CPRACalculationDTOOut:
+    patient_id: str
+    sample_id: str
+    datetime: str
     parsed_antibodies: HLAAntibodies
     parsing_issues: List[ParsingIssueBase]
     cpra: float

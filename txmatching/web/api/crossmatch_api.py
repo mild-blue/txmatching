@@ -94,6 +94,11 @@ class DoCrossmatch(Resource):
             for assumed_hla_type in assumed_hla_typing]
 
         return response_ok(CrossmatchDTOOut(
+            recipient_id=crossmatch_dto.recipient_id,
+            recipient_sample_id=crossmatch_dto.recipient_sample_id,
+            donor_code=crossmatch_dto.donor_code,
+            donor_sample_id=crossmatch_dto.donor_sample_id,
+            datetime=crossmatch_dto.datetime,
             hla_to_antibody=antibody_matches_for_hla_type,
             parsing_issues=antibodies_parsing_issues + typing_parsing_issues,
             is_positive_crossmatch=any((hla_to_antibody.is_positive_crossmatch
@@ -121,7 +126,13 @@ class CalculateCPRA(Resource):
         unacceptable_antibodies = get_unacceptable_antibodies(parsed_antibodies)
 
         return response_ok(CPRACalculationDTOOut(
-            parsed_antibodies, parsing_issues, compute_cpra(unacceptable_antibodies)))
+            patient_id=cpra_calculation_dto.patient_id,
+            sample_id=cpra_calculation_dto.sample_id,
+            datetime=cpra_calculation_dto.datetime,
+            parsed_antibodies=parsed_antibodies,
+            parsing_issues=parsing_issues,
+            cpra=compute_cpra(unacceptable_antibodies)
+        ))
 
 
 def _are_all_codes_infrequent(hla_type_list: Union[List[HLATypeWithFrequencyRaw], List[HLATypeWithFrequency]]) -> bool:
