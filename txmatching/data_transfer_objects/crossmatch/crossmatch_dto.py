@@ -24,6 +24,7 @@ class CrossmatchDTOIn:
 
 @dataclass
 class CrossmatchDTOOut:
+    # pylint: disable=too-many-instance-attributes
     recipient_id: str
     recipient_sample_id: str
     donor_code: str
