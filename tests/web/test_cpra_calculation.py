@@ -86,3 +86,46 @@ class TestCalculateCPRA(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(res.json['cpra'], 0)
+
+    def test_with_integration_data(self):
+        json = {
+            'patient_id': 'DCODE',
+            'sample_id': 'D_SAMPLE_ID',
+            'datetime': '2020-8-9T20:00:00.474Z',
+            'hla_antibodies': [
+                {
+                    'name': 'A*02:03',
+                    'mfi': 2010,
+                    'cutoff': 2000
+                },
+                {
+                    'name': 'A*11:01:35',
+                    'mfi': 2500,
+                    'cutoff': 2000
+                },
+                {
+                    'name': 'DRB4*01:01',
+                    'mfi': 3000,
+                    'cutoff': 2000
+                },
+                {
+                    'name': 'DP[02:01,02:01]',
+                    'mfi': 3000,
+                    'cutoff': 2000
+                },
+                {
+                    'name': 'DQ[02:01,02:01]',
+                    'mfi': 2500,
+                    'cutoff': 2000
+                }
+            ]
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/calculate-cpra',
+                              json=json, headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertEqual(json['patient_id'], res.json['patient_id'])
+            self.assertEqual(json['sample_id'], res.json['sample_id'])
+            self.assertEqual(json['datetime'], res.json['datetime'])
