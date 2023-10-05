@@ -46,6 +46,11 @@ CrossmatchSummaryJson = crossmatch_api.model(
 CrossmatchJsonIn = crossmatch_api.model(
     'CrossmatchInput',
     {
+        'recipient_id': fields.String(required=False),
+        'recipient_sample_id': fields.String(required=False),
+        'donor_code': fields.String(required=False),
+        'donor_sample_id': fields.String(required=False),
+        'datetime': fields.DateTime(required=False),
         'potential_donor_hla_typing': fields.List(required=True,
                                                   cls_or_instance=fields.List(
                                                       required=True, cls_or_instance=fields.Nested(
@@ -74,6 +79,11 @@ AntibodyMatchForHLAType = crossmatch_api.model('AntibodyMatchForHLAType', {
 CrossmatchJsonOut = crossmatch_api.model(
     'CrossmatchOutput',
     {
+        'recipient_id': fields.String(required=False),
+        'recipient_sample_id': fields.String(required=False),
+        'donor_code': fields.String(required=False),
+        'donor_sample_id': fields.String(required=False),
+        'datetime': fields.DateTime(required=False),
         'hla_to_antibody': fields.List(required=True,
                                        cls_or_instance=fields.Nested(AntibodyMatchForHLAType),
                                        example=HLA_TO_ANTIBODY_EXAMPLE),
@@ -87,6 +97,9 @@ CrossmatchJsonOut = crossmatch_api.model(
 CalculateCPRAJsonIn = crossmatch_api.model(
     'CalculateCPRAInput',
     {
+        'patient_id': fields.String(required=False),
+        'sample_id': fields.String(required=False),
+        'datetime': fields.DateTime(required=False),
         'hla_antibodies': fields.List(required=True,
                                       description='Detected HLA antibodies of the patient.',
                                       cls_or_instance=fields.Nested(
@@ -98,6 +111,9 @@ CalculateCPRAJsonIn = crossmatch_api.model(
 CalculateCPRAJsonOut = crossmatch_api.model(
     'CalculateCPRAOutput',
     {
+        'patient_id': fields.String(required=False),
+        'sample_id': fields.String(required=False),
+        'datetime': fields.DateTime(required=False),
         'parsed_antibodies': fields.Nested(required=True, model=HLAAntibodies),
         'parsing_issues': fields.List(required=True,
                                       cls_or_instance=fields.Nested(ParsingIssueBaseJson),

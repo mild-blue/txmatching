@@ -2459,6 +2459,16 @@
                 "hla_antibodies"
             ],
             "properties": {
+                "patient_id": {
+                    "type": "string"
+                },
+                "sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "hla_antibodies": {
                     "type": "array",
                     "description": "Detected HLA antibodies of the patient.",
@@ -2533,6 +2543,16 @@
                 "parsing_issues"
             ],
             "properties": {
+                "patient_id": {
+                    "type": "string"
+                },
+                "sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "parsed_antibodies": {
                     "$ref": "#/definitions/HlaAntibodies"
                 },
@@ -3052,6 +3072,22 @@
                 "recipient_antibodies"
             ],
             "properties": {
+                "recipient_id": {
+                    "type": "string"
+                },
+                "recipient_sample_id": {
+                    "type": "string"
+                },
+                "donor_code": {
+                    "type": "string"
+                },
+                "donor_sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "potential_donor_hla_typing": {
                     "type": "array",
                     "description": "HLA typing of the patient. Use high resolution if available.",
@@ -3278,6 +3314,22 @@
                 "parsing_issues"
             ],
             "properties": {
+                "recipient_id": {
+                    "type": "string"
+                },
+                "recipient_sample_id": {
+                    "type": "string"
+                },
+                "donor_code": {
+                    "type": "string"
+                },
+                "donor_sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "hla_to_antibody": {
                     "type": "array",
                     "example": [

@@ -1212,3 +1212,33 @@ class TestDoCrossmatchApi(DbTests):
                     in zip(res.json['hla_to_antibody'], expected_json['hla_to_antibody']):
                 self.assertCountEqual(res_match_for_hla_type, expected_match_for_hla_type)
             self.assertCountEqual(res.json['parsing_issues'], expected_json['parsing_issues'])
+
+    def test_with_integration_data(self):
+        json = {
+            'recipient_id': 'RID',
+            'recipient_sample_id': 'R_SAMPLE_ID',
+            'donor_code': 'DCODE',
+            'donor_sample_id': 'D_SAMPLE_ID',
+            'datetime': '2020-8-9T20:00:00.474Z',
+            'potential_donor_hla_typing': [[{'hla_code': 'A*02:02', 'is_frequent': True}],
+                                           [{'hla_code': 'A*01:01', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 2350,
+                                      'name': 'A*02:02',
+                                      'cutoff': 1000
+                                      },
+                                     {'mfi': 500,
+                                      'name': 'A*01:01',
+                                      'cutoff': 1000
+                                      }],
+        }
+
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            self.assertEqual(json['recipient_id'], res.json['recipient_id'])
+            self.assertEqual(json['recipient_sample_id'], res.json['recipient_sample_id'])
+            self.assertEqual(json['donor_code'], res.json['donor_code'])
+            self.assertEqual(json['donor_sample_id'], res.json['donor_sample_id'])
+            self.assertEqual(json['datetime'], res.json['datetime'])
