@@ -395,7 +395,7 @@ def compute_cpra(unacceptable_antibodies: List[HLAAntibodyForCPRA]) -> float:
     We compute cPRA even if the http://ETRL.ORG/ endpoint has VPRA in it,
     but according to the consultation with Matěj Röder, these terms are equivalent for us.
     """
-    hla_codes_raw_for_cpra_calculation = [antibody_for_cpra.code_sent_to_calculator for antibody_for_cpra in unacceptable_antibodies]
+    hla_raw_codes_for_cpra_calculation = [antibody_for_cpra.code_sent_to_calculator for antibody_for_cpra in unacceptable_antibodies]
     etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
     if not etrl_login or not etrl_password:
         raise ValueError('http://ETRL.ORG/ login or password not found. '
@@ -410,7 +410,7 @@ def compute_cpra(unacceptable_antibodies: List[HLAAntibodyForCPRA]) -> float:
                     <VirtualPRA xmlns="http://ETRL.ORG/">
                         <sUserName>{etrl_login}</sUserName>
                         <sPassWord>{etrl_password}</sPassWord>
-                        <sUnacceptables>{', '.join(hla_codes_raw_for_cpra_calculation)}</sUnacceptables>
+                        <sUnacceptables>{', '.join(hla_raw_codes_for_cpra_calculation)}</sUnacceptables>
                     </VirtualPRA>
                 </soap:Body>
             </soap:Envelope>
