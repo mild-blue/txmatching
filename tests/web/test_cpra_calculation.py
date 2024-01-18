@@ -910,3 +910,4 @@ class TestCalculateCPRA(DbTests):
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
             self.assertEqual(res.json['cpra'], 28.5)
+            self.assertCountEqual([antibody['code_sent_to_calculator'] for antibody in res.json['unacceptable_antibodies']],['DRB1*12:02', 'DRB3*01:01'])

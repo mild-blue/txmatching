@@ -14,8 +14,13 @@ import { AntibodyMatchForHLATypeGenerated } from './antibodyMatchForHLATypeGener
 
 
 export interface CrossmatchOutputGenerated { 
+    datetime?: string;
+    donor_code?: string;
+    donor_sample_id?: string;
     hla_to_antibody: Array<AntibodyMatchForHLATypeGenerated>;
     is_positive_crossmatch: boolean;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
+    recipient_id?: string;
+    recipient_sample_id?: string;
 }
 

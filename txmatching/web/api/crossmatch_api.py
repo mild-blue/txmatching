@@ -131,7 +131,8 @@ class CalculateCPRA(Resource):
             datetime=cpra_calculation_dto.datetime,
             parsed_antibodies=parsed_antibodies,
             parsing_issues=parsing_issues,
-            cpra=compute_cpra(unacceptable_antibodies)
+            cpra=compute_cpra(unacceptable_antibodies),
+            unacceptable_antibodies=unacceptable_antibodies
         ))
 
 

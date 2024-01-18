@@ -13,7 +13,8 @@ from txmatching.auth.exceptions import ETRLErrorResponse, ETRLRequestException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
-                                           HLAPerGroup, HLAType)
+                                           HLAAntibodyForCPRA, HLAPerGroup,
+                                           HLAType)
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (HLA_GROUPS, HLA_GROUPS_PROPERTIES,
@@ -388,12 +389,13 @@ def analyze_if_high_res_antibodies_are_type_a(
 
 
 # pylint: disable=line-too-long
-def compute_cpra(unacceptable_antibodies):
+def compute_cpra(unacceptable_antibodies: List[HLAAntibodyForCPRA]) -> float:
     """
     Compute cPRA for unacceptable antibodies with http://ETRL.ORG/.
     We compute cPRA even if the http://ETRL.ORG/ endpoint has VPRA in it,
     but according to the consultation with Matěj Röder, these terms are equivalent for us.
     """
+    hla_codes_raw_for_cpra_calculation = [antibody_for_cpra.code_sent_to_calculator for antibody_for_cpra in unacceptable_antibodies]
     etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
     if not etrl_login or not etrl_password:
         raise ValueError('http://ETRL.ORG/ login or password not found. '
@@ -408,7 +410,7 @@ def compute_cpra(unacceptable_antibodies):
                     <VirtualPRA xmlns="http://ETRL.ORG/">
                         <sUserName>{etrl_login}</sUserName>
                         <sPassWord>{etrl_password}</sPassWord>
-                        <sUnacceptables>{', '.join(unacceptable_antibodies)}</sUnacceptables>
+                        <sUnacceptables>{', '.join(hla_codes_raw_for_cpra_calculation)}</sUnacceptables>
                     </VirtualPRA>
                 </soap:Body>
             </soap:Envelope>
@@ -433,7 +435,7 @@ def compute_cpra(unacceptable_antibodies):
     return cpra
 
 
-def get_unacceptable_antibodies(hla_antibodies):
+def get_unacceptable_antibodies(hla_antibodies) -> List[HLAAntibodyForCPRA]:
     """
     We define an unacceptable antigen as a donor antigen that is considered an absolute
     contraindication for transplantation to a particular patient.
@@ -443,6 +445,9 @@ def get_unacceptable_antibodies(hla_antibodies):
     source: https://journals.lww.com/co-transplantation/Fulltext/2008/08000/Defining_unacceptable_HLA_antigens.14.aspx
     """
     unacceptable_antibodies = []
+    def add_antibody(antibody_str_for_calculation: str) -> None:
+        unacceptable_antibodies.append(HLAAntibodyForCPRA(antibody,antibody_str_for_calculation))
+
     for antibodies_group in hla_antibodies.hla_antibodies_per_groups:
         for antibody in antibodies_group.hla_antibody_list:
             if antibody.type != HLAAntibodyType.NORMAL or \
@@ -456,7 +461,7 @@ def get_unacceptable_antibodies(hla_antibodies):
             if antibodies_group.hla_group not in [HLAGroup.DP, HLAGroup.DQ] or \
                     antibody.code.is_in_high_res():
                 # used with the same nomenclature we use
-                unacceptable_antibodies.append(antibody.code.display_code)
+                add_antibody(antibody.code.display_code)
             else:
                 # solve different nomenclature of DPA, DPB, DQA, DQB
                 dq_dp_chain = _which_dq_dp_chain(antibody)
@@ -465,30 +470,30 @@ def get_unacceptable_antibodies(hla_antibodies):
                     hla_number = antibody.code.broad[2:]
 
                     if len(hla_number) == 1:
-                        unacceptable_antibodies.append(('DP-0' + hla_number))
+                        add_antibody('DP-0' + hla_number)
                     elif len(hla_number) == 2:
-                        unacceptable_antibodies.append(('DP-' + hla_number))
+                        add_antibody('DP-' + hla_number)
                     else:
                         raise AssertionError
 
                     if unacceptable_antibodies[-1] == 'DP-02':
                         unacceptable_antibodies[-1] = 'DP-0201'
-                        unacceptable_antibodies.append('DP-0202')
+                        add_antibody('DP-0202')
 
                     if unacceptable_antibodies[-1] == 'DP-04':
                         unacceptable_antibodies[-1] = 'DP-0401'
-                        unacceptable_antibodies.append('DP-0402')
+                        add_antibody('DP-0402')
                 elif dq_dp_chain in [DQDPChain.ALPHA_DP, DQDPChain.ALPHA_DQ]:
                     hla_number = antibody.code.broad[2:]
                     if len(hla_number) == 1:
-                        unacceptable_antibodies.append((dq_dp_chain + '-0' + hla_number))
+                        add_antibody(dq_dp_chain + '-0' + hla_number)
                     elif len(hla_number) == 2:
-                        unacceptable_antibodies.append((dq_dp_chain + '-' + hla_number))
+                        add_antibody(dq_dp_chain + '-' + hla_number)
                     else:
                         raise AssertionError
                 else:
                     # DQB
-                    unacceptable_antibodies.append(antibody.code.display_code)
+                    add_antibody(antibody.code.display_code)
 
                 logger.debug(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-2:]}')
 

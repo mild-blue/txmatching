@@ -5,7 +5,7 @@ from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
-from txmatching.patients.hla_model import (HLAAntibodies,
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyForCPRA,
                                            HLATypeWithFrequencyRaw)
 from txmatching.utils.hla_system.hla_cadaverous_crossmatch import \
     AntibodyMatchForHLAType
@@ -51,3 +51,4 @@ class CPRACalculationDTOOut:
     parsed_antibodies: HLAAntibodies
     parsing_issues: List[ParsingIssueBase]
     cpra: float
+    unacceptable_antibodies: List[HLAAntibodyForCPRA]
