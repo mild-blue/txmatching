@@ -2540,7 +2540,8 @@
             "required": [
                 "cpra",
                 "parsed_antibodies",
-                "parsing_issues"
+                "parsing_issues",
+                "unacceptable_antibodies"
             ],
             "properties": {
                 "patient_id": {
@@ -2571,6 +2572,12 @@
                 },
                 "cpra": {
                     "type": "number"
+                },
+                "unacceptable_antibodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyForCPRAJson"
+                    }
                 }
             },
             "type": "object"
@@ -4253,6 +4260,17 @@
                 },
                 "recipient_country": {
                     "$ref": "#/definitions/CountryCode"
+                }
+            },
+            "type": "object"
+        },
+        "HLAAntibodyForCPRAJson": {
+            "properties": {
+                "hla_antibody": {
+                    "$ref": "#/definitions/HlaAntibody"
+                },
+                "code_sent_to_calculator": {
+                    "type": "string"
                 }
             },
             "type": "object"

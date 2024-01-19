@@ -9,13 +9,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { HLAAntibodyForCPRAJsonGenerated } from './hLAAntibodyForCPRAJsonGenerated';
 import { ParsingIssueBaseGenerated } from './parsingIssueBaseGenerated';
 import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 
 export interface CalculateCPRAOutputGenerated { 
     cpra: number;
+    datetime?: string;
     parsed_antibodies: HlaAntibodiesGenerated;
     parsing_issues: Array<ParsingIssueBaseGenerated>;
+    patient_id?: string;
+    sample_id?: string;
+    unacceptable_antibodies: Array<HLAAntibodyForCPRAJsonGenerated>;
 }
 

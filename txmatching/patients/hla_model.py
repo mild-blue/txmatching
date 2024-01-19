@@ -128,6 +128,10 @@ class HLAAntibody(HLABase, PersistentlyHashable):
         update_persistent_hash(hash_, self.second_raw_code)
         update_persistent_hash(hash_, self.type)
 
+@dataclass
+class HLAAntibodyForCPRA():
+    hla_antibody: HLAAntibody
+    code_sent_to_calculator: str
 
 @dataclass
 class HLAAntibodyRaw:

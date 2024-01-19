@@ -30,6 +30,7 @@ export * from './donorToRecipientGenerated';
 export * from './donorTypeGenerated';
 export * from './failResponseGenerated';
 export * from './forbiddenCountryCombinationGenerated';
+export * from './hLAAntibodyForCPRAJsonGenerated';
 export * from './hLAAntibodyInGenerated';
 export * from './hLAAntibodyTypeGenerated';
 export * from './hlaAntibodiesGenerated';

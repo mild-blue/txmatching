@@ -108,6 +108,13 @@ CalculateCPRAJsonIn = crossmatch_api.model(
     }
 )
 
+HLAAntibodyForCPRAJson = crossmatch_api.model(
+    'HLAAntibodyForCPRAJson',
+    {'hla_antibody': fields.Nested(model=HLAAntibody),
+     'code_sent_to_calculator': fields.String(required=False)
+     }
+)
+
 CalculateCPRAJsonOut = crossmatch_api.model(
     'CalculateCPRAOutput',
     {
@@ -118,6 +125,8 @@ CalculateCPRAJsonOut = crossmatch_api.model(
         'parsing_issues': fields.List(required=True,
                                       cls_or_instance=fields.Nested(ParsingIssueBaseJson),
                                       example=HLA_TO_ANTIBODY_PARSING_ISSUES_EXAMPLE),
-        'cpra': fields.Float(required=True)
+        'cpra': fields.Float(required=True),
+        'unacceptable_antibodies': fields.List(required=True,
+                                               cls_or_instance=fields.Nested(HLAAntibodyForCPRAJson))
     }
 )

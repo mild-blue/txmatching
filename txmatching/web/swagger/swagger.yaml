@@ -203,10 +203,15 @@ definitions:
                 type: string
             sample_id:
                 type: string
+            unacceptable_antibodies:
+                items:
+                    $ref: '#/definitions/HLAAntibodyForCPRAJson'
+                type: array
         required:
         - cpra
         - parsed_antibodies
         - parsing_issues
+        - unacceptable_antibodies
         type: object
     CalculatedMatchings:
         properties:
@@ -1374,6 +1379,13 @@ definitions:
         required:
         - donor_country
         - recipient_country
+        type: object
+    HLAAntibodyForCPRAJson:
+        properties:
+            code_sent_to_calculator:
+                type: string
+            hla_antibody:
+                $ref: '#/definitions/HlaAntibody'
         type: object
     HLAAntibodyIn:
         properties:

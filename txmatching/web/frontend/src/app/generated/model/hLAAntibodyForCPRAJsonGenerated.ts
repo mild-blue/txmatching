@@ -9,16 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HLAAntibodyInGenerated } from './hLAAntibodyInGenerated';
+import { HlaAntibodyGenerated } from './hlaAntibodyGenerated';
 
 
-export interface CalculateCPRAInputGenerated { 
-    datetime?: string;
-    /**
-     * Detected HLA antibodies of the patient.
-     */
-    hla_antibodies: Array<HLAAntibodyInGenerated>;
-    patient_id?: string;
-    sample_id?: string;
+export interface HLAAntibodyForCPRAJsonGenerated { 
+    code_sent_to_calculator?: string;
+    hla_antibody?: HlaAntibodyGenerated;
 }
 
