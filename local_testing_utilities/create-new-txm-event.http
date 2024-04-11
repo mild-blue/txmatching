@@ -18,23 +18,30 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": "675785"
+  "otp": "115027"
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
 ###
 
-
+# Set name of the new txm event. Where the format is Number-TXM-Year-month for example 44-TXM-2024-01
 POST {{url}}/v1/txm-event
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 
 {
-  "name": "TEST-BEL-TXM-2022-01"
+  "name": "45-TXM-2024-04"
 }
 
+
+
 > {% client.global.set("txm_event_id", response.body["id"]); %}
+
+### set permissions. You can use sql script ./scripts_to_create_new_txm_event
+
+### send it to ikem and wait till we get data from austria then use ./notebooks/export_austrian_data to process the
+### data we got into json that fits our format and then upload it via the endpoints below
 
 ###
 
