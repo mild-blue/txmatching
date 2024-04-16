@@ -95,6 +95,7 @@ codes = {
     'B*82:02': (HLACode('B*82:02', 'B82', 'B82'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'DRB1*09:02': (HLACode('DRB1*09:02', 'DR9', 'DR9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'C*07:18': (HLACode('C*07:18', 'CW7', 'CW7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C*07:02': (HLACode('C*07:02', 'CW7', 'CW7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'A*26:12': (HLACode('A*26:12', 'A26', 'A10'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'A*32:03': (HLACode('A*32:03', 'A32', 'A19'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
     'A*24:95': (HLACode('A*24:95', 'A24', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),

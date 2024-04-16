@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": "115027"
+  "otp": "747611"
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
@@ -71,3 +71,366 @@ Content-Type: application/json
 //  "donors": [],
 //  "recipients": []
 //}
+###
+
+POST {{url}}/v1/txm-event/25/patients/pairs
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "country_code": "CZE",
+  "donor": {
+    "medical_id": "SKD",
+    "blood_group": "A",
+    "hla_typing": [
+      "A*02:01",
+      "A*24:02",
+      "B*44:03",
+      "B*51:01",
+      "C*01:02",
+      "C*04:01",
+      "DRB1*04:02",
+      "DRB1*15:01",
+      "DQB1*03:02",
+      "DQB1*06:02",
+      "DQA1*01:02",
+      "DQA1*03:01",
+      "DRB4*01:03",
+      "DRB5*01:01",
+      "DPB1*02:01",
+      "DPB1*04:01",
+      "DPA1*01:03"
+    ],
+    "donor_type": "DONOR",
+    "sex": "F",
+    "year_of_birth": 1977,
+    "note": "",
+    "related_recipient_medical_id": "SKR"
+  },
+  "recipient": {
+    "acceptable_blood_groups": [
+      "A"
+    ],
+    "blood_group": "A",
+    "hla_antibodies": [
+      {
+        "name": "A*01:01",
+        "mfi": 10000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*03:01",
+        "mfi": 12000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*11:01",
+        "mfi": 10000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*11:02",
+        "mfi": 10000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*23:01",
+        "mfi": 1200,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*24:02",
+        "mfi": 5300,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*24:03",
+        "mfi": 5700,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*25:01",
+        "mfi": 3700,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*26:01",
+        "mfi": 4100,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*29:01",
+        "mfi": 3100,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*27:05",
+        "mfi": 1700,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*29:02",
+        "mfi": 3000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*30:01",
+        "mfi": 3500,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*30:02",
+        "mfi": 3000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*31:01",
+        "mfi": 3900,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*32:01",
+        "mfi": 4600,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*33:01",
+        "mfi": 2400,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*34:01",
+        "mfi": 500,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*34:02",
+        "mfi": 4000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*36:01",
+        "mfi": 6600,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*43:01",
+        "mfi": 3000,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*66:01",
+        "mfi": 2013,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*66:02",
+        "mfi": 3900,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*68:01",
+        "mfi": 1982,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*68:02",
+        "mfi": 2700,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*69:01",
+        "mfi": 1250,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*74:01",
+        "mfi": 3400,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*80:01",
+        "mfi": 8000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*13:02",
+        "mfi": 8888,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:01",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:02",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:03",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:10",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:12",
+        "mfi": 15600,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:13",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*15:16",
+        "mfi": 30,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*37:01",
+        "mfi": 3000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*44:02",
+        "mfi": 12000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*44:03",
+        "mfi": 16000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*45:01",
+        "mfi": 15000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*48:01",
+        "mfi": 1300,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*82:01",
+        "mfi": 10000,
+        "cutoff": 2000
+      },
+      {
+        "name": "B*13:01",
+        "mfi": 1732,
+        "cutoff": 2000
+      },
+      {
+        "name": "A*33:03",
+        "mfi": 3100,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[03:01,03:01]",
+        "mfi": 585,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[02:01,03:01]",
+        "mfi": 800,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[05:03,03:01]",
+        "mfi": 1330,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[05:05,03:19]",
+        "mfi": 1400,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[06:01,03:01]",
+        "mfi": 1400,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[02:01,03:02]",
+        "mfi": 922,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[03:01,03:02]",
+        "mfi": 1400,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[03:02,03:02]",
+        "mfi": 2400,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[02:01,03:03]",
+        "mfi": 1018,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[03:01,03:03]",
+        "mfi": 1040,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[03:02,03:03]",
+        "mfi": 1500,
+        "cutoff": 2000
+      },
+      {
+        "name": "DP[02:01,01:01]",
+        "mfi": 1300,
+        "cutoff": 2000
+      },
+      {
+        "name": "DP[01:03,01:01]",
+        "mfi": 100,
+        "cutoff": 2000
+      },
+      {
+        "name": "DP[02:01,13:01]",
+        "mfi": 100,
+        "cutoff": 2000
+      },
+      {
+        "name": "DQ[05:01,02:01]",
+        "mfi": 100,
+        "cutoff": 2000
+      }
+    ],
+    "hla_typing": [
+      "A*02:01",
+      "B*41:02",
+      "B*51:01",
+      "C*01:02",
+      "C*17:03",
+      "DRB1*13:01",
+      "DRB1*15:01",
+      "DQB1*06:02",
+      "DQB1*06:03",
+      "DQA1*01:02",
+      "DQA1*01:03",
+      "DRB3*02:02",
+      "DRB5*01:01",
+      "DPB1*04:01",
+      "DPB1*19:01",
+      "DPA1*01:03",
+      "DPA1*02:07"
+    ],
+    "medical_id": "SKR",
+    "sex": "F",
+    "note": "",
+    "year_of_birth": 1972
+  }
+}
