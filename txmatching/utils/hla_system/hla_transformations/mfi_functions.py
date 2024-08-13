@@ -130,7 +130,8 @@ def is_last_with_positive_mfi(raw_code: str,
     positive_mfis = [mfi for mfi in mfi_dictionary[raw_code] if mfi >= cutoff]
     positive_mfis_count = len(positive_mfis)
     assert passed_positive_count <= positive_mfis_count, \
-        f"The number of positive passes cannot exceed the total number of positive MFIs for the {raw_code}."
+        (f"The number of positive passes cannot exceed the total number of positive MFIs for the {raw_code}. "
+         f"This is an internal error that should never occur, i.e. a bug.")
     return positive_mfis_count == passed_positive_count
 
 
