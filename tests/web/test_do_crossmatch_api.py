@@ -350,6 +350,28 @@ class TestDoCrossmatchApi(DbTests):
                            'match_type': 'THEORETICAL'},
                           res.json['hla_to_antibody'][0]['antibody_matches'])
 
+        # case: double antibody is negative, because all positive representations are associated with other chains,
+        # so there is no crossmatch
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': 'DQA1*01:01', 'is_frequent': True},
+                                            {'hla_code': 'DQA1*01:02', 'is_frequent': True}],
+                                           [{'hla_code': 'DQB1*02:02', 'is_frequent': True}]],
+            'recipient_antibodies': [{'mfi': 100, 'name': 'DQ[01:01, 02:02]', 'cutoff': 2000},
+                                     {'mfi': 3000, 'name': 'DQ[01:01, 03:04]', 'cutoff': 2000},
+                                     {'mfi': 4000, 'name': 'DQ[01:01, 02:33]', 'cutoff': 2000},
+                                     {'mfi': 200, 'name': 'DQ[01:01, 04:04]', 'cutoff': 2000}]
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            expected_summary = {'hla_code': {'broad': 'DQA1',
+                                             'high_res': None,
+                                             'split': 'DQA1'},
+                                'mfi': 150,
+                                'details_and_issues': ['NEGATIVE_ANTIBODY_IN_SUMMARY']}
+            self.assertEqual(expected_summary, res.json['hla_to_antibody'][0]['summary'])
+
         # ULTRA HIGH RES
         json = {
             'potential_donor_hla_typing': [[{'hla_code': 'DQA1*01:01:02:01', 'is_frequent': True}],

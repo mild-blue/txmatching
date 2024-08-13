@@ -2,6 +2,7 @@ import itertools
 import logging
 import os
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
@@ -24,7 +25,7 @@ from txmatching.utils.hla_system.hla_transformations.mfi_functions import (
     create_mfi_dictionary, get_average_mfi,
     get_mfi_from_multiple_hla_codes_single_chain, get_negative_average_mfi,
     get_positive_average_mfi, is_negative_mfi_present,
-    is_only_one_positive_mfi_present, is_positive_mfi_present)
+    is_last_with_positive_mfi, is_positive_mfi_present)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
@@ -158,6 +159,7 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                                single_antibodies_joined: List[HLAAntibody]) -> \
         Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
     mfi_dictionary = create_mfi_dictionary(antibody_list_double_code)
+    passed_positive_counts: Dict[str, int] = defaultdict(int)
 
     parsing_issues = []
     hla_antibodies_joined = single_antibodies_joined.copy()
@@ -177,6 +179,8 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
             hla_antibodies_joined.extend(_parse_double_antibody_mfi_under_cutoff(
                 double_antibody, parsed_hla_codes, mfi_dictionary))
         else:
+            passed_positive_counts[double_antibody.raw_code] += 1
+            passed_positive_counts[double_antibody.second_raw_code] += 1
             alpha_chain_only_positive = not is_negative_mfi_present(
                 double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff)
             beta_chain_only_positive = not is_negative_mfi_present(
@@ -191,20 +195,24 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                 if alpha_chain_only_positive:
                     _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                   parsed_hla_codes, get_average_mfi, mfi_dictionary)
-                    # if only one is positive it is expected that the positivity is caused by the other chain,
-                    # thus it does not contribute to the average mfi
-                    if is_only_one_positive_mfi_present(double_antibody.second_raw_code, mfi_dictionary,
-                                                        double_antibody.cutoff):
+                    if is_last_with_positive_mfi(double_antibody.second_raw_code, mfi_dictionary,
+                                                 passed_positive_counts[double_antibody.second_raw_code],
+                                                 double_antibody.cutoff):
+                        # If this is the last positive, and we did not parse, then the positivity
+                        # is associated with other chains of these antibodies.
+                        # Therefore, we will add it as a negative with the mean of negative MFIs.
                         _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                      parsed_hla_codes, get_negative_average_mfi, mfi_dictionary)
 
                 if beta_chain_only_positive:
                     _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                  parsed_hla_codes, get_average_mfi, mfi_dictionary)
-                    # if only one is positive it is expected that the positivity is caused by the other chain,
-                    # thus it does not contribute to the average mfi
-                    if is_only_one_positive_mfi_present(double_antibody.raw_code, mfi_dictionary,
-                                                        double_antibody.cutoff):
+                    if is_last_with_positive_mfi(double_antibody.raw_code, mfi_dictionary,
+                                                 passed_positive_counts[double_antibody.raw_code],
+                                                 double_antibody.cutoff):
+                        # If this is the last positive, and we did not parse, then the positivity
+                        # is associated with other chains of these antibodies.
+                        # Therefore, we will add it as a negative with the mean of negative MFIs.
                         _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                       parsed_hla_codes, get_negative_average_mfi, mfi_dictionary)
 

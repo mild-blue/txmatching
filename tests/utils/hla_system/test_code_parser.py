@@ -297,7 +297,6 @@ class TestCodeParser(DbTests):
         antibodies_raw = [
             create_antibody('DP[01:03,01:01]', 1900, 2000),
             create_antibody('DP[01:03,02:01],', 2100, 2000),
-
         ]
         issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
 
@@ -308,11 +307,11 @@ class TestCodeParser(DbTests):
         ]
         self.assertCountEqual(expected_antibodies_in_group, antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
 
-        # case: only positive + mixed for DPB1*01:05 with several positive representations
+        # case: only positive + mixed for DPB1*01:01 with several positive representations
         antibodies_raw = [
-            create_antibody('DP[04:01,01:05]', 3000, 2000),
-            create_antibody('DP[03:01,01:05]', 2500, 2000),
-            create_antibody('DP[01:01,01:05]', 200, 2000)
+            create_antibody('DP[04:01,01:01]', 3000, 2000),
+            create_antibody('DP[03:01,01:01]', 2500, 2000),
+            create_antibody('DP[01:01,01:01]', 200, 2000)
         ]
         issues, antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(antibodies_raw)
 
@@ -320,7 +319,9 @@ class TestCodeParser(DbTests):
             create_antibody_parsed('DPA1*04:01', 3000, 2000),
             create_antibody_parsed('DPA1*03:01', 2500, 2000),
             create_antibody_parsed('DPA1*01:01', 200, 2000),
-            # DPB1*01:05 always occurs in the positive + mixed antibody, so it won't be parsed
+            # the positivity for mixed DPB1*01:01 is caused by other chains,
+            # and therefore we consider it as negative. The MFI is equal to the average of negative MFIs
+            create_antibody_parsed('DPB1*01:01', 200, 2000)
         ]
         self.assertCountEqual(expected_antibodies_in_group,
                               antibodies.hla_antibodies_per_groups[4].hla_antibody_list)
