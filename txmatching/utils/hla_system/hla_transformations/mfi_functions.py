@@ -125,13 +125,13 @@ def is_positive_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]],
 
 def is_last_with_positive_mfi(raw_code: str,
                               mfi_dictionary: Dict[str, List[int]],
-                              passed_positive_counts: int,
+                              passed_positive_count: int,
                               cutoff: int) -> bool:
     positive_mfis = [mfi for mfi in mfi_dictionary[raw_code] if mfi >= cutoff]
     positive_mfis_count = len(positive_mfis)
-    assert passed_positive_counts <= positive_mfis_count, \
+    assert passed_positive_count <= positive_mfis_count, \
         f"The number of positive passes cannot exceed the total number of positive MFIs for the {raw_code}."
-    return positive_mfis_count == passed_positive_counts
+    return positive_mfis_count == passed_positive_count
 
 
 def is_negative_mfi_present(raw_code: str, mfi_dictionary: Dict[str, List[int]], cutoff: int) -> bool:
