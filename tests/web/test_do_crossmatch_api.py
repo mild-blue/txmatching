@@ -984,7 +984,7 @@ class TestDoCrossmatchApi(DbTests):
                                       'cutoff': 2000
                                       },
                                      {'mfi': 2000,
-                                      'name': 'DPA1*01:02',
+                                      'name': 'DPA1*01:07',
                                       'cutoff': 2000}] + type_A_antibodies
         }
 
