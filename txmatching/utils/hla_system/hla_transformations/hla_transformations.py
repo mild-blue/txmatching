@@ -75,9 +75,9 @@ def _process_hla_in_high_res(hla_high_res: str, hla_raw_code: str) -> HlaCodePro
     )
     if exception_split_broad_code is None:
         if hla_raw_code in ALL_ULTRA_HIGH_RES_CODES:
-            return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
+            return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
         else:
-            return process_parsing_result(hla_raw_code, hla_raw_code, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
+            return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
     if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return process_parsing_result(hla_raw_code, hla_raw_code, exception_split_broad_code)
     if hla_high_res in ALL_HIGH_RES_CODES_WITH_ASSUMED_SPLIT_BROAD_CODE:
