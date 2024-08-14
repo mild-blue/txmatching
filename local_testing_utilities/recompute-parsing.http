@@ -25,7 +25,7 @@ Authorization: Bearer {{auth_token}}
 ###
 
 
-POST {{url}}/v1/txm-event/2/patients/recompute-parsing
+POST {{url}}/v1/txm-event/9/patients/recompute-parsing
 Authorization: Bearer {{auth_token}}
 
 ###
