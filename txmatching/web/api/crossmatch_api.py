@@ -260,6 +260,9 @@ def _convert_potential_hla_types_to_low_res(
     assumed_hla_types_raw = {HLATypeWithFrequencyRaw(
         hla_code=potential_hla_type.hla_type.code.get_low_res_code(),
         is_frequent=True
+        # if the code does not exist in our database and has an unknown format,
+        # we cannot determine whether it is a high or low res code,
+        # then leave the is_frequent as it is in the input
         if potential_hla_type.hla_type.code.high_res != potential_hla_type.hla_type.code.get_low_res_code()
         else potential_hla_type.is_frequent
     ) for potential_hla_type in potential_hla_types}
