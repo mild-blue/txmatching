@@ -230,9 +230,9 @@ class TestDoCrossmatchApi(DbTests):
             self.assertCountEqual(expected_assumed_hla_types,
                                   res.json['hla_to_antibody'][0]['assumed_hla_types'])
 
-        # CASE: donor has unknown code according to our data
+        # CASE: donor has unknown HIGH RES code according to our data
         json = {
-            'potential_donor_hla_typing': [[{'hla_code': 'C*07:1000', 'is_frequent': False}]],
+            'potential_donor_hla_typing': [[{'hla_code': 'C*07:9999', 'is_frequent': False}]],
             'recipient_antibodies': [],
         }
         with self.app.test_client() as client:
@@ -242,7 +242,22 @@ class TestDoCrossmatchApi(DbTests):
             # but designate its frequency as the input
             self.assertEqual(200, res.status_code)
             expected_assumed_hla_types = [asdict(create_hla_type_with_frequency(
-                HLATypeWithFrequencyRaw('C*07:1000', is_frequent=False)
+                HLATypeWithFrequencyRaw('C*07:9999', is_frequent=False)
+            ))]
+            self.assertCountEqual(expected_assumed_hla_types,
+                                  res.json['hla_to_antibody'][0]['assumed_hla_types'])
+
+        # CASE: donor has unknown code in unknown format according to our data
+        json = {
+            'potential_donor_hla_typing': [[{'hla_code': '921HLAUNKNWONFORMAT123', 'is_frequent': False}]],
+            'recipient_antibodies': [],
+        }
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{CROSSMATCH_NAMESPACE}/do-crossmatch', json=json,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            expected_assumed_hla_types = [asdict(create_hla_type_with_frequency(
+                HLATypeWithFrequencyRaw('921HLAUNKNWONFORMAT123', is_frequent=False)
             ))]
             self.assertCountEqual(expected_assumed_hla_types,
                                   res.json['hla_to_antibody'][0]['assumed_hla_types'])
