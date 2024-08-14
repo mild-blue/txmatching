@@ -260,6 +260,8 @@ def _convert_potential_hla_types_to_low_res(
     assumed_hla_types_raw = {HLATypeWithFrequencyRaw(
         hla_code=potential_hla_type.hla_type.code.get_low_res_code(),
         is_frequent=True
+        if potential_hla_type.hla_type.code.high_res != potential_hla_type.hla_type.code.get_low_res_code()
+        else potential_hla_type.is_frequent
     ) for potential_hla_type in potential_hla_types}
     assumed_hla_types = [create_hla_type_with_frequency(assumed_hla_type_raw)
                          for assumed_hla_type_raw in assumed_hla_types_raw
