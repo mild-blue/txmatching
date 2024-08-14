@@ -4,6 +4,7 @@
 # origin: http://hla.alleles.org/wmda/rel_dna_ser.txt
 # repository: https://raw.githubusercontent.com/ANHIG/IMGTHLA/Latest/wmda/rel_dna_ser.txt
 # author: WHO, Steven G. E. Marsh (steven.marsh@ucl.ac.uk)
+# Some updates below rows with '#'
 A*;01:01:01:01;1;;;
 A*;01:01:01:02N;0;;;
 A*;01:01:01:03;1;;;
@@ -18464,7 +18465,8 @@ B*;82:02:01:02;;;82;
 B*;82:02:02;;;82;
 B*;82:03;;;82;
 B*;82:04;;;82;
-B*;83:01;?;;;
+# Original row was B*;83:01;?;;; but this was updated according to Eurotransplant table from KEPSOFT
+B*;83:01;83;;;
 C*;01:02:01:01;1;;;
 C*;01:02:01:02;1;;;
 C*;01:02:01:03;1;;;
