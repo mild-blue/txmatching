@@ -455,6 +455,7 @@ chain `DPB1*03:03` in the antibody `DP*[01:01;03:03]`.
 ```text
 Example:
 DP*[03:03;02:02], MFI 3000, cutoff 2000
+DP*[01:13;02:02], MFI 3000, cutoff 2000
 DP*[01:01;02:02], MFI 100, cutoff 2000
 DP*[04:01;01:05], MFI 3000, cutoff 2000
 DP*[03:01;01:05], MFI 2500, cutoff 2000
@@ -475,8 +476,7 @@ DPA1*03:03, MFI 3000 (average MFI), cutoff 2000
 ```
 
 This mixed chain `DPB1*02:02`, which has positive
-representation just in this antibody `DP*[01:03;02:02]` (there aren't any other
-antibodies where this chain has positive MFI), is parsed as
+representation in the antibodies `DP*[01:03;02:02]` and `DP*[01:13;02:02]`, is parsed as
 
 ```text
 DPB1*02:02, MFI 100 (average negative MFI), cutoff 2000
@@ -537,15 +537,19 @@ user to decide.
 
 ## Evaluating crossmatch with cadaverous donors
 
-When determining a crossmatch, we need the antigens of the cadaverous donor and the antibodies of the recipient.
-We accept "potential hla typing" for the donor as a list of lists. Each inner list is a collection of HLA
-codes, all of which share the same code on the split level. Furthermore, each code is accompanied by information about
-whether it occurs frequently or not. The necessity for having multiple potential HLA codes stems from the occasional
+When determining a crossmatch, we need the antigens of the cadaverous donor and the antibodies of the recipient. 
+We expect the list of antibodies in the input in the same format as in other parts of the TXM application, including double
+antibodies, which will be parsed using the logic described [here](#square-bracket-antibody-parsing-algorithm). 
+Unlike the classic crossmatch in TXM, information about the donor's HLA may be limited in cadaverous virtual crossmatch, 
+so we work with the so-called "potential HLA typing". This potential HLA typing for the donor is structured as a list of lists, 
+where each inner list contains a collection of HLA codes that all share the same code at the split level. 
+Furthermore, each code is accompanied by information about whether it occurs frequently in population or not. 
+The necessity for having multiple potential HLA codes stems from the occasional
 uncertainty about the exact code the donor has, thus we have to consider several variants of one HLA code.
 
 ### The determination of donor's most likely HLA typing
 
-To evaluate the potential hla typing and to determine the assumed hla typing based on it
+To evaluate the potential HLA typing and to determine the assumed HLA typing based on it
 with codes the donor likely has, we aim to retain only codes that are present
 among recipients' antibodies. If it isn't possible, we convert these codes to their split version.
 However, if there is only one code in the list, we leave it unchanged.
@@ -609,16 +613,16 @@ DQ[01:01,04:04], MFI 100, cutoff 2000
 Note that both chains of the first antibody `DQ[01:01,02:02]` in the list correspond to two
 potential HLA typing codes `DQA1*01:01`, respectively `DQB1*02:02`.
 Moreover, these antibody chains will be parsed by our algorithm
-(which you can also read about in this document) as two separate theoretical antibodies.
+(which you can also read about in [this document](#square-bracket-antibody-parsing-algorithm)) as two separate theoretical antibodies.
 In a normal situation with living patients, a virtual crossmatch on TXM will find a
 positive crossmatch with these antigens, but in the case of cadaverous donors,
 we evaluate this crossmatch as **negative**.
 
 ### Crossmatch description in summary
-For each assumed hla type, we return a boolean `is_positive_crossmatch` simply saing if there are any antibodies positively
+For each assumed hla type, we return a boolean `is_positive_crossmatch` simply saying if there are any antibodies positively
 crossmatched with it.
 The crossmatch situation is described in more detail in `summary` which contains `hla_code` (see
-[How to choose summary HLA code?](#how-to-choose-summary-hla-code)), 'mfi' (see
+[How to choose summary HLA code?](#how-to-choose-summary-hla-code)), `mfi` (see
 [How to calculate summary MFI?](#how-to-calculate-summary-mfi)) and `details_and_issues` (see below).
 
 To describe the crossmatch type, instead of showing the user the crossmatch level as in txm
@@ -627,8 +631,8 @@ describing the crossmatch type together with some possible issues in the `detail
 
 We do this mainly to distinguish two types of `HIGH_RES` match that can occur:
 If the `HIGH_RES` match occurs due to a single HIGH RES antibody matching to single HIGH RES antigen, we send a message:
-`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`
-, if there are multiple antibody - antigen pairs, we send a different message informing about this: `SPLIT HLA code
+`There is a single positively crossmatched HIGH RES HLA type - HIGH RES antibody pair.`, 
+if there are multiple antibody - antigen pairs, we send a different message informing about this: `SPLIT HLA code
 displayed in summary, but there are multiple positive crossmatches of HIGH RES HLA type - HIGH RES antibody pairs.`
 
 `HIGH_RES` match can also occur if all positive HIGH RES antibodies correspond to an antigen on SPLIT level (satisfying
