@@ -1,16 +1,18 @@
 ## Evaluating crossmatch with cadaverous donors
 
-When determining a crossmatch, we need the antigens of the cadaverous donor and the antibodies of the recipient.
-The program offers an API. The detailed documentation of the data the API expects see swagger
-(https://txmatching.ikem.cz/doc/ part crossmatch)
+When determining a crossmatch, it is essential to consider the antigens of the cadaverous donor and the antibodies of
+the recipient. The program offers an API to facilitate this process. For detailed documentation on the data expected by
+the API, please refer to the [Swagger documentation](https://txmatching.ikem.cz/doc/), specifically the section on
+crossmatch.
 
-We expect the list of antibodies in the input that is best described in [Antibody parsing](./antibody_parsing.md).
+The provided list of donors antibodies is first parsed. This is fairly complex process described in
+[Antibody parsing](./antibody_parsing.md).
 There you can also find the logic how the antibodies are parsed.
 
-Unlike the classic crossmatch in TXM, information about the donor's HLA may be limited in cadaverous virtual crossmatch,
+Unlike virtual crossmatch in the case of KPD, information about the donor's HLA may be limited in cadaverous virtual crossmatch,
 so we work with the so-called "potential HLA typing". This potential HLA typing for the donor is structured as a list of
 lists,
-where each inner list contains a collection of HLA codes that all share the same code at the split level.
+where each inner list contains a collection of HLA codes that typically all share the same code at the split level.
 Furthermore, each code is accompanied by information about whether it occurs frequently in population or not.
 The necessity for having multiple potential HLA codes stems from the occasional
 uncertainty about the exact code the donor has, thus we have to consider several variants of one HLA code.
@@ -19,7 +21,7 @@ uncertainty about the exact code the donor has, thus we have to consider several
 
 To evaluate the potential HLA typing and to determine the assumed HLA typing based on it
 with codes the donor likely has, we aim to retain only codes that are present
-among recipients' antibodies. If it isn't possible, we convert these codes to their split version.
+among antibodies the recipient was tested for. If it isn't possible, we convert these codes to their split version.
 However, if there is only one code in the list, we leave it unchanged.
 
 For example, donor has such potential hla typing
@@ -61,7 +63,7 @@ In the last case, with only one HLA code, `A*02:01`, in the potential HLA type, 
 
 ### Special crossmatch with theoretical antibodies
 
-One more distinguishing feature of this API compared to the classical TXM virtual crossmatch
+One more distinguishing feature of this API compared to the virtual crossmatch in KPD
 is the fact that if we have a double antibody that has both chains among the donor's antigens
 and splits into two separate theoretical antibodies,
 these theoretical antibodies have a negative crossmatch.
