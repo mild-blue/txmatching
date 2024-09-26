@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": "675785"
+  "otp": "122961"
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
@@ -31,7 +31,7 @@ Authorization: Bearer {{auth_token}}
 
 
 {
-  "name": "TEST-BEL-TXM-2022-01"
+  "name": "47-TXM-2024-10"
 }
 
 > {% client.global.set("txm_event_id", response.body["id"]); %}
@@ -64,3 +64,11 @@ Content-Type: application/json
 //  "donors": [],
 //  "recipients": []
 //}
+
+#select user_id, txm_event_id from user_to_allowed_event where txm_event_id = ( select max(txm_event_id) from user_to_allowed_event);
+#
+#
+#INSERT INTO user_to_allowed_event (txm_event_id, user_id)
+#SELECT 27, user_id
+#FROM user_to_allowed_event
+#WHERE txm_event_id = (SELECT MAX(txm_event_id) FROM user_to_allowed_event);
