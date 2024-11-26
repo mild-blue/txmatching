@@ -6,14 +6,15 @@ from typing import Callable, List
 from local_testing_utilities.generate_patients import LARGE_DATA_FOLDER
 from tests.utils.hla_system.type_a_example_recipient import TYPE_A_EXAMPLE_REC
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodyRaw
+from txmatching.patients.hla_model import HLAAntibody, HLAAntibodyRaw
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
 from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
                                     HLACrossmatchLevel)
 from txmatching.utils.hla_system.hla_crossmatch import (
-    AntibodyMatch, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
+    AntibodyMatch, add_theoretical_crossmatch_type, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
+
 from txmatching.utils.hla_system.hla_preparation_utils import (
     create_antibodies, create_antibody, create_antibody_parsed,
     create_hla_type, create_hla_typing)
@@ -596,3 +597,40 @@ class TestCrossmatch(unittest.TestCase):
         )
 
         self.assertEqual(crossmatch_result[4].antibody_matches[0].match_type, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
+
+    def test_positive_crossmatch_theoretical_antibody(self):
+        # add_theoretical_crossmatch_type changes match_type of theoretical antibodies
+        # to theoretical, thus these two antibodies will be equal
+        positive_matches = {AntibodyMatch(
+            hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                     code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                     mfi=2100,
+                                     cutoff=2000,
+                                     second_raw_code=None,
+                                     second_code=None,
+                                     type=HLAAntibodyType.THEORETICAL),
+            match_type=AntibodyMatchTypes.HIGH_RES),
+            AntibodyMatch(
+                hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                         code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                         mfi=2100,
+                                         cutoff=2000,
+                                         second_raw_code=None,
+                                         second_code=None,
+                                         type=HLAAntibodyType.THEORETICAL),
+                match_type=AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)
+        }
+
+        expected_positive_matches = {AntibodyMatch(
+            hla_antibody=HLAAntibody(raw_code='DQA1*02:03',
+                                     code=HLACode('DQA1*02:03', 'DQA2', 'DQA2'),
+                                     mfi=2100,
+                                     cutoff=2000,
+                                     second_raw_code=None,
+                                     second_code=None,
+                                     type=HLAAntibodyType.THEORETICAL),
+            match_type=AntibodyMatchTypes.THEORETICAL)
+        }
+
+        add_theoretical_crossmatch_type(positive_matches)
+        self.assertEqual(positive_matches, expected_positive_matches)
