@@ -322,6 +322,8 @@ Recipient's antibodies:
 So summary HLA code will be `A1` with summary MFI `= (3000 + 5000) / 2 = 4000`
 (antibody `A*01:02` wasn't included, because it has MFI below cutoff)
 
+!! Tady by to melo byt tak, ze bude zas dsa hlaska
+
 4. The donor has several SPLIT HLA codes in the assumed HLA types list:
 
 ```text
@@ -394,6 +396,8 @@ Recipient's antibodies:
 The summary HLA code is still `B7` with the MFI value `= (3000) / 1 = 3000`, but we send crossmatch issue
 `Ambiguity in HLA typization, for more see detailed section`.
 
+!! tohle by klidne mohlo byt taky to s tim DSA, neni to moc odlisny case od toho drhyho
+
 7. The donor has the only one frequent HIGH RES HLA codes in the assumed HLA types list,
    and at the same time it has MFI **ABOVE** cutoff (otherwise see 0.):
 
@@ -422,3 +426,5 @@ has the low resolution undefined).
 Consequently, the corresponding list of matched antibodies to choose the summary antibody from is empty.
 The summary HLA code is therefore set to `A*01:01N` with summary MFI `None` and a warning is sent:
 `No matching antibody was found against this HLA type, HLA code displayed in summary taken from the HLA type` .
+!! Zkontrolovat ze by tohle fungovalo i kdyby tam misto ty nulty allely A*01:01N A*02:02
+!! Rozdelit na nutly allely a neexprimovany
