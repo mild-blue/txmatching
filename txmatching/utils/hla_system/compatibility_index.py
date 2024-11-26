@@ -50,7 +50,7 @@ class CIConfiguration:
         raise NotImplementedError('Has to be overridden')
 
     def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup) -> float:
-        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups_without_dp_dq[hla_group]
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups_without_dp_dq.get(hla_group, 0)
 
     def compute_match_compatibility_index_dp_dq(self, match_type: MatchType, dqdp_allele: DQDPChain) -> float:
         return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_dp_dq_chains[dqdp_allele]

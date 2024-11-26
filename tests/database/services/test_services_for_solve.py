@@ -1,7 +1,7 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.database.services.config_service import (
-    find_config_for_parameters)
+from txmatching.database.services.config_service import \
+    find_config_for_parameters
 from txmatching.database.services.pairing_result_service import \
     get_pairing_result_comparable_to_config
 from txmatching.database.services.txm_event_service import \

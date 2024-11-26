@@ -3,7 +3,6 @@ from uuid import uuid4
 
 from flask import Response
 
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.web.public_api.test_public_patient_upload_invalid_example_data import (
     DONORS_WITH_ERRORS, RECIPIENTS_WITH_ERRORS,
@@ -30,6 +29,7 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing
 from txmatching.web import API_VERSION, PUBLIC_NAMESPACE
 
 

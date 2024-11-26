@@ -13,7 +13,6 @@ from typing import Dict, List, Optional, Tuple, Union
 import jinja2
 import pandas as pd
 import pdfkit
-
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.exceptions import NotFoundException
@@ -434,7 +433,7 @@ def hla_type_filter(hla: Union[HLAType, HLAAntibody]):
     if isinstance(hla, HLAAntibody) and hla.second_code is not None:
         first_code = f'{hla.code.display_code}'
         second_code = f'{hla.second_code.display_code}'
-        return first_code + "," + second_code
+        return first_code + ',' + second_code
     elif hla.code.display_code == hla.raw_code:
         return f'{hla.code.display_code}'
     else:

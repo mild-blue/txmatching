@@ -4,7 +4,7 @@ import re
 import time
 import uuid
 from importlib import util as importing
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import sentry_sdk
 from flask import Flask, Response, make_response, request, send_from_directory
@@ -37,6 +37,7 @@ from txmatching.web.error_handler import register_error_handlers
 from txmatching.web.web_utils.logging_config import (
     is_env_variable_value_true, setup_logging)
 from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
+                                                 CROSSMATCH_NAMESPACE,
                                                  MATCHING_NAMESPACE,
                                                  OPTIMIZER_NAMESPACE,
                                                  PATIENT_NAMESPACE,
@@ -44,7 +45,7 @@ from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
                                                  REPORTS_NAMESPACE,
                                                  SERVICE_NAMESPACE,
                                                  TXM_EVENT_NAMESPACE,
-                                                 USER_NAMESPACE, enums_api, CROSSMATCH_NAMESPACE)
+                                                 USER_NAMESPACE, enums_api)
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'

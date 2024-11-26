@@ -11,12 +11,11 @@ from sqlalchemy.types import (BIGINT, BLOB, BOOLEAN, DATETIME, FLOAT, INTEGER,
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
-from txmatching.utils.enums import StrictnessType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
-from txmatching.utils.enums import Sex, TxmEventState
+from txmatching.utils.enums import Sex, StrictnessType, TxmEventState
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 

@@ -3,4 +3,4 @@ TRANSPLANT_IMPOSSIBLE_SCORE = -1.0
 NEGATIVE_SCORE_BINARY_MODE = -1.0
 POSITIVE_SCORE_BINARY_MODE = 1.0
 
-HLA_SCORE = "hla_compatibility_score"
+HLA_SCORE = 'hla_compatibility_score'

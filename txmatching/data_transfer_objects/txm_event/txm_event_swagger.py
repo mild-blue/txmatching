@@ -1,8 +1,7 @@
 from flask_restx import fields
 
-from txmatching.data_transfer_objects.enums_swagger import (CountryCodeJson,
-                                                            StrictnessTypeEnumJson,
-                                                            TxmEventStateJson)
+from txmatching.data_transfer_objects.enums_swagger import (
+    CountryCodeJson, StrictnessTypeEnumJson, TxmEventStateJson)
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
     ParsingIssueJson
 from txmatching.web.web_utils.namespaces import txm_event_api

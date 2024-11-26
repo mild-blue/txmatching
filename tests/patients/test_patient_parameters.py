@@ -1,7 +1,7 @@
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
+from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing
 
 joe_hla_typing = ['A23',
                   'A26',

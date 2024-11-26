@@ -1,0 +1,838 @@
+{
+    "hla_to_antibody": [
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "A2",
+                            "high_res": "A*02:01",
+                            "split": "A2"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 20464,
+                        "raw_code": "A*02:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "A2",
+                            "high_res": "A*02:01",
+                            "split": "A2"
+                        },
+                        "display_code": "A*02:01",
+                        "raw_code": "A*02:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "HIGH_RES_MATCH"
+                ],
+                "hla_code": {
+                    "broad": "A2",
+                    "high_res": "A*02:01",
+                    "split": "A2"
+                },
+                "mfi": 20464
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "A10",
+                            "high_res": null,
+                            "split": "A26"
+                        },
+                        "display_code": "A26",
+                        "raw_code": "A26"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "A10",
+                    "high_res": null,
+                    "split": "A26"
+                },
+                "mfi": 123
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "B35",
+                            "high_res": "B*35:01",
+                            "split": "B35"
+                        },
+                        "display_code": "B*35:01",
+                        "raw_code": "B*35:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "B35",
+                    "high_res": null,
+                    "split": "B35"
+                },
+                "mfi": 133
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "B12",
+                            "high_res": null,
+                            "split": "B44"
+                        },
+                        "display_code": "B44",
+                        "raw_code": "B44"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "B12",
+                    "high_res": null,
+                    "split": "B44"
+                },
+                "mfi": 166
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "CW2",
+                            "high_res": null,
+                            "split": "CW2"
+                        },
+                        "display_code": "CW2",
+                        "raw_code": "CW2"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "CW2",
+                    "high_res": null,
+                    "split": "CW2"
+                },
+                "mfi": 415
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "CW4",
+                            "high_res": null,
+                            "split": "CW4"
+                        },
+                        "display_code": "CW4",
+                        "raw_code": "CW4"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "CW4",
+                    "high_res": null,
+                    "split": "CW4"
+                },
+                "mfi": 361
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DP2",
+                            "high_res": null,
+                            "split": "DP2"
+                        },
+                        "display_code": "DP2",
+                        "raw_code": "DP2"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DP2",
+                    "high_res": null,
+                    "split": "DP2"
+                },
+                "mfi": 161
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DP4",
+                            "high_res": null,
+                            "split": "DP4"
+                        },
+                        "display_code": "DP4",
+                        "raw_code": "DP4"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DP4",
+                    "high_res": null,
+                    "split": "DP4"
+                },
+                "mfi": 214
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:01",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 15249,
+                        "raw_code": "DQA1*01:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:02",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 12986,
+                        "raw_code": "DQA1*01:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": "DQA1*01:03",
+                            "split": "DQA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17289,
+                        "raw_code": "DQA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQA1",
+                            "high_res": null,
+                            "split": "DQA1"
+                        },
+                        "display_code": "DQA1",
+                        "raw_code": "DQA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "HIGH_RES_MATCH_ON_SPLIT_LEVEL"
+                ],
+                "hla_code": {
+                    "broad": "DQA1",
+                    "high_res": null,
+                    "split": "DQA1"
+                },
+                "mfi": 15174
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQA3",
+                            "high_res": "DQA1*03:01",
+                            "split": "DQA3"
+                        },
+                        "display_code": "DQA1*03:01",
+                        "raw_code": "DQA1*03:01"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DQA3",
+                    "high_res": null,
+                    "split": "DQA3"
+                },
+                "mfi": 753
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 4181,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "THEORETICAL"
+                    },
+                    "match_type": "THEORETICAL"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2589,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": {
+                            "broad": "DP11",
+                            "high_res": "DPB1*11:01",
+                            "split": "DP11"
+                        },
+                        "second_raw_code": "DPB1*11:01",
+                        "type": "NORMAL"
+                    },
+                    "match_type": "NONE"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": null,
+                            "split": "DPA1"
+                        },
+                        "display_code": "DPA1",
+                        "raw_code": "DPA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "THEORETICAL_MATCH"
+                ],
+                "hla_code": {
+                    "broad": "DPA1",
+                    "high_res": "DPA1*01:03",
+                    "split": "DPA1"
+                },
+                "mfi": 4181
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 4181,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "THEORETICAL"
+                    },
+                    "match_type": "THEORETICAL"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": "DPA1*01:03",
+                            "split": "DPA1"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2589,
+                        "raw_code": "DPA1*01:03",
+                        "second_code": {
+                            "broad": "DP11",
+                            "high_res": "DPB1*11:01",
+                            "split": "DP11"
+                        },
+                        "second_raw_code": "DPB1*11:01",
+                        "type": "NORMAL"
+                    },
+                    "match_type": "NONE"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DPA1",
+                            "high_res": null,
+                            "split": "DPA1"
+                        },
+                        "display_code": "DPA1",
+                        "raw_code": "DPA1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "THEORETICAL_MATCH"
+                ],
+                "hla_code": {
+                    "broad": "DPA1",
+                    "high_res": "DPA1*01:03",
+                    "split": "DPA1"
+                },
+                "mfi": 4181
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ3",
+                            "high_res": "DQB1*03:02",
+                            "split": "DQ8"
+                        },
+                        "display_code": "DQB1*03:02",
+                        "raw_code": "DQB1*03:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DQ3",
+                    "high_res": null,
+                    "split": "DQ8"
+                },
+                "mfi": 1038
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*05:01",
+                            "split": "DQ5"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17975,
+                        "raw_code": "DQB1*05:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*05:02",
+                            "split": "DQ5"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 8859,
+                        "raw_code": "DQB1*05:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:01",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 16537,
+                        "raw_code": "DQB1*06:01",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:02",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 12934,
+                        "raw_code": "DQB1*06:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:03",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 18042,
+                        "raw_code": "DQB1*06:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:04",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 11851,
+                        "raw_code": "DQB1*06:04",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                },
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": "DQB1*06:09",
+                            "split": "DQ6"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 17889,
+                        "raw_code": "DQB1*06:09",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": null,
+                            "split": "DQ5"
+                        },
+                        "display_code": "DQ5",
+                        "raw_code": "DQ5"
+                    },
+                    "is_frequent": true
+                },
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DQ1",
+                            "high_res": null,
+                            "split": null
+                        },
+                        "display_code": "DQ1",
+                        "raw_code": "DQ1"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "HIGH_RES_MATCH_ON_SPLIT_LEVEL"
+                ],
+                "hla_code": {
+                    "broad": "DQ1",
+                    "high_res": null,
+                    "split": "DQ6"
+                },
+                "mfi": 15450
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DR4",
+                            "high_res": "DRB1*04:02",
+                            "split": "DR4"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 2381,
+                        "raw_code": "DRB1*04:02",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR4",
+                            "high_res": "DRB1*04:02",
+                            "split": "DR4"
+                        },
+                        "display_code": "DRB1*04:02",
+                        "raw_code": "DRB1*04:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "HIGH_RES_MATCH"
+                ],
+                "hla_code": {
+                    "broad": "DR4",
+                    "high_res": "DRB1*04:02",
+                    "split": "DR4"
+                },
+                "mfi": 2381
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR6",
+                            "high_res": "DRB1*14:54",
+                            "split": "DR14"
+                        },
+                        "display_code": "DRB1*14:54",
+                        "raw_code": "DRB1*14:54"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DR6",
+                    "high_res": null,
+                    "split": "DR14"
+                },
+                "mfi": 242
+            }
+        },
+        {
+            "antibody_matches": [
+                {
+                    "hla_antibody": {
+                        "code": {
+                            "broad": "DR53",
+                            "high_res": "DRB4*01:03",
+                            "split": "DR53"
+                        },
+                        "cutoff": 2000,
+                        "mfi": 5166,
+                        "raw_code": "DRB4*01:03",
+                        "second_code": null,
+                        "second_raw_code": null,
+                        "type": "NORMAL"
+                    },
+                    "match_type": "HIGH_RES"
+                }
+            ],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR53",
+                            "high_res": "DRB4*01:03",
+                            "split": "DR53"
+                        },
+                        "display_code": "DRB4*01:03",
+                        "raw_code": "DRB4*01:03"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": true,
+            "summary": {
+                "details_and_issues": [
+                    "HIGH_RES_MATCH"
+                ],
+                "hla_code": {
+                    "broad": "DR53",
+                    "high_res": "DRB4*01:03",
+                    "split": "DR53"
+                },
+                "mfi": 5166
+            }
+        },
+        {
+            "antibody_matches": [],
+            "assumed_hla_types": [
+                {
+                    "hla_type": {
+                        "code": {
+                            "broad": "DR52",
+                            "high_res": "DRB3*02:02",
+                            "split": "DR52"
+                        },
+                        "display_code": "DRB3*02:02",
+                        "raw_code": "DRB3*02:02"
+                    },
+                    "is_frequent": true
+                }
+            ],
+            "is_positive_crossmatch": false,
+            "summary": {
+                "details_and_issues": [
+                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                ],
+                "hla_code": {
+                    "broad": "DR52",
+                    "high_res": null,
+                    "split": "DR52"
+                },
+                "mfi": 255
+            }
+        }
+    ],
+    "is_positive_crossmatch": true,
+    "parsing_issues": [
+        {
+            "hla_code_or_group": "DP[01:03,11:01]",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. The antibody DP[01:03,11:01] has positive mfi: 2589. Other antibodies with alpha: DP[01:03,28:01] mfi: 111, DP[01:03,23:01] mfi: 212, DP[01:03,19:01] mfi: 3226, DP[01:03,06:01] mfi: 4689, DP[01:03,04:02] mfi: 214, DP[01:03,04:01] mfi: 123, DP[01:03,03:01] mfi: 5810, DP[01:03,02:01] mfi: 161, DP[01:03,01:01] mfi: 4593. Other antibodies with beta: DP[02:02,11:01] mfi: 1993.",
+            "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
+        },
+        {
+            "hla_code_or_group": "DP[02:02,13:01]",
+            "message": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains. The antibody DP[02:02,13:01] has positive mfi: 2295. Other antibodies with alpha: DP[02:02,11:01] mfi: 1993, DP[02:02,10:01] mfi: 2770, DP[02:02,05:01] mfi: 2028. Other antibodies with beta: DP[03:01,13:01] mfi: 2184, DP[02:01,13:01] mfi: 1711.",
+            "parsing_issue_detail": "Theoretical antibody was created, because double antibody had mixed MFI values for both chains."
+        }
+    ]
+}

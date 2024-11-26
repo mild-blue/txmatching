@@ -3,14 +3,16 @@ from typing import Optional
 
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import require_valid_config_id, require_valid_txm_event_id
+from txmatching.auth.auth_check import (require_valid_config_id,
+                                        require_valid_txm_event_id)
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.request_context import get_user_role
-from txmatching.data_transfer_objects.configuration.configuration_swagger import (
-    ConfigIdPathParamDefinition)
+from txmatching.data_transfer_objects.configuration.configuration_swagger import \
+    ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
-from txmatching.database.services.config_service import get_configuration_from_db_id_or_default
+from txmatching.database.services.config_service import \
+    get_configuration_from_db_id_or_default
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto,
     get_matchings_detailed_for_pairing_result_model)

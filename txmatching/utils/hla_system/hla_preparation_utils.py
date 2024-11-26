@@ -1,13 +1,16 @@
 from typing import List
 
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import HLATypingRawDTO
-from txmatching.patients.hla_model import HLATyping, HLATypeRaw, HLAType, HLAAntibodyRaw, \
-    HLAAntibodies, HLAAntibody
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
+    HLATypingRawDTO
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
+                                           HLAAntibodyRaw, HLAType, HLATypeRaw,
+                                           HLATypeWithFrequency,
+                                           HLATypeWithFrequencyRaw, HLATyping)
 from txmatching.utils.enums import HLAAntibodyType
-from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_typing_raw_and_return_parsing_issue_list, \
-    parse_hla_raw_code_and_return_parsing_issue_list, \
-    parse_hla_antibodies_raw_and_return_parsing_issue_list
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
+    parse_hla_antibodies_raw_and_return_parsing_issue_list,
+    parse_hla_raw_code_and_return_parsing_issue_list,
+    parse_hla_typing_raw_and_return_parsing_issue_list)
 
 
 def create_hla_typing(hla_types_list: List[str],
@@ -30,6 +33,13 @@ def create_hla_type(raw_code: str) -> HLAType:
     return HLAType(
         raw_code=raw_code,
         code=code
+    )
+
+
+def create_hla_type_with_frequency(raw_type: HLATypeWithFrequencyRaw) -> HLATypeWithFrequency:
+    return HLATypeWithFrequency(
+        hla_type=create_hla_type(raw_type.hla_code),
+        is_frequent=raw_type.is_frequent
     )
 
 

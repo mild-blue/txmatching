@@ -2,6 +2,62 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
+        "/v1/crossmatch/calculate-cpra": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/CalculateCPRAOutput"
+                        }
+                    }
+                },
+                "description": "Calculate CPRA for recipient with http://ETRL.ORG/",
+                "operationId": "post_calculate_cpra",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CalculateCPRAInput"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "crossmatch"
+                ]
+            }
+        },
         "/v1/crossmatch/do-crossmatch": {
             "post": {
                 "responses": {
@@ -2323,13 +2379,14 @@
         },
         "AntibodyMatchForHLAType": {
             "required": [
-                "assumed_hla_type"
+                "assumed_hla_types",
+                "is_positive_crossmatch"
             ],
             "properties": {
-                "assumed_hla_type": {
+                "assumed_hla_types": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/HlaType"
+                        "$ref": "#/definitions/AssumedHLAType"
                     }
                 },
                 "antibody_matches": {
@@ -2338,13 +2395,16 @@
                         "$ref": "#/definitions/AntibodyMatch"
                     }
                 },
-                "summary_antibody": {
+                "summary": {
                     "readOnly": true,
                     "allOf": [
                         {
-                            "$ref": "#/definitions/AntibodyMatch"
+                            "$ref": "#/definitions/CrossmatchSummary"
                         }
                     ]
+                },
+                "is_positive_crossmatch": {
+                    "type": "boolean"
                 }
             },
             "type": "object"
@@ -2371,6 +2431,20 @@
             },
             "type": "object"
         },
+        "AssumedHLAType": {
+            "required": [
+                "is_frequent"
+            ],
+            "properties": {
+                "hla_type": {
+                    "$ref": "#/definitions/HlaType"
+                },
+                "is_frequent": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
         "BloodGroupEnum": {
             "enum": [
                 "A",
@@ -2379,6 +2453,134 @@
                 "0"
             ],
             "type": "string"
+        },
+        "CalculateCPRAInput": {
+            "required": [
+                "hla_antibodies"
+            ],
+            "properties": {
+                "patient_id": {
+                    "type": "string"
+                },
+                "sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "hla_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient.",
+                    "example": [
+                        {
+                            "name": "A1",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A32",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B7",
+                            "mfi": 2000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B51",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR11",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR15",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*02:03",
+                            "mfi": 2010,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*11:01:35",
+                            "mfi": 1500,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DRB4*01:01",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DP[02:01,02:01]",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DQ[02:01,02:01]",
+                            "mfi": 2500,
+                            "cutoff": 2000
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "CalculateCPRAOutput": {
+            "required": [
+                "cpra",
+                "parsed_antibodies",
+                "parsing_issues",
+                "unacceptable_antibodies"
+            ],
+            "properties": {
+                "patient_id": {
+                    "type": "string"
+                },
+                "sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "parsed_antibodies": {
+                    "$ref": "#/definitions/HlaAntibodies"
+                },
+                "parsing_issues": {
+                    "type": "array",
+                    "example": [
+                        {
+                            "hla_code_or_group": "A*01:06",
+                            "message": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct.",
+                            "parsing_issue_detail": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct."
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueBase"
+                    }
+                },
+                "cpra": {
+                    "type": "number"
+                },
+                "unacceptable_antibodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyForCPRAJson"
+                    }
+                }
+            },
+            "type": "object"
         },
         "CalculatedMatchings": {
             "required": [
@@ -2877,35 +3079,234 @@
                 "recipient_antibodies"
             ],
             "properties": {
+                "recipient_id": {
+                    "type": "string"
+                },
+                "recipient_sample_id": {
+                    "type": "string"
+                },
+                "donor_code": {
+                    "type": "string"
+                },
+                "donor_sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "potential_donor_hla_typing": {
                     "type": "array",
                     "description": "HLA typing of the patient. Use high resolution if available.",
                     "example": [
                         [
-                            "A*01:02",
-                            "A*01:03",
-                            "A*01:06"
+                            {
+                                "hla_code": "A*01:02",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "A*01:03",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "A*01:06",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "A*01:19",
+                                "is_frequent": true
+                            }
                         ],
                         [
-                            "A*02:02",
-                            "A*02:04",
-                            "A*02:05"
+                            {
+                                "hla_code": "A*02:02",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "A*02:04",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "A*02:05",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "A*02:29",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "A*02:74",
+                                "is_frequent": true
+                            }
                         ],
                         [
-                            "B*07:26",
-                            "B*07:27"
+                            {
+                                "hla_code": "B*07:04",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "B*07:08",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "B*07:26",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "B*07:27",
+                                "is_frequent": false
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "B*35:09",
+                                "is_frequent": false
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DRB1*15:03",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DRB1*15:112",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "DRB1*15:07",
+                                "is_frequent": true
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DRB1*11:02",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "DRB1*11:15",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DRB1*11:52",
+                                "is_frequent": true
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DPA1*02:01",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DPA1*02:16",
+                                "is_frequent": true
+                            },
+                            {
+                                "hla_code": "DPA1*02:17",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DPA1*02:21",
+                                "is_frequent": false
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DPB1*1054:01",
+                                "is_frequent": false
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DQA1*01:03",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DQA1*01:08",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DQA1*01:31",
+                                "is_frequent": false
+                            },
+                            {
+                                "hla_code": "DQA1*01:42",
+                                "is_frequent": false
+                            }
+                        ],
+                        [
+                            {
+                                "hla_code": "DQ6",
+                                "is_frequent": true
+                            }
                         ]
                     ],
                     "items": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/definitions/PotentialHLATypeRaw"
                         }
                     }
                 },
                 "recipient_antibodies": {
                     "type": "array",
                     "description": "Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
+                    "example": [
+                        {
+                            "name": "A1",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A32",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B7",
+                            "mfi": 2000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "B51",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR11",
+                            "mfi": 1400,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DR15",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*02:03",
+                            "mfi": 2010,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "A*11:01:35",
+                            "mfi": 1500,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DRB4*01:01",
+                            "mfi": 1000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DP[02:01,02:01]",
+                            "mfi": 3000,
+                            "cutoff": 2000
+                        },
+                        {
+                            "name": "DQ[02:01,02:01]",
+                            "mfi": 2500,
+                            "cutoff": 2000
+                        }
+                    ],
                     "items": {
                         "$ref": "#/definitions/HLAAntibodyIn"
                     }
@@ -2916,19 +3317,527 @@
         "CrossmatchOutput": {
             "required": [
                 "hla_to_antibody",
+                "is_positive_crossmatch",
                 "parsing_issues"
             ],
             "properties": {
+                "recipient_id": {
+                    "type": "string"
+                },
+                "recipient_sample_id": {
+                    "type": "string"
+                },
+                "donor_code": {
+                    "type": "string"
+                },
+                "donor_sample_id": {
+                    "type": "string"
+                },
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
                 "hla_to_antibody": {
                     "type": "array",
+                    "example": [
+                        {
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "code": {
+                                            "broad": "A1",
+                                            "high_res": null,
+                                            "split": "A1"
+                                        },
+                                        "cutoff": 2000,
+                                        "mfi": 3000,
+                                        "raw_code": "A1",
+                                        "second_code": null,
+                                        "second_raw_code": null,
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "A1",
+                                            "high_res": "A*01:02",
+                                            "split": "A1"
+                                        },
+                                        "display_code": "A*01:02",
+                                        "raw_code": "A*01:02"
+                                    },
+                                    "is_frequent": true
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "A1",
+                                            "high_res": "A*01:03",
+                                            "split": "A1"
+                                        },
+                                        "display_code": "A*01:03",
+                                        "raw_code": "A*01:03"
+                                    },
+                                    "is_frequent": true
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "A1",
+                                            "high_res": "A*01:06",
+                                            "split": "A1"
+                                        },
+                                        "display_code": "A*01:06",
+                                        "raw_code": "A*01:06"
+                                    },
+                                    "is_frequent": true
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "A1",
+                                            "high_res": "A*01:19",
+                                            "split": "A1"
+                                        },
+                                        "display_code": "A*01:19",
+                                        "raw_code": "A*01:19"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": true,
+                            "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH",
+                                    "ANTIBODIES_MIGHT_NOT_BE_DSA"
+                                ],
+                                "hla_code": {
+                                    "broad": "A1",
+                                    "high_res": null,
+                                    "split": "A1"
+                                },
+                                "mfi": 3000
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "A2",
+                                            "high_res": null,
+                                            "split": "A2"
+                                        },
+                                        "display_code": "A2",
+                                        "raw_code": "A2"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "A2",
+                                    "high_res": null,
+                                    "split": "A2"
+                                },
+                                "mfi": null
+                            }
+                        },
+                        {
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "code": {
+                                            "broad": "B7",
+                                            "high_res": null,
+                                            "split": "B7"
+                                        },
+                                        "cutoff": 2000,
+                                        "mfi": 2000,
+                                        "raw_code": "B7",
+                                        "second_code": null,
+                                        "second_raw_code": null,
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "B7",
+                                            "high_res": null,
+                                            "split": "B7"
+                                        },
+                                        "display_code": "B7",
+                                        "raw_code": "B7"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": true,
+                            "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH"
+                                ],
+                                "hla_code": {
+                                    "broad": "B7",
+                                    "high_res": null,
+                                    "split": "B7"
+                                },
+                                "mfi": 2000
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "B35",
+                                            "high_res": null,
+                                            "split": "B35"
+                                        },
+                                        "display_code": "B35",
+                                        "raw_code": "B35"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "B35",
+                                    "high_res": null,
+                                    "split": "B35"
+                                },
+                                "mfi": null
+                            }
+                        },
+                        {
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "code": {
+                                            "broad": "DR2",
+                                            "high_res": null,
+                                            "split": "DR15"
+                                        },
+                                        "cutoff": 2000,
+                                        "mfi": 3000,
+                                        "raw_code": "DR15",
+                                        "second_code": null,
+                                        "second_raw_code": null,
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR2",
+                                            "high_res": "DRB1*15:03",
+                                            "split": "DR15"
+                                        },
+                                        "display_code": "DRB1*15:03",
+                                        "raw_code": "DRB1*15:03"
+                                    },
+                                    "is_frequent": false
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR2",
+                                            "high_res": "DRB1*15:112",
+                                            "split": "DR15"
+                                        },
+                                        "display_code": "DRB1*15:112",
+                                        "raw_code": "DRB1*15:112"
+                                    },
+                                    "is_frequent": true
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR2",
+                                            "high_res": "DRB1*15:07",
+                                            "split": "DR15"
+                                        },
+                                        "display_code": "DRB1*15:07",
+                                        "raw_code": "DRB1*15:07"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": true,
+                            "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH",
+                                    "ANTIBODIES_MIGHT_NOT_BE_DSA"
+                                ],
+                                "hla_code": {
+                                    "broad": "DR2",
+                                    "high_res": null,
+                                    "split": "DR15"
+                                },
+                                "mfi": 3000
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR5",
+                                            "high_res": "DRB1*11:02",
+                                            "split": "DR11"
+                                        },
+                                        "display_code": "DRB1*11:02",
+                                        "raw_code": "DRB1*11:02"
+                                    },
+                                    "is_frequent": true
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR5",
+                                            "high_res": "DRB1*11:15",
+                                            "split": "DR11"
+                                        },
+                                        "display_code": "DRB1*11:15",
+                                        "raw_code": "DRB1*11:15"
+                                    },
+                                    "is_frequent": false
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DR5",
+                                            "high_res": "DRB1*11:52",
+                                            "split": "DR11"
+                                        },
+                                        "display_code": "DRB1*11:52",
+                                        "raw_code": "DRB1*11:52"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NEGATIVE_ANTIBODY_IN_SUMMARY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DR5",
+                                    "high_res": null,
+                                    "split": "DR11"
+                                },
+                                "mfi": 1400
+                            }
+                        },
+                        {
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "code": {
+                                            "broad": "DPA2",
+                                            "high_res": "DPA1*02:01",
+                                            "split": "DPA2"
+                                        },
+                                        "cutoff": 2000,
+                                        "mfi": 3000,
+                                        "raw_code": "DPA1*02:01",
+                                        "second_code": null,
+                                        "second_raw_code": null,
+                                        "type": "NORMAL"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DPA2",
+                                            "high_res": null,
+                                            "split": "DPA2"
+                                        },
+                                        "display_code": "DPA2",
+                                        "raw_code": "DPA2"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": true,
+                            "summary": {
+                                "details_and_issues": [
+                                    "SPLIT_BROAD_MATCH"
+                                ],
+                                "hla_code": {
+                                    "broad": "DPA2",
+                                    "high_res": "DPA1*02:01",
+                                    "split": "DPA2"
+                                },
+                                "mfi": 3000
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DP1054",
+                                            "high_res": null,
+                                            "split": "DP1054"
+                                        },
+                                        "display_code": "DP1054",
+                                        "raw_code": "DP1054"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DP1054",
+                                    "high_res": null,
+                                    "split": "DP1054"
+                                },
+                                "mfi": null
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DQA1",
+                                            "high_res": null,
+                                            "split": "DQA1"
+                                        },
+                                        "display_code": "DQA1",
+                                        "raw_code": "DQA1"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DQA1",
+                                    "high_res": null,
+                                    "split": "DQA1"
+                                },
+                                "mfi": null
+                            }
+                        },
+                        {
+                            "antibody_matches": [],
+                            "assumed_hla_types": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "broad": "DQ1",
+                                            "high_res": null,
+                                            "split": "DQ6"
+                                        },
+                                        "display_code": "DQ6",
+                                        "raw_code": "DQ6"
+                                    },
+                                    "is_frequent": true
+                                }
+                            ],
+                            "is_positive_crossmatch": false,
+                            "summary": {
+                                "details_and_issues": [
+                                    "NO_MATCHING_ANTIBODY"
+                                ],
+                                "hla_code": {
+                                    "broad": "DQ1",
+                                    "high_res": null,
+                                    "split": "DQ6"
+                                },
+                                "mfi": null
+                            }
+                        }
+                    ],
                     "items": {
                         "$ref": "#/definitions/AntibodyMatchForHLAType"
                     }
                 },
                 "parsing_issues": {
                     "type": "array",
+                    "example": [
+                        {
+                            "hla_code_or_group": "A*01:06",
+                            "message": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct.",
+                            "parsing_issue_detail": "The information about the serological equivalent of the allele is only assumed in our datasource so the conversion is not 100% reliable. Please check that the conversion is correct."
+                        }
+                    ],
                     "items": {
                         "$ref": "#/definitions/ParsingIssueBase"
+                    }
+                },
+                "is_positive_crossmatch": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "CrossmatchSummary": {
+            "required": [
+                "hla_code"
+            ],
+            "properties": {
+                "hla_code": {
+                    "$ref": "#/definitions/HlaCode"
+                },
+                "mfi": {
+                    "type": "integer"
+                },
+                "details_and_issues": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "example": "RARE_ALLELE_POSITIVE_CROSSMATCH",
+                        "enum": [
+                            "RARE_ALLELE_POSITIVE_CROSSMATCH",
+                            "ANTIBODIES_MIGHT_NOT_BE_DSA",
+                            "AMBIGUITY_IN_HLA_TYPIZATION",
+                            "NEGATIVE_ANTIBODY_IN_SUMMARY",
+                            "NO_MATCHING_ANTIBODY",
+                            "HIGH_RES_MATCH",
+                            "HIGH_RES_MATCH_ON_SPLIT_LEVEL",
+                            "MULTIPLE_HIGH_RES_MATCH",
+                            "HIGH_RES_WITH_SPLIT_BROAD_MATCH",
+                            "SPLIT_BROAD_MATCH",
+                            "THEORETICAL_MATCH",
+                            "NONE_MATCH"
+                        ]
                     }
                 }
             },
@@ -3351,6 +4260,17 @@
                 },
                 "recipient_country": {
                     "$ref": "#/definitions/CountryCode"
+                }
+            },
+            "type": "object"
+        },
+        "HLAAntibodyForCPRAJson": {
+            "properties": {
+                "hla_antibody": {
+                    "$ref": "#/definitions/HlaAntibody"
+                },
+                "code_sent_to_calculator": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -4289,6 +5209,21 @@
                     "items": {
                         "$ref": "#/definitions/ParsingIssue"
                     }
+                }
+            },
+            "type": "object"
+        },
+        "PotentialHLATypeRaw": {
+            "required": [
+                "hla_code",
+                "is_frequent"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "is_frequent": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

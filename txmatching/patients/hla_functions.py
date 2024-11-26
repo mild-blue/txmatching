@@ -1,22 +1,31 @@
 import itertools
 import logging
+import os
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
+import requests
+from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
+
+from txmatching.auth.exceptions import ETRLErrorResponse, ETRLRequestException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
     ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
-                                           HLAAntibodyType, HLAPerGroup,
+                                           HLAAntibodyForCPRA, HLAPerGroup,
                                            HLAType)
 from txmatching.utils.constants import \
     SUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
-from txmatching.utils.enums import HLA_GROUPS, HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.utils.enums import (HLA_GROUPS, HLA_GROUPS_PROPERTIES,
+                                    DQDPChain, HLAAntibodyType, HLAGroup)
+from txmatching.utils.hla_system.compatibility_index import _which_dq_dp_chain
 from txmatching.utils.hla_system.hla_transformations.mfi_functions import (
     create_mfi_dictionary, get_average_mfi,
     get_mfi_from_multiple_hla_codes_single_chain, get_negative_average_mfi,
-    get_positive_average_mfi, is_negative_mfi_present, is_only_one_positive_mfi_present,
-    is_positive_mfi_present)
+    get_positive_average_mfi, is_negative_mfi_present,
+    is_last_with_positive_mfi, is_positive_mfi_present)
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import \
@@ -150,6 +159,7 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                                single_antibodies_joined: List[HLAAntibody]) -> \
         Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
     mfi_dictionary = create_mfi_dictionary(antibody_list_double_code)
+    passed_positive_counts: Dict[str, int] = defaultdict(int)
 
     parsing_issues = []
     hla_antibodies_joined = single_antibodies_joined.copy()
@@ -169,6 +179,8 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
             hla_antibodies_joined.extend(_parse_double_antibody_mfi_under_cutoff(
                 double_antibody, parsed_hla_codes, mfi_dictionary))
         else:
+            passed_positive_counts[double_antibody.raw_code] += 1
+            passed_positive_counts[double_antibody.second_raw_code] += 1
             alpha_chain_only_positive = not is_negative_mfi_present(
                 double_antibody.raw_code, mfi_dictionary, double_antibody.cutoff)
             beta_chain_only_positive = not is_negative_mfi_present(
@@ -183,20 +195,24 @@ def _add_double_hla_antibodies(antibody_list_double_code: List[HLAAntibody],
                 if alpha_chain_only_positive:
                     _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                   parsed_hla_codes, get_average_mfi, mfi_dictionary)
-                    # if only one is positive it is expected that the positivity is caused by the other chain,
-                    # thus it does not contribute to the average mfi
-                    if is_only_one_positive_mfi_present(double_antibody.second_raw_code, mfi_dictionary,
-                                                        double_antibody.cutoff):
+                    if is_last_with_positive_mfi(double_antibody.second_raw_code, mfi_dictionary,
+                                                 passed_positive_counts[double_antibody.second_raw_code],
+                                                 double_antibody.cutoff):
+                        # If this is the last positive, and we did not parse, then the positivity
+                        # is associated with other chains of these antibodies.
+                        # Therefore, we will add it as a negative with the mean of negative MFIs.
                         _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                      parsed_hla_codes, get_negative_average_mfi, mfi_dictionary)
 
                 if beta_chain_only_positive:
                     _join_beta_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                  parsed_hla_codes, get_average_mfi, mfi_dictionary)
-                    # if only one is positive it is expected that the positivity is caused by the other chain,
-                    # thus it does not contribute to the average mfi
-                    if is_only_one_positive_mfi_present(double_antibody.raw_code, mfi_dictionary,
-                                                        double_antibody.cutoff):
+                    if is_last_with_positive_mfi(double_antibody.raw_code, mfi_dictionary,
+                                                 passed_positive_counts[double_antibody.raw_code],
+                                                 double_antibody.cutoff):
+                        # If this is the last positive, and we did not parse, then the positivity
+                        # is associated with other chains of these antibodies.
+                        # Therefore, we will add it as a negative with the mean of negative MFIs.
                         _join_alpha_chain_if_unparsed(double_antibody, hla_antibodies_joined,
                                                       parsed_hla_codes, get_negative_average_mfi, mfi_dictionary)
 
@@ -234,18 +250,20 @@ def create_parsing_issue_creating_double_antibody(double_antibody: HLAAntibody,
                                                   antibody_list_double_code: List[HLAAntibody]) -> ParsingIssueBase:
     # extract other occurences of alpha chain
     alpha_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
-        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody) + ' mfi: ' + str(antibody.mfi) for antibody in antibody_list_double_code if
         antibody.code == double_antibody.code and not antibody == double_antibody])
 
     # extract other occurences of beta chain
     beta_chain_occurences = ', '.join([create_raw_code_for_double_antibody(
-        antibody) + " mfi: " + str(antibody.mfi) for antibody in antibody_list_double_code if
+        antibody) + ' mfi: ' + str(antibody.mfi) for antibody in antibody_list_double_code if
         antibody.second_code == double_antibody.second_code and not antibody == double_antibody])
 
-    detailed_message = " Other antibodies with alpha: " + alpha_chain_occurences + \
-        ". Other antibodies with beta: " + beta_chain_occurences + "."
+    detailed_message = ' The antibody ' + create_raw_code_for_double_antibody(double_antibody) + \
+                       ' has positive mfi: ' + str(double_antibody.mfi) + '. Other antibodies with alpha: ' + \
+                       alpha_chain_occurences + '. Other antibodies with beta: ' + beta_chain_occurences + '.'
+
     return ParsingIssueBase(
-        hla_code_or_group=double_antibody.raw_code + ', ' + double_antibody.second_raw_code,
+        hla_code_or_group=create_raw_code_for_double_antibody(double_antibody),
         parsing_issue_detail=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY,
         message=ParsingIssueDetail.CREATED_THEORETICAL_ANTIBODY.value + detailed_message
     )
@@ -376,6 +394,118 @@ def analyze_if_high_res_antibodies_are_type_a(
         return HighResAntibodiesAnalysis(False,
                                          ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES)
     return HighResAntibodiesAnalysis(True, None)
+
+
+# pylint: disable=line-too-long
+def compute_cpra(unacceptable_antibodies: List[HLAAntibodyForCPRA]) -> float:
+    """
+    Compute cPRA for unacceptable antibodies with http://ETRL.ORG/.
+    We compute cPRA even if the http://ETRL.ORG/ endpoint has VPRA in it,
+    but according to the consultation with Matěj Röder, these terms are equivalent for us.
+    """
+    hla_raw_codes_for_cpra_calculation = [antibody_for_cpra.code_sent_to_calculator for antibody_for_cpra in unacceptable_antibodies]
+    etrl_login, etrl_password = os.getenv('ETRL_LOGIN'), os.getenv('ETRL_PASSWORD')
+    if not etrl_login or not etrl_password:
+        raise ValueError('http://ETRL.ORG/ login or password not found. '
+                         'Fill the ETRL_LOGIN and the ETRL_PASSWORD into .env file.')
+
+    url = 'https://www.etrl.org/calculator4.0/calculator4.0.asmx'
+    headers = {'content-type': 'text/xml'}
+    body = \
+        f"""<?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <VirtualPRA xmlns="http://ETRL.ORG/">
+                        <sUserName>{etrl_login}</sUserName>
+                        <sPassWord>{etrl_password}</sPassWord>
+                        <sUnacceptables>{', '.join(hla_raw_codes_for_cpra_calculation)}</sUnacceptables>
+                    </VirtualPRA>
+                </soap:Body>
+            </soap:Envelope>
+            """
+
+    try:
+        response = requests.post(url, data=body, headers=headers, timeout=15)
+        response.raise_for_status()
+    except RequestException as ex:
+        raise ETRLRequestException(str(ex)) from ex
+
+    soup = BeautifulSoup(response.content, 'xml')
+
+    error_msg = soup.find('ErrorMessage').get_text()
+    if error_msg:
+        raise ETRLErrorResponse(error_msg)
+
+    cpra = float(soup.find('Frequency').get_text())
+    # print(soup.find('matches'))
+    # print(soup.find('panelsize'))
+
+    return cpra
+
+
+def get_unacceptable_antibodies(hla_antibodies) -> List[HLAAntibodyForCPRA]:
+    """
+    We define an unacceptable antigen as a donor antigen that is considered an absolute
+    contraindication for transplantation to a particular patient.
+    Such an antigen constitutes a level of immunological risk considered to be appreciably
+    greater than the potential benefit to be derived from the transplant.
+
+    source: https://journals.lww.com/co-transplantation/Fulltext/2008/08000/Defining_unacceptable_HLA_antigens.14.aspx
+    """
+    unacceptable_antibodies = []
+    def add_antibody(antibody_str_for_calculation: str) -> None:
+        unacceptable_antibodies.append(HLAAntibodyForCPRA(antibody,antibody_str_for_calculation))
+
+    for antibodies_group in hla_antibodies.hla_antibodies_per_groups:
+        for antibody in antibodies_group.hla_antibody_list:
+            if antibody.type != HLAAntibodyType.NORMAL or \
+                    antibody.second_code is not None or \
+                    antibody.mfi <= antibody.cutoff:
+                # We don't accept double antibodies here, because tool http://ETRL.ORG/
+                # for CPRA (VPRA) computation doesn't support them.
+                # So we agreed with IKEM to ignore such antibodies
+                continue
+
+            if antibodies_group.hla_group not in [HLAGroup.DP, HLAGroup.DQ] or \
+                    antibody.code.is_in_high_res():
+                # used with the same nomenclature we use
+                add_antibody(antibody.code.display_code)
+            else:
+                # solve different nomenclature of DPA, DPB, DQA, DQB
+                dq_dp_chain = _which_dq_dp_chain(antibody)
+
+                if dq_dp_chain == DQDPChain.BETA_DP:
+                    hla_number = antibody.code.broad[2:]
+
+                    if len(hla_number) == 1:
+                        add_antibody('DP-0' + hla_number)
+                    elif len(hla_number) == 2:
+                        add_antibody('DP-' + hla_number)
+                    else:
+                        raise AssertionError
+
+                    if unacceptable_antibodies[-1] == 'DP-02':
+                        unacceptable_antibodies[-1] = 'DP-0201'
+                        add_antibody('DP-0202')
+
+                    if unacceptable_antibodies[-1] == 'DP-04':
+                        unacceptable_antibodies[-1] = 'DP-0401'
+                        add_antibody('DP-0402')
+                elif dq_dp_chain in [DQDPChain.ALPHA_DP, DQDPChain.ALPHA_DQ]:
+                    hla_number = antibody.code.broad[2:]
+                    if len(hla_number) == 1:
+                        add_antibody(dq_dp_chain + '-0' + hla_number)
+                    elif len(hla_number) == 2:
+                        add_antibody(dq_dp_chain + '-' + hla_number)
+                    else:
+                        raise AssertionError
+                else:
+                    # DQB
+                    add_antibody(antibody.code.display_code)
+
+                logger.debug(f'Parsed {antibody.raw_code} -> {unacceptable_antibodies[-2:]}')
+
+    return unacceptable_antibodies
 
 
 def _create_alpha_chain_antibody(double_antibody: HLAAntibody,

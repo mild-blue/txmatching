@@ -5,8 +5,9 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
-from txmatching.scorers.scorer_constants import NEGATIVE_SCORE_BINARY_MODE, POSITIVE_SCORE_BINARY_MODE, \
-    TRANSPLANT_IMPOSSIBLE_SCORE
+from txmatching.scorers.scorer_constants import (NEGATIVE_SCORE_BINARY_MODE,
+                                                 POSITIVE_SCORE_BINARY_MODE,
+                                                 TRANSPLANT_IMPOSSIBLE_SCORE)
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES
 from txmatching.utils.hla_system.compatibility_index import (

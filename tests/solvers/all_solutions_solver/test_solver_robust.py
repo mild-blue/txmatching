@@ -1,4 +1,5 @@
-from tests.solvers.prepare_txm_event_with_many_solutions import prepare_txm_event_with_too_many_solutions
+from tests.solvers.prepare_txm_event_with_many_solutions import \
+    prepare_txm_event_with_too_many_solutions
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.solve_service.solve_from_configuration import \

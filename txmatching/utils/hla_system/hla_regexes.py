@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-HIGH_RES_REGEX_STRING = r'^([A-Z]+\d?\*\d{2,4}(:\d{2,3}))(:\d{2,3})*'
+HIGH_RES_REGEX_STRING = r'^([A-Z]+\d?\*\d{2,4}(:\d{2,4}))(:\d{2,4})*'
 HIGH_RES_REGEX = re.compile(HIGH_RES_REGEX_STRING+r'$')  # with high res subunit
 HIGH_RES_REGEX_ENDING_WITH_LETTER = re.compile(HIGH_RES_REGEX_STRING+r'([A-Z])$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'(DP|DQ)\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')

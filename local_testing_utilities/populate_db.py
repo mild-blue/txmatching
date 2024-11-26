@@ -2,10 +2,10 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME,
-    THEORETICAL_DOUBLE_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
     SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_THEORETICAL,
-    SMALL_DATA_FOLDER_WITH_CROSSMATCH, store_generated_patients_from_folder)
+    SMALL_DATA_FOLDER_WITH_CROSSMATCH, THEORETICAL_DOUBLE_TXM_EVENT_NAME,
+    store_generated_patients_from_folder)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole

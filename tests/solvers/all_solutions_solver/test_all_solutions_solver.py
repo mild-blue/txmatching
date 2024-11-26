@@ -1,6 +1,7 @@
 from local_testing_utilities.generate_patients import (
-    GENERATED_TXM_EVENT_NAME, THEORETICAL_DOUBLE_TXM_EVENT_NAME, SMALL_DATA_FOLDER_THEORETICAL,
-    SMALL_DATA_FOLDER_WITH_ROUND, store_generated_patients_from_folder)
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_THEORETICAL,
+    SMALL_DATA_FOLDER_WITH_ROUND, THEORETICAL_DOUBLE_TXM_EVENT_NAME,
+    store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.solvers.ilp_solver.test_ilp_solver import _set_donor_blood_group

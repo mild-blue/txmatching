@@ -2,9 +2,10 @@ import logging
 
 import requests
 
-from txmatching.auth.exceptions import CouldNotSendOtpUsingSmsServiceException, require_auth_condition
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
-    ApplicationConfiguration
+from txmatching.auth.exceptions import (
+    CouldNotSendOtpUsingSmsServiceException, require_auth_condition)
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationConfiguration, get_application_configuration)
 
 logger = logging.getLogger(__name__)
 

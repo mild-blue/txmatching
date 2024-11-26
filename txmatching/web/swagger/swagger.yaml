@@ -79,16 +79,19 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodyMatch'
                 type: array
-            assumed_hla_type:
+            assumed_hla_types:
                 items:
-                    $ref: '#/definitions/HlaType'
+                    $ref: '#/definitions/AssumedHLAType'
                 type: array
-            summary_antibody:
+            is_positive_crossmatch:
+                type: boolean
+            summary:
                 allOf:
-                -   $ref: '#/definitions/AntibodyMatch'
+                -   $ref: '#/definitions/CrossmatchSummary'
                 readOnly: true
         required:
-        - assumed_hla_type
+        - assumed_hla_types
+        - is_positive_crossmatch
         type: object
     AntigenMatch:
         properties:
@@ -106,6 +109,15 @@ definitions:
         - hla_type
         - match_type
         type: object
+    AssumedHLAType:
+        properties:
+            hla_type:
+                $ref: '#/definitions/HlaType'
+            is_frequent:
+                type: boolean
+        required:
+        - is_frequent
+        type: object
     BloodGroupEnum:
         enum:
         - A
@@ -113,6 +125,94 @@ definitions:
         - AB
         - '0'
         type: string
+    CalculateCPRAInput:
+        properties:
+            datetime:
+                format: date-time
+                type: string
+            hla_antibodies:
+                description: Detected HLA antibodies of the patient.
+                example: &id001
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: A1
+                -   cutoff: 2000
+                    mfi: 1400
+                    name: A32
+                -   cutoff: 2000
+                    mfi: 2000
+                    name: B7
+                -   cutoff: 2000
+                    mfi: 1000
+                    name: B51
+                -   cutoff: 2000
+                    mfi: 1400
+                    name: DR11
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: DR15
+                -   cutoff: 2000
+                    mfi: 2010
+                    name: A*02:03
+                -   cutoff: 2000
+                    mfi: 1500
+                    name: A*11:01:35
+                -   cutoff: 2000
+                    mfi: 1000
+                    name: DRB4*01:01
+                -   cutoff: 2000
+                    mfi: 3000
+                    name: DP[02:01,02:01]
+                -   cutoff: 2000
+                    mfi: 2500
+                    name: DQ[02:01,02:01]
+                items:
+                    $ref: '#/definitions/HLAAntibodyIn'
+                type: array
+            patient_id:
+                type: string
+            sample_id:
+                type: string
+        required:
+        - hla_antibodies
+        type: object
+    CalculateCPRAOutput:
+        properties:
+            cpra:
+                type: number
+            datetime:
+                format: date-time
+                type: string
+            parsed_antibodies:
+                $ref: '#/definitions/HlaAntibodies'
+            parsing_issues:
+                example: &id002
+                -   hla_code_or_group: A*01:06
+                    message: The information about the serological equivalent of the
+                        allele is only assumed in our datasource so the conversion
+                        is not 100% reliable. Please check that the conversion is
+                        correct.
+                    parsing_issue_detail: The information about the serological equivalent
+                        of the allele is only assumed in our datasource so the conversion
+                        is not 100% reliable. Please check that the conversion is
+                        correct.
+                items:
+                    $ref: '#/definitions/ParsingIssueBase'
+                type: array
+            patient_id:
+                type: string
+            sample_id:
+                type: string
+            unacceptable_antibodies:
+                items:
+                    $ref: '#/definitions/HLAAntibodyForCPRAJson'
+                type: array
+        required:
+        - cpra
+        - parsed_antibodies
+        - parsing_issues
+        - unacceptable_antibodies
+        type: object
     CalculatedMatchings:
         properties:
             calculated_matchings:
@@ -538,20 +638,79 @@ definitions:
         type: string
     CrossmatchInput:
         properties:
+            datetime:
+                format: date-time
+                type: string
+            donor_code:
+                type: string
+            donor_sample_id:
+                type: string
             potential_donor_hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
-                -   - A*01:02
-                    - A*01:03
-                    - A*01:06
-                -   - A*02:02
-                    - A*02:04
-                    - A*02:05
-                -   - B*07:26
-                    - B*07:27
+                -   -   hla_code: A*01:02
+                        is_frequent: true
+                    -   hla_code: A*01:03
+                        is_frequent: true
+                    -   hla_code: A*01:06
+                        is_frequent: true
+                    -   hla_code: A*01:19
+                        is_frequent: true
+                -   -   hla_code: A*02:02
+                        is_frequent: false
+                    -   hla_code: A*02:04
+                        is_frequent: true
+                    -   hla_code: A*02:05
+                        is_frequent: true
+                    -   hla_code: A*02:29
+                        is_frequent: false
+                    -   hla_code: A*02:74
+                        is_frequent: true
+                -   -   hla_code: B*07:04
+                        is_frequent: false
+                    -   hla_code: B*07:08
+                        is_frequent: false
+                    -   hla_code: B*07:26
+                        is_frequent: false
+                    -   hla_code: B*07:27
+                        is_frequent: false
+                -   -   hla_code: B*35:09
+                        is_frequent: false
+                -   -   hla_code: DRB1*15:03
+                        is_frequent: false
+                    -   hla_code: DRB1*15:112
+                        is_frequent: true
+                    -   hla_code: DRB1*15:07
+                        is_frequent: true
+                -   -   hla_code: DRB1*11:02
+                        is_frequent: true
+                    -   hla_code: DRB1*11:15
+                        is_frequent: false
+                    -   hla_code: DRB1*11:52
+                        is_frequent: true
+                -   -   hla_code: DPA1*02:01
+                        is_frequent: false
+                    -   hla_code: DPA1*02:16
+                        is_frequent: true
+                    -   hla_code: DPA1*02:17
+                        is_frequent: false
+                    -   hla_code: DPA1*02:21
+                        is_frequent: false
+                -   -   hla_code: DPB1*1054:01
+                        is_frequent: false
+                -   -   hla_code: DQA1*01:03
+                        is_frequent: false
+                    -   hla_code: DQA1*01:08
+                        is_frequent: false
+                    -   hla_code: DQA1*01:31
+                        is_frequent: false
+                    -   hla_code: DQA1*01:42
+                        is_frequent: false
+                -   -   hla_code: DQ6
+                        is_frequent: true
                 items:
                     items:
-                        type: string
+                        $ref: '#/definitions/PotentialHLATypeRaw'
                     type: array
                 type: array
             recipient_antibodies:
@@ -559,26 +718,370 @@ definitions:
                     if available. If high resolution is provided it is assumed that
                     all tested antibodies were provided. If not it is assumed that
                     either all or just positive ones were.
+                example: *id001
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
+            recipient_id:
+                type: string
+            recipient_sample_id:
+                type: string
         required:
         - potential_donor_hla_typing
         - recipient_antibodies
         type: object
     CrossmatchOutput:
         properties:
+            datetime:
+                format: date-time
+                type: string
+            donor_code:
+                type: string
+            donor_sample_id:
+                type: string
             hla_to_antibody:
+                example:
+                -   antibody_matches:
+                    -   hla_antibody:
+                            code:
+                                broad: A1
+                                high_res: null
+                                split: A1
+                            cutoff: 2000
+                            mfi: 3000
+                            raw_code: A1
+                            second_code: null
+                            second_raw_code: null
+                            type: NORMAL
+                        match_type: SPLIT
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: A1
+                                high_res: A*01:02
+                                split: A1
+                            display_code: A*01:02
+                            raw_code: A*01:02
+                        is_frequent: true
+                    -   hla_type:
+                            code:
+                                broad: A1
+                                high_res: A*01:03
+                                split: A1
+                            display_code: A*01:03
+                            raw_code: A*01:03
+                        is_frequent: true
+                    -   hla_type:
+                            code:
+                                broad: A1
+                                high_res: A*01:06
+                                split: A1
+                            display_code: A*01:06
+                            raw_code: A*01:06
+                        is_frequent: true
+                    -   hla_type:
+                            code:
+                                broad: A1
+                                high_res: A*01:19
+                                split: A1
+                            display_code: A*01:19
+                            raw_code: A*01:19
+                        is_frequent: true
+                    is_positive_crossmatch: true
+                    summary:
+                        details_and_issues:
+                        - SPLIT_BROAD_MATCH
+                        - ANTIBODIES_MIGHT_NOT_BE_DSA
+                        hla_code:
+                            broad: A1
+                            high_res: null
+                            split: A1
+                        mfi: 3000
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: A2
+                                high_res: null
+                                split: A2
+                            display_code: A2
+                            raw_code: A2
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NO_MATCHING_ANTIBODY
+                        hla_code:
+                            broad: A2
+                            high_res: null
+                            split: A2
+                        mfi: null
+                -   antibody_matches:
+                    -   hla_antibody:
+                            code:
+                                broad: B7
+                                high_res: null
+                                split: B7
+                            cutoff: 2000
+                            mfi: 2000
+                            raw_code: B7
+                            second_code: null
+                            second_raw_code: null
+                            type: NORMAL
+                        match_type: SPLIT
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: B7
+                                high_res: null
+                                split: B7
+                            display_code: B7
+                            raw_code: B7
+                        is_frequent: true
+                    is_positive_crossmatch: true
+                    summary:
+                        details_and_issues:
+                        - SPLIT_BROAD_MATCH
+                        hla_code:
+                            broad: B7
+                            high_res: null
+                            split: B7
+                        mfi: 2000
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: B35
+                                high_res: null
+                                split: B35
+                            display_code: B35
+                            raw_code: B35
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NO_MATCHING_ANTIBODY
+                        hla_code:
+                            broad: B35
+                            high_res: null
+                            split: B35
+                        mfi: null
+                -   antibody_matches:
+                    -   hla_antibody:
+                            code:
+                                broad: DR2
+                                high_res: null
+                                split: DR15
+                            cutoff: 2000
+                            mfi: 3000
+                            raw_code: DR15
+                            second_code: null
+                            second_raw_code: null
+                            type: NORMAL
+                        match_type: SPLIT
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DR2
+                                high_res: DRB1*15:03
+                                split: DR15
+                            display_code: DRB1*15:03
+                            raw_code: DRB1*15:03
+                        is_frequent: false
+                    -   hla_type:
+                            code:
+                                broad: DR2
+                                high_res: DRB1*15:112
+                                split: DR15
+                            display_code: DRB1*15:112
+                            raw_code: DRB1*15:112
+                        is_frequent: true
+                    -   hla_type:
+                            code:
+                                broad: DR2
+                                high_res: DRB1*15:07
+                                split: DR15
+                            display_code: DRB1*15:07
+                            raw_code: DRB1*15:07
+                        is_frequent: true
+                    is_positive_crossmatch: true
+                    summary:
+                        details_and_issues:
+                        - SPLIT_BROAD_MATCH
+                        - ANTIBODIES_MIGHT_NOT_BE_DSA
+                        hla_code:
+                            broad: DR2
+                            high_res: null
+                            split: DR15
+                        mfi: 3000
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DR5
+                                high_res: DRB1*11:02
+                                split: DR11
+                            display_code: DRB1*11:02
+                            raw_code: DRB1*11:02
+                        is_frequent: true
+                    -   hla_type:
+                            code:
+                                broad: DR5
+                                high_res: DRB1*11:15
+                                split: DR11
+                            display_code: DRB1*11:15
+                            raw_code: DRB1*11:15
+                        is_frequent: false
+                    -   hla_type:
+                            code:
+                                broad: DR5
+                                high_res: DRB1*11:52
+                                split: DR11
+                            display_code: DRB1*11:52
+                            raw_code: DRB1*11:52
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NEGATIVE_ANTIBODY_IN_SUMMARY
+                        hla_code:
+                            broad: DR5
+                            high_res: null
+                            split: DR11
+                        mfi: 1400
+                -   antibody_matches:
+                    -   hla_antibody:
+                            code:
+                                broad: DPA2
+                                high_res: DPA1*02:01
+                                split: DPA2
+                            cutoff: 2000
+                            mfi: 3000
+                            raw_code: DPA1*02:01
+                            second_code: null
+                            second_raw_code: null
+                            type: NORMAL
+                        match_type: SPLIT
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DPA2
+                                high_res: null
+                                split: DPA2
+                            display_code: DPA2
+                            raw_code: DPA2
+                        is_frequent: true
+                    is_positive_crossmatch: true
+                    summary:
+                        details_and_issues:
+                        - SPLIT_BROAD_MATCH
+                        hla_code:
+                            broad: DPA2
+                            high_res: DPA1*02:01
+                            split: DPA2
+                        mfi: 3000
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DP1054
+                                high_res: null
+                                split: DP1054
+                            display_code: DP1054
+                            raw_code: DP1054
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NO_MATCHING_ANTIBODY
+                        hla_code:
+                            broad: DP1054
+                            high_res: null
+                            split: DP1054
+                        mfi: null
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DQA1
+                                high_res: null
+                                split: DQA1
+                            display_code: DQA1
+                            raw_code: DQA1
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NO_MATCHING_ANTIBODY
+                        hla_code:
+                            broad: DQA1
+                            high_res: null
+                            split: DQA1
+                        mfi: null
+                -   antibody_matches: []
+                    assumed_hla_types:
+                    -   hla_type:
+                            code:
+                                broad: DQ1
+                                high_res: null
+                                split: DQ6
+                            display_code: DQ6
+                            raw_code: DQ6
+                        is_frequent: true
+                    is_positive_crossmatch: false
+                    summary:
+                        details_and_issues:
+                        - NO_MATCHING_ANTIBODY
+                        hla_code:
+                            broad: DQ1
+                            high_res: null
+                            split: DQ6
+                        mfi: null
                 items:
                     $ref: '#/definitions/AntibodyMatchForHLAType'
                 type: array
+            is_positive_crossmatch:
+                type: boolean
             parsing_issues:
+                example: *id002
                 items:
                     $ref: '#/definitions/ParsingIssueBase'
                 type: array
+            recipient_id:
+                type: string
+            recipient_sample_id:
+                type: string
         required:
         - hla_to_antibody
+        - is_positive_crossmatch
         - parsing_issues
+        type: object
+    CrossmatchSummary:
+        properties:
+            details_and_issues:
+                items:
+                    enum:
+                    - RARE_ALLELE_POSITIVE_CROSSMATCH
+                    - ANTIBODIES_MIGHT_NOT_BE_DSA
+                    - AMBIGUITY_IN_HLA_TYPIZATION
+                    - NEGATIVE_ANTIBODY_IN_SUMMARY
+                    - NO_MATCHING_ANTIBODY
+                    - HIGH_RES_MATCH
+                    - HIGH_RES_MATCH_ON_SPLIT_LEVEL
+                    - MULTIPLE_HIGH_RES_MATCH
+                    - HIGH_RES_WITH_SPLIT_BROAD_MATCH
+                    - SPLIT_BROAD_MATCH
+                    - THEORETICAL_MATCH
+                    - NONE_MATCH
+                    example: RARE_ALLELE_POSITIVE_CROSSMATCH
+                    type: string
+                type: array
+            hla_code:
+                $ref: '#/definitions/HlaCode'
+            mfi:
+                type: integer
+        required:
+        - hla_code
         type: object
     CycleOrChain:
         properties:
@@ -658,10 +1161,10 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id017
+                example: &id019
                 -   antibody_matches:
                     -   hla_antibody:
-                            code: &id002
+                            code: &id004
                                 broad: A9
                                 high_res: null
                                 split: null
@@ -671,7 +1174,7 @@ definitions:
                             type: NORMAL
                         match_type: NONE
                     -   hla_antibody:
-                            code: &id001
+                            code: &id003
                                 broad: A1
                                 high_res: null
                                 split: null
@@ -689,18 +1192,18 @@ definitions:
                             raw_code: A23
                         match_type: BROAD
                     -   hla_type:
-                            code: *id001
+                            code: *id003
                             raw_code: A1
                         match_type: SPLIT
                     group_compatibility_index: 2.0
                     hla_group: A
                     recipient_matches:
                     -   hla_type:
-                            code: *id002
+                            code: *id004
                             raw_code: A9
                         match_type: BROAD
                     -   hla_type:
-                            code: *id001
+                            code: *id003
                             raw_code: A1
                         match_type: SPLIT
                 -   antibody_matches: []
@@ -718,7 +1221,7 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
-            etag: &id004
+            etag: &id006
                 description: Number of updates of a patient
                 example: 1
                 type: integer
@@ -753,15 +1256,15 @@ definitions:
         type: object
     DonorInput:
         properties:
-            blood_group: &id003
+            blood_group: &id005
                 $ref: '#/definitions/BloodGroupEnum'
             donor_type:
                 $ref: '#/definitions/DonorType'
-            height: &id005
+            height: &id007
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id012
+            hla_typing: &id014
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
                 - A1
@@ -778,19 +1281,19 @@ definitions:
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id013
+            internal_medical_id: &id015
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id011
+            medical_id: &id013
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: D1037
                 type: string
-            note: &id006
+            note: &id008
                 default: ''
                 example: donor note
                 type: string
@@ -799,13 +1302,13 @@ definitions:
                     and non-directed donors.
                 example: R1037
                 type: string
-            sex: &id007
+            sex: &id009
                 $ref: '#/definitions/SexEnum'
-            weight: &id008
+            weight: &id010
                 description: Weight of the patient in kilograms.
                 example: 78.4
                 type: number
-            year_of_birth: &id009
+            year_of_birth: &id011
                 description: Year of birth of the patient.
                 example: 1945
                 type: integer
@@ -876,6 +1379,13 @@ definitions:
         required:
         - donor_country
         - recipient_country
+        type: object
+    HLAAntibodyForCPRAJson:
+        properties:
+            code_sent_to_calculator:
+                type: string
+            hla_antibody:
+                $ref: '#/definitions/HlaAntibody'
         type: object
     HLAAntibodyIn:
         properties:
@@ -1406,13 +1916,13 @@ definitions:
         type: object
     PatientModelToUpdate:
         properties:
-            blood_group: *id003
-            db_id: &id010
+            blood_group: *id005
+            db_id: &id012
                 description: Database id of the patient
                 example: 1
                 type: integer
-            etag: *id004
-            height: *id005
+            etag: *id006
+            height: *id007
             hla_typing:
                 allOf:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
@@ -1423,10 +1933,10 @@ definitions:
                     -   raw_code: A*01:02
                     -   raw_code: B7
                     -   raw_code: DR11
-            note: *id006
-            sex: *id007
-            weight: *id008
-            year_of_birth: *id009
+            note: *id008
+            sex: *id009
+            weight: *id010
+            year_of_birth: *id011
         required:
         - blood_group
         - db_id
@@ -1506,6 +2016,16 @@ definitions:
         - patients_checked_antibodies
         - patients_checked_antigens
         type: object
+    PotentialHLATypeRaw:
+        properties:
+            hla_code:
+                type: string
+            is_frequent:
+                type: boolean
+        required:
+        - hla_code
+        - is_frequent
+        type: object
     Recipient:
         properties:
             acceptable_blood_groups:
@@ -1517,14 +2037,14 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            db_id: *id010
-            etag: *id004
+            db_id: *id012
+            etag: *id006
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id011
+            medical_id: *id013
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_issues:
@@ -1577,7 +2097,7 @@ definitions:
         type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id014
+            acceptable_blood_groups: &id016
                 description: Acceptable blood groups for the patient. Leave empty
                     to use compatible blood groups.
                 example:
@@ -1586,8 +2106,8 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
-            blood_group: *id003
-            height: *id005
+            blood_group: *id005
+            height: *id007
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution
                     if available. If high resolution is provided it is assumed that
@@ -1596,23 +2116,23 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id012
-            internal_medical_id: *id013
-            medical_id: *id011
-            note: *id006
-            previous_transplants: &id015
+            hla_typing: *id014
+            internal_medical_id: *id015
+            medical_id: *id013
+            note: *id008
+            previous_transplants: &id017
                 description: Number of previous kidney transplants.
                 example: 0
                 type: integer
-            sex: *id007
-            waiting_since: &id016
+            sex: *id009
+            waiting_since: &id018
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
                 format: date
                 type: string
-            weight: *id008
-            year_of_birth: *id009
+            weight: *id010
+            year_of_birth: *id011
         required:
         - blood_group
         - hla_antibodies
@@ -1623,7 +2143,7 @@ definitions:
         allOf:
         -   $ref: '#/definitions/PatientModelToUpdate'
         -   properties:
-                acceptable_blood_groups: *id014
+                acceptable_blood_groups: *id016
                 cutoff:
                     type: integer
                 hla_antibodies:
@@ -1635,7 +2155,7 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
-                previous_transplants: *id015
+                previous_transplants: *id017
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -1643,7 +2163,7 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
-                waiting_since: *id016
+                waiting_since: *id018
             type: object
     RecipientRequirements:
         properties:
@@ -1760,7 +2280,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id017
+                example: *id019
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -2046,6 +2566,42 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/crossmatch/calculate-cpra:
+        post:
+            description: Calculate CPRA for recipient with http://ETRL.ORG/
+            operationId: post_calculate_cpra
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/CalculateCPRAInput'
+            responses:
+                '200':
+                    description: Success
+                    schema:
+                        $ref: '#/definitions/CalculateCPRAOutput'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - crossmatch
     /v1/crossmatch/do-crossmatch:
         post:
             description: Perform crossmatch test between donor HLA typing and recipient

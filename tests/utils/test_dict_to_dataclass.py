@@ -41,7 +41,7 @@ class TestDictToDataclass(DbTests):
         self.assertGreater(dacite_time, 3 * dataclass_time)
         self.assertEqual(antibodies_dto_dacite, antibodies_dto_list_comprehension)
 
-        logger.info(f"Dacite time: {dacite_time}, Dataclass time: {dataclass_time}")
+        logger.info(f'Dacite time: {dacite_time}, Dataclass time: {dataclass_time}')
 
         # Case with HLATypingDTO
         start_time = time.time()

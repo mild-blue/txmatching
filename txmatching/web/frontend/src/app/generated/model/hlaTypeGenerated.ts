@@ -14,6 +14,7 @@ import { HlaCodeGenerated } from './hlaCodeGenerated';
 
 export interface HlaTypeGenerated { 
     code: HlaCodeGenerated;
+    display_code?: string;
     raw_code: string;
 }
 

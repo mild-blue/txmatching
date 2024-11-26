@@ -112,14 +112,14 @@ class CannotFindShortEnoughRoundsOrPathsInILPSolver(BaseTxmException):
     """
 
     default_message = """
-    There are too many possible solutions for the provided set of patients and the algorithm cannot find the optimal 
-    solution with the provided configuration. Try changing the configuration, ideally in the following order: increase 
-    the number of dynamic constraints, increase the max length of cycle/sequence, increase the max number of countries 
+    There are too many possible solutions for the provided set of patients and the algorithm cannot find the optimal
+    solution with the provided configuration. Try changing the configuration, ideally in the following order: increase
+    the number of dynamic constraints, increase the max length of cycle/sequence, increase the max number of countries
     in round.
 
     If you need help, contact administrators at info@mild.blue or +420 723 927 536.
 
-    This is happening because the algorithm is still under development. We are working intensively to ensure that this 
+    This is happening because the algorithm is still under development. We are working intensively to ensure that this
     is not necessary in the future.
     """
     def __init__(self, message: str = default_message):
@@ -158,6 +158,24 @@ class TXMNotImplementedFeatureException(BaseTxmException):
     Functionality is not implemented yet. Just inform user about this situation.
     This exception is completely OK and should be loged with level INFO.
     Do not confuse with python NotImplementedError (corresponds to unexpected internal errors with code 500).
+    """
+
+
+class CPRACalculationBaseException(Exception):
+    """
+    Base class for CPRA calculation with http://ETRL.ORG/ related exceptions.
+    """
+
+
+class ETRLRequestException(CPRACalculationBaseException):
+    """
+    The request from the http://ETRL.ORG/ was not successful.
+    """
+
+
+class ETRLErrorResponse(CPRACalculationBaseException):
+    """
+    There is an error in the response from the http://ETRL.ORG/.
     """
 
 

@@ -9,12 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HlaTypeGenerated } from './hlaTypeGenerated';
+import { AssumedHLATypeGenerated } from './assumedHLATypeGenerated';
 import { AntibodyMatchGenerated } from './antibodyMatchGenerated';
+import { CrossmatchSummaryGenerated } from './crossmatchSummaryGenerated';
 
 
 export interface AntibodyMatchForHLATypeGenerated { 
     antibody_matches?: Array<AntibodyMatchGenerated>;
-    hla_type: HlaTypeGenerated;
+    assumed_hla_types: Array<AssumedHLATypeGenerated>;
+    is_positive_crossmatch: boolean;
+    summary?: CrossmatchSummaryGenerated;
 }
 

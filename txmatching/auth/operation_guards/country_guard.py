@@ -3,9 +3,20 @@ from typing import Type, Union
 from txmatching.auth.exceptions import GuardException, InvalidArgumentException
 from txmatching.database.services.app_user_management import get_app_user_by_id
 from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
+                                                    ParsingIssueModel,
                                                     RecipientModel)
 from txmatching.utils.country_enum import Country
 
+
+def guard_user_country_access_to_parsing_issue(user_id: int, parsing_issue: ParsingIssueModel):
+    """
+    Verify that the user has right to access parsing issue, it should never happend that both donor_id
+    and recipient_id are None.
+    """
+    if parsing_issue.donor_id is not None:
+        guard_user_country_access_to_donor(user_id, parsing_issue.donor_id)
+    elif parsing_issue.recipient_id is not None:
+        guard_user_country_access_to_recipient(user_id, parsing_issue.recipient_id)
 
 def guard_user_country_access_to_donor(user_id: int, donor_id: int):
     """

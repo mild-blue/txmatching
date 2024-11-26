@@ -14,8 +14,11 @@ from txmatching.utils.enums import (AntibodyMatchTypes, HLAAntibodyType,
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, add_theoretical_crossmatch_type, do_crossmatch_in_type_a, do_crossmatch_in_type_b,
     is_positive_hla_crossmatch, is_recipient_type_a)
-from txmatching.utils.hla_system.hla_preparation_utils import create_hla_typing, create_hla_type, \
-    create_antibodies, create_antibody, create_antibody_parsed
+
+from txmatching.utils.hla_system.hla_preparation_utils import (
+    create_antibodies, create_antibody, create_antibody_parsed,
+    create_hla_type, create_hla_typing)
+
 logger = logging.getLogger(__name__)
 
 

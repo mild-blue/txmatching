@@ -1,8 +1,10 @@
 import datetime
 from unittest import TestCase
 
-from txmatching.auth.crypto.jwt_crypto import decode_auth_token, encode_auth_token, parse_request_token
-from txmatching.auth.data_types import DecodedBearerToken, UserRole, TokenType
+from txmatching.auth.crypto.jwt_crypto import (decode_auth_token,
+                                               encode_auth_token,
+                                               parse_request_token)
+from txmatching.auth.data_types import DecodedBearerToken, TokenType, UserRole
 from txmatching.auth.exceptions import InvalidJWTException
 
 
